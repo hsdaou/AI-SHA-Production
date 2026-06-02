@@ -1,0 +1,13 @@
+ld19_config:
+  product_name: LDLiDAR_LD19
+  topic_name: scan #LiDAR/ld19
+  frame_id: laser
+  port_name: /dev/ttyUSB0
+  port_baudrate: 230400
+
+  # false = Counterclockwise, true = Clockwise
+  laser_scan_dir: true
+
+  enable_angle_crop_func: false
+  angle_crop_min: 0.0
+  angle_crop_max: 0.0

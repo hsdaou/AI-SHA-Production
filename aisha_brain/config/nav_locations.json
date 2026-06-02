@@ -1,0 +1,119 @@
+{
+    "_comment": "Waypoint coordinates in the SLAM map frame (metres). All entries below are PLACEHOLDERS (0,0,0,1) — see _calibration_protocol for how to fill them. Only Ground Floor waypoints are listed; AI-SHA cannot reach the First Floor (Zone 6) without elevator support.",
+    "_calibration_protocol": [
+        "1. Generate SLAM map: ros2 launch aisha_integration rpi_launch.py enable_slam:=true",
+        "2. Drive robot through campus via teleop, save map:",
+        "     ros2 run nav2_map_server map_saver_cli -f ~/maps/iscshj_campus",
+        "3. Load map in RViz: ros2 launch nav2_bringup bringup_launch.py map:=~/maps/iscshj_campus.yaml",
+        "4. Drive robot to each location, then record pose:",
+        "     ros2 topic echo /amcl_pose --once",
+        "5. Copy position.x, position.y, orientation.z, orientation.w into this file.",
+        "6. Test: ros2 topic pub /nav_goal std_msgs/String '{data: \"cafeteria\"}' --once"
+    ],
+
+    "locations": {
+        "main entrance":               {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "side entrance":               {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "atrium":                      {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "reception":                   {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "admin office":                {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "principal office":            {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "vice-principal office":       {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "conference room":             {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "it room":                     {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "server room":                 {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "aqc office":                  {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+
+        "cafeteria":                   {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "bookshop":                    {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "uniform shop":                {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "lost and found":              {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+
+        "gymnasium":                   {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "old gym":                     {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "basketball court":            {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "music room":                  {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "swimming pool":               {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+
+        "biology lab":                 {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "chemistry lab":               {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "physics lab":                 {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "art room":                    {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "video conference room":       {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+
+        "boys clinic":                 {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "girls clinic":                {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+
+        "kindergarten wing":           {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "kg reading room":             {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "kg computer lab":             {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "kg gymnasium":                {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "kg coordinator":              {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+
+        "zone 1 corridor":             {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "zone 2 corridor":             {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "zone 3 corridor":             {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "zone 4 corridor":             {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+        "zone 5 corridor":             {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+
+        "stair to zone 6":             {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0},
+
+        "charging station":            {"x": 0.0, "y": 0.0, "oz": 0.0, "ow": 1.0}
+    },
+
+    "aliases": {
+        "office":              "admin office",
+        "front desk":          "reception",
+        "front door":          "main entrance",
+        "entrance":            "main entrance",
+        "atrium hall":         "atrium",
+        "principal":           "principal office",
+        "vice principal":      "vice-principal office",
+        "vp":                  "vice-principal office",
+        "it":                  "it room",
+        "server":              "server room",
+        "aqc":                 "aqc office",
+
+        "food":                "cafeteria",
+        "lunch":                "cafeteria",
+        "canteen":             "cafeteria",
+        "books":               "bookshop",
+        "uniform":             "uniform shop",
+        "lost & found":        "lost and found",
+
+        "gym":                 "gymnasium",
+        "basketball":          "basketball court",
+        "music":               "music room",
+        "pool":                "swimming pool",
+        "swim":                "swimming pool",
+
+        "biology":             "biology lab",
+        "chemistry":           "chemistry lab",
+        "physics":             "physics lab",
+        "art":                 "art room",
+
+        "boys nurse":          "boys clinic",
+        "girls nurse":         "girls clinic",
+        "nurse":               "boys clinic",
+        "clinic":              "boys clinic",
+
+        "kg":                  "kindergarten wing",
+        "kindergarten":        "kindergarten wing",
+        "kg reading":          "kg reading room",
+        "kg lab":              "kg computer lab",
+        "kg gym":              "kg gymnasium",
+
+        "stairs":              "stair to zone 6",
+        "stairway":            "stair to zone 6",
+        "go upstairs":         "stair to zone 6",
+        "upstairs":            "stair to zone 6",
+        "first floor":         "stair to zone 6",
+        "library":             "stair to zone 6",
+        "multi-purpose hall":  "stair to zone 6",
+        "upper school":        "stair to zone 6",
+
+        "home":                "charging station",
+        "charge":              "charging station",
+        "dock":                "charging station"
+    }
+}

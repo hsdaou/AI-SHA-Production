@@ -1,0 +1,47 @@
+# AI-SHA Brain - Python Dependencies
+# Install: pip install -r requirements.txt
+#
+# Note: ROS2 packages (rclpy, std_msgs) come from the ROS2 installation,
+# not pip. System tools (piper, aplay) must be installed separately.
+
+# LLM inference (local)
+ollama>=0.4.0
+
+# RAG pipeline
+llama-index-core>=0.11.0
+llama-index-vector-stores-chroma>=0.2.0
+llama-index-embeddings-huggingface>=0.3.0
+llama-index-llms-ollama>=0.3.0
+
+# Vector database
+chromadb>=0.5.0
+
+# Embeddings
+sentence-transformers>=3.0.0
+
+# HTTP client (used by brain_node for Ollama API)
+requests>=2.31.0
+
+# Web scraping for knowledge base building (replaces crawl4ai)
+beautifulsoup4>=4.12.0
+lxml>=5.0.0
+
+# TTS (text-to-speech)
+piper-tts>=1.4.0
+pathvalidate>=3.0.0
+
+# STT (speech-to-text) — Faster-Whisper (CTranslate2 backend)
+# On Jetson with CUDA: set whisper_device:=cuda and whisper_compute_type:=float16
+faster-whisper>=1.0.0
+
+# Audio capture — continuous ring buffer (preferred over arecord chunks)
+# Requires PortAudio system library: apt install libportaudio2 portaudio19-dev
+sounddevice>=0.4.6
+
+# Voice Activity Detection — detects human speech frequencies, ignores
+# non-speech noise (lockers, bells, ambient chatter). CPU-negligible.
+# Used as gatekeeper before Faster-Whisper to avoid wasting GPU on noise.
+webrtcvad>=2.0.10
+
+# Utilities
+setuptools>=68.0.0

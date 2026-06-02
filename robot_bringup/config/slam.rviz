@@ -1,0 +1,40 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+
+Visualization Manager:
+  Displays:
+    - Class: rviz_common/Grid
+      Name: Grid
+      Reference Frame: map
+      Plane Cell Count: 50
+
+    - Class: rviz_default_plugins/Map
+      Name: Map
+      Topic: /map
+      Color Scheme: map
+
+    - Class: rviz_default_plugins/LaserScan
+      Name: LaserScan
+      Topic: /scan
+      Size: 0.05
+      Color: 255; 0; 0
+
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Show Names: true
+
+    - Class: rviz_common/RobotModel
+      Name: RobotModel
+      Description Topic: /robot_description
+
+  Global Options:
+    Fixed Frame: map
+
+  Views:
+    Current:
+      Class: rviz_default_plugins/TopDownOrtho
+      Name: TopDown
+      Scale: 10.0

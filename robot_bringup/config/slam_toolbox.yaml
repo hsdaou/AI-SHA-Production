@@ -1,0 +1,61 @@
+slam_toolbox:
+  ros__parameters:
+    # ROS Parameters
+    use_sim_time: false
+
+    # Frames
+    odom_frame: odom
+    map_frame: map
+    base_frame: base_link
+    scan_topic: /scan
+
+    # Mode
+    mode: mapping  # mapping or localization
+
+    # Transform handling - CRITICAL for static TF
+    transform_timeout: 2.0  # Wait longer for transforms
+    tf_buffer_duration: 120.0  # Large buffer
+    minimum_travel_distance: 0.2  # Move 20cm before updating (reduced processing)
+    minimum_travel_heading: 0.2  # Rotate ~12° before updating
+    scan_buffer_size: 5  # Small buffer for sync mode
+    scan_buffer_maximum_scan_distance: 15.0
+    link_match_minimum_response_fine: 0.1
+    link_scan_maximum_distance: 1.5
+    loop_search_maximum_distance: 4.0
+
+    # Resolution and range - lighter processing
+    resolution: 0.1  # Larger cells = faster processing
+    max_laser_range: 10.0  # Slightly reduced
+    minimum_time_interval: 0.5  # Process scans every 500ms
+
+    # Map updates
+    map_update_interval: 3.0  # Slower updates
+
+    # Solver
+    solver_plugin: solver_plugins::CeresSolver
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY
+    ceres_preconditioner: SCHUR_JACOBI
+    ceres_trust_strategy: LEVENBERG_MARQUARDT
+    ceres_dogleg_type: TRADITIONAL_DOGLEG
+    ceres_loss_function: None
+
+    # Scan matching correlation parameters
+    correlation_search_space_dimension: 0.5
+    correlation_search_space_resolution: 0.01
+    correlation_search_space_smear_deviation: 0.1
+
+    # Loop closure
+    loop_search_space_dimension: 8.0
+    loop_search_space_resolution: 0.05
+    loop_search_space_smear_deviation: 0.03
+
+    # Scan matcher
+    distance_variance_penalty: 0.5
+    angle_variance_penalty: 1.0
+
+    fine_search_angle_offset: 0.00349
+    coarse_search_angle_offset: 0.349
+    coarse_angle_resolution: 0.0349
+    minimum_angle_penalty: 0.9
+    minimum_distance_penalty: 0.5
+    use_response_expansion: true

@@ -1,0 +1,30 @@
+# ROS 2 build artifacts
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Editor / OS
+*.swp
+*.bak
+*~
+
+# Large / regenerable binaries (shipped or rebuilt separately)
+*.pt
+*.engine
+*.onnx
+*.pdf
+
+# Generated knowledge base — rebuild via build_knowledge.py
+**/aisha_knowledge_db/
+
+# Vendored packages that carry their own git history
+realsense-ros/
+slam_toolbox/
+ldlidar_stl_ros2/
+web_video_server/
