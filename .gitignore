@@ -12,6 +12,7 @@ __pycache__/
 # Editor / OS
 *.swp
 *.bak
+*.backup
 *~
 
 # Large / regenerable binaries (shipped or rebuilt separately)
