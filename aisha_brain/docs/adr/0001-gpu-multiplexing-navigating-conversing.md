@@ -1,6 +1,6 @@
 # ADR 0001 — Time-multiplex the GPU between NAVIGATING and CONVERSING states
 
-- **Status:** Implemented — `gpu_arbiter` (YOLO kill/respawn) + `pause_inference` + `admin_node` `/aisha/mode` reaction, all wired into `cerebro_aisha.launch.py` (`enable_gpu_arbiter`, default on) and verified end-to-end from one `ros2 launch` (2026-06-02). Accelerated answer works (CONVERSING ~6.5 s first / ~2 s warm vs ~16–22 s CPU). Remaining polish: wake-word trigger; GPU-load fallback; ~10 s respawn time. See Validation.
+- **Status:** Implemented — `gpu_arbiter` (YOLO kill/respawn) + `pause_inference` + `admin_node` `/aisha/mode` reaction + **"Hey Aisha stop" wake word**, all wired into `cerebro_aisha.launch.py` (`enable_gpu_arbiter`, default on) and verified (2026-06-02). Accelerated answer works (CONVERSING ~6.5 s first / ~2 s warm vs ~16–22 s CPU). Remaining polish: GPU-load fallback; optional sleep-phrase; ~10 s respawn time. See Validation.
 - **Date:** 2026-06-02
 - **Deciders:** AI-SHA team
 - **Hardware:** Jetson Orin Nano 8GB (unified CPU+GPU memory), JetPack 6 / L4T R36.4.7, ROS 2 Humble
@@ -259,5 +259,12 @@ Ignoring these yields a scheme that stalls vision without reclaiming memory.
       a pre-warmed engine or a faster-loading model; disabling detectors alone does NOT help.
 - [ ] Spike: trim `admin_node` ~0.8 GB footprint — if baseline drops enough, pause-only may
       suffice and the respawn can be dropped.
-- [ ] Decide wake-word engine (openWakeWord / Porcupine), CPU-only.
+- [x] **Wake-word trigger** (2026-06-02): `gpu_arbiter` watches `/speech/text` (Whisper STT,
+      already running) for **"Hey Aisha stop"** (tolerant regex: an Aisha-name variant + "stop";
+      a bare "stop" stays brain_node's emergency halt) → enters CONVERSING. Verified: non-wake
+      speech ignored, wake phrase switches the mode. Params `wake_enabled`/`speech_topic`. Reuses
+      STT, so no new wake-word engine/dependency; upgrade to openWakeWord/Porcupine later if a
+      lower-latency, always-on (STT-independent) detector is wanted.
 - [ ] Define fallback: llama GPU-load failure → `num_gpu=0` (CPU) mid-conversation, with timeout.
+- [ ] Optional: a "sleep phrase" (e.g. "Hey Aisha go") to end CONVERSING early instead of waiting
+      for `conversation_timeout_s`.

@@ -29,10 +29,12 @@ Exit (NAVIGATING):
   2. broadcast admin num_gpu=0; unload llama
   3. clear motion-inhibit ONLY once vision is confirmed back
 
-Trigger:
-    ros2 service call /aisha/set_conversing std_srvs/srv/SetBool "{data: true}"
+Triggers:
+    - Wake word "Hey Aisha stop" on /speech/text (auto; param wake_enabled).
+    - Manual: ros2 service call /aisha/set_conversing std_srvs/srv/SetBool "{data: true}"
 """
 import os
+import re
 import signal
 import subprocess
 import threading
@@ -83,6 +85,11 @@ class GpuArbiter(Node):
         self.declare_parameter('yolo_ready_timeout_s', 25.0)
         # Auto-return to NAVIGATING after this many seconds (never stuck blind).
         self.declare_parameter('conversation_timeout_s', 90.0)
+        # Wake word: a phrase on the STT stream that switches NAVIGATING ->
+        # CONVERSING ("Hey Aisha stop" = stop moving + start a conversation).
+        # Matched tolerantly against Whisper output (name variants + "stop").
+        self.declare_parameter('wake_enabled', True)
+        self.declare_parameter('speech_topic', '/speech/text')
 
         self.pause_srv_name = self.get_parameter('yolo_pause_service').value
         self.cmd_in = self.get_parameter('cmd_vel_in').value
@@ -96,6 +103,8 @@ class GpuArbiter(Node):
             self.get_parameter('yolo_ready_timeout_s').value)
         self.conv_timeout = float(
             self.get_parameter('conversation_timeout_s').value)
+        self.wake_enabled = bool(self.get_parameter('wake_enabled').value)
+        self.speech_topic = self.get_parameter('speech_topic').value
 
         # ── State ───────────────────────────────────────────────────────────
         self.state = NAVIGATING
@@ -103,6 +112,7 @@ class GpuArbiter(Node):
         self._yolo_proc = None
         self._busy = threading.Lock()        # serialize transitions
         self._conv_deadline = None           # monotonic auto-return deadline
+        self._last_wake = 0.0                # debounce repeated wake triggers
 
         # ── I/O ─────────────────────────────────────────────────────────────
         latched = QoSProfile(
@@ -116,14 +126,26 @@ class GpuArbiter(Node):
                             self._on_set_conversing)
         self.pause_client = self.create_client(SetBool, self.pause_srv_name)
 
+        # Wake word "Hey Aisha stop": tolerant match for an Aisha-name variant
+        # (Whisper spells it many ways) followed by "stop" in the same line.
+        # Requires the NAME — a bare "stop" is brain_node's emergency halt, not
+        # a conversation trigger.
+        self._wake_re = re.compile(
+            r'\b(a[iye]{1,3}sha|asha|aesha)\b.{0,30}\bstop\b')
+        if self.wake_enabled:
+            self.create_subscription(
+                String, self.speech_topic, self._on_speech, 10)
+
         # Safety: republish zero velocity at 10 Hz whenever motion is not
         # allowed (CONVERSING, or NAVIGATING before vision is confirmed back).
         self.create_timer(0.1, self._safety_tick)
 
         self._publish_mode()
+        wake = (f'wake word "Hey Aisha stop" on {self.speech_topic}'
+                if self.wake_enabled else 'wake word disabled')
         self.get_logger().info(
-            f'GPU arbiter up in {self.state} (manage_yolo={self.manage_yolo}). '
-            f'Trigger: ros2 service call /aisha/set_conversing '
+            f'GPU arbiter up in {self.state} (manage_yolo={self.manage_yolo}, '
+            f'{wake}). Manual trigger: ros2 service call /aisha/set_conversing '
             f'std_srvs/srv/SetBool "{{data: true}}"')
 
         # Own the YOLO process from the start so we can kill/respawn it.
@@ -152,6 +174,27 @@ class GpuArbiter(Node):
             self.get_logger().warn(
                 f'[gpu-mux] CONVERSING timed out -> auto-return to NAVIGATING')
             threading.Thread(target=self._navigating_worker, daemon=True).start()
+
+    # ── Wake word ───────────────────────────────────────────────────────────
+    def _on_speech(self, msg: String):
+        """Watch the STT stream for the wake phrase -> enter CONVERSING.
+
+        "Hey Aisha stop" both halts the robot (CONVERSING locks motion) and
+        starts a conversation (frees the GPU for a fast answer). Only fires
+        while NAVIGATING; a 3 s debounce avoids re-triggering on echoes.
+        """
+        text = (msg.data or '').lower()
+        if not self._wake_re.search(text):
+            return
+        now = time.time()
+        if now - self._last_wake < 3.0:
+            return
+        self._last_wake = now
+        if self.state == CONVERSING or self._busy.locked():
+            return
+        self.get_logger().info(f'[gpu-mux] wake word detected: "{msg.data[:50]}" '
+                               f'-> CONVERSING')
+        threading.Thread(target=self._conversing_worker, daemon=True).start()
 
     # ── Trigger ─────────────────────────────────────────────────────────────
     def _on_set_conversing(self, request, response):
