@@ -51,16 +51,20 @@ class STTNode(Node):
             10
         )
 
-        # FAILSAFE: Monitor /tts_text to auto-mute when LLM responds
+        # FAILSAFE: auto-mute the moment the brain dispatches speech, in case
+        # the TTS node's authoritative /speaker/playing signal never arrives
+        # (e.g. TTS runs on the RPi5 and isn't publishing it). tts_callback
+        # mutes immediately and sets a duration timer estimated from the text
+        # length, so the mic stays off for the whole spoken response.
+        #   /robot_speech : AI-SHA brain (brain_node) — the current deployment
+        #   /tts_text     : legacy llm_node brain — kept for rollback
         self.tts_mute_timer = None
         self.post_stt_cooldown_timer = None
         self.auto_mute_start_time = 0.0
+        self.robot_speech_sub = self.create_subscription(
+            String, '/robot_speech', self.tts_callback, 10)
         self.tts_sub = self.create_subscription(
-            String,
-            '/tts_text',
-            self.tts_callback,
-            10
-        )
+            String, '/tts_text', self.tts_callback, 10)
 
         # Audio queue
         self.audio_queue = queue.Queue()
