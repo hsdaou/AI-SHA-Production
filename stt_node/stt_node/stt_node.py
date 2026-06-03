@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 STT Node - Optimized Faster-Whisper (GPU Accelerated)
-Uses small model for maximum accuracy and speed
+Model size is set via the 'model_size' ROS param (default 'small').
 """
 
 import rclpy
@@ -30,12 +30,18 @@ class STTNode(Node):
         except Exception as e:
             self.get_logger().warn(f'Could not stop PulseAudio: {e}')
 
+        # Whisper model size — wired from the launch arg (stt_model_size).
+        # Default 'small' preserves the previous hardcoded behaviour; pass
+        # 'tiny'/'base' for lighter load or 'medium'/'large' for accuracy.
+        self.model_size = self.declare_parameter(
+            'model_size', 'small').get_parameter_value().string_value
+
         # Optimized parameters
         self.sample_rate = 16000
-        self.device_channels = 1  
-        self.channels = 1  
-        self.chunk_duration = 0.5  
-        self.silence_threshold = 0.02  
+        self.device_channels = 1
+        self.channels = 1
+        self.chunk_duration = 0.5
+        self.silence_threshold = 0.02
         self.device_index = None
         self.respeaker_found = False
 
@@ -77,7 +83,8 @@ class STTNode(Node):
         self._find_respeaker()
 
         # Load optimized model
-        self.get_logger().info('Loading Faster-Whisper SMALL model (excellent accuracy)...')
+        self.get_logger().info(
+            f'Loading Faster-Whisper {self.model_size.upper()} model...')
         threading.Thread(target=self._load_model, daemon=True).start()
 
         # Start audio processing
@@ -163,10 +170,10 @@ class STTNode(Node):
                 compute_type = "int8"
 
             self.model = WhisperModel(
-                "small",  
+                self.model_size,
                 device=device,
                 compute_type=compute_type,
-                num_workers=4  
+                num_workers=4
             )
 
             dummy_audio = np.zeros(self.sample_rate * 2, dtype=np.float32)
@@ -178,10 +185,8 @@ class STTNode(Node):
             ))
 
             self.model_loaded.set()
-            if has_cuda:
-                self.get_logger().info('✓ Whisper SMALL ready on GPU')
-            else:
-                self.get_logger().info('✓ Whisper base ready on CPU')
+            self.get_logger().info(
+                f'✓ Whisper {self.model_size.upper()} ready on {device.upper()}')
 
         except Exception as e:
             self.get_logger().error(f'Model load failed: {e}')

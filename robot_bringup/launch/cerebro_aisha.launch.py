@@ -49,8 +49,8 @@ def generate_launch_description():
     }
 
     declare_stt_model = DeclareLaunchArgument(
-        'stt_model_size', default_value='tiny',
-        description='Whisper model size: tiny, base, small, medium')
+        'stt_model_size', default_value='small',
+        description='Whisper model size: tiny, base, small, medium, large')
     declare_yolo_model = DeclareLaunchArgument(
         'yolo_model_path',
         default_value=os.path.expanduser('~/robot_ws/yolov8m.engine'),
