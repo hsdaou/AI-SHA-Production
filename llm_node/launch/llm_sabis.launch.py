@@ -1,5 +1,21 @@
 #!/usr/bin/env python3
-"""Launch file for Plant Health LLM Node"""
+"""Launch file for Plant Health LLM Node — DEPRECATED.
+
+DEPRECATED: This is the legacy "Plant Health Robot" brain. It is NOT part of
+the AI-SHA production stack and must NOT be run alongside it.
+
+The current robot is launched via `robot_bringup cerebro_aisha.launch.py`,
+where LLM inference is owned exclusively by `aisha_brain admin_node` (RAG over
+the school knowledge base). This llm_node:
+  * subscribes to /speech/text (same topic admin_node routes from), so running
+    it concurrently triggers a SECOND local LLM inference per utterance —
+    on an 8GB Jetson Orin Nano that can exceed unified memory and OOM-crash;
+  * loads a large plant-disease system prompt (prompts/sabis_robot_*.txt) and
+    subscribes to 8 agricultural sensor topics that no longer exist on the
+    chassis — pure overhead and wrong-identity responses.
+
+Kept only for rollback/reference. Do not add to any production launch.
+"""
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
@@ -9,6 +25,18 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
+    import sys
+    print(
+        '\n'
+        '╔══════════════════════════════════════════════════════════════════╗\n'
+        '║  DEPRECATED: llm_node/llm_sabis.launch.py (legacy Plant Health)   ║\n'
+        '║  NOT for production. Do NOT run alongside cerebro_aisha.launch.py ║\n'
+        '║  — concurrent local LLM inference can OOM-crash the Jetson.       ║\n'
+        '║  Production brain = aisha_brain admin_node (via cerebro_aisha).   ║\n'
+        '╚══════════════════════════════════════════════════════════════════╝\n',
+        file=sys.stderr,
+    )
+
     backend = LaunchConfiguration('backend')
     prompt_type = LaunchConfiguration('prompt_type')
     max_tokens = LaunchConfiguration('max_tokens')
