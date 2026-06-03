@@ -83,6 +83,12 @@ def generate_launch_description():
     declare_enable_arbiter = DeclareLaunchArgument(
         'enable_gpu_arbiter', default_value='true',
         description='Run gpu_arbiter (manages yolov8_node); disables standalone YOLO')
+    # LD19 LiDAR + slam_toolbox mapping (includes slam.launch.py). Set false
+    # when the LiDAR isn't connected (otherwise the lidar node errors on the
+    # missing /dev/ttyUSB0). SLAM runs on CPU — no GPU contention with vision.
+    declare_enable_slam = DeclareLaunchArgument(
+        'enable_slam', default_value='true',
+        description='Bring up LD19 LiDAR + slam_toolbox (needs LiDAR on /dev/ttyUSB0)')
 
     # RealSense Camera Node
     realsense_node = Node(
@@ -154,6 +160,16 @@ def generate_launch_description():
         }.items(),
     )
 
+    # LD19 LiDAR + slam_toolbox (LiDAR -> scan_raw -> throttle 2Hz -> scan ->
+    # slam_toolbox; dummy_odom + static base_link->laser TF). Reuses the
+    # existing slam.launch.py so there's one source of truth for the SLAM graph.
+    slam = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(PathJoinSubstitution([
+            FindPackageShare('robot_bringup'), 'launch', 'slam.launch.py',
+        ])),
+        condition=IfCondition(LaunchConfiguration('enable_slam')),
+    )
+
     # Vision selection (resolved at launch): either the gpu_arbiter (which
     # spawns/kills yolov8_node to time-multiplex the GPU) OR the standalone
     # YOLO node. They are mutually exclusive — running both would start two
@@ -208,6 +224,7 @@ def generate_launch_description():
         '  Vision: RealSense D435 + YOLO  |  STT -> /speech/text\n',
         '  Brain:  brain_node (rule-based router) + admin_node (RAG) + action_node\n',
         '  GPU:    gpu_arbiter time-multiplexes vision <-> LLM (ADR 0001)\n',
+        '  SLAM:   LD19 LiDAR + slam_toolbox -> /map  (enable_slam:=false to skip)\n',
         '  Speech out: /robot_speech  (TTS must subscribe to this)\n',
         '  Requires: ollama serve + model llama3.2:1b\n',
         '=' * 70, '\n',
@@ -223,9 +240,11 @@ def generate_launch_description():
         declare_llm_model,
         declare_llm_num_gpu,
         declare_enable_arbiter,
+        declare_enable_slam,
         startup_msg,
         realsense_node,
         stt_node,
         vision,
         aisha_brain,
+        slam,
     ])
