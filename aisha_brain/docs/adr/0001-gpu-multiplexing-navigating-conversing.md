@@ -112,6 +112,41 @@ Params: `conversing_num_gpu`/`conversing_keep_alive` (99/120s),
 behaviour when no arbiter publishes. **Note:** the GPU path requires `llm_model=llama3.2:1b`
 — the 3B `llama3.2` OOMs at num_gpu=99 even on a free GPU on this 8 GB board.
 
+### yolov8n / pause-only feasibility (2026-06-03) — NEGATIVE result
+
+After gemma3's removal (−0.84 GB) we re-tested whether the kill/respawn could be replaced
+by **pause-only** (keep YOLO resident, just stop inference), optionally helped by a smaller
+vision model. Built `yolov8n.engine` (FP16, 8.7 MB vs yolov8m 52.3 MB) and measured under
+the full stack:
+
+| | yolov8m | yolov8n |
+|---|---|---|
+| Detection rate | 22 Hz | 29.6 Hz |
+| YOLO process RSS | 1265 MB | 1154 MB (**−110 MB only**) |
+| Pause-only, free RAM | 922 MB | 1049 MB |
+| Pause-only → llama `num_gpu=99` | **OOM** | **OOM (3/3)** |
+| Respawn (spawn→ready) | ~10.6 s | **10.4 s** (unchanged) |
+
+**Conclusions (both inefficiencies are fundamental on 8 GB, not tunable):**
+1. **Pause-only is impossible.** Pausing frees only the transient *inference* buffers; the
+   YOLO process keeps ~1 GB of **fixed CUDA-context + TensorRT-runtime** memory that is only
+   reclaimed by killing the process. llama needs ~1.3–1.5 GB contiguous; paused leaves ~1 GB
+   → OOM. The gap is ~400–600 MB; a smaller model closes only ~110 MB (weights are a tiny
+   fraction of the footprint). gemma3's removal didn't help here — the arbiter already
+   unloaded it on CONVERSING, so it wasn't resident during the paused test anyway.
+2. **The ~10 s respawn is process-startup cost, not engine size.** Breakdown: **10.3 of
+   10.4 s is spent *before* "YOLO ready"** — Python + ultralytics/torch import, CUDA-context
+   init, TensorRT-runtime load. Engine deserialize + the plant-disease/mediapipe loads add
+   <1 s combined. So yolov8n (and trimming disabled detectors) does NOT cut it.
+
+**Therefore:** keep yolov8m + kill/respawn. The only real levers are hardware (a 16 GB Orin
+→ both resident → true pause-only, ~0 ms) or a C++ TensorRT node (no torch/Python cold
+start → ~3–4 s respawn). On 8 GB, the ~10 s respawn is the floor — and it lands *on exit*
+(returning to roam after the user has left), not on answer latency. Rejected as
+unfavourable: KV-cache quantization (KV is already bounded by num_ctx=2048, saves ~50 MB,
+and the 621 chunks never reach the model — only top-k does) and switching to yolov8n
+(no benefit to either inefficiency). `yolov8n.engine` artifacts were built and removed.
+
 ## Decision
 
 Introduce a **GPU arbiter** that time-multiplexes the GPU between two mutually exclusive
@@ -254,11 +289,14 @@ Ignoring these yields a scheme that stalls vision without reclaiming memory.
       cerebro params) instead of the standalone YOLO; set false to fall back. Verified end to
       end from one `ros2 launch`: 5 nodes incl. exactly ONE `detection_node`; CONVERSING kills
       YOLO + admin→num_gpu=99; NAVIGATING respawns YOLO + admin→num_gpu=0.
-- [ ] Shrink respawn time: it is **~10 s even with faces/gestures/ocr off** — the TensorRT
-      engine deserialize + warmup dominates, not the detectors. To cut it, investigate keeping
-      a pre-warmed engine or a faster-loading model; disabling detectors alone does NOT help.
-- [ ] Spike: trim `admin_node` ~0.8 GB footprint — if baseline drops enough, pause-only may
-      suffice and the respawn can be dropped.
+- [x] **Shrink respawn time — investigated, NOT achievable in software** (2026-06-03):
+      10.3 of 10.4 s is Python/torch/CUDA cold start (before "YOLO ready"), not engine size
+      or detectors. yolov8n respawns the same ~10.4 s. Real fix is a C++ TensorRT node. See
+      "yolov8n / pause-only feasibility" above.
+- [x] **Pause-only / smaller-model spike — DEAD END** (2026-06-03): yolov8n freed only
+      ~110 MB (YOLO's ~1 GB is fixed CUDA context, not weights); pause-only still OOMs.
+      admin_node holds CPU RAM, not GPU, so trimming it doesn't help the cudaMalloc wall.
+      Kill/respawn stays. True pause-only needs a 16 GB board. See section above.
 - [x] **Wake-word trigger** (2026-06-02): `gpu_arbiter` watches `/speech/text` (Whisper STT,
       already running) for **"Hey Aisha stop"** (tolerant regex: an Aisha-name variant + "stop";
       a bare "stop" stays brain_node's emergency halt) → enters CONVERSING. Verified: non-wake
