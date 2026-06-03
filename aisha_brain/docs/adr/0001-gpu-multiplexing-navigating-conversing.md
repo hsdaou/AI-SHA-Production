@@ -143,9 +143,12 @@ the full stack:
 → both resident → true pause-only, ~0 ms) or a C++ TensorRT node (no torch/Python cold
 start → ~3–4 s respawn). On 8 GB, the ~10 s respawn is the floor — and it lands *on exit*
 (returning to roam after the user has left), not on answer latency. Rejected as
-unfavourable: KV-cache quantization (KV is already bounded by num_ctx=2048, saves ~50 MB,
-and the 621 chunks never reach the model — only top-k does) and switching to yolov8n
-(no benefit to either inefficiency). `yolov8n.engine` artifacts were built and removed.
+unfavourable: KV-cache quantization (**measured** 2026-06-03 with flash-attn + q8_0 on a
+2nd Ollama instance — llama3.2:1b dropped 1647 → 1616 MB, a **31 MB** saving; KV is already
+bounded by num_ctx=2048 to ~68 MB and the 621 chunks never reach the model, only top-k does;
+flash-attn DOES work on the Orin iGPU. Would only matter at much larger num_ctx, e.g. ~500 MB
+at 32K ctx) and switching to yolov8n (no benefit to either inefficiency). `yolov8n.engine`
+artifacts were built and removed.
 
 ## Decision
 
