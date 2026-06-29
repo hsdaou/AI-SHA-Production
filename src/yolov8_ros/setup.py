@@ -25,7 +25,6 @@ setup(
     entry_points={
         'console_scripts': [
             'yolov8_node = yolov8_ros.yolov8_node:main',
-            'plant_disease_node = yolov8_ros.plant_disease_node:main',
         ],
     },
 )

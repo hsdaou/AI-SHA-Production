@@ -1,10 +1,10 @@
-# AI-SHA — Production (Full Robot System)
+# AI-SHA — Production (Local School Robot)
 
-ROS 2 Humble workspace for **AI-SHA**, a multi-platform assistant robot for the
+ROS 2 Humble workspace for **AI-SHA**, an administrative-assistant robot for the
 International School of Choueifat (ISC), Sharjah. It **navigates autonomously and
 avoids obstacles**, **listens** and answers school-admin questions from a local RAG
-knowledge base, **sees** (RealSense + YOLOv8), monitors crops / detects plant disease,
-and is driven by voice — all on an 8 GB **Jetson Orin Nano**.
+knowledge base, **sees** (RealSense + YOLOv8), and is driven by voice — running
+**fully offline / on-device** on an 8 GB **Jetson Orin Nano** (no cloud services).
 
 > This repository is a consolidated **best-of-three** merge (brain + hardware + nav).
 > See **[MERGE_NOTES.md](MERGE_NOTES.md)** for what came from where and what still
@@ -24,8 +24,9 @@ and is driven by voice — all on an 8 GB **Jetson Orin Nano**.
 - **Sees** (RealSense D435 + YOLOv8 TensorRT).
 - **Converses on command** via the wake word **"Hey Aisha stop"** — the robot halts and
   switches into a GPU-accelerated answer mode (~2–6 s replies vs ~16 s on CPU).
-- **Smart-farming** sensing — soil moisture, rain, pressure, GPS — plus a plant-disease
-  vision pipeline (`plant_disease_training/`).
+
+Everything runs locally on the Jetson — local LLM (Ollama), local Whisper STT, local
+Piper TTS, local embeddings (bge) + ChromaDB. No external/cloud APIs are used.
 
 ### Headline design: GPU time-multiplexing (ADR 0001)
 
@@ -38,23 +39,20 @@ free VRAM). Triggered by "Hey Aisha stop"; auto-returns to NAVIGATING after a ti
 
 ```
 src/
-  aisha_brain/        brain_node (router), admin_node (RAG), action_node,
-                      gpu_arbiter, tts_node, stt_node, waypoint_resolver, + ADR
+  aisha_brain/        brain_node (router), admin_node (RAG), action_node, gpu_arbiter,
+                      tts_node (Piper, local), stt_node, waypoint_resolver, + ADR
   robot_bringup/      launch + configs: nav2_params.yaml, ekf.yaml, slam_toolbox, ld19
   robot_description/  robot URDF (digital twin)
-  yolov8_ros/         vision (detection_node) + pause_inference service
-  stt_node/           Whisper STT (mic-mute while speaking)
-  llm_node/           LLM serving
-  robot_brain/        farm/agriculture brain (farm_brain)
+  yolov8_ros/         vision detection_node (person / face / gesture / OCR) + pause_inference
+  stt_node/           Whisper STT (local; mic-mute while speaking)
   mecanum_driver/     holonomic drive + encoder odometry
   motor_control/      low-level motor/encoder serial bridge
   ldlidar_stl_ros2/   LD19 LiDAR driver (C++)
-  bno055_imu/  gps_gt_u7/  bmp180_pressure/  rain_sensor/  soil_moisture/
-  speaker_monitor/  robot_display/  llm_display/  tts_elevenlabs/
+  bno055_imu/         IMU (fused into odometry via EKF)
+  speaker_monitor/  robot_display/  llm_display/   audio + face/eyes UI
   aisha_integration/  bringup meta-package
 firmware/             Arduino mecanum controller + Pi encoder node
 docs/                 hardware setup, Jetson integration, TTS troubleshooting
-plant_disease_training/  crop-disease model training/inference
 ```
 
 ## Quick start

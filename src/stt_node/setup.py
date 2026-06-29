@@ -28,8 +28,6 @@ setup(
     entry_points={
         'console_scripts': [
             'stt_node = stt_node.stt_node:main',
-            'stt_assemblyai = stt_node.stt_assemblyai:main',
-            'stt_node_api = stt_node.stt_node_api:main',
         ],
     },
 )

@@ -37,13 +37,6 @@ from typing import List, Optional
 import time
 import json
 
-# ── Plant disease classifier ──────────────────────────────────────────────────
-try:
-    from yolov8_ros.plant_disease_engine import PlantDiseaseEngine
-    _DISEASE_ENGINE_AVAILABLE = True
-except ImportError:
-    _DISEASE_ENGINE_AVAILABLE = False
-
 # Lazy import for OCR
 easyocr = None
 
@@ -61,8 +54,6 @@ class DetectionResult:
     y1: float = 0
     x2: float = 0
     y2: float = 0
-    disease_label: str = ''
-    disease_confidence: float = 0.0
 
 
 @dataclass
@@ -100,17 +91,6 @@ class DetectionNode(Node):
         self.declare_parameter('depth_max_valid', 10.0)
         self.declare_parameter('depth_percentile', 50)
         self.declare_parameter('depth_sample_ratio', 0.5)
-        # Disease classifier parameters
-        self.declare_parameter('enable_disease_classifier', True)
-        self.declare_parameter('disease_engine_path',
-                               '~/plant_disease_models/plant_disease_classifier.engine')
-        self.declare_parameter('disease_class_mapping_path',
-                               '~/plant_disease_models/class_mapping.json')
-        self.declare_parameter('disease_confidence_threshold', 0.60)
-        self.declare_parameter('disease_trigger_classes',
-                               ['potted plant', 'banana', 'apple', 'orange',
-                                'broccoli', 'carrot'])
-        self.declare_parameter('disease_roi_padding', 0.10)
 
         # Load parameters
         model_path = os.path.expanduser(self.get_parameter('model_path').value)
@@ -131,18 +111,6 @@ class DetectionNode(Node):
         self.depth_max = self.get_parameter('depth_max_valid').value * 1000.0
         self.depth_percentile = self.get_parameter('depth_percentile').value
         self.depth_sample_ratio = self.get_parameter('depth_sample_ratio').value
-        # Disease classifier config
-        self.enable_disease = self.get_parameter('enable_disease_classifier').value
-        _disease_engine_path = os.path.expanduser(
-            self.get_parameter('disease_engine_path').value)
-        _disease_mapping_path = os.path.expanduser(
-            self.get_parameter('disease_class_mapping_path').value)
-        self.disease_conf_threshold = self.get_parameter(
-            'disease_confidence_threshold').value
-        self.disease_trigger_classes = set(
-            self.get_parameter('disease_trigger_classes').value)
-        self.disease_roi_padding = self.get_parameter('disease_roi_padding').value
-        self.disease_timing: 'deque' = deque(maxlen=30)
 
         self.bridge = CvBridge()
         self.min_frame_time = 1.0 / self.target_fps
@@ -170,25 +138,6 @@ class DetectionNode(Node):
                              imgsz=self.img_size, half=True)
         torch.cuda.synchronize()
         self.get_logger().info("YOLO ready")
-
-        # ── Disease classifier ───────────────────────────────────────────────
-        self.disease_engine = None
-        if self.enable_disease and _DISEASE_ENGINE_AVAILABLE:
-            try:
-                self.disease_engine = PlantDiseaseEngine(
-                    engine_path=_disease_engine_path,
-                    class_mapping_path=_disease_mapping_path,
-                    confidence_threshold=self.disease_conf_threshold,
-                )
-                self.get_logger().info(
-                    f"Plant disease classifier ready: {_disease_engine_path}")
-            except Exception as _e:
-                self.get_logger().warn(
-                    f"Disease classifier failed to load ({_e}). Running without it.")
-        elif not _DISEASE_ENGINE_AVAILABLE and self.enable_disease:
-            self.get_logger().warn(
-                "plant_disease_engine.py not found on PYTHONPATH. "
-                "Disease classification disabled.")
 
         # Initialize MediaPipe
         if self.enable_gestures:
@@ -312,8 +261,6 @@ class DetectionNode(Node):
         self.closest_object_pub = self.create_publisher(String, '/detection/closest_object', reliable_qos)
         self.fps_pub = self.create_publisher(Float32, '/detection/fps', reliable_qos)
         self.stats_pub = self.create_publisher(String, '/detection/stats', reliable_qos)
-        self.disease_pub = self.create_publisher(
-            String, '/detection/disease_simple', reliable_qos)
 
         # ── GPU multiplexing (ADR 0001): pause inference on demand ──────────
         # When paused, process_loop skips predict() so no new GPU buffers are
@@ -596,31 +543,6 @@ class DetectionNode(Node):
             self.get_logger().error(f"YOLO error: {e}", throttle_duration_sec=1.0)
 
         self.timing_stats['yolo'].append(time.perf_counter() - t0)
-        # ── Disease classification on plant / food ROIs ───────────────────
-        if self.disease_engine is not None and results:
-            plant_dets = [r for r in results
-                          if r.class_id in self.disease_trigger_classes
-                          and (r.x2 - r.x1) >= 32 and (r.y2 - r.y1) >= 32]
-            if plant_dets:
-                img_h, img_w = frame.shape[:2]
-                rois = []
-                for det in plant_dets:
-                    pad_x = int((det.x2 - det.x1) * self.disease_roi_padding)
-                    pad_y = int((det.y2 - det.y1) * self.disease_roi_padding)
-                    x1 = max(0, int(det.x1) - pad_x)
-                    y1 = max(0, int(det.y1) - pad_y)
-                    x2 = min(img_w, int(det.x2) + pad_x)
-                    y2 = min(img_h, int(det.y2) + pad_y)
-                    roi = frame[y1:y2, x1:x2]
-                    rois.append(self.disease_engine.preprocess(roi))
-                t_d = time.perf_counter()
-                disease_results = self.disease_engine.infer_batch(rois)
-                self.disease_timing.append(time.perf_counter() - t_d)
-                for det, dr in zip(plant_dets, disease_results):
-                    if not dr['below_threshold']:
-                        det.disease_label = f"{dr['species']}: {dr['disease']}"
-                        det.disease_confidence = dr['confidence']
-        # ────────────────────────────────────────────────────────────────────
         return results
 
     def detect_faces(self, frame_rgb: np.ndarray, depth_image: Optional[np.ndarray],
@@ -871,22 +793,6 @@ class DetectionNode(Node):
         self.gestures_simple_pub.publish(String(data=make_simple_msg(gestures)))
         self.ocr_simple_pub.publish(String(data=make_simple_msg(ocr)))
 
-        # Disease detections
-        diseased = [o for o in objects if o.disease_label]
-        disease_items = []
-        for det in diseased:
-            disease_items.append({
-                'class': det.class_id,
-                'disease': det.disease_label,
-                'conf': round(det.disease_confidence, 2),
-                'bbox': [round(det.x1, 1), round(det.y1, 1),
-                         round(det.x2, 1), round(det.y2, 1)],
-            })
-            if det.depth is not None:
-                disease_items[-1]['depth'] = round(det.depth, 2)
-        self.disease_pub.publish(String(
-            data=json.dumps(disease_items, separators=(',', ':'))))
-
         # Closest object
         all_dets = objects + faces + gestures
         closest = None
@@ -920,8 +826,6 @@ class DetectionNode(Node):
                 'face': round(np.mean(self.timing_stats['face']) * 1000, 1) if self.timing_stats['face'] else 0,
                 'gesture': round(np.mean(self.timing_stats['gesture']) * 1000, 1) if self.timing_stats['gesture'] else 0,
                 'ocr': round(np.mean(self.timing_stats['ocr']) * 1000, 1) if self.timing_stats['ocr'] else 0,
-                'disease': round(np.mean(self.disease_timing) * 1000, 1)
-                         if self.disease_timing else 0,
             }
         }
         self.stats_pub.publish(String(data=json.dumps(stats)))
@@ -993,21 +897,6 @@ class DetectionNode(Node):
             cv2.putText(img, label, (x1 + 4, label_y), font, font_scale, (255, 255, 255), 1)
 
         # Draw all detections
-        # Draw disease overlays on top of YOLO boxes
-        for det in objects:
-            if det.disease_label:
-                cx_lbl = int(det.cx)
-                cy_lbl = int(det.y1) - 22
-                label = '[' + det.disease_label + '  ' + format(det.disease_confidence, '.0%') + ']'
-                font = cv2.FONT_HERSHEY_SIMPLEX
-                (lw, lh), _ = cv2.getTextSize(label, font, 0.45, 1)
-                cx_lbl = max(0, min(cx_lbl - lw // 2, canvas.shape[1] - lw - 4))
-                cy_lbl = max(lh + 4, cy_lbl)
-                cv2.rectangle(canvas, (cx_lbl - 2, cy_lbl - lh - 3),
-                              (cx_lbl + lw + 2, cy_lbl + 3), (32, 80, 220), -1)
-                cv2.rectangle(canvas, (cx_lbl - 2, cy_lbl - lh - 3),
-                              (cx_lbl + lw + 2, cy_lbl + 3), (255, 255, 255), 1)
-                cv2.putText(canvas, label, (cx_lbl, cy_lbl), font, 0.45, (255, 255, 255), 1)
         for det in objects:
             draw_detection(canvas, det, (0, 255, 0))  # Green
 
