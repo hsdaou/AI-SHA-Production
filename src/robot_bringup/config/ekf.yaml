@@ -1,0 +1,118 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# robot_localization Extended Kalman Filter (EKF) configuration for AI-SHA.
+#
+# Fuses BNO055 IMU data with wheel encoder odometry to produce a smooth,
+# drift-corrected odom→base_link transform for SLAM and nav2.
+#
+# Data sources:
+#   /imu/data_raw   — BNO055 via imu_bridge.py (sensor_msgs/Imu at 50 Hz)
+#                     Provides: orientation (quaternion), angular velocity,
+#                     linear acceleration.  Connected to RPi 5 via I2C,
+#                     published over FastDDS to the Jetson.
+#
+#   /odom           — Wheel encoder odometry from mecanum_driver_node.py
+#                     (nav_msgs/Odometry).  NOT YET IMPLEMENTED — requires
+#                     Arduino firmware to read encoder ticks and the ROS 2
+#                     driver to apply forward kinematics.  When available,
+#                     uncomment the odom0 section below.
+#
+# What this replaces:
+#   Once both sources are active, this EKF replaces:
+#     - dummy_odom.py (identity transform, no real motion)
+#     - rf2o_laser_odometry (scan-matching, drifts in featureless corridors)
+#   The EKF publishes odom→base_link at the IMU rate (50 Hz), giving
+#   slam_toolbox and nav2 a smooth, high-frequency pose estimate.
+#
+# Prerequisites:
+#   sudo apt install ros-humble-robot-localization
+#
+# Usage (add to your launch file):
+#   Node(
+#       package='robot_localization',
+#       executable='ekf_node',
+#       name='ekf_filter_node',
+#       output='screen',
+#       parameters=[os.path.join(bringup_dir, 'config', 'ekf.yaml')],
+#   )
+#
+# Frame conventions:
+#   - world_frame: odom (local, continuous — not map)
+#   - base_link_frame: base_link (robot body)
+#   - The EKF publishes the odom→base_link transform.  SLAM provides
+#     map→odom.  Together: map→odom→base_link→laser (full TF chain).
+#
+# Tuning notes:
+#   - process_noise_covariance: controls how much the filter trusts the
+#     motion model vs. sensor measurements.  Start with defaults, tune
+#     by watching `ros2 topic echo /diagnostics` for innovation values.
+#   - The BNO055 has onboard sensor fusion (NDOF mode) producing high-quality
+#     orientation.  We trust its orientation strongly (small covariance) but
+#     do NOT use its linear acceleration for position (double-integration of
+#     MEMS accelerometer drifts catastrophically within seconds).
+# ─────────────────────────────────────────────────────────────────────────────
+
+ekf_filter_node:
+  ros__parameters:
+    # ── Frame configuration ────────────────────────────────────────────────
+    odom_frame: odom
+    base_link_frame: base_link
+    world_frame: odom
+    publish_tf: true
+    frequency: 50.0         # Match BNO055 IMU rate
+
+    # ── Sensor 0: Wheel encoder odometry (FUTURE) ─────────────────────────
+    # Uncomment when mecanum_driver_node publishes nav_msgs/Odometry on /odom.
+    # Until then, the EKF runs on IMU-only (orientation + angular velocity),
+    # which is insufficient for position estimation but still useful for
+    # providing a smooth, time-stamped orientation to slam_toolbox.
+    #
+    # odom0: /odom
+    # odom0_config: [true,  true,  false,    # x, y, z position
+    #                false, false, false,    # roll, pitch, yaw (from IMU instead)
+    #                true,  true,  false,    # vx, vy, vz velocity
+    #                false, false, true,     # vroll, vpitch, vyaw
+    #                false, false, false]    # ax, ay, az
+    # odom0_differential: false
+    # odom0_relative: false
+    # odom0_queue_size: 10
+
+    # ── Sensor 1: BNO055 IMU via imu_bridge (/imu/data_raw) ───────────────
+    # The BNO055 in NDOF mode provides excellent orientation from onboard
+    # 9-DOF fusion (accel + gyro + mag).  We use:
+    #   - Orientation (yaw): yes — primary heading source
+    #   - Angular velocity (vyaw): yes — helps predict between updates
+    #   - Linear acceleration: NO — double-integrating MEMS accel for
+    #     position drifts meters within seconds.  Position comes from
+    #     wheel odom (future) or rf2o laser odom.
+    imu0: /imu/data_raw
+    imu0_config: [false, false, false,    # x, y, z (never from IMU)
+                  true,  true,  true,     # roll, pitch, yaw orientation
+                  false, false, false,    # vx, vy, vz (not from IMU)
+                  true,  true,  true,     # vroll, vpitch, vyaw angular vel
+                  false, false, false]    # ax, ay, az (disabled — drift)
+    imu0_differential: false
+    imu0_relative: false
+    imu0_queue_size: 10
+    imu0_remove_gravitational_acceleration: true
+
+    # ── Process noise covariance (15x15 diagonal) ─────────────────────────
+    # State vector: [x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az]
+    # These values control how quickly the filter adapts to unmodeled motion.
+    # Start with these conservative defaults; tune after physical testing.
+    process_noise_covariance: [
+      0.05,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      0.0,   0.05,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      0.0,   0.0,   0.06,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      0.0,   0.0,   0.0,   0.03,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      0.0,   0.0,   0.0,   0.0,   0.03,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.03,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.025, 0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.025, 0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.04,  0.0,   0.0,   0.0,   0.0,   0.0,   0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.01,  0.0,   0.0,   0.0,   0.0,   0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.01,  0.0,   0.0,   0.0,   0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.01,  0.0,   0.0,   0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.01,  0.0,   0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.01,  0.0,
+      0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.0,   0.015
+    ]

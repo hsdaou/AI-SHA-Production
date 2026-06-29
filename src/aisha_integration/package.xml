@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>aisha_integration</name>
+  <version>1.0.0</version>
+  <description>
+    Unified launch and configuration package for AI-SHA.
+    Integrates the hardware/perception layer (AI-SHA) with the
+    cognitive/administrative layer (aisha-brain) for deployment
+    on the Jetson Orin Nano.
+  </description>
+  <maintainer email="hsdaou@gmail.com">Houssam</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <!-- ROS2 core -->
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+
+  <!-- Hardware layer -->
+  <!-- Two-Tier SBC + MCU: the BNO055 is now read by the Arduino Mega and
+       forwarded inside the mecanum_driver ODOM packet, so bno055_imu is
+       no longer a runtime dependency of the integration package. -->
+  <depend>ldlidar_stl_ros2</depend>
+  <depend>mecanum_driver</depend>
+  <depend>yolov8_ros</depend>
+
+  <!-- Cognitive layer (from aisha-brain) -->
+  <depend>aisha_brain</depend>
+
+  <!-- Navigation -->
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>rf2o_laser_odometry</exec_depend>
+  <exec_depend>robot_bringup</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

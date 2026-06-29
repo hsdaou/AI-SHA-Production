@@ -1,0 +1,45 @@
+# AI-SHA Farm Brain Configuration
+# Fully autonomous agricultural robot orchestrator
+
+farm_brain:
+  ros__parameters:
+    # ── Operation Mode ──────────────────────────────────────────────────
+    auto_start: true               # Begin autonomous patrol on startup
+    nav2_enabled: true
+    obstacle_avoidance_enabled: true
+
+    # ── Isaac Sim Model ─────────────────────────────────────────────────
+    isaac_model_path: ''           # TensorRT/ONNX RL policy from Isaac Sim
+
+    # ── Farm Layout ─────────────────────────────────────────────────────
+    farm_locations_file: ''        # JSON with locations + patrol_order
+
+    # ── Timing (seconds) ────────────────────────────────────────────────
+    patrol_interval_sec: 300.0     # Seconds between autonomous patrols
+    probe_deploy_time_sec: 3.0     # Linear actuator extension time
+    probe_retract_time_sec: 3.0    # Linear actuator retraction time
+    measure_settle_time_sec: 5.0   # Wait for sensors to stabilise
+    water_duration_sec: 8.0        # Pump activation duration per waypoint
+    sow_duration_sec: 4.0          # Seed dispenser activation duration
+    inspect_duration_sec: 5.0      # Vision scan duration at waypoint
+
+    # ── Autonomous Decision Thresholds ──────────────────────────────────
+    thresh_soil_dry_pct: 30.0      # Below -> auto-water
+    thresh_soil_wet_pct: 80.0      # Above -> skip watering
+    thresh_ph_low: 5.5             # Acidic soil alert
+    thresh_ph_high: 8.0            # Alkaline soil alert
+    thresh_co2_high_ppm: 1000.0    # Elevated CO2 alert
+    thresh_uv_high_index: 8.0      # High UV warning
+    thresh_temp_high_c: 40.0       # Heat warning
+    thresh_temp_low_c: 5.0         # Frost warning
+    thresh_humidity_low_pct: 20.0  # Low humidity alert
+    thresh_obstacle_stop_m: 0.30   # Emergency stop distance
+    thresh_obstacle_slow_m: 0.80   # Slow-down distance
+    thresh_disease_conf_min: 0.60  # Min confidence to log disease
+
+    # ── Topic Remapping ─────────────────────────────────────────────────
+    tts_topic: '/tts_text'
+    stt_topic: '/speech/text'
+
+    # ── Logging ─────────────────────────────────────────────────────────
+    log_file: '/home/orin-robot/farm_brain_log.json'

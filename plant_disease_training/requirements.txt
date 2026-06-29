@@ -1,0 +1,17 @@
+# Core training stack (torch already installed system-wide with CUDA 12.8)
+# Install with: pip install -r requirements.txt
+torchvision
+onnx>=1.15
+onnxsim
+scikit-learn
+matplotlib
+seaborn
+tqdm
+kaggle
+
+# TensorRT (workstation, CUDA 12.x)
+# pip install tensorrt --extra-index-url https://pypi.nvidia.com
+tensorrt
+
+# Optional: CUDA bindings for TensorRT benchmark
+# pycuda

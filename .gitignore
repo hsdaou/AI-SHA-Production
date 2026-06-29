@@ -30,5 +30,24 @@ __pycache__/
 # Vendored packages that carry their own git history
 realsense-ros/
 slam_toolbox/
-ldlidar_stl_ros2/
 web_video_server/
+.colcon_install_layout
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+# OS
+.DS_Store
+Thumbs.db
+# Secrets
+.env
+*.key
+# Model files (too large for git)
+*.bin
+*.safetensors
+*.whl
+# Temp files
+*.swo
+# ROS2 bags
+*.bag
+*.db3

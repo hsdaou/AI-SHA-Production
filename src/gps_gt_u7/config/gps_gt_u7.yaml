@@ -1,0 +1,10 @@
+gps_gt_u7_node:
+  ros__parameters:
+    # Serial port where the GT-U7 appears (check: ls /dev/ttyUSB*)
+    port: /dev/ttyAMA0
+    # Default baud rate for GT-U7
+    baud_rate: 9600
+    # Serial read timeout in seconds
+    timeout: 1.0
+    # TF frame for GPS messages
+    frame_id: gps_link

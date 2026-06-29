@@ -1,0 +1,28 @@
+AI-SHA-Production — NOTICE / Attribution
+========================================
+
+This repository is a consolidated ("best-of-three") merge of three AI-SHA
+sources into a single full-robot ROS 2 workspace. It is distributed under the
+MIT License (see LICENSE), inherited from the Ahmed28309/AI-SHA project from
+which the robotics/hardware packages originate.
+
+Provenance of merged content
+----------------------------
+* Brain, perception & production packaging
+  (src/aisha_brain, src/llm_node, src/stt_node, src/yolov8_ros, ADRs, build_ros.sh):
+  from hsdaou/AI-SHA-Production.
+
+* Hardware, drivers, sensors, motor/encoder odometry + EKF fusion, Arduino/Pi
+  firmware, the farm brain (src/robot_brain), plant-disease training, and docs/:
+  from Ahmed28309/AI-SHA — a high-school robotics team project. Contributors
+  include (per that repository's git history): SrinjayUbuntu, Ahmed28309, hsdaou,
+  srinjaycode, Noureldin-Puterisms265, Srinjay-JavaScript, dynamicskeleton,
+  pixelsauras, jameelon8-web, Yasir-guburi. Refer to that repository for the
+  authoritative authorship and commit history.
+
+* Nav2 navigation stack (src/robot_bringup/config/nav2_params.yaml) and the
+  src/aisha_integration meta-package: from the local "AI-SHA Reimagined" tree.
+
+This merge preserves the upstream MIT license. It does not attempt to rewrite or
+re-attribute individual commit authorship; consult each source repository for
+full history. See MERGE_NOTES.md for per-package decisions.
