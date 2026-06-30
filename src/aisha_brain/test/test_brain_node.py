@@ -5,7 +5,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 from std_msgs.msg import String
 
-from .conftest import make_string_msg, capture_published
+from .conftest import make_string_msg, capture_published, wait_for_call
 
 
 # ---------------------------------------------------------------------------
@@ -85,6 +85,7 @@ class TestListenerCallback:
         node = brain_node
         admin_pub = capture_published(node, 'admin_pub')
         node.listener_callback(make_string_msg('what is the school phone number'))
+        assert wait_for_call(admin_pub.publish), 'admin_pub.publish never called'
         admin_pub.publish.assert_called_once()
         payload = json.loads(admin_pub.publish.call_args[0][0].data)
         assert payload['details'] == 'what is the school phone number'
@@ -94,12 +95,16 @@ class TestListenerCallback:
         nav_pub = capture_published(node, 'nav_pub')
         speech_pub = capture_published(node, 'speech_pub')
         node.listener_callback(make_string_msg('go to the library'))
+        assert wait_for_call(nav_pub.publish), 'nav_pub.publish never called'
         nav_pub.publish.assert_called_once()
-        # NAV also triggers a TTS "not yet available" message
-        speech_pub.publish.assert_called_once()
+        # brain_node does NOT speak on NAV — waypoint_resolver_node owns all
+        # user feedback ("Navigating to..."/"I don't know where...") to avoid
+        # duplicate/conflicting speech (see brain_node._route NAV branch).
+        speech_pub.publish.assert_not_called()
 
     def test_routes_to_action(self, brain_node):
         node = brain_node
         action_pub = capture_published(node, 'action_pub')
         node.listener_callback(make_string_msg('send a whatsapp'))
+        assert wait_for_call(action_pub.publish), 'action_pub.publish never called'
         action_pub.publish.assert_called_once()

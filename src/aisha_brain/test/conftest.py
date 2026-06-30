@@ -59,3 +59,20 @@ def capture_published(node, publisher_attr):
     mock_pub = MagicMock()
     setattr(node, publisher_attr, mock_pub)
     return mock_pub
+
+
+def wait_for_call(mock_method, timeout=3.0):
+    """Block until a mock method has been called, or timeout (seconds).
+
+    BrainNode.listener_callback hands routing to a daemon worker thread
+    (see _worker_loop / _route_queue), so .publish() happens asynchronously
+    a few milliseconds later — tests must wait for it rather than asserting
+    synchronously.  Returns True if the call landed, False on timeout.
+    """
+    import time
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if mock_method.call_count:
+            return True
+        time.sleep(0.005)
+    return False
