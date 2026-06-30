@@ -141,9 +141,8 @@ class AdminNode(Node):
                 local_files_only=True
             )
             # keep_alive="30s": unload Llama 3.2 after 30s of inactivity to
-            # free VRAM for brain_node's Gemma 3 router.  Ollama's default
-            # (5 min) would hold the larger model in memory far too long,
-            # risking OOM when the router needs to reload.  30s covers
+            # free VRAM (e.g. for YOLO vision).  Ollama's default (5 min) would
+            # hold the model in memory far too long, risking OOM.  30s covers
             # multi-turn follow-ups while allowing VRAM recycling.
             #
             # num_ctx / num_gpu: OLLAMA_NUM_GPU and OLLAMA_NUM_CTX are
@@ -189,9 +188,9 @@ class AdminNode(Node):
         """Build a list of ChatMessage objects with system prompt, history, and current question.
 
         The system prompt contains ONLY behavioural rules and persona — no context.
-        Retrieved context is injected into the final user message so small models
-        (e.g. Gemma 3 270M) process it right before generating, avoiding the
-        "forgotten rules" problem that occurs when context overwhelms the system prompt.
+        Retrieved context is injected into the final user message so small local
+        models process it right before generating, avoiding the "forgotten rules"
+        problem that occurs when context overwhelms the system prompt.
         """
         # 1. System prompt strictly for rules and persona
         messages = [

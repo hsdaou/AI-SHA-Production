@@ -8,7 +8,7 @@ so tests can inspect published messages without a live ROS2 graph.
 import json
 import pytest
 import rclpy
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -21,16 +21,11 @@ def rclpy_session():
 
 @pytest.fixture
 def brain_node():
-    """Return a BrainNode with Ollama calls mocked out."""
-    with patch('aisha_brain.brain_node.requests') as mock_requests:
-        # Make the startup connectivity check succeed silently
-        mock_requests.get.return_value.json.return_value = {
-            'models': [{'name': 'gemma3:270m'}]
-        }
-        from aisha_brain.brain_node import BrainNode
-        node = BrainNode()
-        yield node, mock_requests
-        node.destroy_node()
+    """Return a BrainNode (deterministic keyword router — no Ollama)."""
+    from aisha_brain.brain_node import BrainNode
+    node = BrainNode()
+    yield node
+    node.destroy_node()
 
 
 @pytest.fixture

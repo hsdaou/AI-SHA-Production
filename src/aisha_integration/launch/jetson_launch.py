@@ -194,7 +194,6 @@ def generate_launch_description():
     args = [
         DeclareLaunchArgument('enable_vision',    default_value='true'),
         DeclareLaunchArgument('enable_stt',       default_value='true'),
-        DeclareLaunchArgument('router_model',     default_value='gemma3:270m'),
         DeclareLaunchArgument('llm_model',        default_value='llama3.2'),
         DeclareLaunchArgument('whisper_model',    default_value='base'),
         DeclareLaunchArgument('whisper_device',   default_value='cuda'),
@@ -332,29 +331,15 @@ def generate_launch_description():
             'OLLAMA_NUM_CTX': arg('ollama_num_ctx'),
         }
 
-        # ── 7. Brain Node (Intent Router) — delayed for STT init ──────────
-        # Use a 5s delay to give STT/Whisper model time to load onto GPU.
-        # WARNING: On 8 GB Jetsons, running STT + LLM simultaneously can
-        # trigger OOM.  Monitor with `tegrastats` and lower ollama_gpu_layers
-        # or ollama_num_ctx if needed.
-        # VRAM safety: brain_node's single worker thread serializes all
-        # routing, so only one Ollama model loads at a time.  The router
-        # model (Gemma 3 270M) uses keep_alive=0 (immediate VRAM release)
-        # before admin_node's Llama 3.2 loads — preventing concurrent
-        # model residency.  If a second user message arrives during an
-        # active admin inference, it queues in brain_node (maxsize=3)
-        # rather than triggering a parallel Ollama load.
+        # ── 7. Brain Node (keyword intent router) — delayed for STT init ──
+        # 5s delay lets the STT/Whisper model load first.  brain_node routes
+        # with deterministic keywords (no LLM, no Ollama), so it adds no
+        # GPU/VRAM load and needs no router parameters.
         brain_node = Node(
             package='aisha_brain',
             executable='brain_node',
             name='ai_sha_brain',
             output='screen',
-            parameters=[{
-                'ollama_url': 'http://127.0.0.1:11434/api/generate',
-                'router_model': arg('router_model'),
-                'router_timeout': 30,
-            }],
-            additional_env=ollama_env,
         )
         # Stagger cognitive nodes to avoid a "thundering herd" of heavy
         # Python processes initializing simultaneously on the Jetson's ARM

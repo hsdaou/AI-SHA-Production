@@ -101,16 +101,12 @@ def generate_launch_description():
 
     def create_nodes(context):
         return [
-            # 1. Brain Node (Intent Router — rule-based; no LLM router model)
+            # 1. Brain Node (deterministic keyword intent router — no LLM)
             Node(
                 package='aisha_brain',
                 executable='brain_node',
                 name='ai_sha_brain',
                 output='screen',
-                parameters=[{
-                    'ollama_url': 'http://127.0.0.1:11434/api/generate',
-                    'router_timeout': 30,
-                }]
             ),
 
             # 2. Admin Node (Knowledge Base RAG)

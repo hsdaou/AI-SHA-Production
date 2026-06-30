@@ -137,7 +137,7 @@ def main():
         print('      EXITS. => YOLO must be KILLED/RESPAWNED (keep RealSense as a')
         print('      separate, still-alive process). A passive lifecycle/del is NOT')
         print('      enough. Note: the realistic OOM blocker in production is active')
-        print('      inference buffers + gemma3 co-residency, not the static engine.')
+        print('      inference buffers + the admin LLM, not the static engine.')
     # cleanup any llama we loaded
     probe_llama(0, keep_alive=0)
 

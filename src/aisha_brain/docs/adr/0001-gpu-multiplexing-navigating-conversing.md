@@ -1,5 +1,11 @@
 # ADR 0001 — Time-multiplex the GPU between NAVIGATING and CONVERSING states
 
+> **UPDATE (2026-06-30):** the intent router is now a **deterministic keyword
+> classifier** — `gemma3:270m` is no longer used. The GPU time-multiplexing below
+> still applies to YOLO vision vs the admin RAG model (`llama3.2:1b`); references
+> to a gemma3 router are **historical** (the keyword router adds no GPU load, so
+> the NAVIGATING/CONVERSING design is otherwise unchanged).
+
 - **Status:** Implemented — `gpu_arbiter` (YOLO kill/respawn) + `pause_inference` + `admin_node` `/aisha/mode` reaction + **"Hey Aisha stop" wake word**, all wired into `cerebro_aisha.launch.py` (`enable_gpu_arbiter`, default on) and verified (2026-06-02). Accelerated answer works (CONVERSING ~6.5 s first / ~2 s warm vs ~16–22 s CPU). Remaining polish: GPU-load fallback; optional sleep-phrase; ~10 s respawn time. See Validation.
 - **Date:** 2026-06-02
 - **Deciders:** AI-SHA team
