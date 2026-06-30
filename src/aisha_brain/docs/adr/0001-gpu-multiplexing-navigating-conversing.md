@@ -1,5 +1,14 @@
 # ADR 0001 — Time-multiplex the GPU between NAVIGATING and CONVERSING states
 
+> **UPDATE (2026-06-30):** the intent router is now a **deterministic keyword
+> classifier** — `gemma3:270m` has been **removed entirely**. The GPU
+> time-multiplexing below still applies to YOLO vision vs the admin RAG model
+> (`llama3.2:1b`); every reference to a gemma3 router below is **historical** and
+> describes the pre-2026-06-30 system. In particular, the CONVERSING transition
+> steps that "unload gemma3" (`keep_alive=0`) no longer apply — there is no router
+> model to unload, and the keyword classifier runs on CPU at all times, so the
+> NAVIGATING/CONVERSING design is otherwise unchanged.
+
 - **Status:** Implemented — `gpu_arbiter` (YOLO kill/respawn) + `pause_inference` + `admin_node` `/aisha/mode` reaction + **"Hey Aisha stop" wake word**, all wired into `cerebro_aisha.launch.py` (`enable_gpu_arbiter`, default on) and verified (2026-06-02). Accelerated answer works (CONVERSING ~6.5 s first / ~2 s warm vs ~16–22 s CPU). Remaining polish: GPU-load fallback; optional sleep-phrase; ~10 s respawn time. See Validation.
 - **Date:** 2026-06-02
 - **Deciders:** AI-SHA team
@@ -114,9 +123,9 @@ behaviour when no arbiter publishes. **Note:** the GPU path requires `llm_model=
 
 ### yolov8n / pause-only feasibility (2026-06-03) — NEGATIVE result
 
-After gemma3's runtime VRAM **unload** (−0.84 GB; the arbiter sets `keep_alive=0` on
-CONVERSING and the keyword fallback covers routing meanwhile — the LLM-first router itself
-is **not** removed) we re-tested whether the kill/respawn could be replaced
+After gemma3's runtime VRAM **unload** (−0.84 GB; at the time the arbiter set `keep_alive=0`
+on CONVERSING and the keyword classifier covered routing meanwhile — gemma3 has since been
+**removed entirely**, 2026-06-30) we re-tested whether the kill/respawn could be replaced
 by **pause-only** (keep YOLO resident, just stop inference), optionally helped by a smaller
 vision model. Built `yolov8n.engine` (FP16, 8.7 MB vs yolov8m 52.3 MB) and measured under
 the full stack:

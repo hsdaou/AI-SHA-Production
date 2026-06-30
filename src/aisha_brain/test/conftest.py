@@ -8,7 +8,7 @@ so tests can inspect published messages without a live ROS2 graph.
 import json
 import pytest
 import rclpy
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -21,16 +21,11 @@ def rclpy_session():
 
 @pytest.fixture
 def brain_node():
-    """Return a BrainNode with Ollama calls mocked out."""
-    with patch('aisha_brain.brain_node.requests') as mock_requests:
-        # Make the startup connectivity check succeed silently
-        mock_requests.get.return_value.json.return_value = {
-            'models': [{'name': 'gemma3:270m'}]
-        }
-        from aisha_brain.brain_node import BrainNode
-        node = BrainNode()
-        yield node, mock_requests
-        node.destroy_node()
+    """Return a BrainNode (deterministic keyword router — no Ollama)."""
+    from aisha_brain.brain_node import BrainNode
+    node = BrainNode()
+    yield node
+    node.destroy_node()
 
 
 @pytest.fixture
@@ -64,3 +59,20 @@ def capture_published(node, publisher_attr):
     mock_pub = MagicMock()
     setattr(node, publisher_attr, mock_pub)
     return mock_pub
+
+
+def wait_for_call(mock_method, timeout=3.0):
+    """Block until a mock method has been called, or timeout (seconds).
+
+    BrainNode.listener_callback hands routing to a daemon worker thread
+    (see _worker_loop / _route_queue), so .publish() happens asynchronously
+    a few milliseconds later — tests must wait for it rather than asserting
+    synchronously.  Returns True if the call landed, False on timeout.
+    """
+    import time
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        if mock_method.call_count:
+            return True
+        time.sleep(0.005)
+    return False

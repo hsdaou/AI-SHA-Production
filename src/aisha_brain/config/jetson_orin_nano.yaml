@@ -17,10 +17,9 @@
 # Memory budget (approximate):
 #   OS + ROS2:              ~1.5 GB
 #   Ollama + llama3.2:      ~2.0 GB (q4_0 quantization)
-#   Ollama + gemma3:        ~0.3 GB
 #   ChromaDB + embeds:      ~0.5 GB
 #   Faster-Whisper (base):  ~0.5 GB (CTranslate2 + model)
-#   Headroom:               ~3.2 GB
+#   Headroom:               ~3.5 GB
 #
 # If memory is tight:
 #   - Use llama3.2:1b instead of llama3.2 (saves ~1 GB)
@@ -31,7 +30,6 @@
 # --- Ollama setup on Jetson ---
 # 1. Install: curl -fsSL https://ollama.com/install.sh | sh
 # 2. Pull models:
-#      ollama pull gemma3:270m
 #      ollama pull llama3.2
 # 3. (Optional, if RAM is tight):
 #      ollama pull llama3.2:1b
