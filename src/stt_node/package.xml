@@ -3,7 +3,7 @@
 <package format="3">
   <name>stt_node</name>
   <version>1.0.0</version>
-  <description>NVIDIA Canary-1B-v2 STT node for ReSpeaker mic array on Jetson Orin Nano</description>
+  <description>DEPRECATED legacy Faster-Whisper STT node. Canonical STT is aisha_brain.stt_node (used by the aisha_integration launches); this package is retained only for robot_bringup/cerebro_aisha.launch.py. See MERGE_NOTES.md.</description>
   <maintainer email="robot@jetson.local">orin-robot</maintainer>
   <license>MIT</license>
 

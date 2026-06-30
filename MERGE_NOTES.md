@@ -71,8 +71,15 @@ bug to fix.
   must `pip install -r src/aisha_brain/requirements.txt` + `rosdep install`, or
   the brain pytest suite errors on missing `requests`/etc. Tracked as a GitHub
   issue.
-* **Duplicate STT path** — `stt_node` exists both as a standalone package and as a
-  node inside `aisha_brain`; confirm which is the live one.
+* **Duplicate STT path — RESOLVED (documented).** Canonical STT is
+  **`aisha_brain.stt_node`** (600-line faster-whisper/CUDA node) — the
+  production `aisha_integration/jetson_launch.py` and `rpi_launch.py` both spawn
+  `package='aisha_brain', executable='stt_node'`. The standalone **`stt_node`
+  package** (358-line legacy version) is now marked DEPRECATED in its docstring
+  + package.xml; it is retained only because the legacy
+  `robot_bringup/cerebro_aisha.launch.py` brain launch still references it. No
+  production launch depends on the standalone package. Remove it + rewire
+  cerebro_aisha to `aisha_brain` in a later cleanup if cerebro_aisha is retired.
 
 ### Resolved in follow-up (2026-06-30)
 * **Doc debt — done.** README and ADR 0001 now describe the intent router

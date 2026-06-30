@@ -2,6 +2,15 @@
 """
 STT Node - Optimized Faster-Whisper (GPU Accelerated)
 Model size is set via the 'model_size' ROS param (default 'small').
+
+DEPRECATED (2026-06-30): this standalone ``stt_node`` package is the legacy STT
+implementation.  The canonical, maintained STT node is ``aisha_brain.stt_node``
+(executable ``stt_node`` in the ``aisha_brain`` package), which the production
+launches use — ``aisha_integration/jetson_launch.py`` and
+``aisha_integration/rpi_launch.py`` both spawn ``package='aisha_brain',
+executable='stt_node'``.  This package survives only because the legacy
+``robot_bringup/cerebro_aisha.launch.py`` brain launch still references it.
+Prefer the aisha_brain node; do not add features here.  See MERGE_NOTES.md.
 """
 
 import rclpy
