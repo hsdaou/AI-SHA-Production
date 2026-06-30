@@ -1,0 +1,22 @@
+# Persistent udev symlink for Arduino Mega 2560 on Raspberry Pi 5.
+#
+# Without this rule, the Arduino enumerates as /dev/ttyACMx where x depends
+# on USB enumeration order — a reboot or plugging in another USB device can
+# shift it from ttyACM0 to ttyACM1, breaking mecanum_driver_node's serial
+# connection.  This rule creates a stable /dev/aisha_arduino symlink.
+#
+# Installation (run once on the Raspberry Pi 5):
+#   sudo cp arduino_mega.rules /etc/udev/rules.d/99-aisha-arduino.rules
+#   sudo udevadm control --reload-rules && sudo udevadm trigger
+#
+# Verify:
+#   ls -la /dev/aisha_arduino   # should point to /dev/ttyACM*
+#
+# Arduino Mega 2560 USB IDs:
+#   idVendor  = 2341  (Arduino SA)
+#   idProduct = 0042  (Mega 2560)
+# If using a clone board (e.g. CH340 USB-serial), update the IDs:
+#   lsusb | grep -i arduino   # or
+#   udevadm info -a /dev/ttyACM0 | grep -E 'idVendor|idProduct'
+
+KERNEL=="ttyACM*", ATTRS{idVendor}=="2341", ATTRS{idProduct}=="0042", MODE:="0666", SYMLINK+="aisha_arduino"

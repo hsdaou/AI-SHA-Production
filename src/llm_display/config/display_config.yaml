@@ -1,0 +1,68 @@
+# LLM Display Configuration File
+
+# Window Settings
+window:
+  title: "AI Assistant Display"
+  fullscreen: true
+  width: 1920
+  height: 1080
+
+# Colors (Hex format)
+colors:
+  # Background gradient
+  bg_start: "#1a1a2e"
+  bg_middle: "#16213e"
+  bg_end: "#0f3460"
+
+  # Message bubbles
+  user_message: "#3498db"      # Blue
+  ai_message: "#2ecc71"        # Green
+
+  # Status cards
+  card_background: "#34495e"
+  card_border: "#3498db"
+
+  # Text colors
+  primary_text: "#ffffff"
+  secondary_text: "#7f8c8d"
+  title_color: "#3498db"
+
+# Fonts
+fonts:
+  main_font: "Ubuntu"
+  header_size: 24
+  message_size: 14
+  dashboard_title_size: 20
+  dashboard_value_size: 28
+
+# Animation Settings
+animations:
+  enable_animations: true
+  fade_duration: 500          # milliseconds
+  slide_duration: 300         # milliseconds
+
+# Message Settings
+messages:
+  max_history: 50             # Maximum messages to display
+  show_timestamps: true
+  auto_scroll: true
+
+# Dashboard Settings
+dashboard:
+  show_total_messages: true
+  show_user_messages: true
+  show_ai_messages: true
+  show_uptime: true
+  update_interval: 1000       # milliseconds
+
+# Topics
+topics:
+  user_input: "/speech_rec"
+  llm_output: "/speech/text"
+
+# UI Settings
+ui:
+  button_height: 50
+  button_min_width: 150
+  card_padding: 20
+  message_padding: 15

@@ -1,0 +1,68 @@
+# ISC-Sharjah School Facts — Verified Knowledge Base
+
+## GENERAL & CONTACT
+The school phone number is +971 6 558 2211.
+The school email address is info@iscsharjah.sabis.net.
+ISC-Sharjah is located on University City Road, Industrial Area 6, Sharjah, UAE. The mailing address is P.O. Box 2077.
+ISC-Sharjah was founded in 1976. It was the first SABIS school in the UAE.
+ISC-Sharjah has an enrollment of more than 4,000 students from over 64 different nationalities.
+The Director of ISC-Sharjah is Mr. Wissam Malaeb.
+The SABIS Network was established in 1886.
+
+## CURRICULUM & ACADEMICS
+ISC-Sharjah implements the SABIS Educational System, based on both the American and British educational systems.
+Students can sit for SAT, TOEFL, and AP exams (American pathway) as well as IGCSE, O Level, AS and A Level exams (British pathway).
+ISC-Sharjah offers the following academic levels:
+- Pre-Kindergarten and Kindergarten (KG 1 - KG 2)
+- Lower School (Grades 1 - 5)
+- Middle School (Grades 6 - 8)
+- High School (Grades 9 - 12)
+The school is accredited by the UAE government and international accreditation agencies.
+
+## ADMISSIONS
+There is no application deadline. ISC-Sharjah accepts applications based on space availability throughout the year.
+There is no joining fee.
+To apply, you need: the SABIS Application Form, Medical Form, 4 passport photos, copies of passports and residency/UAE ID for the student and parents, birth certificate, vaccination card, and most recent school report.
+If transferring from outside the UAE, the transfer certificate must be attested by the Ministry of Education.
+You can apply online through the Application Form on the school website, or apply in person at the school reception desk.
+To book a campus tour, contact the school directly or fill in the Interest Form on the school website.
+
+## FACILITIES
+ISC-Sharjah has two semi-Olympic-sized swimming pools.
+The school has an all-season running track and a large sports field.
+There are two large indoor sports halls and a dedicated KG gymnasium.
+The ITL Hall (SABIS Integrated Testing and Learning Hall) has 580 computers. Students use it for exams and to revise and review material.
+All main classrooms for Grades 1 through 12 are equipped with Interactive Smart Boards.
+There are three science laboratories: biology, chemistry, and physics.
+There are two computer science rooms with state-of-the-art computing equipment.
+The kindergarten has its own independent building with a large playground and a car track.
+The school theater has professional-quality sound and lighting systems.
+The library has a computer suite and a wide range of books in English, Arabic, and French.
+There are two medical doctors on site at all times in modern, spacious clinics.
+The cafeteria offers wholesome sandwiches and fresh fruit. Students can also bring food from home.
+There are outdoor basketball courts on campus.
+
+## SLO (STUDENT LIFE ORGANIZATION)
+SLO stands for Student Life Organization. It is also known as the SABIS Student Life Organization.
+The SLO is a student-run organization that exists in every SABIS school, including ISC-Sharjah.
+The SLO provides students with the opportunity to gain and refine life skills, empowering them to make a difference in their school and community.
+The SLO is at the heart of school life at ISC-Sharjah. It is one of the most distinctive features of the SABIS Educational System.
+The SLO has multiple departments, including: Academic, Discipline, Sports, Arts, Community Service, Environment, Media, Social, and more.
+The Academic Department of the SLO helps students who are struggling with their studies by organizing peer tutoring and study groups.
+The Discipline Department helps maintain order and a positive school environment.
+The Sports Department organizes inter-school competitions and sports events.
+A prefect is a student leader in the SLO. Prefects are elected or appointed students who help organize school activities, maintain discipline, and serve as role models.
+Prefects wear a special badge or uniform to be identified as student leaders.
+The SLO empowers students to take responsibility for their school community and develop leadership skills.
+Any student at ISC-Sharjah can participate in SLO activities and apply to become a prefect.
+
+## EXTRA-CURRICULAR ACTIVITIES
+ISC-Sharjah offers during-school activities, after-school activities, weekend activities, and regional and international experiences.
+Student engagement in daily life and activities is important for their well-being and development.
+
+## AI-SHA IDENTITY
+I am AI-SHA, the administrative assistant robot for ISC-Sharjah.
+I can help you with information about the school, admissions, facilities, the academic calendar, the SLO, extra-curricular activities, and general school information.
+I can also help with campus navigation.
+If I don't have the information you need, please contact the school at +971 6 558 2211 or info@iscsharjah.sabis.net.
+I cannot access private academic records such as student grades or personal information.

@@ -1,0 +1,52 @@
+# Mecanum Driver Configuration
+# These values match the actual AI-SHA robot dimensions.
+#
+# IMPORTANT: Every value here must match the ParameterDescriptor type
+# declared in mecanum_driver_node.py.  rclpy will reject mismatches:
+#   - Integers must be bare numbers:  baud_rate: 115200  (NOT "115200")
+#   - Floats must have a decimal:     wheel_radius: 0.0695
+#   - Booleans must be YAML native:   publish_odom: false (NOT "false")
+#   - Strings must be quoted:         serial_port: "/dev/aisha_arduino"
+
+mecanum_driver:
+  ros__parameters:
+    # Serial connection to Arduino Mega via persistent udev symlink.
+    # Install scripts/arduino_mega.rules to create /dev/aisha_arduino.
+    # Falls back to /dev/ttyACM0 if the udev rule is not installed —
+    # override with: serial_port: "/dev/ttyACM0"
+    serial_port: "/dev/aisha_arduino"
+    baud_rate: 115200
+
+    # Robot geometry (metres)
+    wheel_radius: 0.0695
+    robot_width: 0.5
+    robot_length: 0.6
+
+    # Motor limits
+    max_motor_pwm: 255
+    max_wheel_speed: 1.0
+
+    # Safety
+    cmd_vel_timeout: 0.5
+    serial_timeout: 0.1
+
+    # Motor polarity — set true if right-side motors spin backwards
+    # (physically mounted 180° opposite).  Negates FR/RR PWM in software.
+    invert_right_side: false
+
+    # Dead-band compensation — minimum PWM where wheels overcome static
+    # friction.  Tune on hardware; 0 disables.
+    min_motor_pwm: 0
+
+    # Encoder odometry — set encoder_cpr to 0 to disable.
+    # Arduino Mega uses CHANGE on Channel A = 2x decoding:
+    #   PPR=600 × 2 = 1200 CPR.
+    # If using RPi pigpio encoder_node (4x decoding), set 2400 instead.
+    encoder_cpr: 1200
+    # Enable only when encoder data is available AND rf2o/dummy_odom is
+    # disabled, to avoid conflicting odom→base_link transforms.
+    publish_odom: false
+    # Broadcast odom→base_link TF from encoder data.  Set to false when
+    # robot_localization EKF is running — the EKF owns that transform.
+    # Keep publish_odom: true when EKF is active so it receives raw /odom.
+    publish_odom_tf: false

@@ -1,0 +1,57 @@
+# AI-SHA Brain - Jetson Orin Nano deployment parameters
+#
+# Usage:
+#   ros2 launch aisha_brain aisha_launch.py \
+#     audio_device:=plughw:0,0 \
+#     voice_model:=/opt/piper/models/en_US-amy-low.onnx \
+#     enable_stt:=true \
+#     whisper_model:=base \
+#     whisper_device:=cuda \
+#     whisper_compute_type:=float16
+#
+# Or load this file directly:
+#   ros2 launch aisha_brain aisha_launch.py --ros-args --params-file config/jetson_orin_nano.yaml
+
+# --- Hardware notes ---
+# Jetson Orin Nano: 8GB shared RAM (GPU+CPU)
+# Memory budget (approximate):
+#   OS + ROS2:              ~1.5 GB
+#   Ollama + llama3.2:      ~2.0 GB (q4_0 quantization)
+#   Ollama + gemma3:        ~0.3 GB
+#   ChromaDB + embeds:      ~0.5 GB
+#   Faster-Whisper (base):  ~0.5 GB (CTranslate2 + model)
+#   Headroom:               ~3.2 GB
+#
+# If memory is tight:
+#   - Use llama3.2:1b instead of llama3.2 (saves ~1 GB)
+#   - Use whisper_model:=tiny instead of base (saves ~0.3 GB)
+#   - Use whisper_compute_type:=int8 for lower VRAM usage
+#   - Reduce llm_timeout to 60s (faster fail on overload)
+
+# --- Ollama setup on Jetson ---
+# 1. Install: curl -fsSL https://ollama.com/install.sh | sh
+# 2. Pull models:
+#      ollama pull gemma3:270m
+#      ollama pull llama3.2
+# 3. (Optional, if RAM is tight):
+#      ollama pull llama3.2:1b
+
+# --- Piper TTS on Jetson (ARM64) ---
+# 1. Install piper from: https://github.com/rhasspy/piper/releases (aarch64)
+# 2. Download voice: en_US-amy-low.onnx + en_US-amy-low.onnx.json
+# 3. Place in /opt/piper/models/
+
+# --- Faster-Whisper STT on Jetson (ARM64 + CUDA) ---
+# 1. Install: pip install faster-whisper
+#    (CTranslate2 backend; downloads model automatically on first use)
+# 2. Models are named by size: tiny, base, small, medium, large-v3
+#    Default is 'base' — good accuracy/speed tradeoff for Jetson.
+# 3. For GPU acceleration on Jetson:
+#      whisper_device:=cuda  whisper_compute_type:=float16
+#    For CPU-only (slower but uses no GPU RAM):
+#      whisper_device:=cpu   whisper_compute_type:=int8
+
+# --- Audio device ---
+# Run 'arecord -l' and 'aplay -l' on the Jetson to find the correct
+# ALSA device. USB audio is typically plughw:1,0 or plughw:2,0.
+# Built-in audio (if present) is usually plughw:0,0.
