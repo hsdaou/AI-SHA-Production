@@ -5,16 +5,17 @@
 # drift-corrected odom→base_link transform for SLAM and nav2.
 #
 # Data sources:
-#   /imu/data_raw   — BNO055 via imu_bridge.py (sensor_msgs/Imu at 50 Hz)
-#                     Provides: orientation (quaternion), angular velocity,
-#                     linear acceleration.  Connected to RPi 5 via I2C,
-#                     published over FastDDS to the Jetson.
+#   /imu/data       — BNO055 (sensor_msgs/Imu at 50 Hz).  The BNO055 sits on
+#                     the Arduino Mega I2C bus; mecanum_driver_node parses the
+#                     unified ODOM serial packet and republishes the IMU half
+#                     on /imu/data (frame_id=imu_link).  There is no separate
+#                     bno055_imu / imu_bridge node in the Two-Tier SBC+MCU
+#                     architecture (that I2C path stalled on clock-stretching).
 #
-#   /odom           — Wheel encoder odometry from mecanum_driver_node.py
-#                     (nav_msgs/Odometry).  NOT YET IMPLEMENTED — requires
-#                     Arduino firmware to read encoder ticks and the ROS 2
-#                     driver to apply forward kinematics.  When available,
-#                     uncomment the odom0 section below.
+#   /odom           — Wheel encoder odometry from mecanum_driver_node
+#                     (nav_msgs/Odometry).  Active when publish_odom: true in
+#                     mecanum_params.yaml; the driver populates pose and twist
+#                     covariance so robot_localization can fuse it.
 #
 # What this replaces:
 #   Once both sources are active, this EKF replaces:
@@ -25,6 +26,11 @@
 #
 # Prerequisites:
 #   sudo apt install ros-humble-robot-localization
+#
+# IMPORTANT: When using this EKF, set publish_odom_tf: false in
+# mecanum_params.yaml (or launch with odom_source:=ekf, which does this for
+# you) to stop the motor driver from also broadcasting odom→base_link.  Two
+# TF broadcasters on the same transform cause pose flickering that breaks Nav2.
 #
 # Usage (add to your launch file):
 #   Node(
@@ -60,23 +66,25 @@ ekf_filter_node:
     publish_tf: true
     frequency: 50.0         # Match BNO055 IMU rate
 
-    # ── Sensor 0: Wheel encoder odometry (FUTURE) ─────────────────────────
-    # Uncomment when mecanum_driver_node publishes nav_msgs/Odometry on /odom.
-    # Until then, the EKF runs on IMU-only (orientation + angular velocity),
-    # which is insufficient for position estimation but still useful for
-    # providing a smooth, time-stamped orientation to slam_toolbox.
-    #
-    # odom0: /odom
-    # odom0_config: [true,  true,  false,    # x, y, z position
-    #                false, false, false,    # roll, pitch, yaw (from IMU instead)
-    #                true,  true,  false,    # vx, vy, vz velocity
-    #                false, false, true,     # vroll, vpitch, vyaw
-    #                false, false, false]    # ax, ay, az
-    # odom0_differential: false
-    # odom0_relative: false
-    # odom0_queue_size: 10
+    # ── Sensor 0: Wheel encoder odometry (/odom) ──────────────────────────
+    # mecanum_driver_node publishes nav_msgs/Odometry on /odom with populated
+    # pose+twist covariance when publish_odom: true.  We fuse planar position
+    # (x, y) and body velocity (vx, vy, vyaw); orientation comes from the IMU.
+    # If encoders are absent, set publish_odom: false and the EKF degrades to
+    # IMU-only (smooth orientation, no position) — but disable this odom0 block
+    # too, or robot_localization will block waiting for an /odom that never
+    # arrives.
+    odom0: /odom
+    odom0_config: [true,  true,  false,    # x, y, z position
+                   false, false, false,    # roll, pitch, yaw (from IMU instead)
+                   true,  true,  false,    # vx, vy, vz velocity
+                   false, false, true,     # vroll, vpitch, vyaw
+                   false, false, false]    # ax, ay, az
+    odom0_differential: false
+    odom0_relative: false
+    odom0_queue_size: 10
 
-    # ── Sensor 1: BNO055 IMU via imu_bridge (/imu/data_raw) ───────────────
+    # ── Sensor 1: BNO055 IMU (/imu/data, via mecanum_driver_node) ─────────
     # The BNO055 in NDOF mode provides excellent orientation from onboard
     # 9-DOF fusion (accel + gyro + mag).  We use:
     #   - Orientation (yaw): yes — primary heading source
@@ -84,7 +92,7 @@ ekf_filter_node:
     #   - Linear acceleration: NO — double-integrating MEMS accel for
     #     position drifts meters within seconds.  Position comes from
     #     wheel odom (future) or rf2o laser odom.
-    imu0: /imu/data_raw
+    imu0: /imu/data
     imu0_config: [false, false, false,    # x, y, z (never from IMU)
                   true,  true,  true,     # roll, pitch, yaw orientation
                   false, false, false,    # vx, vy, vz (not from IMU)

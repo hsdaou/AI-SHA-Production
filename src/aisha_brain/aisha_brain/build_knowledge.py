@@ -8,12 +8,16 @@ in a ChromaDB persistent collection at ../aisha_knowledge_db/.
 The resulting vector store is consumed by admin_node.py at runtime.
 
 Chunk strategy:
-  - Each ## header defines a "section" (e.g. "Cambridge IGCSE").
-  - Every bullet point (line starting with "- ") under a section becomes
-    its own chunk, with the # title and ## section prepended for context.
+  - Each ## header defines a "section" (e.g. "Cambridge IGCSE"); deeper
+    ###+ headers add a "subsection" folded into each chunk's context.
+  - Every list item under a section becomes its own chunk, with the # title
+    and ## section prepended for context.  Both unordered markers ("-", "*",
+    "+") and ordered markers ("1.", "2)") are recognised.
+  - Each Markdown table data row becomes its own chunk, with every cell
+    labelled by its column header (e.g. "Grade: KG1 | Annual Fee: 21,000").
   - Non-bullet paragraphs are grouped into a single chunk per section.
-  - This ensures exam entries are individually retrievable while retaining
-    the qualification context (IGCSE vs AS/A Level vs AP).
+  - This ensures exam entries, fee rows and calendar dates are individually
+    retrievable while retaining the qualification context.
 
 Metadata stored per chunk:
   - file_name: source .md filename
@@ -33,15 +37,21 @@ import os
 import re
 import sys
 
-import chromadb
+
+# Matches a Markdown list-item marker at the start of a stripped line:
+#   "- ", "* ", "+ "   (unordered)   and   "1. ", "2) "   (ordered).
+# The required trailing whitespace (\s+) is what keeps horizontal rules
+# ("---", "***") and bold spans ("**Note**") from being misread as items.
+LIST_ITEM_RE = re.compile(r'^([-*+]|\d+[.)])\s+')
 
 
 def parse_markdown_sections(filepath: str) -> list[dict]:
     """Parse a Markdown file into section-aware chunks.
 
-    Returns a list of dicts: {text, file_name, section, title}.
-    Each bullet point becomes its own chunk; consecutive non-bullet
-    lines are merged into paragraph chunks.
+    Returns a list of dicts: {text, file_name, section}.  Each list item
+    and each table data row becomes its own chunk; consecutive plain-text
+    lines are merged into paragraph chunks.  The # title, ## section and
+    any deeper (###+) subsection are prepended to every chunk for context.
     """
     filename = os.path.basename(filepath)
     with open(filepath, 'r', encoding='utf-8') as f:
@@ -50,55 +60,105 @@ def parse_markdown_sections(filepath: str) -> list[dict]:
     chunks = []
     title = ''
     section = ''
+    subsection = ''
     paragraph_lines = []
+    table_lines = []
+
+    def make_prefix() -> str:
+        """Join the non-empty title/section/subsection with em-dashes."""
+        return ' — '.join(p for p in (title, section, subsection) if p)
+
+    def emit(text: str):
+        """Append a chunk, prefixing the current heading context."""
+        prefix = make_prefix()
+        chunks.append({
+            'text': f"{prefix}\n{text}" if prefix else text,
+            'file_name': filename,
+            'section': section,
+        })
 
     def flush_paragraph():
-        """Emit accumulated non-bullet lines as a single chunk."""
+        """Emit accumulated plain-text lines as a single chunk."""
         if paragraph_lines:
             text = '\n'.join(paragraph_lines).strip()
             if text:
-                chunks.append({
-                    'text': f"{title} — {section}\n{text}" if section else text,
-                    'file_name': filename,
-                    'section': section,
-                })
+                emit(text)
             paragraph_lines.clear()
+
+    def flush_table():
+        """Emit each Markdown table data row as its own chunk.
+
+        The header row labels every cell, so a row reads
+        "Col A: x | Col B: y"; the |---| separator row is dropped.
+        """
+        if not table_lines:
+            return
+        rows = [
+            [c.strip() for c in raw.strip('|').split('|')]
+            for raw in table_lines
+        ]
+        table_lines.clear()
+        headers = rows[0]
+        data_rows = rows[1:]
+        # Drop the |---|:--| separator row that follows the header.
+        if data_rows and all(
+            cell and set(cell) <= set('-: ') for cell in data_rows[0]
+        ):
+            data_rows = data_rows[1:]
+        for cells in data_rows:
+            pairs = [
+                f"{headers[i]}: {cell}"
+                if i < len(headers) and headers[i] else cell
+                for i, cell in enumerate(cells) if cell
+            ]
+            if pairs:
+                emit(' | '.join(pairs))
 
     for line in content.splitlines():
         stripped = line.strip()
 
-        # Top-level title (# header)
-        if stripped.startswith('# ') and not stripped.startswith('## '):
-            flush_paragraph()
-            title = stripped.lstrip('# ').strip()
+        # Horizontal rule (---, ***, ___) — purely visual, ignore.
+        if re.match(r'^([-*_])\1{2,}\s*$', stripped):
             continue
 
-        # Section header (## header)
-        if stripped.startswith('## '):
+        # Heading (#..######): level sets title / section / subsection.
+        header_match = re.match(r'(#{1,6})\s+(.*)', stripped)
+        if header_match:
             flush_paragraph()
-            section = stripped.lstrip('# ').strip()
+            flush_table()
+            level = len(header_match.group(1))
+            text = header_match.group(2).strip()
+            if level == 1:
+                title, section, subsection = text, '', ''
+            elif level == 2:
+                section, subsection = text, ''
+            else:
+                subsection = text
             continue
 
-        # Bullet point → individual chunk with section context
-        if stripped.startswith('- '):
+        # Table row → buffer for row-wise chunking.
+        if stripped.startswith('|'):
             flush_paragraph()
-            entry = stripped.lstrip('- ').strip()
+            table_lines.append(stripped)
+            continue
+
+        # List item (-, *, +, 1., 2)) → individual chunk.
+        list_match = LIST_ITEM_RE.match(stripped)
+        if list_match:
+            flush_paragraph()
+            flush_table()
+            entry = stripped[list_match.end():].strip()
             if entry:
-                # Prepend title + section for retrieval context
-                context_prefix = f"{title} — {section}" if section else title
-                full_text = f"{context_prefix}\n{entry}" if context_prefix else entry
-                chunks.append({
-                    'text': full_text,
-                    'file_name': filename,
-                    'section': section,
-                })
+                emit(entry)
             continue
 
-        # Regular text → accumulate for paragraph chunk
+        # Regular text → accumulate for a paragraph chunk.
         if stripped:
+            flush_table()
             paragraph_lines.append(stripped)
 
     flush_paragraph()
+    flush_table()
     return chunks
 
 
@@ -141,8 +201,10 @@ def build_knowledge_base(raw_data_dir: str, output_dir: str):
     texts = [c['text'] for c in all_chunks]
     embeddings = embed_model.get_text_embedding_batch(texts, show_progress=True)
 
-    # Store in ChromaDB
+    # Store in ChromaDB (imported lazily so the parser above can be used
+    # — and unit-tested — without the heavy chromadb dependency installed).
     print(f'Writing to ChromaDB at {output_dir}...')
+    import chromadb
     os.makedirs(output_dir, exist_ok=True)
     client = chromadb.PersistentClient(path=output_dir)
 

@@ -9,8 +9,6 @@
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
-  <depend>std_srvs</depend>
-  <depend>geometry_msgs</depend>
 
   <!-- Python dependencies (install via pip, listed here for documentation) -->
   <!-- chromadb, llama-index, sentence-transformers, ollama, requests, piper-tts -->

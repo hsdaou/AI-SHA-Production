@@ -41,16 +41,42 @@ Removed so the robot runs **entirely on-device** with **no agricultural features
   vision (person / face / gesture / OCR). Legacy `cerebro.launch.py` (launched the old
   GGUF `robot_brain`) was removed — use `cerebro_aisha.launch.py`.
 
-## ⚠ NOT YET BUILD-VERIFIED — do this first on the Linux/5080 box
+## Build verification — DONE on the RTX 5080 box (2026-06-30)
 
-1. **No `colcon build` / `colcon test` has run.** Assembled on a Windows host without
-   ROS 2. First action: `colcon build` (not `--symlink-install`) then `colcon test`.
-2. **`robot_bringup` launch wiring** — `ekf.yaml` + `nav2_params.yaml` configs are
-   present, but the launch that starts encoder odometry + EKF + sensors is not yet
-   merged in. Reconcile against `Ahmed28309/AI-SHA` `robot_bringup/launch/*`.
-3. **CI** — add a `colcon test` GitHub Action (none exists in-tree).
-4. **Duplicate STT path** — `stt_node` exists both as a standalone package and as a
-   node inside `aisha_brain`; confirm which is the live one.
+Built and tested inside a `ros:humble` container (NOT the workstation's native
+Jazzy — see *Build target* below).
+
+1. **✅ `colcon build` (no `--symlink-install`): 13/13 packages clean**, including
+   the C++ `ldlidar_stl_ros2` and the `bno055_imu` message package.
+2. **✅ `robot_bringup` launch wiring done** — `aisha_integration/rpi_launch.py`
+   now has an `odom_source:=ekf` path that starts `robot_localization` with
+   `ekf.yaml`, fusing encoder `/odom` + IMU `/imu/data` and owning the
+   `odom→base_link` TF (driver set to `publish_odom=true`,
+   `publish_odom_tf=false`). `ekf.yaml` made live (odom0 enabled, `imu0` fixed
+   to `/imu/data`). Default `odom_source` stays `laser`, so EKF is opt-in.
+3. **✅ `colcon test`: no regressions** — reconciled tree vs the pristine local
+   baseline give byte-identical `aisha_brain` results. Remaining failures are
+   inherited (bare-container missing `requirements.txt` deps + lint/test debt),
+   not introduced by the merge.
+
+### Build target — Humble, NOT Jazzy
+The deploy target is the Jetson Orin Nano (JetPack / Ubuntu 22.04 = **ROS 2
+Humble**). The 5080 workstation is Ubuntu 24.04 (native Jazzy). Build/test in a
+`ros:humble` container — Jazzy breakage (e.g. `ldlidar_stl_ros2` C++,
+`bno055_imu` msg-gen) is distro-mismatch noise against the wrong baseline, not a
+bug to fix.
+
+### Still open
+* **CI** — add a `colcon test` GitHub Action (none exists in-tree). Note the
+  bare image needs `aisha_brain/requirements.txt` installed for its pytest suite.
+* **Duplicate STT path** — `stt_node` exists both as a standalone package and as a
+  node inside `aisha_brain`; confirm which is the live one.
+* **Doc debt** — README/ADR say the gemma3 LLM router was removed for a
+  rule-based classifier, but `brain_node.classify_intent` is LLM-first
+  (gemma3:270m) with keyword *fallback* in both trees. Reconcile the docs.
+* **EKF + Nav2 without SLAM** — the `odom_source:=ekf` node currently lives
+  inside the `enable_slam` block, so it only runs with `enable_slam:=true`.
+  Lift it out if EKF odom is wanted for Nav2 without SLAM.
 
 ## Build
 
@@ -83,3 +109,18 @@ Steps: (1) clone both repos; (2) reconcile `mecanum_driver` + `aisha_brain` towa
 local + fold the unique files in; (3) `colcon build` (NOT `--symlink-install`) +
 `colcon test`; (4) wire `robot_bringup` launches for EKF/encoder-odom/sensors
 (configs already present); (5) update this PR.
+
+### ✅ Reconciliation completed (2026-06-30)
+Steps (1)–(4) done; this commit is step (5).
+- **`mecanum_driver`** → local (815-line node, 395-line firmware, params,
+  launch); folded in `scripts/arduino_mega.rules`; kept merge's
+  `motor_test`/`motor_direct`/`mecanum.launch.py` + their entry points, and the
+  2nd Arduino sketch `arduino/mecanum_driver/mecanum_driver.ino`.
+- **`aisha_brain`** → local for all shared code (verified superset: query_id +
+  streaming + RAG table/subsection hardening); kept merge's `jetson_launch.py`
+  (GPU-OOM env), `gpu_arbiter` (+ entry point), `gpu_release_probe.py`,
+  `fastdds_*.xml`, ADR, `sabis_system.md`; adopted local's `rpi_launch.py`
+  deprecation.
+- **Folded root files**: `.env.example`, `config/fastdds_env.sh`.
+- **CRLF→LF** normalized the whole tree + added `.gitattributes` (the merge was
+  assembled on Windows; CRLF was masking the real diffs).

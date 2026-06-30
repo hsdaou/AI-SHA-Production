@@ -1,18 +1,14 @@
-"""AI-SHA Pi 5 Launch — Audio I/O nodes (TTS + optional STT).
+"""AI-SHA Pi 5 Launch — Audio I/O nodes only (DEPRECATED).
 
-This is the canonical Raspberry Pi 5 entry point for AI-SHA. It runs the
-TTS node (Piper + aplay via the I2S HAT) and, by default, the STT node.
-The TTS node subscribes to /robot_speech, which the Jetson-side brain_node
-publishes (see robot_bringup/launch/cerebro_aisha.launch.py).
+DEPRECATED: Use `ros2 launch aisha_integration rpi_launch.py` instead.
+That launch file is the canonical Pi 5 entry point — it includes
+LiDAR, IMU, TTS, and display nodes.  This file is kept only for
+standalone audio-only testing; running it alongside the integration
+launch will cause tts_node name collisions and audio device locking.
 
-The LiDAR, RealSense, YOLO, SLAM and brain stack all run on the Jetson
-and are brought up by cerebro_aisha.launch.py — none of them belong here.
-If the Jetson is also running STT (its default enable_stt:=true), launch
-this with enable_stt:=false to avoid two nodes publishing /speech/text.
-
-Usage:
+Usage (testing only):
   ros2 launch aisha_brain rpi_launch.py
-  ros2 launch aisha_brain rpi_launch.py enable_stt:=false
+  ros2 launch aisha_brain rpi_launch.py enable_stt:=true
 
 Set the FastDDS profile externally before launching:
   export FASTRTPS_DEFAULT_PROFILES_FILE=.../config/fastdds_rpi.xml
@@ -58,6 +54,15 @@ def _kill_existing_nodes():
 
 
 def generate_launch_description():
+    import sys
+    print(
+        '\n'
+        '╔════════════════════════════════════════════════════════════════╗\n'
+        '║  WARNING: aisha_brain/rpi_launch.py is DEPRECATED.           ║\n'
+        '║  Use: ros2 launch aisha_integration rpi_launch.py            ║\n'
+        '╚════════════════════════════════════════════════════════════════╝\n',
+        file=sys.stderr,
+    )
     _kill_existing_nodes()
 
     def create_nodes(context):

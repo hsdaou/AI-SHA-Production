@@ -1,0 +1,16 @@
+# Normalize line endings to LF for the whole tree (Linux/ROS build host + Jetson).
+# Prevents the Windows-assembly CRLF churn that obscured real diffs in the merge.
+* text=auto eol=lf
+
+# Explicit binaries — never touch.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.pcd binary
+*.bag binary
+*.db binary
+*.onnx binary
+*.engine binary
+*.pt binary

@@ -1,6 +1,7 @@
 import re
 import rclpy
 from rclpy.node import Node
+from rcl_interfaces.msg import ParameterDescriptor, ParameterType
 from std_msgs.msg import String
 import json
 import os
@@ -61,11 +62,26 @@ class AdminNode(Node):
                 os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                 'aisha_knowledge_db'
             )
-        self.declare_parameter('knowledge_db_path', default_kb_path)
-        self.declare_parameter('ollama_url', 'http://127.0.0.1:11434')
-        self.declare_parameter('llm_model', 'llama3.2')
-        self.declare_parameter('llm_timeout', 120.0)
-        self.declare_parameter('similarity_top_k', 6)
+        self.declare_parameter('knowledge_db_path', default_kb_path,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_STRING,
+                description='Path to ChromaDB knowledge base directory'))
+        self.declare_parameter('ollama_url', 'http://127.0.0.1:11434',
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_STRING,
+                description='Ollama HTTP endpoint'))
+        self.declare_parameter('llm_model', 'llama3.2',
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_STRING,
+                description='Ollama model name for RAG inference'))
+        self.declare_parameter('llm_timeout', 120.0,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_DOUBLE,
+                description='LLM inference timeout in seconds'))
+        self.declare_parameter('similarity_top_k', 6,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_INTEGER,
+                description='Number of top-k chunks retrieved from ChromaDB'))
         # Cosine distance cutoff for retrieved chunks.  ChromaDB cosine
         # distance ranges from 0.0 (identical) to 2.0 (opposite).  Chunks
         # with distance > this threshold are discarded BEFORE the LLM sees
@@ -79,7 +95,10 @@ class AdminNode(Node):
         #   1.0  — good default for well-structured factual KB
         #   1.2  — permissive, lets borderline chunks through to the LLM
         #   1.5+ — effectively disabled
-        self.declare_parameter('relevance_distance_threshold', 1.0)
+        self.declare_parameter('relevance_distance_threshold', 1.0,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_DOUBLE,
+                description='Cosine distance cutoff for RAG chunks (0.0-2.0)'))
 
         kb_path = self.get_parameter('knowledge_db_path').get_parameter_value().string_value
         ollama_url = self.get_parameter('ollama_url').get_parameter_value().string_value
@@ -160,7 +179,7 @@ class AdminNode(Node):
                             self._cached_sections.add(meta['section'])
                 self.get_logger().info(f'Cached {len(self._cached_sections)} unique grade sections.')
             except Exception as e:
-                self.get_logger().warn(f'Failed to cache sections: {e}')
+                self.get_logger().warning(f'Failed to cache sections: {e}')
 
         except Exception as e:
             self.get_logger().error(f'Failed to initialize knowledge base: {e}')
@@ -222,7 +241,7 @@ class AdminNode(Node):
             now = time.time()
             if (user_question == self._last_query_text and
                     now - self._last_query_time < self._query_debounce_secs):
-                self.get_logger().warn(
+                self.get_logger().warning(
                     f'Duplicate /admin_task ignored (within {self._query_debounce_secs}s): '
                     f'{user_question[:60]}'
                 )
@@ -257,7 +276,9 @@ class AdminNode(Node):
                 self.get_logger().info(f'  with {len(history)} prior turn(s) of context')
 
             if self.index is None:
-                self._publish("I'm sorry, my knowledge base is not available right now. Please try again later.", query_id)
+                fallback = "I'm sorry, my knowledge base is not available right now. Please try again later."
+                self._publish_chunk(fallback, query_id)
+                self._publish_final(fallback, query_id)
                 return
 
             # Step 1: Retrieve relevant context from the vector store
@@ -313,8 +334,13 @@ class AdminNode(Node):
                         else:
                             where_filter = {"section": {"$in": list(matching_sections)}}
 
+                        # Compute embedding with the SAME model used to build the DB
+                        # (BAAI/bge-small-en-v1.5).  Passing query_texts= would make
+                        # ChromaDB use its default model (all-MiniLM-L6-v2), producing
+                        # vectors in a different space → garbage distance scores.
+                        query_embedding = self.embed_model.get_text_embedding(retrieval_query)
                         grade_results = self._chroma_collection.query(
-                            query_texts=[retrieval_query],
+                            query_embeddings=[query_embedding],
                             n_results=self.similarity_top_k,
                             where=where_filter,
                             include=["documents", "metadatas", "distances"]
@@ -332,19 +358,42 @@ class AdminNode(Node):
                                 # ChromaDB distance → score (lower distance = higher score)
                                 filtered_nodes.append(NodeWithScore(node=node, score=1.0 - dist))
                 except Exception as e:
-                    self.get_logger().warn(f'Grade filter failed, falling back to standard retrieval: {e}')
+                    self.get_logger().warning(f'Grade filter failed, falling back to standard retrieval: {e}')
 
-            # Fall back to standard vector retrieval if no grade filter hit
+            # Always run standard vector retrieval so globally-relevant chunks
+            # (a tuition fee row, a calendar date) are never excluded just
+            # because the query happens to mention a grade or level.
+            retriever = self.index.as_retriever(
+                similarity_top_k=self.similarity_top_k,
+                embed_model=self.embed_model
+            )
+            standard_nodes = retriever.retrieve(retrieval_query)
+
             if filtered_nodes:
-                nodes = filtered_nodes
-                self.get_logger().info(f'Grade-filtered retrieval: {len(nodes)} chunks')
-            else:
-                retriever = self.index.as_retriever(
-                    similarity_top_k=self.similarity_top_k,
-                    embed_model=self.embed_model
+                # Union grade-filtered + standard results.  The grade filter
+                # guarantees the right grade's chunks are in the pool (generic
+                # similarity can rank near-identical other-grade rows above
+                # them); standard retrieval keeps cross-section hits like fees.
+                # Dedupe by content keeping the higher score, then keep the
+                # top-k by score so the LLM context stays bounded.
+                merged = {}
+                for n in filtered_nodes + standard_nodes:
+                    key = n.node.get_content()
+                    if key not in merged or n.score > merged[key].score:
+                        merged[key] = n
+                nodes = sorted(
+                    merged.values(), key=lambda x: x.score, reverse=True
+                )[:self.similarity_top_k]
+                self.get_logger().info(
+                    f'Merged retrieval: {len(nodes)} chunks '
+                    f'({len(filtered_nodes)} grade + {len(standard_nodes)} '
+                    f'standard, deduped)'
                 )
-                nodes = retriever.retrieve(retrieval_query)
-                self.get_logger().info(f'Standard retrieval: {len(nodes)} chunks')
+            else:
+                nodes = standard_nodes
+                self.get_logger().info(
+                    f'Standard retrieval: {len(nodes)} chunks'
+                )
 
             # ── Distance-based relevance filter ─────────────────────────────
             # Both retrieval paths produce NodeWithScore where score = 1.0 - cosine_distance
@@ -374,14 +423,15 @@ class AdminNode(Node):
                     f'All {pre_filter_count} chunks exceeded distance threshold '
                     f'{threshold} — query is out of scope, skipping LLM'
                 )
-                self._publish(
+                oos_reply = (
                     "I am an administrative assistant for the International School "
                     "of Choueifat in Sharjah. I can help with school schedules, "
                     "exam timetables, campus facilities, and general school information. "
                     "For other questions, please ask your teacher or contact the school "
-                    "at +971 6 558 2211.",
-                    query_id
+                    "at +971 6 558 2211."
                 )
+                self._publish_chunk(oos_reply, query_id)
+                self._publish_final(oos_reply, query_id)
                 return
 
             # NodeWithScore objects: access .node for metadata and content
@@ -394,35 +444,84 @@ class AdminNode(Node):
             # Step 2: Build chat messages with system prompt + history + context
             messages = self._build_messages(history, user_question, context_str)
 
-            # Step 3: Call LLM (blocking — safe here because we are in a daemon thread)
-            self.get_logger().info(f'Calling Ollama ({self.llm.model})...')
-            response = self.llm.chat(messages)
-            answer = str(response.message.content).strip()
+            # Step 3: Stream LLM tokens and publish sentence-by-sentence.
+            # Piper TTS needs complete sentences for natural intonation, so we
+            # accumulate tokens until a sentence boundary (.!?\n) and publish
+            # each sentence immediately.  This eliminates the 10-20s dead
+            # silence that occurs when waiting for full LLM generation.
+            self.get_logger().info(f'Calling Ollama ({self.llm.model}) with streaming...')
 
-            if not answer:
-                answer = "I could not find information about that. Could you rephrase your question?"
+            full_answer = ""
+            current_sentence = ""
 
-            self.get_logger().info(f'Answer: {answer[:120]}...' if len(answer) > 120 else f'Answer: {answer}')
-            self._publish(answer, query_id)
-            self.get_logger().info('Published to /admin_response')
+            for chunk in self.llm.stream_chat(messages):
+                token = chunk.delta
+                if not token:
+                    continue
+
+                current_sentence += token
+                full_answer += token
+
+                # Publish on sentence boundaries (.!?\n) but avoid splitting
+                # on abbreviations (Dr. Mr. Mrs. etc.) and decimal numbers.
+                if re.search(r'(?<![A-Z])(?<!\d)[.!?]\s|[.!?]$|\n', token):
+                    clean = current_sentence.strip()
+                    if clean:
+                        self._publish_chunk(clean, query_id)
+                    current_sentence = ""
+
+            # Flush any remaining text that didn't end with punctuation
+            if current_sentence.strip():
+                self._publish_chunk(current_sentence.strip(), query_id)
+
+            if not full_answer:
+                full_answer = "I could not find information about that. Could you rephrase your question?"
+                self._publish_chunk(full_answer, query_id)
+
+            # Publish the final payload with the complete answer for brain_node's
+            # history tracking.  chunk="" signals brain_node NOT to speak this
+            # message — the sentences were already spoken individually above.
+            self._publish_final(full_answer.strip(), query_id)
+            self.get_logger().info(f'Streamed {len(full_answer)} chars to /admin_response')
 
         except Exception as e:
             self.get_logger().error(f'Query error: {type(e).__name__}: {e}')
             import traceback
             self.get_logger().error(traceback.format_exc())
-            self._publish("I encountered an error processing your question. Please try again.", query_id)
+            err_msg = "I encountered an error processing your question. Please try again."
+            self._publish_chunk(err_msg, query_id)
+            self._publish_final(err_msg, query_id)
 
-    def _publish(self, text: str, query_id: str = ''):
-        """Publish response to /admin_response with query UUID for pairing.
+    def _publish_chunk(self, chunk: str, query_id: str = ''):
+        """Publish a streaming sentence chunk to /admin_response.
 
-        brain_node uses the query_id to match this response with the
-        original question, preventing the FIFO desync race condition.
+        brain_node will speak this immediately via /robot_speech without
+        touching the history or pending-question state.
         """
         out_msg = String()
-        if query_id:
-            out_msg.data = json.dumps({"answer": text, "query_id": query_id})
-        else:
-            out_msg.data = text
+        out_msg.data = json.dumps({
+            "chunk": chunk,
+            "answer": "",
+            "query_id": query_id,
+            "is_final": False,
+        })
+        self.speech_publisher.publish(out_msg)
+
+    def _publish_final(self, full_answer: str, query_id: str = ''):
+        """Publish the complete answer for brain_node's history tracking.
+
+        chunk="" tells brain_node not to speak this message — the
+        individual sentences were already spoken via _publish_chunk().
+        brain_node uses the full answer to record conversation history
+        and pops the query_id from its pending dict.
+        """
+        out_msg = String()
+        out_msg.data = json.dumps({
+            "chunk": "",
+            "answer": full_answer,
+            "query_id": query_id,
+            "is_final": True,
+        })
         self.speech_publisher.publish(out_msg)
 
 

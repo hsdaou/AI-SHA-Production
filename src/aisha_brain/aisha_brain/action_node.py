@@ -75,7 +75,7 @@ class ActionNode(Node):
             self.get_logger().info("Calendar integration not yet implemented")
         else:
             self._say("I'm not sure how to handle that action yet.", query_id)
-            self.get_logger().warn(f'Unrecognized action: {command}')
+            self.get_logger().warning(f'Unrecognized action: {command}')
 
     def send_whatsapp(self, text, query_id=''):
         try:
@@ -83,7 +83,7 @@ class ActionNode(Node):
             phone_match = re.search(r'\b(971\d{8,10})\b', text)
             if not phone_match:
                 self._say("I couldn't find a valid phone number. Please include a number starting with 971.", query_id)
-                self.get_logger().warn("No valid phone number found in command")
+                self.get_logger().warning("No valid phone number found in command")
                 return
 
             phone = phone_match.group(1)

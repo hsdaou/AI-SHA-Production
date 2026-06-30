@@ -2,12 +2,24 @@
 """
 Mecanum Robot Driver Node (ROS2 Humble)
 
-Subscribes to /cmd_vel and converts to 4 mecanum wheel speeds
-using inverse kinematics, then sends to Arduino over serial.
+Subscribes to /cmd_vel and converts to 4 mecanum wheel speeds using
+inverse kinematics, then sends them to the Arduino Mega over USB serial.
 
-When encoder feedback is available (serial line "E <fl> <fr> <rl> <rr>"),
-applies Mecanum forward kinematics to compute robot velocity and integrates
-into a cumulative pose, publishing nav_msgs/Odometry and odom→base_link TF.
+In the Two-Tier SBC + MCU architecture this node also unpacks the
+unified Arduino telemetry packet — encoders + BNO055 IMU stamped from a
+single MCU loop — and republishes the IMU half as ``sensor_msgs/Imu`` on
+``/imu/data`` while feeding the encoder half into the existing Mecanum
+forward-kinematics estimator that publishes ``nav_msgs/Odometry`` on
+``/odom`` and broadcasts the ``odom→base_link`` TF.
+
+Serial telemetry lines understood by the parser:
+
+  ODOM <fl> <fr> <rl> <rr>
+       <qw> <qx> <qy> <qz>
+       <gx> <gy> <gz>       # deg/s, converted to rad/s here
+       <ax> <ay> <az>       # m/s^2
+
+  E    <fl> <fr> <rl> <rr>  # legacy encoder-only fallback (no BNO055)
 
 Mecanum Inverse Kinematics (cmd_vel → wheel speeds):
   v_fl = vx - vy - (lx + ly) * wz
@@ -25,8 +37,10 @@ import math
 
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import Twist, TransformStamped
+from rcl_interfaces.msg import ParameterDescriptor, ParameterType
+from geometry_msgs.msg import Quaternion, TransformStamped, Twist
 from nav_msgs.msg import Odometry
+from sensor_msgs.msg import Imu
 from std_msgs.msg import Float32MultiArray
 from tf2_ros import TransformBroadcaster
 import serial
@@ -34,59 +48,124 @@ import time
 import threading
 
 
+# BNO055 gyro vectors come out of the Adafruit library in deg/s; sensor_msgs/Imu
+# expects rad/s for angular_velocity.
+_DEG2RAD = math.pi / 180.0
+
+
 class MecanumDriverNode(Node):
     def __init__(self):
         super().__init__('mecanum_driver')
 
-        # Declare parameters
-        self.declare_parameter('serial_port', '/dev/ttyACM0')
-        self.declare_parameter('baud_rate', 115200)
-        self.declare_parameter('wheel_radius', 0.03)
-        self.declare_parameter('robot_width', 0.20)
-        self.declare_parameter('robot_length', 0.15)
-        self.declare_parameter('max_motor_pwm', 255)
+        # Declare parameters with explicit ParameterDescriptor types.
+        # rclpy rejects mismatched types at declaration time, preventing
+        # silent failures when LaunchConfiguration passes strings or when
+        # YAML values are parsed with the wrong scalar type.
+        self.declare_parameter('serial_port', '/dev/aisha_arduino',
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_STRING,
+                description='Persistent udev symlink for Arduino Mega (see scripts/arduino_mega.rules)'))
+        self.declare_parameter('baud_rate', 115200,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_INTEGER,
+                description='Serial baud rate'))
+        self.declare_parameter('wheel_radius', 0.03,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_DOUBLE,
+                description='Wheel radius in metres'))
+        self.declare_parameter('robot_width', 0.20,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_DOUBLE,
+                description='Track width (left-right wheel centre distance) in metres'))
+        self.declare_parameter('robot_length', 0.15,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_DOUBLE,
+                description='Wheelbase (front-rear wheel centre distance) in metres'))
+        self.declare_parameter('max_motor_pwm', 255,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_INTEGER,
+                description='Maximum PWM value sent to BTS7960 (0-255)'))
         # max_wheel_speed in rad/s — default 1.0 m/s / 0.03 m ≈ 33.3 rad/s
-        self.declare_parameter('max_wheel_speed', 33.3)
-        self.declare_parameter('cmd_vel_timeout', 0.5)
-        self.declare_parameter('serial_timeout', 0.1)
+        self.declare_parameter('max_wheel_speed', 33.3,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_DOUBLE,
+                description='Maximum wheel angular velocity in rad/s'))
+        self.declare_parameter('cmd_vel_timeout', 0.5,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_DOUBLE,
+                description='Seconds of silence before watchdog stops motors'))
+        self.declare_parameter('serial_timeout', 0.1,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_DOUBLE,
+                description='Serial read timeout in seconds'))
         # Right-side motors are physically mounted 180° opposite on most
         # chassis.  Set to True to negate FR/RR PWM in software (instead of
-        # swapping IN1/IN2 wires at the motor driver).
-        self.declare_parameter('invert_right_side', False)
+        # swapping RPWM/LPWM wires at the BTS7960 driver).
+        self.declare_parameter('invert_right_side', False,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_BOOL,
+                description='Negate right-side PWM for reversed motor mounting'))
         # Minimum PWM below which motors stall due to static friction.
         # Nav stack micro-adjustments (PWM 5-30) will just make motors whine.
         # Set via hardware testing: slowly raise PWM until wheels just start
         # turning under load.  0 disables deadband compensation.
-        self.declare_parameter('min_motor_pwm', 0)
+        self.declare_parameter('min_motor_pwm', 0,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_INTEGER,
+                description='Dead-band PWM threshold; 0 disables compensation'))
         # Encoder ticks per full wheel revolution (after 4× quadrature decoding).
         # Set to 0 to disable encoder odometry (e.g. if encoders are not installed).
-        # The existing encoder_node.py uses PPR=600 → CPR=2400 (4× quadrature).
-        # If Arduino sends raw quadrature-decoded ticks, use 2400.
-        # If Arduino sends per-channel pulses, use 600 and let this node multiply by 4.
-        self.declare_parameter('encoder_cpr', 2400)
+        # Arduino Mega encoder decoding: CHANGE on Channel A = 2x decoding.
+        # A 600 PPR encoder yields 1200 counts/rev.  If using the RPi pigpio
+        # encoder_node (full 4x decoding), set encoder_cpr=2400 instead.
+        self.declare_parameter('encoder_cpr', 1200,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_INTEGER,
+                description='Encoder counts per revolution (2x Arduino / 4x RPi)'))
         # Enable/disable publishing odom from encoder data.  When False, the
         # encoder parser still runs (for logging), but no Odometry messages or
         # TF transforms are published.  Use False when running rf2o or dummy_odom
         # as the odom source to avoid conflicting odom→base_link transforms.
-        self.declare_parameter('publish_odom', False)
+        self.declare_parameter('publish_odom', False,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_BOOL,
+                description='Enable encoder-based odometry publishing'))
+        # Separate TF broadcast control.  When using robot_localization EKF,
+        # the EKF node publishes the odom→base_link TF.  If this driver also
+        # broadcasts it, both nodes fight over the TF tree, causing the robot's
+        # pose to flicker between the two estimates and breaking Nav2.
+        # Set publish_odom=True + publish_odom_tf=False to feed raw encoder
+        # odometry to the EKF without conflicting TF broadcasts.
+        self.declare_parameter('publish_odom_tf', True,
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_BOOL,
+                description='Broadcast odom→base_link TF (disable when EKF is active)'))
+        # Frame names for the IMU half of the unified ODOM packet.  The BNO055
+        # is mounted on the chassis next to the Arduino; the URDF should
+        # define an `imu_link` joint, but the static_transform_publisher in
+        # rpi_launch.py also covers the case where the URDF is not loaded.
+        self.declare_parameter('imu_frame_id', 'imu_link',
+            ParameterDescriptor(
+                type=ParameterType.PARAMETER_STRING,
+                description='frame_id stamped on sensor_msgs/Imu messages'))
 
-        # Read parameters — type-cast every numeric value to guard against
-        # LaunchConfiguration passing strings.  ROS 2 launch substitutions
-        # always resolve to strings; without explicit casts, rclpy may throw
-        # ParameterException or silently store the wrong type.
-        self.serial_port = str(self.get_parameter('serial_port').value)
-        self.baud_rate = int(self.get_parameter('baud_rate').value)
-        self.wheel_radius = float(self.get_parameter('wheel_radius').value)
-        self.robot_width = float(self.get_parameter('robot_width').value)
-        self.robot_length = float(self.get_parameter('robot_length').value)
-        self.max_pwm = int(self.get_parameter('max_motor_pwm').value)
-        self.max_wheel_speed = float(self.get_parameter('max_wheel_speed').value)
-        self.cmd_vel_timeout = float(self.get_parameter('cmd_vel_timeout').value)
-        self.serial_timeout = float(self.get_parameter('serial_timeout').value)
-        self.invert_right = -1 if self.get_parameter('invert_right_side').value else 1
-        self.min_pwm = int(self.get_parameter('min_motor_pwm').value)
-        self.encoder_cpr = int(self.get_parameter('encoder_cpr').value)
-        self.publish_odom = bool(self.get_parameter('publish_odom').value)
+        # Read parameters — ParameterDescriptor guarantees correct types at
+        # declaration time, so the typed accessors below will never mismatch.
+        self.serial_port = self.get_parameter('serial_port').get_parameter_value().string_value
+        self.baud_rate = self.get_parameter('baud_rate').get_parameter_value().integer_value
+        self.wheel_radius = self.get_parameter('wheel_radius').get_parameter_value().double_value
+        self.robot_width = self.get_parameter('robot_width').get_parameter_value().double_value
+        self.robot_length = self.get_parameter('robot_length').get_parameter_value().double_value
+        self.max_pwm = self.get_parameter('max_motor_pwm').get_parameter_value().integer_value
+        self.max_wheel_speed = self.get_parameter('max_wheel_speed').get_parameter_value().double_value
+        self.cmd_vel_timeout = self.get_parameter('cmd_vel_timeout').get_parameter_value().double_value
+        self.serial_timeout = self.get_parameter('serial_timeout').get_parameter_value().double_value
+        self.invert_right = -1 if self.get_parameter('invert_right_side').get_parameter_value().bool_value else 1
+        self.min_pwm = self.get_parameter('min_motor_pwm').get_parameter_value().integer_value
+        self.encoder_cpr = self.get_parameter('encoder_cpr').get_parameter_value().integer_value
+        self.publish_odom = self.get_parameter('publish_odom').get_parameter_value().bool_value
+        self.publish_odom_tf = self.get_parameter('publish_odom_tf').get_parameter_value().bool_value
+        self.imu_frame_id = self.get_parameter('imu_frame_id').get_parameter_value().string_value
 
         # Half-widths for kinematics
         self.lx = self.robot_width / 2.0
@@ -98,7 +177,19 @@ class MecanumDriverNode(Node):
         # When disabled, rf2o_laser_odometry or dummy_odom provides the transform.
         self._odom_pub = self.create_publisher(Odometry, 'odom', 10)
         self._tf_broadcaster = TransformBroadcaster(self)
-        # Cumulative pose from forward kinematics integration
+
+        # ── IMU publisher (BNO055 via Arduino) ────────────────────────────
+        # The Arduino streams the BNO055 fused quaternion + raw gyro/accel in
+        # the same line as the encoder ticks, so the IMU and wheel-odom data
+        # share a single MCU-side acquisition timestamp.  We re-stamp with
+        # the ROS clock here so downstream consumers (slam_toolbox, Nav2,
+        # robot_localization EKF) see a coherent timeline across topics.
+        self._imu_pub = self.create_publisher(Imu, 'imu/data', 10)
+        # Cumulative pose from forward kinematics integration.
+        # Protected by _odom_lock because _update_odometry() is called from
+        # both the serial_reader thread (Arduino "E" lines) and the ROS
+        # executor thread (_on_encoder_position callback).
+        self._odom_lock = threading.Lock()
         self._odom_x = 0.0
         self._odom_y = 0.0
         self._odom_theta = 0.0
@@ -116,14 +207,18 @@ class MecanumDriverNode(Node):
             Twist, 'cmd_vel', self.cmd_vel_callback, 10)
 
         # ── Alternative encoder source: RPi encoder_node via ROS topic ────
-        # The Arduino Uno has no free pins for encoders (all 12 digital pins
-        # are used by motor drivers).  encoder_node.py on the RPi reads
-        # quadrature encoders via pigpio and publishes to /encoders/position
-        # as Float64MultiArray: [rad1, deg1, rad2, deg2, rad3, deg3, rad4, deg4].
+        # The Arduino Mega has 6 interrupt pins available for quadrature
+        # encoders (pins 18-21 + 2-3).  When USE_ENCODERS is defined in the
+        # Arduino firmware, encoder ticks arrive via serial "E" protocol.
+        # Alternatively, encoder_node.py on the RPi reads quadrature encoders
+        # via pigpio and publishes to /encoders/position as Float64MultiArray:
+        # [rad1, deg1, rad2, deg2, rad3, deg3, rad4, deg4].
         # This subscription converts those radians to equivalent tick counts
         # and feeds them into the same FK pipeline as the serial "E" protocol.
-        # Both sources can coexist — whichever arrives first initializes the
-        # baseline; subsequent readings from either source update odometry.
+        # WARNING: Do NOT run both Arduino serial encoders (USE_ENCODERS) and
+        # RPi encoder_node simultaneously — their tick counts are in different
+        # coordinate systems, causing massive delta jumps.  Use one or the
+        # other.  _odom_lock prevents data corruption but not logic errors.
         if self.publish_odom and self.encoder_cpr > 0:
             from std_msgs.msg import Float64MultiArray as F64MA
             self._encoder_pos_sub = self.create_subscription(
@@ -146,8 +241,8 @@ class MecanumDriverNode(Node):
         self._serial_flush_timer = self.create_timer(
             1.0 / 20.0, self._flush_serial)  # 20 Hz
 
-        # Watchdog timer
-        self.last_cmd_time = time.time()
+        # Watchdog timer — uses ROS clock for sim-time compatibility
+        self.last_cmd_time = self.get_clock().now()
         self.is_moving = False
         # Redundant stop counter: send stop N times after timeout to survive
         # dropped USB serial packets, then stop spamming.  10 ticks × 0.1s = 1s
@@ -190,14 +285,14 @@ class MecanumDriverNode(Node):
                 self.get_logger().info('Serial connection established')
                 return
             except serial.SerialException as e:
-                self.get_logger().warn(
+                self.get_logger().warning(
                     f'Serial attempt {attempt+1}/{max_retries} failed: {e}')
                 time.sleep(1.0)
         self.get_logger().error(
             'Could not open serial port! Motors will not work.')
 
     def cmd_vel_callback(self, msg: Twist):
-        self.last_cmd_time = time.time()
+        self.last_cmd_time = self.get_clock().now()
         self.is_moving = True
         # Cancel any pending watchdog stop commands — a new velocity command
         # supersedes the previous timeout.  Without this, the stale counter
@@ -347,7 +442,8 @@ class MecanumDriverNode(Node):
                 pass
 
     def watchdog_callback(self):
-        if time.time() - self.last_cmd_time > self.cmd_vel_timeout:
+        elapsed = (self.get_clock().now() - self.last_cmd_time).nanoseconds / 1e9
+        if elapsed > self.cmd_vel_timeout:
             if self.is_moving:
                 # Arm the redundant stop counter on transition from moving→stopped.
                 # 10 ticks × 0.1s = 1s of stop commands — enough to survive
@@ -364,37 +460,73 @@ class MecanumDriverNode(Node):
                 self._stop_sends_remaining -= 1
 
     def _parse_encoder_line(self, line: str) -> bool:
-        """Parse an encoder feedback line and compute odometry.
+        """Parse a telemetry line from the Arduino.
 
         ── Serial Protocol Contract ──────────────────────────────────────
-        The Arduino firmware MUST send encoder tick counts in this format:
+        Two telemetry packet flavours are accepted:
 
-            E <fl_ticks> <fr_ticks> <rl_ticks> <rr_ticks>\\n
+        (1) Unified ODOM packet — Arduino has the BNO055 IMU on I2C:
 
-        Where:
-          - "E" is the message type prefix (Encoder)
-          - Each value is a signed integer: cumulative encoder ticks since
-            Arduino boot (or last reset).  Signed because mecanum wheels
-            can rotate in either direction.
-          - Fields are space-separated, terminated by newline.
-          - Example: "E 1024 -980 1015 -1002\\n"
+            ODOM <fl> <fr> <rl> <rr>
+                 <qw> <qx> <qy> <qz>
+                 <gx> <gy> <gz>   # deg/s
+                 <ax> <ay> <az>   # m/s^2  (linear accel WITH gravity)
+
+        (2) Legacy encoder-only packet — bench setup without IMU:
+
+            E <fl> <fr> <rl> <rr>
+
+        Each tick value is a signed integer: cumulative encoder ticks since
+        Arduino boot.  IMU fields are floats; the gyro vector is converted
+        from deg/s to rad/s before publishing because sensor_msgs/Imu
+        expects SI radians.
 
         Other recognized prefixes:
-          - "OK" — command acknowledgment (filtered before reaching here)
-          - "ERR <msg>" — Arduino-side error (logged as warning)
+          - "OK"     — command acknowledgment (filtered before reaching here)
+          - "ERR …"  — Arduino-side error (logged as warning)
 
-        Returns True if the line was recognized and parsed, False otherwise.
+        Returns True if the line was recognised (whether or not the data
+        was usable), False if the line should fall through to debug logging.
         """
         parts = line.split()
         if not parts:
             return False
 
+        # ── Unified encoder + IMU telemetry ───────────────────────────────
+        if parts[0] == 'ODOM' and len(parts) == 15:
+            try:
+                ticks = (int(parts[1]), int(parts[2]),
+                         int(parts[3]), int(parts[4]))
+                qw, qx, qy, qz = (float(parts[5]), float(parts[6]),
+                                   float(parts[7]), float(parts[8]))
+                gx, gy, gz = (float(parts[9]), float(parts[10]),
+                               float(parts[11]))
+                ax, ay, az = (float(parts[12]), float(parts[13]),
+                               float(parts[14]))
+            except ValueError:
+                self.get_logger().warning(f'Malformed ODOM line: {line}')
+                return True
+
+            # Unified ROS timestamp — every consumer (slam_toolbox, Nav2,
+            # robot_localization) sees encoder and IMU samples with the
+            # exact same stamp, eliminating fusion-time mismatch errors.
+            stamp = self.get_clock().now().to_msg()
+
+            self._last_encoder_ticks = ticks
+            self._publish_imu(stamp, qw, qx, qy, qz, gx, gy, gz, ax, ay, az)
+
+            if self.publish_odom and self.encoder_cpr > 0:
+                self._update_odometry(ticks)
+
+            return True
+
+        # ── Legacy encoder-only fallback (no BNO055) ──────────────────────
         if parts[0] == 'E' and len(parts) == 5:
             try:
                 ticks = (int(parts[1]), int(parts[2]),
                          int(parts[3]), int(parts[4]))
             except ValueError:
-                self.get_logger().warn(f'Malformed encoder line: {line}')
+                self.get_logger().warning(f'Malformed encoder line: {line}')
                 return True  # recognized prefix, just bad data
 
             self._last_encoder_ticks = ticks
@@ -409,10 +541,61 @@ class MecanumDriverNode(Node):
             return True
 
         if parts[0] == 'ERR':
-            self.get_logger().warn(f'Arduino error: {line}')
+            self.get_logger().warning(f'Arduino error: {line}')
             return True
 
         return False
+
+    def _publish_imu(self, stamp, qw, qx, qy, qz, gx_dps, gy_dps, gz_dps,
+                     ax, ay, az):
+        """Publish a sensor_msgs/Imu from BNO055 fields in an ODOM packet.
+
+        The BNO055 outputs a fused orientation quaternion plus raw gyro
+        (deg/s) and linear acceleration (m/s^2, gravity-included).  We
+        convert the gyro to rad/s and stamp the message with the unified
+        ROS clock value captured at parse time.
+
+        Covariance matrices: the BNO055 datasheet does not specify formal
+        per-axis covariance, so we use empirically-reasonable diagonal
+        values.  All-zero matrices would make robot_localization treat the
+        sensor as perfectly accurate, which is dangerous.
+        """
+        msg = Imu()
+        msg.header.stamp = stamp
+        msg.header.frame_id = self.imu_frame_id
+
+        msg.orientation.x = qx
+        msg.orientation.y = qy
+        msg.orientation.z = qz
+        msg.orientation.w = qw
+
+        msg.angular_velocity.x = gx_dps * _DEG2RAD
+        msg.angular_velocity.y = gy_dps * _DEG2RAD
+        msg.angular_velocity.z = gz_dps * _DEG2RAD
+
+        msg.linear_acceleration.x = ax
+        msg.linear_acceleration.y = ay
+        msg.linear_acceleration.z = az
+
+        # Diagonal covariances.  Numbers are conservative but non-zero so
+        # downstream EKF/UKF nodes do not divide by zero on this source.
+        msg.orientation_covariance = [
+            0.01, 0.0,  0.0,
+            0.0,  0.01, 0.0,
+            0.0,  0.0,  0.01,
+        ]
+        msg.angular_velocity_covariance = [
+            0.005, 0.0,   0.0,
+            0.0,   0.005, 0.0,
+            0.0,   0.0,   0.005,
+        ]
+        msg.linear_acceleration_covariance = [
+            0.05, 0.0,  0.0,
+            0.0,  0.05, 0.0,
+            0.0,  0.0,  0.05,
+        ]
+
+        self._imu_pub.publish(msg)
 
     def _update_odometry(self, ticks: tuple):
         """Apply Mecanum forward kinematics and publish odom + TF.
@@ -420,99 +603,143 @@ class MecanumDriverNode(Node):
         Converts delta encoder ticks → wheel angular displacements →
         robot-frame velocity (vx, vy, wz) → integrated pose (x, y, θ).
 
-        Called from the serial_reader thread.  Publishing from a non-executor
-        thread is safe in rclpy — publishers are thread-safe.  The only shared
-        state is self._odom_{x,y,theta} and self._prev_encoder_ticks, which are
-        only accessed from this thread (serial_reader), so no lock is needed.
+        Called from BOTH the serial_reader thread (Arduino "E" lines) and the
+        ROS executor thread (_on_encoder_position callback).  All shared
+        odometry state is guarded by _odom_lock.  Publishing from a
+        non-executor thread is safe in rclpy — publishers are thread-safe.
 
         Mecanum Forward Kinematics:
           vx = (R/4)( ωfl + ωfr + ωrl + ωrr)
           vy = (R/4)(-ωfl + ωfr + ωrl - ωrr)
           wz = (R/4(lx+ly))(-ωfl + ωfr - ωrl + ωrr)
         """
-        now = time.monotonic()
+        ros_now = self.get_clock().now()
+        now_sec = ros_now.nanoseconds / 1e9
 
-        # First reading — just store the baseline, can't compute deltas yet
-        if self._prev_encoder_ticks is None:
+        with self._odom_lock:
+            # First reading — just store the baseline, can't compute deltas yet
+            if self._prev_encoder_ticks is None:
+                self._prev_encoder_ticks = ticks
+                self._last_encoder_time = now_sec
+                return
+
+            dt = now_sec - self._last_encoder_time
+            if dt <= 0:
+                return
+            self._last_encoder_time = now_sec
+
+            # Delta ticks since last reading.
+            # Right-side motors are physically mirrored, so their encoders
+            # report negated ticks when invert_right_side is active.  Apply
+            # the same inversion used in the inverse kinematics (cmd_vel→PWM)
+            # so forward kinematics (encoder→odometry) stays consistent.
+            d_fl = ticks[0] - self._prev_encoder_ticks[0]
+            d_fr = (ticks[1] - self._prev_encoder_ticks[1]) * self.invert_right
+            d_rl = ticks[2] - self._prev_encoder_ticks[2]
+            d_rr = (ticks[3] - self._prev_encoder_ticks[3]) * self.invert_right
             self._prev_encoder_ticks = ticks
-            self._last_encoder_time = now
-            return
 
-        dt = now - self._last_encoder_time
-        if dt <= 0:
-            return
-        self._last_encoder_time = now
+            # Convert tick deltas to wheel angular displacement (radians)
+            # Each tick = (2π / encoder_cpr) radians
+            rad_per_tick = (2.0 * math.pi) / self.encoder_cpr
+            w_fl = d_fl * rad_per_tick
+            w_fr = d_fr * rad_per_tick
+            w_rl = d_rl * rad_per_tick
+            w_rr = d_rr * rad_per_tick
 
-        # Delta ticks since last reading
-        d_fl = ticks[0] - self._prev_encoder_ticks[0]
-        d_fr = ticks[1] - self._prev_encoder_ticks[1]
-        d_rl = ticks[2] - self._prev_encoder_ticks[2]
-        d_rr = ticks[3] - self._prev_encoder_ticks[3]
-        self._prev_encoder_ticks = ticks
+            # Mecanum forward kinematics: wheel displacements → robot displacement
+            R = self.wheel_radius
+            k = self.lx + self.ly  # half-width + half-length
 
-        # Convert tick deltas to wheel angular displacement (radians)
-        # Each tick = (2π / encoder_cpr) radians
-        rad_per_tick = (2.0 * math.pi) / self.encoder_cpr
-        w_fl = d_fl * rad_per_tick
-        w_fr = d_fr * rad_per_tick
-        w_rl = d_rl * rad_per_tick
-        w_rr = d_rr * rad_per_tick
+            # Robot-frame displacement (meters, radians)
+            dx_robot = (R / 4.0) * (w_fl + w_fr + w_rl + w_rr)
+            dy_robot = (R / 4.0) * (-w_fl + w_fr + w_rl - w_rr)
+            dtheta = (R / (4.0 * k)) * (-w_fl + w_fr - w_rl + w_rr)
 
-        # Mecanum forward kinematics: wheel displacements → robot displacement
-        R = self.wheel_radius
-        k = self.lx + self.ly  # half-width + half-length
+            # Integrate into world-frame pose
+            # Use midpoint theta for better accuracy during rotation
+            mid_theta = self._odom_theta + dtheta / 2.0
+            cos_t = math.cos(mid_theta)
+            sin_t = math.sin(mid_theta)
+            self._odom_x += dx_robot * cos_t - dy_robot * sin_t
+            self._odom_y += dx_robot * sin_t + dy_robot * cos_t
+            self._odom_theta += dtheta
 
-        # Robot-frame displacement (meters, radians)
-        dx_robot = (R / 4.0) * (w_fl + w_fr + w_rl + w_rr)
-        dy_robot = (R / 4.0) * (-w_fl + w_fr + w_rl - w_rr)
-        dtheta = (R / (4.0 * k)) * (-w_fl + w_fr - w_rl + w_rr)
+            # Robot-frame velocities (for Odometry twist)
+            vx = dx_robot / dt
+            vy = dy_robot / dt
+            wz = dtheta / dt
 
-        # Integrate into world-frame pose
-        # Use midpoint theta for better accuracy during rotation
-        mid_theta = self._odom_theta + dtheta / 2.0
-        cos_t = math.cos(mid_theta)
-        sin_t = math.sin(mid_theta)
-        self._odom_x += dx_robot * cos_t - dy_robot * sin_t
-        self._odom_y += dx_robot * sin_t + dy_robot * cos_t
-        self._odom_theta += dtheta
+            # Snapshot pose for publishing (still under lock)
+            odom_x = self._odom_x
+            odom_y = self._odom_y
+            odom_theta = self._odom_theta
 
-        # Robot-frame velocities (for Odometry twist)
-        vx = dx_robot / dt
-        vy = dy_robot / dt
-        wz = dtheta / dt
+        # ── Publish outside lock (publishers are thread-safe) ─────────
+        ros_stamp = ros_now.to_msg()
 
-        # Publish odom→base_link TF
-        ros_now = self.get_clock().now().to_msg()
+        # Compute quaternion from yaw (2D robot, roll=pitch=0)
+        half_theta = odom_theta / 2.0
+        odom_quat = Quaternion()
+        odom_quat.x = 0.0
+        odom_quat.y = 0.0
+        odom_quat.z = math.sin(half_theta)
+        odom_quat.w = math.cos(half_theta)
 
-        t = TransformStamped()
-        t.header.stamp = ros_now
-        t.header.frame_id = 'odom'
-        t.child_frame_id = 'base_link'
-        t.transform.translation.x = self._odom_x
-        t.transform.translation.y = self._odom_y
-        t.transform.translation.z = 0.0
-        # Quaternion from yaw (2D robot, roll=pitch=0)
-        half_theta = self._odom_theta / 2.0
-        t.transform.rotation.x = 0.0
-        t.transform.rotation.y = 0.0
-        t.transform.rotation.z = math.sin(half_theta)
-        t.transform.rotation.w = math.cos(half_theta)
-        self._tf_broadcaster.sendTransform(t)
+        # Broadcast odom→base_link TF only if publish_odom_tf is True.
+        # When the EKF is active, it owns this transform — broadcasting
+        # from both nodes causes TF tree flickering that breaks Nav2.
+        if self.publish_odom_tf:
+            t = TransformStamped()
+            t.header.stamp = ros_stamp
+            t.header.frame_id = 'odom'
+            t.child_frame_id = 'base_link'
+            t.transform.translation.x = odom_x
+            t.transform.translation.y = odom_y
+            t.transform.translation.z = 0.0
+            t.transform.rotation = odom_quat
+            self._tf_broadcaster.sendTransform(t)
 
         # Publish nav_msgs/Odometry
         odom_msg = Odometry()
-        odom_msg.header.stamp = ros_now
+        odom_msg.header.stamp = ros_stamp
         odom_msg.header.frame_id = 'odom'
         odom_msg.child_frame_id = 'base_link'
         # Pose
-        odom_msg.pose.pose.position.x = self._odom_x
-        odom_msg.pose.pose.position.y = self._odom_y
+        odom_msg.pose.pose.position.x = odom_x
+        odom_msg.pose.pose.position.y = odom_y
         odom_msg.pose.pose.position.z = 0.0
-        odom_msg.pose.pose.orientation = t.transform.rotation
+        odom_msg.pose.pose.orientation = odom_quat
         # Twist (robot-frame velocities)
         odom_msg.twist.twist.linear.x = vx
         odom_msg.twist.twist.linear.y = vy
         odom_msg.twist.twist.angular.z = wz
+
+        # Covariance matrices (6×6, row-major).  robot_localization's EKF
+        # interprets all-zero covariance as infinite certainty, producing a
+        # singular matrix during Kalman gain inversion.  Provide baseline
+        # uncertainty for the 2D states we actually observe (x, y, yaw).
+        # Unobserved states (z, roll, pitch) get a large value so the EKF
+        # effectively ignores them from this source.
+        #   Index map: 0=x, 7=y, 14=z, 21=roll, 28=pitch, 35=yaw
+        pose_cov = [0.0] * 36
+        pose_cov[0] = 0.01    # x
+        pose_cov[7] = 0.01    # y
+        pose_cov[14] = 1e6    # z        (unobserved — large uncertainty)
+        pose_cov[21] = 1e6    # roll     (unobserved)
+        pose_cov[28] = 1e6    # pitch    (unobserved)
+        pose_cov[35] = 0.05   # yaw
+        odom_msg.pose.covariance = pose_cov
+
+        twist_cov = [0.0] * 36
+        twist_cov[0] = 0.01   # vx
+        twist_cov[7] = 0.01   # vy
+        twist_cov[14] = 1e6   # vz       (unobserved)
+        twist_cov[21] = 1e6   # vroll    (unobserved)
+        twist_cov[28] = 1e6   # vpitch   (unobserved)
+        twist_cov[35] = 0.05  # vyaw
+        odom_msg.twist.covariance = twist_cov
+
         self._odom_pub.publish(odom_msg)
 
     def _on_encoder_position(self, msg):

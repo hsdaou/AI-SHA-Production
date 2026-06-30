@@ -1,4 +1,5 @@
 import os
+import re
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
@@ -121,7 +122,7 @@ class BrainNode(Node):
             r = requests.get(tags_url, timeout=5)
             models = [m['name'] for m in r.json().get('models', [])]
             if self.router_model not in models:
-                self.get_logger().warn(f'Router model {self.router_model} not found. Available: {models}')
+                self.get_logger().warning(f'Router model {self.router_model} not found. Available: {models}')
             else:
                 self.get_logger().info(f'Ollama OK. Model: {self.router_model}')
         except Exception as e:
@@ -134,9 +135,14 @@ class BrainNode(Node):
     # is locked (OLLAMA_NUM_PARALLEL=1 default).  A "Stop!" command would
     # hang until RAG finishes — unacceptable for physical safety.  These
     # keywords are routed to NAV immediately without touching Ollama.
-    _EMERGENCY_STOP_WORDS = frozenset([
-        'stop', 'halt', 'freeze', 'shut up', 'emergency',
-    ])
+    #
+    # Word-boundary regex prevents false positives like "bus stop" or
+    # "don't stop the music".  Additionally, only short utterances
+    # (≤ 4 words) qualify — genuine panic commands are brief.
+    _EMERGENCY_STOP_PATTERNS = [
+        re.compile(r'\b' + w + r'\b') for w in
+        ['stop', 'halt', 'freeze', 'shut up', 'emergency']
+    ]
 
     def classify_intent(self, text):
         """Classify user intent — LLM first, keywords as fallback.
@@ -153,8 +159,9 @@ class BrainNode(Node):
         """
         # ── Emergency pre-emption: bypass Ollama entirely ─────────────────
         text_lower = text.lower().strip()
-        if any(word in text_lower for word in self._EMERGENCY_STOP_WORDS):
-            self.get_logger().warn(f'EMERGENCY OVERRIDE -> NAV (stop): "{text[:40]}"')
+        word_count = len(text_lower.split())
+        if word_count <= 4 and any(p.search(text_lower) for p in self._EMERGENCY_STOP_PATTERNS):
+            self.get_logger().warning(f'EMERGENCY OVERRIDE -> NAV (stop): "{text[:40]}"')
             return {"intent": "NAV"}
 
         # Proactively expire stale pending questions so a hung admin_node
@@ -170,7 +177,7 @@ class BrainNode(Node):
                              if now - ts > self._pending_timeout]
                 for qid in stale_ids:
                     stale_ts, stale_q = q_dict.pop(qid)
-                    self.get_logger().warn(
+                    self.get_logger().warning(
                         f'Proactive expiry of pending [{q_name}] '
                         f'({now - stale_ts:.0f}s old): {stale_q[:60]}'
                     )
@@ -279,7 +286,7 @@ JSON:"""
             if intent in ("ADMIN", "NAV", "ACTION"):
                 self.get_logger().info(f'LLM classified -> {intent}')
                 return {"intent": intent}
-            self.get_logger().warn(f'LLM returned unknown intent "{intent}", defaulting to ADMIN')
+            self.get_logger().warning(f'LLM returned unknown intent "{intent}", defaulting to ADMIN')
         except requests.ConnectionError:
             self.get_logger().error('Ollama connection failed')
         except requests.Timeout:
@@ -292,7 +299,7 @@ JSON:"""
                 if m and m.group(1) in ("ADMIN", "NAV", "ACTION"):
                     self.get_logger().info(f'Regex fallback -> {m.group(1)}')
                     return {"intent": m.group(1)}
-                self.get_logger().warn(
+                self.get_logger().warning(
                     f'Regex fallback also failed on: {cleaned[:80]}'
                 )
 
@@ -317,25 +324,43 @@ JSON:"""
     def _handle_response(self, msg_data: str, pending_dict: dict, intent_name: str):
         """Pair an incoming response with its pending question via UUID lookup.
 
-        Each query gets a unique UUID when routed.  The responding node
-        includes the same UUID, allowing direct dict lookup instead of
-        FIFO matching.  This prevents a delayed Ollama response (arriving
-        after timeout expiry) from being paired with a newer, unrelated
-        question — the "FIFO desync" race condition.
+        Supports two message formats:
 
-        Backward compatible: if the response has no query_id (e.g. older
-        node version), falls back to oldest-entry matching.
+        1. **Streaming** (sentence-boundary chunks from admin_node):
+           - ``is_final=False``: ``chunk`` contains a sentence to speak
+             immediately.  History and pending state are NOT touched.
+           - ``is_final=True``:  ``answer`` contains the full concatenated
+             response for history recording.  ``chunk`` is empty — do NOT
+             speak this message (sentences were already spoken).
+
+        2. **Legacy** (single complete response, no ``is_final`` key):
+           Treated as a final response — spoken and recorded in one step.
+           Backward compatible with older node versions.
         """
-        # Parse response — expect JSON {"answer": ..., "query_id": ...}
+        # Parse response — expect JSON with streaming or legacy format
+        is_streaming = False
         try:
             payload = json.loads(msg_data)
+            chunk = payload.get('chunk', '').strip()
             answer = payload.get('answer', '').strip()
             query_id = payload.get('query_id', '')
+            is_final = payload.get('is_final', True)  # Legacy msgs default final
+            # 'is_final' key present → streaming protocol; absent → legacy
+            is_streaming = 'is_final' in payload
         except (json.JSONDecodeError, AttributeError):
             # Fallback: treat entire message as the answer (backward compat)
+            chunk = ''
             answer = msg_data.strip()
             query_id = ''
+            is_final = True
 
+        # ── Streaming chunk: speak immediately, don't touch history ──────
+        if not is_final:
+            if chunk:
+                self._say(chunk)
+            return
+
+        # ── Final payload: record history, pop pending UUID ──────────────
         if not answer:
             return
 
@@ -346,7 +371,7 @@ JSON:"""
                          if now - ts > self._pending_timeout]
             for qid in stale_ids:
                 stale_ts, stale_q = pending_dict.pop(qid)
-                self.get_logger().warn(
+                self.get_logger().warning(
                     f'Expired stale pending [{intent_name}] '
                     f'({now - stale_ts:.0f}s old): {stale_q[:60]}'
                 )
@@ -360,13 +385,16 @@ JSON:"""
                 oldest_id = min(pending_dict, key=lambda k: pending_dict[k][0])
                 _, matched_question = pending_dict.pop(oldest_id)
                 self.history.append((matched_question, answer))
-                self.get_logger().warn(
+                self.get_logger().warning(
                     f'[{intent_name}] response without query_id — '
                     f'paired with oldest pending question (FIFO fallback)'
                 )
 
-        # Forward to /robot_speech for TTS + WhatsApp
-        self._say(answer)
+        # Speak the answer — but only for legacy (non-streaming) responses.
+        # Streaming final payloads (is_streaming=True) have chunk="" because
+        # each sentence was already spoken individually via _say(chunk) above.
+        if not is_streaming:
+            self._say(answer)
 
     def _on_admin_response(self, msg):
         """Handle RAG response from admin_node (/admin_response)."""
@@ -410,7 +438,7 @@ JSON:"""
         try:
             self._route_queue.put_nowait(user_input)
         except queue.Full:
-            self.get_logger().warn(
+            self.get_logger().warning(
                 f'Routing queue full — dropping: {user_input[:60]}'
             )
 
@@ -462,24 +490,20 @@ JSON:"""
             self.admin_pub.publish(out_msg)
 
         elif intent == "NAV":
-            # ── NAV intent — currently a placeholder ────────────────────────
-            # Phase 1 architecture (not yet implemented):
-            #   1. A "waypoint_resolver" node subscribes to /nav_goal (String),
-            #      maps natural-language locations ("admin office", "cafeteria")
-            #      to XY coordinates via a nav_locations.json lookup table.
-            #   2. The resolver sends a NavigateToPose action goal to nav2,
-            #      which handles path planning and publishes /cmd_vel.
-            #   3. /cmd_vel reaches mecanum_driver on the Pi 4b via FastDDS.
-            # Until waypoint_resolver + nav2 are integrated, NAV requests
-            # get a polite placeholder response.  The /nav_goal topic is
-            # published for future subscribers to consume.
+            # ── NAV intent → waypoint_resolver_node ───────────────────────
+            # Architecture:
+            #   1. brain_node publishes user_input to /nav_goal (String).
+            #   2. waypoint_resolver_node subscribes, resolves the location
+            #      name to map coordinates via nav_locations.json, and sends
+            #      a NavigateToPose action goal to Nav2.
+            #   3. Nav2 plans and publishes /cmd_vel → mecanum_driver (Pi 4b).
+            #   4. waypoint_resolver publishes speech feedback on /robot_speech
+            #      ("Navigating to...", "I don't know where...", "Arrived at...").
+            # brain_node does NOT publish its own speech here — the resolver
+            # handles all user feedback to avoid duplicate/conflicting messages.
             self.get_logger().info("Route -> NAV")
             out_msg.data = user_input
             self.nav_pub.publish(out_msg)
-            response = "Navigation is not yet available. I'll be able to move around soon."
-            self._say(response)
-            with self._history_lock:
-                self.history.append((user_input, response))
 
         else:
             self.get_logger().info("Route -> ACTION")

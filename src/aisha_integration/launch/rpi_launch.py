@@ -100,10 +100,17 @@ def generate_launch_description():
         #   'dummy'  — identity TF (odom=base_link at all times).  SLAM relies
         #              entirely on scan-matching, which works for slow mapping
         #              but shears the map under fast Mecanum movement.
-        #   'encoder' — encoder-based odom from mecanum_driver_node (set
-        #               publish_odom: true in mecanum_params.yaml).  Best
-        #               accuracy when the wheel-radius / track-width calibration
-        #               is trusted.
+        #   'encoder' — encoder-based odom from mecanum_driver_node, which
+        #               owns the odom→base_link TF directly (publish_odom and
+        #               publish_odom_tf both forced true).  Best raw accuracy
+        #               when the wheel-radius / track-width calibration is
+        #               trusted, but no IMU heading correction.
+        #   'ekf'     — robot_localization EKF fuses encoder /odom + IMU
+        #               /imu/data into a smooth odom→base_link (config:
+        #               robot_bringup/config/ekf.yaml).  The driver publishes
+        #               /odom but yields TF ownership to the EKF
+        #               (publish_odom=true, publish_odom_tf=false, set below).
+        #               Requires: sudo apt install ros-humble-robot-localization
         DeclareLaunchArgument('odom_source',         default_value='laser'),
         # ── Audio / display args ─────────────────────────────────────────
         DeclareLaunchArgument('enable_display',      default_value='true'),
@@ -123,6 +130,21 @@ def generate_launch_description():
 
         def arg(name):
             return LaunchConfiguration(name).perform(context)
+
+        # Odometry source decides who owns the odom→base_link TF, which in
+        # turn decides how mecanum_driver_node is configured (below).  Compute
+        # it once here so both the driver params and the SLAM block agree.
+        odom_source = arg('odom_source')
+        if odom_source == 'ekf':
+            # EKF owns the TF: driver emits /odom but not the transform.
+            mecanum_odom_overrides = {'publish_odom': True, 'publish_odom_tf': False}
+        elif odom_source == 'encoder':
+            # Driver owns the TF directly.
+            mecanum_odom_overrides = {'publish_odom': True, 'publish_odom_tf': True}
+        else:
+            # laser/dummy: another node owns odom; leave the YAML defaults
+            # (publish_odom: false) untouched.
+            mecanum_odom_overrides = {}
 
         nodes = []
         event_handlers = []
@@ -180,6 +202,8 @@ def generate_launch_description():
                 {
                     'serial_port': arg('arduino_serial_port'),
                     'baud_rate': int(arg('arduino_baud_rate')),
+                    # Encoder-odom / TF ownership depends on odom_source.
+                    **mecanum_odom_overrides,
                 },
             ],
         )
@@ -220,8 +244,6 @@ def generate_launch_description():
         # AI-only and so SLAM consumes /scan from a local DDS endpoint
         # rather than crossing the network.
         if arg('enable_slam') == 'true':
-            odom_source = arg('odom_source')
-
             if odom_source == 'laser':
                 # rf2o_laser_odometry: estimates odom→base_link from
                 # consecutive /scan frames (wall-shift matching).  Much
@@ -256,9 +278,29 @@ def generate_launch_description():
                 )
                 nodes.append(dummy_node)
                 event_handlers.append(_exit_logger(dummy_node, 'dummy_odom_publisher'))
+            elif odom_source == 'ekf':
+                # robot_localization EKF fuses encoder /odom + IMU /imu/data
+                # into a smooth, drift-corrected odom→base_link at 50 Hz.
+                # The driver was set to publish_odom=true / publish_odom_tf=false
+                # above, so the EKF is the sole odom→base_link broadcaster.
+                # Install: sudo apt install ros-humble-robot-localization
+                ekf_node = Node(
+                    package='robot_localization',
+                    executable='ekf_node',
+                    name='ekf_filter_node',
+                    output='screen',
+                    parameters=[
+                        PathJoinSubstitution([
+                            FindPackageShare('robot_bringup'),
+                            'config', 'ekf.yaml',
+                        ])
+                    ],
+                )
+                nodes.append(ekf_node)
+                event_handlers.append(_exit_logger(ekf_node, 'ekf_filter_node'))
             # When odom_source=='encoder' the mecanum_driver_node itself
-            # owns odom→base_link (set publish_odom: true in
-            # mecanum_params.yaml), so no fallback node is needed.
+            # owns odom→base_link (publish_odom_tf=true, set above), so no
+            # separate odometry node is needed.
 
             slam_node = Node(
                 package='slam_toolbox',
