@@ -59,3 +59,27 @@ colcon build            # NOT --symlink-install (see build_ros.sh)
 source install/setup.bash
 colcon test && colcon test-result --verbose
 ```
+
+## Handoff — continuing on the RTX 5080 workstation
+
+State: this is PR #1 (`merge/best-of-three`) — a local-only, no-farming, 13-package
+workspace. **Not yet `colcon build`/`test`'d.**
+
+Remaining job is a **reconciliation pass**: the local "AI-SHA Reimagined" tree is
+*ahead* of this merge in two packages (audit-confirmed), so this merge would
+otherwise regress them:
+
+- `mecanum_driver` — local's node (815 lines) + Arduino firmware (395 lines) beat
+  this merge's Ahmed-sourced versions (588 / 145). Reconcile **toward local**.
+- `aisha_brain` — local has ~140 lines in `admin_node.py` + ~96 in
+  `build_knowledge.py` not present here (parallel evolution). 3-way reconcile.
+- Also unique to local: `.env.example`, `config/fastdds_env.sh`,
+  `mecanum_driver/scripts/arduino_mega.rules`, fastdds edits, `campus-map.md`.
+
+Local's ahead code is backed up at **hsdaou/aisha-integration**, branch
+**`backup/local-wip-2026-06-29`**.
+
+Steps: (1) clone both repos; (2) reconcile `mecanum_driver` + `aisha_brain` toward
+local + fold the unique files in; (3) `colcon build` (NOT `--symlink-install`) +
+`colcon test`; (4) wire `robot_bringup` launches for EKF/encoder-odom/sensors
+(configs already present); (5) update this PR.
