@@ -67,16 +67,23 @@ Humble**). The 5080 workstation is Ubuntu 24.04 (native Jazzy). Build/test in a
 bug to fix.
 
 ### Still open
-* **CI** — add a `colcon test` GitHub Action (none exists in-tree). Note the
-  bare image needs `aisha_brain/requirements.txt` installed for its pytest suite.
+* **CI** — add a `colcon test` GitHub Action (none exists in-tree). The runner
+  must `pip install -r src/aisha_brain/requirements.txt` + `rosdep install`, or
+  the brain pytest suite errors on missing `requests`/etc. Tracked as a GitHub
+  issue.
 * **Duplicate STT path** — `stt_node` exists both as a standalone package and as a
   node inside `aisha_brain`; confirm which is the live one.
-* **Doc debt** — README/ADR say the gemma3 LLM router was removed for a
-  rule-based classifier, but `brain_node.classify_intent` is LLM-first
-  (gemma3:270m) with keyword *fallback* in both trees. Reconcile the docs.
-* **EKF + Nav2 without SLAM** — the `odom_source:=ekf` node currently lives
-  inside the `enable_slam` block, so it only runs with `enable_slam:=true`.
-  Lift it out if EKF odom is wanted for Nav2 without SLAM.
+
+### Resolved in follow-up (2026-06-30)
+* **Doc debt — done.** README and ADR 0001 now describe the intent router
+  correctly: **LLM-first (`gemma3:270m`) with a keyword fallback**. The ADR's
+  gemma3 "removal" wording was clarified to mean the runtime VRAM unload on
+  CONVERSING (the router is not deleted).
+* **EKF + Nav2 without SLAM — done.** The odom-source selection
+  (rf2o / dummy / ekf) was lifted out of the `enable_slam` block in
+  `aisha_integration/rpi_launch.py`; it now runs whenever odom is needed, so
+  `enable_slam:=false` (AMCL on a saved map) still gets a fused
+  `odom→base_link`. Only `slam_toolbox` remains gated by `enable_slam`.
 
 ## Build
 

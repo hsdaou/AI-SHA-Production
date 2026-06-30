@@ -18,7 +18,9 @@ knowledge base, **sees** (RealSense + YOLOv8), and is driven by voice — runnin
 - **Navigates & avoids obstacles** — Nav2 (mecanum-holonomic) + SLAM Toolbox on LD19
   LiDAR, with encoder odometry fused with the BNO055 IMU via an EKF.
 - **Listens** continuously (Whisper STT → `/speech/text`).
-- **Routes intent** (ADMIN / NAV / ACTION) with a deterministic **rule-based** classifier.
+- **Routes intent** (ADMIN / NAV / ACTION) with an **LLM-first router** (`gemma3:270m`
+  via Ollama) and a deterministic **keyword fallback** — the fallback also covers
+  routing while the router model is unloaded for VRAM during CONVERSING (see ADR 0001).
 - **Answers** school-admin questions from a RAG KB (ChromaDB + bge-small + `llama3.2:1b`
   via Ollama), streaming sentence-by-sentence; refuses out-of-scope/academic requests.
 - **Sees** (RealSense D435 + YOLOv8 TensorRT).

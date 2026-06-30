@@ -114,7 +114,9 @@ behaviour when no arbiter publishes. **Note:** the GPU path requires `llm_model=
 
 ### yolov8n / pause-only feasibility (2026-06-03) — NEGATIVE result
 
-After gemma3's removal (−0.84 GB) we re-tested whether the kill/respawn could be replaced
+After gemma3's runtime VRAM **unload** (−0.84 GB; the arbiter sets `keep_alive=0` on
+CONVERSING and the keyword fallback covers routing meanwhile — the LLM-first router itself
+is **not** removed) we re-tested whether the kill/respawn could be replaced
 by **pause-only** (keep YOLO resident, just stop inference), optionally helped by a smaller
 vision model. Built `yolov8n.engine` (FP16, 8.7 MB vs yolov8m 52.3 MB) and measured under
 the full stack:

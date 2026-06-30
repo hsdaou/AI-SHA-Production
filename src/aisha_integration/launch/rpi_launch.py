@@ -239,69 +239,76 @@ def generate_launch_description():
         )
         nodes.append(lidar_tf_node)
 
-        # ── SLAM Toolbox + odometry fallback ─────────────────────────────
-        # Both relocated here from the Jetson so the GPU board stays
-        # AI-only and so SLAM consumes /scan from a local DDS endpoint
-        # rather than crossing the network.
-        if arg('enable_slam') == 'true':
-            if odom_source == 'laser':
-                # rf2o_laser_odometry: estimates odom→base_link from
-                # consecutive /scan frames (wall-shift matching).  Much
-                # more accurate than dummy_odom for SLAM — the scan
-                # matcher no longer fights a "robot is stationary" prior
-                # while LiDAR sees walls moving.
-                # Install: sudo apt install ros-humble-rf2o-laser-odometry
-                rf2o_node = Node(
-                    package='rf2o_laser_odometry',
-                    executable='rf2o_laser_odometry_node',
-                    name='rf2o_laser_odometry',
-                    output='screen',
-                    parameters=[{
-                        'laser_scan_topic': '/scan',
-                        'odom_topic': '/odom_rf2o',
-                        'publish_tf': True,
-                        'base_frame_id': 'base_link',
-                        'odom_frame_id': 'odom',
-                        'freq': 20.0,
-                    }],
-                )
-                nodes.append(rf2o_node)
-                event_handlers.append(_exit_logger(rf2o_node, 'rf2o_laser_odometry'))
-            elif odom_source == 'dummy':
-                # Identity odom→base_link at 50 Hz so slam_toolbox always
-                # has a TF to operate on.  Shears the map under fast moves.
-                dummy_node = Node(
-                    package='robot_bringup',
-                    executable='dummy_odom',
-                    name='dummy_odom_publisher',
-                    output='screen',
-                )
-                nodes.append(dummy_node)
-                event_handlers.append(_exit_logger(dummy_node, 'dummy_odom_publisher'))
-            elif odom_source == 'ekf':
-                # robot_localization EKF fuses encoder /odom + IMU /imu/data
-                # into a smooth, drift-corrected odom→base_link at 50 Hz.
-                # The driver was set to publish_odom=true / publish_odom_tf=false
-                # above, so the EKF is the sole odom→base_link broadcaster.
-                # Install: sudo apt install ros-humble-robot-localization
-                ekf_node = Node(
-                    package='robot_localization',
-                    executable='ekf_node',
-                    name='ekf_filter_node',
-                    output='screen',
-                    parameters=[
-                        PathJoinSubstitution([
-                            FindPackageShare('robot_bringup'),
-                            'config', 'ekf.yaml',
-                        ])
-                    ],
-                )
-                nodes.append(ekf_node)
-                event_handlers.append(_exit_logger(ekf_node, 'ekf_filter_node'))
-            # When odom_source=='encoder' the mecanum_driver_node itself
-            # owns odom→base_link (publish_odom_tf=true, set above), so no
-            # separate odometry node is needed.
+        # ── Odometry source (odom→base_link) ─────────────────────────────
+        # Runs independently of SLAM: Nav2 localizing with AMCL on a saved
+        # map (enable_slam:=false) still needs a continuous odom→base_link.
+        # Each branch below provides that transform; 'encoder' has the driver
+        # publish it directly (publish_odom_tf=true, set above).
+        if odom_source == 'laser':
+            # rf2o_laser_odometry: estimates odom→base_link from
+            # consecutive /scan frames (wall-shift matching).  Much
+            # more accurate than dummy_odom for SLAM — the scan
+            # matcher no longer fights a "robot is stationary" prior
+            # while LiDAR sees walls moving.
+            # Install: sudo apt install ros-humble-rf2o-laser-odometry
+            rf2o_node = Node(
+                package='rf2o_laser_odometry',
+                executable='rf2o_laser_odometry_node',
+                name='rf2o_laser_odometry',
+                output='screen',
+                parameters=[{
+                    'laser_scan_topic': '/scan',
+                    'odom_topic': '/odom_rf2o',
+                    'publish_tf': True,
+                    'base_frame_id': 'base_link',
+                    'odom_frame_id': 'odom',
+                    'freq': 20.0,
+                }],
+            )
+            nodes.append(rf2o_node)
+            event_handlers.append(_exit_logger(rf2o_node, 'rf2o_laser_odometry'))
+        elif odom_source == 'dummy':
+            # Identity odom→base_link at 50 Hz so slam_toolbox / Nav2 always
+            # has a TF to operate on.  Shears the map under fast moves.
+            dummy_node = Node(
+                package='robot_bringup',
+                executable='dummy_odom',
+                name='dummy_odom_publisher',
+                output='screen',
+            )
+            nodes.append(dummy_node)
+            event_handlers.append(_exit_logger(dummy_node, 'dummy_odom_publisher'))
+        elif odom_source == 'ekf':
+            # robot_localization EKF fuses encoder /odom + IMU /imu/data
+            # into a smooth, drift-corrected odom→base_link at 50 Hz.
+            # The driver was set to publish_odom=true / publish_odom_tf=false
+            # above, so the EKF is the sole odom→base_link broadcaster.
+            # Install: sudo apt install ros-humble-robot-localization
+            ekf_node = Node(
+                package='robot_localization',
+                executable='ekf_node',
+                name='ekf_filter_node',
+                output='screen',
+                parameters=[
+                    PathJoinSubstitution([
+                        FindPackageShare('robot_bringup'),
+                        'config', 'ekf.yaml',
+                    ])
+                ],
+            )
+            nodes.append(ekf_node)
+            event_handlers.append(_exit_logger(ekf_node, 'ekf_filter_node'))
+        # When odom_source=='encoder' the mecanum_driver_node itself
+        # owns odom→base_link (publish_odom_tf=true, set above), so no
+        # separate odometry node is needed.
 
+        # ── SLAM Toolbox (online mapping only) ───────────────────────────
+        # Relocated here from the Jetson so the GPU board stays AI-only and
+        # SLAM consumes /scan from a local DDS endpoint rather than crossing
+        # the network.  Set enable_slam:=false when localizing on a pre-built
+        # map (Nav2 + AMCL) instead of mapping — the odom source above keeps
+        # running either way.
+        if arg('enable_slam') == 'true':
             slam_node = Node(
                 package='slam_toolbox',
                 executable='async_slam_toolbox_node',
