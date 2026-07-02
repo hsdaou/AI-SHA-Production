@@ -1,238 +1,84 @@
-# RPi5 <-> Jetson LLM Integration
+# Jetson ↔ Raspberry Pi 5 Integration (two-tier)
 
-## ✅ Setup Complete!
+How the two SBCs talk to each other in the current architecture. This supersedes
+the old single-machine / CycloneDDS notes.
 
-Your RPi5 is now configured to communicate with the Jetson Orin Nano LLM node.
+> Middleware is **FastDDS** (`rmw_fastrtps_cpp`) with **static unicast** discovery,
+> **not** CycloneDDS. Both boards run **ROS 2 Humble** — a Humble↔Jazzy mesh
+> silently drops Nav2 action goals, so do not mix distros.
 
-## 📋 What's Installed
+## Roles
 
-1. **Cyclone DDS** - ROS2 middleware for cross-distro communication (Jazzy ↔ Humble)
-2. **DDS Configuration** - Copied from Jetson at `~/cyclonedds.xml`
-3. **Environment Variables** - Configured in `~/.bashrc`
-4. **STT Package** - Speech-to-Text node (publishes to `/speech_rec`)
-5. **TTS Package** - Text-to-Speech node (subscribes to `/speech/text`)
+| Board | IP (default, see `.env`) | Runs |
+|---|---|---|
+| Jetson Orin Nano | `172.23.23.20` | RealSense + YOLOv8 (TensorRT), STT (Whisper/CUDA), brain_node (router), admin_node (RAG: Ollama + ChromaDB), action_node |
+| Raspberry Pi 5   | `172.23.23.51` | LiDAR (LD19), mecanum serial bridge → `/odom` + `/imu/data`, SLAM Toolbox + odom source, Piper TTS, face display |
+| Arduino Mega     | — (USB serial) | encoders + BNO055 (I2C) → unified `ODOM` packet; motor PWM |
 
-## 🔧 Configuration
+The mic is on the **Jetson** (Whisper runs on CUDA); the speaker is on the **Pi 5**
+(Piper). Echo is handled by a software mute bridge: `tts_node` publishes
+`/speaker/playing` and `stt_node` drops audio while it is true.
 
-### Environment Variables (Auto-loaded)
+## Network / DDS setup (run on BOTH boards)
+
+1. Set static IPs (DHCP reservations or static config) and put them in `.env`
+   (`JETSON_IP`, `RPI_IP`, `WS_IP`) with `ROS_DOMAIN_ID=42`.
+2. Generate the FastDDS profiles and enlarge UDP buffers (else LiDAR packets drop):
+   ```bash
+   ROS_DOMAIN_ID=42 bash scripts/generate_fastdds_configs.sh
+   sudo sysctl -w net.core.rmem_max=4194304 net.core.rmem_default=4194304 \
+                   net.core.wmem_max=1048576 net.core.wmem_default=1048576
+   ```
+3. Load the DDS env (add to `~/.bashrc`) — pass the device tag:
+   ```bash
+   source config/fastdds_env.sh jetson     # on the Jetson
+   source config/fastdds_env.sh rpi        # on the Pi 5
+   # exports RMW_IMPLEMENTATION=rmw_fastrtps_cpp, FASTRTPS_DEFAULT_PROFILES_FILE, ROS_DOMAIN_ID=42
+   ```
+
+## Launch
+
 ```bash
-export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-export ROS_DOMAIN_ID=42
-export CYCLONEDDS_URI=file:///home/pi5/cyclonedds.xml
+# Jetson:
+ros2 launch aisha_integration jetson_launch.py
+# Pi 5:
+ros2 launch aisha_integration rpi_launch.py
 ```
 
-These are already in your `~/.bashrc` and will load automatically on new terminals.
+## Verify cross-host discovery
 
-### Network
-- **Jetson IP**: 172.41.40.47
-- **Connection**: ✓ Verified
-
-## 🚀 Quick Start
-
-### Option 1: Using Launcher Scripts
-
-**Terminal 1 - Start TTS:**
 ```bash
-cd ~/ros2_ws
-./launch_tts.sh
+# Jetson:
+ros2 run demo_nodes_cpp talker
+# Pi 5 (should print "I heard: Hello World"):
+ros2 run demo_nodes_cpp listener
+
+ros2 node list        # should list nodes from BOTH boards
 ```
 
-**Terminal 2 - Start STT:**
-```bash
-cd ~/ros2_ws
-./launch_stt.sh
-```
+## Key topics
 
-### Option 2: Manual Launch
+| Topic | Type | Direction |
+|---|---|---|
+| `/speech/text` | `std_msgs/String` | STT out (Jetson) + wake-word in |
+| `/robot_speech` | `std_msgs/String` | brain → TTS (Pi 5 speaks) |
+| `/aisha/mode` | `std_msgs/String` | `gpu_arbiter` broadcasts NAVIGATING / CONVERSING |
+| `/aisha/set_conversing` | `std_srvs/SetBool` | manual mode trigger |
+| `/scan` | `sensor_msgs/LaserScan` | LD19 LiDAR (Pi 5) |
+| `/odom`, `/imu/data` | `nav_msgs/Odometry`, `sensor_msgs/Imu` | from the Arduino `ODOM` packet via the serial bridge |
+| `/cmd_vel` | `geometry_msgs/Twist` | mecanum velocity command |
 
-**Terminal 1 - Start TTS:**
-```bash
-source ~/.bashrc
-cd ~/ros2_ws
-source install/setup.bash
-ros2 run tts_speaker tts_speaker_node
-```
+## Troubleshooting
 
-**Terminal 2 - Start STT:**
-```bash
-source ~/.bashrc
-cd ~/ros2_ws
-source install/setup.bash
-ros2 run speech_recognition stt_node
-```
+- **Nodes invisible across boards:** confirm identical `ROS_DOMAIN_ID=42`, that the
+  UDP sysctl was applied, that `FASTRTPS_DEFAULT_PROFILES_FILE` points at the
+  generated `config/fastdds_<device>.xml`, and that no host firewall blocks ports
+  ≥ 17910. Re-run `generate_fastdds_configs.sh` after changing any IP.
+- **Speaker self-transcribes:** verify the `/speaker/playing` mute bridge (TTS on
+  Pi 5, STT on Jetson) — see `docs/TTS_TROUBLESHOOTING.md`.
+- **OOM on the 8 GB Jetson:** keep the RAG LLM on CPU, bound `OLLAMA_NUM_CTX`, enable
+  swap. See the GPU-multiplexing rationale in
+  `src/aisha_brain/docs/adr/0001-gpu-multiplexing-navigating-conversing.md`.
 
-## 🧪 Testing
-
-### Run Integration Test
-```bash
-cd ~/ros2_ws
-./test_jetson_integration.sh
-```
-
-This will check:
-- Environment variables
-- Network connectivity to Jetson
-- ROS2 node discovery
-- Topic availability
-
-### Manual Test (without microphone)
-
-**Terminal 1 - Monitor LLM responses:**
-```bash
-source ~/.bashrc
-source ~/ros2_ws/install/setup.bash
-ros2 topic echo /speech/text
-```
-
-**Terminal 2 - Start TTS:**
-```bash
-cd ~/ros2_ws
-./launch_tts.sh
-```
-
-**Terminal 3 - Simulate speech input:**
-```bash
-source ~/.bashrc
-source ~/ros2_ws/install/setup.bash
-ros2 topic pub --once /speech_rec std_msgs/msg/String "{data: 'Hello robot, what is your name?'}"
-```
-
-Wait 10-20 seconds. You should:
-1. See the response in Terminal 1
-2. Hear the TTS speak the response
-
-## 📡 Communication Flow
-
-```
-User speaks → Microphone (RPi5)
-    ↓
-STT Node (RPi5) → /speech_rec topic
-    ↓
-Jetson LLM Node receives /speech_rec
-    ↓
-LLM processes (10-20 sec)
-    ↓
-Jetson publishes → /speech/text topic
-    ↓
-TTS Node (RPi5) receives /speech/text
-    ↓
-Speaker plays response
-```
-
-## 🔍 Troubleshooting
-
-### Check if Jetson LLM is running
-```bash
-source ~/.bashrc
-ros2 node list | grep llm_node
-```
-
-If you don't see `/llm_node`, the Jetson LLM service is not running.
-
-### Check topics
-```bash
-source ~/.bashrc
-ros2 topic list
-```
-
-You should see:
-- `/speech_rec` (STT publishes here)
-- `/speech/text` (TTS subscribes here)
-- `/parameter_events`
-- `/rosout`
-
-### Check topic connections
-```bash
-source ~/.bashrc
-ros2 topic info /speech_rec
-ros2 topic info /speech/text
-```
-
-### Monitor all messages
-
-**Monitor speech recognition:**
-```bash
-source ~/.bashrc
-source ~/ros2_ws/install/setup.bash
-ros2 topic echo /speech_rec
-```
-
-**Monitor LLM responses:**
-```bash
-source ~/.bashrc
-source ~/ros2_ws/install/setup.bash
-ros2 topic echo /speech/text
-```
-
-### Network issues
-
-**Ping Jetson:**
-```bash
-ping 172.41.40.47
-```
-
-**Check environment:**
-```bash
-echo $RMW_IMPLEMENTATION  # Should be: rmw_cyclonedds_cpp
-echo $ROS_DOMAIN_ID       # Should be: 42
-echo $CYCLONEDDS_URI      # Should be: file:///home/pi5/cyclonedds.xml
-```
-
-## 📁 File Locations
-
-- **DDS Config**: `~/cyclonedds.xml`
-- **STT Node**: `~/ros2_ws/src/speech_recognition/speech_recognition/stt_node.py`
-- **TTS Node**: `~/ros2_ws/src/tts_speaker/tts_speaker/tts_speaker_node.py`
-- **Test Script**: `~/ros2_ws/test_jetson_integration.sh`
-- **Launcher Scripts**: `~/ros2_ws/launch_stt.sh`, `~/ros2_ws/launch_tts.sh`
-
-## 🎤 STT Node Details
-
-- **Publishes to**: `/speech_rec`
-- **Message type**: `std_msgs/msg/String`
-- **Speech recognition**: Faster Whisper (base.en model)
-- **Audio device**: plughw:1,0 (ReSpeaker)
-- **Features**:
-  - Voice Activity Detection (VAD)
-  - Automatic muting during TTS playback
-  - 3-second audio chunks
-
-## 🔊 TTS Node Details
-
-- **Subscribes to**: `/speech/text`
-- **Message type**: `std_msgs/msg/String`
-- **TTS engine**: Piper (en_US-lessac-medium)
-- **Audio output**: plughw:0,0
-- **Features**:
-  - Publishes speaking state to `/robot/speaking`
-  - Prevents mic feedback during speech
-
-## ⚙️ Performance
-
-- **LLM Response Time**: 10-20 seconds (Llama 3.2 8B on Jetson)
-- **Network Latency**: <10ms (same network)
-- **Total Pipeline**: ~10-25 seconds from speech to response
-
-## 🔗 Jetson Information
-
-- **IP Address**: 172.41.40.47
-- **Username**: orin-robot
-- **ROS2 Distro**: Humble
-- **LLM Model**: Llama 3.2 8B Instruct (Q4_K_M)
-- **LLM Node Name**: `/llm_node`
-
-## 🆘 Getting Help
-
-If you encounter issues:
-
-1. Run the test script: `./test_jetson_integration.sh`
-2. Check if Jetson LLM is running: `ros2 node list`
-3. Verify network: `ping 172.41.40.47`
-4. Check environment variables (see above)
-5. Monitor topics: `ros2 topic echo /speech_rec` and `ros2 topic echo /speech/text`
-
----
-
-**Setup Date**: 2026-01-24
-**Integration**: RPi5 (ROS2 Jazzy) ↔ Jetson Orin Nano (ROS2 Humble)
-**Communication**: Cyclone DDS with Domain ID 42
+See `MERGE_NOTES.md` for provenance and the bring-up checklist for step-by-step
+first-boot instructions.
