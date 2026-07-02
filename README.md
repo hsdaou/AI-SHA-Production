@@ -46,14 +46,12 @@ src/
   robot_bringup/      launch + configs: nav2_params.yaml, ekf.yaml, slam_toolbox, ld19
   robot_description/  robot URDF (digital twin)
   yolov8_ros/         vision detection_node (person / face / gesture / OCR) + pause_inference
-  stt_node/           Whisper STT (local; mic-mute while speaking)
-  mecanum_driver/     holonomic drive + encoder odometry
+  mecanum_driver/     holonomic drive + encoder odometry + Arduino firmware (arduino/)
   motor_control/      low-level motor/encoder serial bridge
   ldlidar_stl_ros2/   LD19 LiDAR driver (C++)
   bno055_imu/         IMU (fused into odometry via EKF)
   speaker_monitor/  robot_display/  llm_display/   audio + face/eyes UI
   aisha_integration/  bringup meta-package
-firmware/             Arduino mecanum controller + Pi encoder node
 docs/                 hardware setup, Jetson integration, TTS troubleshooting
 ```
 
@@ -66,9 +64,11 @@ docs/                 hardware setup, Jetson integration, TTS troubleshooting
 colcon build            # NOT --symlink-install (see build_ros.sh)
 source install/setup.bash
 
-# Full stack (camera + YOLO + brain + RAG + gpu_arbiter):
-ros2 launch robot_bringup cerebro_aisha.launch.py
-# Navigation (SLAM + Nav2):
+# Two-tier deployment (canonical). Set matching DDS env on BOTH boards first:
+#   source config/fastdds_env.sh jetson     # on the Jetson  (or: rpi  on the Pi 5)
+ros2 launch aisha_integration jetson_launch.py   # Jetson: RealSense+YOLO, STT, brain+RAG
+ros2 launch aisha_integration rpi_launch.py      # Pi 5:  LiDAR, SLAM, odom/EKF, motor bridge, TTS
+# Mapping-only (SLAM standalone, if needed):
 ros2 launch robot_bringup slam.launch.py
 ```
 
