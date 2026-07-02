@@ -7,8 +7,13 @@ Mega 2560 handles real-time motor PWM and IMU acquisition.
 
 Nodes started here:
 
-  Perception (TensorRT):
-    - yolov8_ros         : object + face + gesture + plant-disease
+  Perception:
+    - realsense2_camera  : D435 driver with aligned depth (enable_camera)
+    - yolov8_ros         : object + face + gesture + OCR (TensorRT)
+    - gpu_arbiter        : time-multiplexes the GPU between vision and the LLM
+                           (ADR 0001); OWNS yolov8_node when enable_gpu_arbiter
+                           is true (spawns/kills it). Mutually exclusive with
+                           the standalone YOLO node.
 
   TF tree:
     - robot_state_publisher + URDF (xacro)
@@ -36,6 +41,9 @@ Usage:
     ros2 launch aisha_integration jetson_launch.py
     ros2 launch aisha_integration jetson_launch.py llm_model:=llama3.2:1b
     ros2 launch aisha_integration jetson_launch.py wake_word_enabled:=false
+    # Vision-only bring-up (always-on YOLO, no arbiter, external camera):
+    ros2 launch aisha_integration jetson_launch.py \\
+        enable_stt:=false enable_gpu_arbiter:=false enable_camera:=false
 """
 
 import os
@@ -47,14 +55,17 @@ import urllib.error
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
+    IncludeLaunchDescription,
     LogInfo,
     OpaqueFunction,
     RegisterEventHandler,
     TimerAction,
 )
 from launch.event_handlers import OnProcessExit
-from launch.substitutions import LaunchConfiguration
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
 
 
 # ── Deprecated cloud node names — killed on startup if somehow running ────────
@@ -193,6 +204,20 @@ def generate_launch_description():
     # the spatial tier now lives on the Pi 5 (rpi_launch.py).
     args = [
         DeclareLaunchArgument('enable_vision',    default_value='true'),
+        DeclareLaunchArgument(
+            'enable_camera', default_value='true',
+            description='Start the RealSense D435 driver (with aligned depth) that '
+                        'yolov8_node consumes. Set false if a camera is launched '
+                        'externally (e.g. ros2 launch realsense2_camera rs_launch.py).',
+        ),
+        DeclareLaunchArgument(
+            'enable_gpu_arbiter', default_value='true',
+            description='Run gpu_arbiter, which time-multiplexes the GPU between '
+                        'vision (NAVIGATING) and the LLM (CONVERSING) per ADR 0001. '
+                        'When true the arbiter OWNS yolov8_node (spawns/kills it) and '
+                        'the standalone YOLO node is NOT started. Set false for '
+                        'always-on vision without GPU multiplexing.',
+        ),
         DeclareLaunchArgument('enable_stt',       default_value='true'),
         DeclareLaunchArgument('llm_model',        default_value='llama3.2'),
         DeclareLaunchArgument('whisper_model',    default_value='base'),
@@ -284,24 +309,82 @@ def generate_launch_description():
         # the LiDAR and motor driver.  Keeping them here would duplicate
         # the odom→base_link transform and break the TF tree.
 
-        # ── 5. YOLOv8 Vision Pipeline ─────────────────────────────────────
-        if arg('enable_vision') == 'true':
-            vision_node = Node(
-                package='yolov8_ros',
-                executable='yolov8_node',
-                name='yolov8_vision',
-                output='screen',
-                parameters=[{
-                    'confidence_threshold': float(arg('yolo_confidence')),
-                    'enable_ocr': True,
-                    'enable_faces': True,
-                    'enable_gestures': True,
-                    'enable_disease_classifier': arg('enable_disease_classifier') == 'true',
-                    'target_fps': 30,
-                }],
+        # ── 4. RealSense D435 camera (aligned depth for YOLO) ─────────────
+        # yolov8_node subscribes to /camera/camera/color/image_raw and
+        # /camera/camera/aligned_depth_to_color/image_raw.  We include the
+        # vendor rs_launch.py (rather than a bare Node) because it reproduces
+        # exactly those nested-namespace topic names AND enables aligned depth
+        # — a plain realsense2_camera Node publishes single-level /camera/...
+        # with no aligned-depth topic, which YOLO's depth path can't consume.
+        # Set enable_camera:=false if you run the camera from another launch.
+        if arg('enable_camera') == 'true':
+            realsense = IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([
+                    PathJoinSubstitution([
+                        FindPackageShare('realsense2_camera'),
+                        'launch', 'rs_launch.py',
+                    ]),
+                ]),
+                launch_arguments={
+                    'align_depth.enable': 'true',
+                    'pointcloud.enable': 'false',
+                }.items(),
             )
-            nodes.append(vision_node)
-            event_handlers.append(_on_node_exit(vision_node, 'yolov8_vision'))
+            nodes.append(realsense)
+
+        # ── 5. YOLOv8 vision — arbiter-managed OR standalone (never both) ──
+        # Mutually exclusive (see ADR 0001): two detection_node instances would
+        # fight over the camera + GPU.  With the arbiter, YOLO is a managed
+        # child it spawns/kills to free VRAM for the LLM during CONVERSING.
+        if arg('enable_vision') == 'true':
+            if arg('enable_gpu_arbiter') == 'true':
+                # The arbiter (re)spawns YOLO via this command, reproducing the
+                # standalone node's params.  `ros2 run` gives the node its
+                # default name 'detection_node', so the pause service stays
+                # /detection_node/pause_inference (the arbiter's default).
+                disease = 'true' if arg('enable_disease_classifier') == 'true' else 'false'
+                yolo_cmd = [
+                    'ros2', 'run', 'yolov8_ros', 'yolov8_node', '--ros-args',
+                    '-p', f"confidence_threshold:={arg('yolo_confidence')}",
+                    '-p', 'enable_ocr:=true',
+                    '-p', 'enable_faces:=true',
+                    '-p', 'enable_gestures:=true',
+                    '-p', f'enable_disease_classifier:={disease}',
+                    '-p', 'target_fps:=30',
+                ]
+                gpu_arbiter_node = Node(
+                    package='aisha_brain',
+                    executable='gpu_arbiter',
+                    name='gpu_arbiter',
+                    output='screen',
+                    emulate_tty=True,
+                    parameters=[{
+                        'manage_yolo': True,
+                        'yolo_cmd': yolo_cmd,
+                        'llm_model': arg('llm_model'),
+                    }],
+                )
+                nodes.append(gpu_arbiter_node)
+                event_handlers.append(_on_node_exit(gpu_arbiter_node, 'gpu_arbiter'))
+            else:
+                # Always-on vision, no GPU time-multiplexing (higher OOM risk
+                # during live Q&A on the 8 GB Jetson).
+                vision_node = Node(
+                    package='yolov8_ros',
+                    executable='yolov8_node',
+                    name='yolov8_vision',
+                    output='screen',
+                    parameters=[{
+                        'confidence_threshold': float(arg('yolo_confidence')),
+                        'enable_ocr': True,
+                        'enable_faces': True,
+                        'enable_gestures': True,
+                        'enable_disease_classifier': arg('enable_disease_classifier') == 'true',
+                        'target_fps': 30,
+                    }],
+                )
+                nodes.append(vision_node)
+                event_handlers.append(_on_node_exit(vision_node, 'yolov8_vision'))
 
         # ── 6. STT Node (Faster-Whisper, fully local, CUDA) ───────────────
         if arg('enable_stt') == 'true':
