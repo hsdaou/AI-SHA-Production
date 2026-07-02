@@ -57,8 +57,8 @@ dashboard:
 
 # Topics
 topics:
-  user_input: "/speech_rec"
-  llm_output: "/speech/text"
+  user_input: "/speech/text"      # STT output + wake word (user speech)
+  llm_output: "/robot_speech"     # robot's spoken output (what it says)
 
 # UI Settings
 ui:

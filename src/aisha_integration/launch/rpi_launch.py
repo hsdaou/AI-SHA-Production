@@ -344,7 +344,7 @@ def generate_launch_description():
         if arg('enable_display') == 'true':
             display_node = Node(
                 package='llm_display',
-                executable='llm_display_node',
+                executable='llm_display_face',
                 name='ai_sha_display',
                 output='screen',
             )

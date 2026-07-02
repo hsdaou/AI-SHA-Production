@@ -91,15 +91,15 @@ def main(args=None):
 ### Step 1: Verify Network Connectivity
 
 ```bash
-# On RPi5, ping the Jetson
-ping 172.41.40.47
+# On RPi5, ping the Jetson (JETSON_IP comes from .env, default 172.23.23.20)
+ping "${JETSON_IP:-172.23.23.20}"
 
 # Expected: Successful pings with <1ms latency
 ```
 
 **Expected Output**:
 ```
-64 bytes from 172.41.40.47: icmp_seq=1 ttl=64 time=0.5 ms
+64 bytes from 172.23.23.20: icmp_seq=1 ttl=64 time=0.5 ms
 ```
 
 ---
@@ -385,7 +385,7 @@ echo "=== RPi5 TTS Pipeline Diagnostics ==="
 echo ""
 
 echo "1. Network Check:"
-ping -c 2 172.41.40.47 && echo "✓ Jetson reachable" || echo "✗ Cannot reach Jetson"
+ping -c 2 "${JETSON_IP:-172.23.23.20}" && echo "✓ Jetson reachable" || echo "✗ Cannot reach Jetson"
 echo ""
 
 echo "2. ROS Nodes:"
@@ -475,7 +475,7 @@ ros2 node info /tts_node
 
 ## Contact Information
 
-- **Jetson IP**: 172.41.40.47 (running LLM node)
+- **Jetson IP**: from `.env` `JETSON_IP` (default `172.23.23.20`; running LLM node)
 - **RPi5 IP**: Check with `hostname -I`
 - **ROS Domain**: Check with `echo $ROS_DOMAIN_ID` (should match Jetson)
 - **DDS**: Cyclone DDS (auto-discovery enabled)
