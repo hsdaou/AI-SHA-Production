@@ -79,8 +79,8 @@ EOF
 ### Topics
 
 The display subscribes to:
-- `/speech_rec`: User input from speech recognition
-- `/speech/text`: AI responses from the LLM node
+- `/speech/text`: User speech (STT output + wake word)
+- `/robot_speech`: Robot's spoken output (what the robot says)
 
 ### Testing
 
@@ -91,10 +91,10 @@ You can test the display by publishing messages manually:
 ros2 run llm_display llm_display
 
 # In terminal 2 - Send test user message
-ros2 topic pub --once /speech_rec std_msgs/msg/String "data: 'Hello robot!'"
+ros2 topic pub --once /speech/text std_msgs/msg/String "data: 'Hello robot!'"
 
 # In terminal 3 - Send test AI response
-ros2 topic pub --once /speech/text std_msgs/msg/String "data: 'Hello! How can I help you today?'"
+ros2 topic pub --once /robot_speech std_msgs/msg/String "data: 'Hello! How can I help you today?'"
 ```
 
 ## Customization
@@ -173,8 +173,8 @@ sudo journalctl -u llm-display.service -f
 │ (Display Node)  │
 │                 │
 │ Subscribes:     │
-│ /speech_rec     │
 │ /speech/text    │
+│ /robot_speech   │
 │                 │
 │ PyQt5 GUI ──────┼───> Elecrow Display
 └─────────────────┘

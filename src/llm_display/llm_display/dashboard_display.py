@@ -298,18 +298,18 @@ class DashboardNode(Node):
         super().__init__('dashboard_node')
         self.gui = gui
 
-        # Subscribe to user input
+        # Subscribe to user speech (STT output + wake word)
         self.user_subscription = self.create_subscription(
             String,
-            '/speech_rec',
+            '/speech/text',
             self.user_callback,
             10
         )
 
-        # Subscribe to AI output
+        # Subscribe to robot speech output (what the robot says)
         self.ai_subscription = self.create_subscription(
             String,
-            '/speech/text',
+            '/robot_speech',
             self.ai_callback,
             10
         )

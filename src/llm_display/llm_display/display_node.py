@@ -453,18 +453,18 @@ class LLMDisplayNode(Node):
         super().__init__('llm_display_node')
         self.gui = gui
 
-        # Subscribe to LLM responses
+        # Subscribe to robot speech output (what the robot says)
         self.llm_subscription = self.create_subscription(
             String,
-            '/speech/text',
+            '/robot_speech',
             self.llm_callback,
             10
         )
 
-        # Subscribe to user input
+        # Subscribe to user speech (STT output + wake word)
         self.user_subscription = self.create_subscription(
             String,
-            '/speech_rec',
+            '/speech/text',
             self.user_callback,
             10
         )

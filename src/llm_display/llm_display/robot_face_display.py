@@ -535,16 +535,18 @@ class RobotDisplayNode(Node):
         self.gui = gui
 
         # Subscribe to topics
+        # User speech (STT output + wake word)
         self.user_subscription = self.create_subscription(
             String,
-            '/speech_rec',
+            '/speech/text',
             self.user_callback,
             10
         )
 
+        # Robot speech output (what the robot says)
         self.ai_subscription = self.create_subscription(
             String,
-            '/speech/text',
+            '/robot_speech',
             self.ai_callback,
             10
         )
