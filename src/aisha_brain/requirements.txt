@@ -1,6 +1,10 @@
 # AI-SHA Brain - Python Dependencies
 # Install: pip install -r requirements.txt
 #
+# On Jetson (JetPack 6.2.x), pin versions for the numpy-1.x system stack:
+#   pip install -r src/aisha_brain/requirements.txt -c constraints-jetson.txt
+#   (run from the repo root — see constraints-jetson.txt for the why)
+#
 # Note: ROS2 packages (rclpy, std_msgs) come from the ROS2 installation,
 # not pip. System tools (piper, aplay) must be installed separately.
 

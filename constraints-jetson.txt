@@ -1,0 +1,29 @@
+# constraints-jetson.txt — pinned Python versions for the AI-SHA stack on
+# Jetson Orin (JetPack 6.2.x / L4T R36.5 / Ubuntu 22.04; system numpy is 1.x).
+#
+# WHY: src/aisha_brain/requirements.txt uses open lower bounds, which on a fresh
+# install resolve to bleeding-edge wheels that break on Jetson:
+#   * numpy 2.x clashes with JetPack's numpy-1.x system stack (cv2, matplotlib,
+#     scipy, pandas are compiled against numpy 1.x) -> import crashes.
+#   * transformers 5.x + sentence-transformers 5.x fail to import together
+#     ("Could not import module 'PreTrainedModel'").
+# These pins keep the ML stack consistent with JetPack's numpy-1.x world so
+# sister-school Jetsons reproduce a known-good set instead of re-deriving it.
+#
+# USE (on the Jetson, from the repo root):
+#   pip install --user -r src/aisha_brain/requirements.txt -c constraints-jetson.txt
+#
+# Validated 2026-07-06 on Jetson Orin Nano 8GB / JetPack 6.2.2:
+#   16/16 ML imports OK, 12 ROS packages built, RAG KB (621 chunks) built.
+#
+# NOTE: torch here is the generic PyPI aarch64 wheel and runs CPU-only on Jetson
+# (it targets CUDA 13 vs JetPack's 12.6). For GPU torch, install NVIDIA's
+# Jetson-specific wheel instead; faster-whisper (CTranslate2) still uses the GPU.
+
+numpy==1.26.4
+transformers==4.44.2
+sentence-transformers==3.3.1
+tokenizers==0.19.1
+huggingface-hub==0.36.2
+scipy==1.15.3
+pandas==2.3.3
