@@ -6,6 +6,7 @@ import os
 import re
 import queue
 import threading
+import time
 
 
 class TTSNode(Node):
@@ -44,9 +45,13 @@ class TTSNode(Node):
 
         self.declare_parameter('voice_model', 'en_US-amy-low.onnx')
         self.declare_parameter('audio_device', 'plughw:1,0')
+        # Post-roll: keep /speaker/playing True this long after playback so
+        # the STT mute covers the ALSA buffer drain + room reverb tail.
+        self.declare_parameter('post_roll_ms', 200)
 
         model_param = self.get_parameter('voice_model').get_parameter_value().string_value
         self.audio_device = self.get_parameter('audio_device').get_parameter_value().string_value
+        self.post_roll_s = float(self.get_parameter('post_roll_ms').value) / 1000.0
 
         self.model = self._resolve_model_path(model_param)
 
@@ -158,7 +163,10 @@ class TTSNode(Node):
         except Exception as e:
             self.get_logger().error(f'TTS error: {e}')
         finally:
-            # Always unmute STT when done, even if an error occurred
+            # Always unmute STT when done, even if an error occurred.
+            # Post-roll first: let the speaker finish physically before the
+            # mic re-opens (prevents self-transcribing the final syllables).
+            time.sleep(self.post_roll_s)
             self._set_playing(False)
 
 

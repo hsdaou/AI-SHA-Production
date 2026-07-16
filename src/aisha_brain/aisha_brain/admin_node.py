@@ -1,6 +1,8 @@
 import re
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import (QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy,
+                       QoSDurabilityPolicy)
 from rcl_interfaces.msg import ParameterDescriptor, ParameterType
 from std_msgs.msg import String
 import json
@@ -41,6 +43,21 @@ class AdminNode(Node):
     def __init__(self):
         super().__init__('ai_sha_admin')
         self.subscription = self.create_subscription(String, '/admin_task', self.handle_query, 10)
+
+        # ── GPU-mode contract with gpu_arbiter (ADR 0001) ────────────────
+        # The arbiter broadcasts NAVIGATING/CONVERSING on a latched topic.
+        #   NAVIGATING: YOLO owns the GPU -> LLM must stay on CPU (num_gpu=0)
+        #   CONVERSING: YOLO is killed   -> LLM may take the GPU (env value)
+        # Until the first mode message arrives we assume NAVIGATING — the
+        # safe side: a GPU llama next to a resident YOLO engine is the OOM
+        # case this contract exists to prevent. Closes the ADR open item
+        # (gpu_arbiter._set_admin_num_gpu was a stub awaiting this wiring).
+        self._mode = 'NAVIGATING'
+        latched = QoSProfile(
+            depth=1, reliability=QoSReliabilityPolicy.RELIABLE,
+            history=QoSHistoryPolicy.KEEP_LAST,
+            durability=QoSDurabilityPolicy.TRANSIENT_LOCAL)
+        self.create_subscription(String, '/aisha/mode', self._on_mode, latched)
         # Publish to /admin_response — brain_node subscribes here to pair
         # the answer with the correct pending ADMIN question, then forwards
         # to /robot_speech.  Publishing directly to /robot_speech would cause
@@ -151,12 +168,18 @@ class AdminNode(Node):
             # We read them from the launch-injected environment and pass
             # them as per-request overrides via the Ollama API options.
             ollama_num_ctx = int(os.environ.get('OLLAMA_NUM_CTX', '2048'))
-            ollama_num_gpu = int(os.environ.get('OLLAMA_NUM_GPU', '999'))
-            self.llm = Ollama(
+            # Mode-aware offload: OLLAMA_NUM_GPU is the CONVERSING value
+            # (arbiter has killed YOLO, the GPU is free). While NAVIGATING
+            # the LLM stays on CPU so it can never collide with the YOLO
+            # engine's ~1.2 GB CUDA context.
+            self._llm_kwargs = dict(
                 model=llm_model, base_url=ollama_url,
                 request_timeout=llm_timeout, keep_alive="30s",
-                num_ctx=ollama_num_ctx, num_gpu=ollama_num_gpu,
+                num_ctx=ollama_num_ctx,
             )
+            self._num_gpu_conversing = int(os.environ.get('OLLAMA_NUM_GPU', '999'))
+            self._num_gpu_navigating = 0
+            self.llm = self._build_llm()
 
             self.index = VectorStoreIndex.from_vector_store(
                 vector_store,
@@ -216,6 +239,26 @@ class AdminNode(Node):
         )
         messages.append(ChatMessage(role=MessageRole.USER, content=final_user_content))
         return messages
+
+    # ── GPU-mode contract helpers ────────────────────────────────────────
+    def _current_num_gpu(self) -> int:
+        return (self._num_gpu_conversing if self._mode == 'CONVERSING'
+                else self._num_gpu_navigating)
+
+    def _build_llm(self):
+        return Ollama(num_gpu=self._current_num_gpu(), **self._llm_kwargs)
+
+    def _on_mode(self, msg: String):
+        mode = (msg.data or '').strip().upper()
+        if mode not in ('NAVIGATING', 'CONVERSING') or mode == self._mode:
+            return
+        self._mode = mode
+        if self.llm is not None:
+            # Rebuild is a lightweight HTTP-client construct (no model load);
+            # an in-flight query keeps the old client — swap is atomic.
+            self.llm = self._build_llm()
+        self.get_logger().info(
+            f'[gpu-mux] mode={mode} -> LLM num_gpu={self._current_num_gpu()}')
 
     def handle_query(self, msg):
         """ROS2 subscription callback — returns immediately, work done in thread.

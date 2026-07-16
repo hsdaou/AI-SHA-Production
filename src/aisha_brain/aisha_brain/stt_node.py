@@ -101,6 +101,9 @@ class STTNode(Node):
         # Wake word parameters
         self.declare_parameter('wake_word_enabled', True)
         self.declare_parameter('wake_word_timeout', 15.0)    # seconds of continued listening
+        # Mute-bridge hardening:
+        self.declare_parameter('mute_max_s', 90.0)      # stuck-mute watchdog
+        self.declare_parameter('unmute_grace_ms', 250)  # hold mute after TTS ends
 
         self.whisper_model_size = self.get_parameter('whisper_model').get_parameter_value().string_value
         self.whisper_device = self.get_parameter('whisper_device').get_parameter_value().string_value
@@ -120,6 +123,15 @@ class STTNode(Node):
 
         # Wake word state: timestamp until which we accept speech without wake word
         self._wake_active_until: float = 0.0
+
+        self.mute_max_s = float(self.get_parameter('mute_max_s').value)
+        self.unmute_grace_s = float(self.get_parameter('unmute_grace_ms').value) / 1000.0
+        self._muted_since = 0.0   # monotonic; 0 = not muted
+        self._mute_until = 0.0    # unmute-grace deadline
+        # Watchdog: if /speaker/playing True never gets its False (TTS died
+        # uncleanly, so its finally-unmute never ran), force-unmute so the
+        # robot cannot stay deaf forever.
+        self.create_timer(1.0, self._mute_watchdog)
 
         # Extend listening window when the robot responds (conversation continuation)
         if self.wake_word_enabled:
@@ -201,9 +213,29 @@ class STTNode(Node):
     # ── Speaker playing feedback prevention ───────────────────────────────────
 
     def _on_speaker_playing(self, msg: Bool):
+        now = time.monotonic()
+        if msg.data and not self._is_speaker_playing:
+            self._muted_since = now
+        elif (not msg.data) and self._is_speaker_playing:
+            # Hold the mute briefly after playback: ALSA drain + room tail
+            # would otherwise leak the last syllables into the next block.
+            self._mute_until = now + self.unmute_grace_s
+            self._muted_since = 0.0
         self._is_speaker_playing = msg.data
         state = 'muted (TTS playing)' if msg.data else 'listening'
         self.get_logger().debug(f'STT mic: {state}')
+
+    def _mic_muted(self) -> bool:
+        return self._is_speaker_playing or time.monotonic() < self._mute_until
+
+    def _mute_watchdog(self):
+        if (self._is_speaker_playing and self._muted_since
+                and time.monotonic() - self._muted_since > self.mute_max_s):
+            self.get_logger().warn(
+                f'/speaker/playing stuck True for >{self.mute_max_s:.0f}s '
+                f'(TTS died uncleanly?) — force-unmuting the microphone')
+            self._is_speaker_playing = False
+            self._muted_since = 0.0
 
     # ── Robot speech callback — extend listening window ───────────────────────
 
@@ -448,8 +480,8 @@ class STTNode(Node):
             except queue.Empty:
                 continue
 
-            # Skip while TTS is playing
-            if self._is_speaker_playing:
+            # Skip while TTS is playing (incl. unmute-grace tail)
+            if self._mic_muted():
                 speech_buffer.clear()
                 silent_count = 0
                 is_speaking = False
@@ -531,7 +563,7 @@ class STTNode(Node):
 
         while rclpy.ok():
             try:
-                if self._is_speaker_playing:
+                if self._mic_muted():
                     time.sleep(0.1)
                     continue
 
@@ -545,7 +577,7 @@ class STTNode(Node):
                     tmp_wav,
                 ], capture_output=True, timeout=self.chunk_duration + 5)
 
-                if self._is_speaker_playing:
+                if self._mic_muted():
                     continue
 
                 if not os.path.exists(tmp_wav):
