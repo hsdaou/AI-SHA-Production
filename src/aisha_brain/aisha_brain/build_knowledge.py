@@ -208,12 +208,13 @@ def build_knowledge_base(raw_data_dir: str, output_dir: str):
     os.makedirs(output_dir, exist_ok=True)
     client = chromadb.PersistentClient(path=output_dir)
 
-    # Clear existing collection to avoid stale data
-    try:
-        client.delete_collection('school_info')
-        print('  Cleared existing school_info collection.')
-    except ValueError:
-        pass  # Collection didn't exist
+    # Clear existing collection to avoid stale data.  Deleting a collection that
+    # does not exist raises ValueError on chromadb <1.0 but NotFoundError on
+    # chromadb >=1.x, so get_or_create first to guarantee a delete target exists
+    # regardless of the installed chromadb version.
+    client.get_or_create_collection('school_info')
+    client.delete_collection('school_info')
+    print('  Reset school_info collection.')
 
     collection = client.create_collection(
         name='school_info',
