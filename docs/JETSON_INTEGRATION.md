@@ -82,3 +82,18 @@ ros2 node list        # should list nodes from BOTH boards
 
 See `MERGE_NOTES.md` for provenance and the bring-up checklist for step-by-step
 first-boot instructions.
+
+## Python dependency pins (Jetson)
+
+The Jetson brain/RAG stack must be installed with the repo-root constraints file
+so it stays consistent with JetPack's numpy-1.x system libraries (OpenCV,
+matplotlib, scipy, pandas) and avoids the transformers 5.x import break:
+
+```bash
+# from the repo root, on the Jetson:
+pip install --user -r src/aisha_brain/requirements.txt -c constraints-jetson.txt
+```
+
+See [`constraints-jetson.txt`](../constraints-jetson.txt) for the pinned versions
+and rationale. CP1 references this file so every sister-school Jetson reproduces
+the same validated set.
