@@ -51,3 +51,6 @@ Thumbs.db
 # ROS2 bags
 *.bag
 *.db3
+
+# Mediapipe Tasks API model bundles (fetch via scripts/fetch_mediapipe_task_models.sh)
+models/

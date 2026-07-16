@@ -29,6 +29,10 @@ import numpy as np
 import cv2
 from ultralytics import YOLO
 import mediapipe as mp
+# Legacy mp.solutions is not shipped in the Jetson (aarch64) mediapipe
+# wheel; use the current Tasks API for FaceDetector + HandLandmarker.
+from mediapipe.tasks import python as mp_python
+from mediapipe.tasks.python import vision as mp_vision
 from threading import Thread, Lock
 from concurrent.futures import ThreadPoolExecutor
 from collections import deque
@@ -142,21 +146,27 @@ class DetectionNode(Node):
         # Initialize MediaPipe
         if self.enable_gestures:
             self.get_logger().info("=" * 60)
-            self.get_logger().info("🤚 Initializing MediaPipe Hands (Gesture Recognition)...")
+            self.get_logger().info("🤚 Initializing MediaPipe HandLandmarker (Tasks API)...")
             try:
-                self.mp_hands = mp.solutions.hands
-                self.hands = self.mp_hands.Hands(
-                    static_image_mode=False,
-                    max_num_hands=2,
-                    min_detection_confidence=0.5,  # Lowered for better detection
-                    min_tracking_confidence=0.5,
-                    model_complexity=0
+                # Tasks-API replacement for legacy mp.solutions.hands.Hands.
+                # Model fetched by scripts/fetch_mediapipe_task_models.sh.
+                hand_model = os.path.expanduser(
+                    "~/robot_ws/models/hand_landmarker.task")
+                self.hands = mp_vision.HandLandmarker.create_from_options(
+                    mp_vision.HandLandmarkerOptions(
+                        base_options=mp_python.BaseOptions(
+                            model_asset_path=hand_model),
+                        num_hands=2,
+                        min_hand_detection_confidence=0.5,
+                        min_hand_presence_confidence=0.5,
+                        min_tracking_confidence=0.5,
+                    )
                 )
-                self.get_logger().info("✓ MediaPipe Hands ready - Gesture detection ENABLED")
+                self.get_logger().info("✓ HandLandmarker ready - Gesture detection ENABLED")
                 self.get_logger().info("  Detectable gestures: fist, open, peace, thumbs_up, etc.")
                 self.get_logger().info("=" * 60)
             except Exception as e:
-                self.get_logger().error(f"❌ Failed to initialize MediaPipe Hands: {e}")
+                self.get_logger().error(f"❌ Failed to initialize HandLandmarker: {e}")
                 self.hands = None
                 self.enable_gestures = False
         else:
@@ -165,17 +175,23 @@ class DetectionNode(Node):
 
         if self.enable_faces:
             self.get_logger().info("=" * 60)
-            self.get_logger().info("👤 Initializing MediaPipe Face Detection...")
+            self.get_logger().info("👤 Initializing MediaPipe FaceDetector (Tasks API)...")
             try:
-                self.mp_face = mp.solutions.face_detection
-                self.face_detector = self.mp_face.FaceDetection(
-                    model_selection=0,
-                    min_detection_confidence=0.3  # Lowered for better detection
+                # Tasks-API replacement for legacy mp.solutions.face_detection.
+                # Model fetched by scripts/fetch_mediapipe_task_models.sh.
+                face_model = os.path.expanduser(
+                    "~/robot_ws/models/blaze_face_short_range.tflite")
+                self.face_detector = mp_vision.FaceDetector.create_from_options(
+                    mp_vision.FaceDetectorOptions(
+                        base_options=mp_python.BaseOptions(
+                            model_asset_path=face_model),
+                        min_detection_confidence=0.3,
+                    )
                 )
-                self.get_logger().info("✓ MediaPipe Face Detection ready - Face detection ENABLED")
+                self.get_logger().info("✓ FaceDetector ready - Face detection ENABLED")
                 self.get_logger().info("=" * 60)
             except Exception as e:
-                self.get_logger().error(f"❌ Failed to initialize MediaPipe Face: {e}")
+                self.get_logger().error(f"❌ Failed to initialize FaceDetector: {e}")
                 self.face_detector = None
                 self.enable_faces = False
         else:
@@ -551,18 +567,20 @@ class DetectionNode(Node):
         results = []
 
         try:
-            mp_results = self.face_detector.process(frame_rgb)
+            mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
+            mp_results = self.face_detector.detect(mp_image)
             if mp_results.detections:
                 for det in mp_results.detections:
-                    bbox = det.location_data.relative_bounding_box
-                    x1 = int(bbox.xmin * w)
-                    y1 = int(bbox.ymin * h)
-                    bw = int(bbox.width * w)
-                    bh = int(bbox.height * h)
+                    # Tasks API bounding_box is in pixel space, not normalized.
+                    bbox = det.bounding_box
+                    x1 = int(bbox.origin_x)
+                    y1 = int(bbox.origin_y)
+                    bw = int(bbox.width)
+                    bh = int(bbox.height)
 
                     cx = x1 + bw / 2.0
                     cy = y1 + bh / 2.0
-                    conf = det.score[0]
+                    conf = det.categories[0].score
                     depth = self.get_depth_improved(depth_image, x1, y1, bw, bh)
 
                     results.append(DetectionResult(
@@ -585,21 +603,27 @@ class DetectionNode(Node):
         results = []
 
         try:
-            mp_results = self.hands.process(frame_rgb)
-            if mp_results.multi_hand_landmarks and mp_results.multi_handedness:
-                for landmarks, handedness in zip(mp_results.multi_hand_landmarks,
-                                                  mp_results.multi_handedness):
-                    xs = [lm.x * w for lm in landmarks.landmark]
-                    ys = [lm.y * h for lm in landmarks.landmark]
+            mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame_rgb)
+            mp_results = self.hands.detect(mp_image)
+            # Tasks API: hand_landmarks and handedness are parallel lists —
+            # each element is itself a list (21 NormalizedLandmark per hand;
+            # 1 Category per hand). The list is empty when no hand is seen.
+            if mp_results.hand_landmarks and mp_results.handedness:
+                for landmarks, handedness in zip(mp_results.hand_landmarks,
+                                                  mp_results.handedness):
+                    # `landmarks` is directly the 21-point list (no `.landmark`
+                    # attribute like the legacy solutions API had).
+                    xs = [lm.x * w for lm in landmarks]
+                    ys = [lm.y * h for lm in landmarks]
                     x1, x2 = int(min(xs)) - 10, int(max(xs)) + 10
                     y1, y2 = int(min(ys)) - 10, int(max(ys)) + 10
                     bw, bh = x2 - x1, y2 - y1
 
                     cx = (x1 + x2) / 2.0
                     cy = (y1 + y2) / 2.0
-                    conf = handedness.classification[0].score
-                    hand_side = handedness.classification[0].label
-                    gesture = self.classify_gesture(landmarks.landmark)
+                    conf = handedness[0].score
+                    hand_side = handedness[0].category_name
+                    gesture = self.classify_gesture(landmarks)
                     depth = self.get_depth_improved(depth_image, x1, y1, bw, bh)
 
                     results.append(DetectionResult(
