@@ -219,7 +219,9 @@ def generate_launch_description():
                         'always-on vision without GPU multiplexing.',
         ),
         DeclareLaunchArgument('enable_stt',       default_value='true'),
-        DeclareLaunchArgument('llm_model',        default_value='llama3.2'),
+        # CP1 installs llama3.2:1b (the 8GB-safe tag); a bare 'llama3.2'
+        # resolves to :latest which Ollama does not have -> 404 at admin_node.
+        DeclareLaunchArgument('llm_model',        default_value='llama3.2:1b'),
         DeclareLaunchArgument('whisper_model',    default_value='base'),
         DeclareLaunchArgument('whisper_device',   default_value='cuda'),
         # int8 saves ~500 MB VRAM vs float16 with negligible accuracy loss

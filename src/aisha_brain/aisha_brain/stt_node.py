@@ -23,6 +23,10 @@ _WAKE_PREFIXES = [
     'hey aisha', 'hey i sha', 'hey eye sha', 'hey asha', 'hey isha',
     'hi aisha',  'hi i sha',  'hi isha',
     'aisha',     'i sha',     'eye sha',     'asha',     'isha',
+    # "Ayesha" family — the spelling Whisper most often produces for the name
+    # (confirmed verbatim in the CP6 field test: 'Hey Ayesha, hello?').
+    'hey ayesha', 'hi ayesha', 'ayesha',
+    'hey aysha',  'hi aysha',  'aysha',
     # ARIA variants (legacy / alternate transcriptions)
     'hey aria',  'hey arya',  'hey area',    'hey ariya',
     'hi aria',   'hi arya',   'hi area',
@@ -31,8 +35,17 @@ _WAKE_PREFIXES = [
 
 # Compiled regex: match any wake prefix at the start of the string,
 # optionally followed by a comma / period / colon / space.
+# Whisper freely inserts punctuation between words ("Hey, Aisha!"), so the
+# tokens of each multi-word prefix are joined by a punctuation/whitespace
+# class rather than a literal space — "hey, aisha" and "hey aisha" both
+# match (confirmed verbatim in the CP6 field test: 'Hey, Aisha!' was
+# discarded by the literal-space version of this regex).
+_WAKE_PUNCT = r'[\s,.:;!?\-]+'
 _WAKE_RE = re.compile(
-    r'^(?:' + '|'.join(re.escape(p) for p in _WAKE_PREFIXES) + r')'
+    r'^(?:' + '|'.join(
+        _WAKE_PUNCT.join(re.escape(w) for w in p.split())
+        for p in _WAKE_PREFIXES
+    ) + r')'
     r'[\s,.:;!?\-]*',
     re.IGNORECASE,
 )
@@ -282,7 +295,16 @@ class STTNode(Node):
             # If the user said just the wake word (e.g. "Hey AISHA") with no
             # follow-up text, send a standardized trigger so brain_node can
             # greet the user ("Yes, how can I help you?")
-            return True, cleaned if cleaned else 'wake_word_triggered'
+            if not cleaned:
+                return True, 'wake_word_triggered'
+            # gpu_arbiter's CONVERSING trigger (ADR 0001) requires the NAME
+            # and "stop" in the same /speech/text message ("Hey Aisha stop"),
+            # but the name is stripped above — so reattach a canonical prefix
+            # for stop-commands. A bare in-window "stop" (no name) stays
+            # name-less and remains brain_node's emergency halt only.
+            if re.match(r'^\W*stop\b', cleaned, re.IGNORECASE):
+                return True, f'aisha {cleaned}'
+            return True, cleaned
 
         if now < self._wake_active_until:
             remaining = self._wake_active_until - now
@@ -400,23 +422,35 @@ class STTNode(Node):
                 pass  # ignore overflow warnings in noisy environments
             audio_q.put(indata[:, 0].copy())  # mono channel
 
-        try:
-            with sd.InputStream(
-                samplerate=self.sample_rate,
-                channels=1,
-                dtype='float32',
-                blocksize=block_size,
-                device=device,
-                callback=audio_callback,
-            ):
-                self.get_logger().info(f'Sounddevice stream opened (device={device})')
-                self._vad_process_loop(audio_q, block_size, silence_blocks,
-                                       min_speech_blocks, max_blocks, vad)
-        except Exception as e:
-            self.get_logger().error(f'Sounddevice stream failed: {e}')
-            self.get_logger().warning('Falling back to arecord chunked capture')
-            self._use_continuous = False
-            self._arecord_listen_loop()
+        # A just-killed previous STT can hold the ALSA device for several
+        # seconds (PaErrorCode -9985 "Device unavailable") — hit on every fast
+        # stack restart during the CP6 field test. Retry with backoff before
+        # conceding to the arecord fallback, which cannot consume name-form
+        # device strings (e.g. "ReSpeaker") and would capture nothing.
+        last_err = None
+        for attempt in range(1, 5):
+            try:
+                with sd.InputStream(
+                    samplerate=self.sample_rate,
+                    channels=1,
+                    dtype='float32',
+                    blocksize=block_size,
+                    device=device,
+                    callback=audio_callback,
+                ):
+                    self.get_logger().info(f'Sounddevice stream opened (device={device})')
+                    self._vad_process_loop(audio_q, block_size, silence_blocks,
+                                           min_speech_blocks, max_blocks, vad)
+                return
+            except Exception as e:
+                last_err = e
+                self.get_logger().warning(
+                    f'Sounddevice stream open failed (attempt {attempt}/4): {e} — retrying in 3s')
+                time.sleep(3.0)
+        self.get_logger().error(f'Sounddevice stream failed after 4 attempts: {last_err}')
+        self.get_logger().warning('Falling back to arecord chunked capture')
+        self._use_continuous = False
+        self._arecord_listen_loop()
 
     def _resolve_audio_device(self):
         """Try to resolve ALSA device string to sounddevice device index.
