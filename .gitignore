@@ -54,3 +54,15 @@ Thumbs.db
 
 # Mediapipe Tasks API model bundles (fetch via scripts/fetch_mediapipe_task_models.sh)
 models/
+
+# ── Face-auth skill: NEVER commit biometric data or models ──────────────
+# Runtime data lives outside the repo (default ~/face_auth), but guard the
+# in-repo tree too in case anyone drops data next to the code.
+tools/face_auth/gallery/
+tools/face_auth/models/
+tools/face_auth/**/*.onnx
+tools/face_auth/**/*.zip
+tools/face_auth/admins.json
+tools/face_auth/session.json
+tools/face_auth/__pycache__/
+*.npz
