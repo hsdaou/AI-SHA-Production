@@ -56,7 +56,7 @@ def _load():
     return json.load(open(CONFIG))
 
 
-def _online(host="8.8.8.8", port=53, timeout=3):
+def _online(host="www.google.com", port=443, timeout=4):
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
