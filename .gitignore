@@ -66,3 +66,11 @@ tools/face_auth/admins.json
 tools/face_auth/session.json
 tools/face_auth/__pycache__/
 *.npz
+
+# ── Video-messenger skill: NEVER commit recordings or credentials ───────
+# Runtime data lives outside the repo (default ~/video_messages).
+tools/video_messenger/outbox/
+tools/video_messenger/sent/
+tools/video_messenger/config.json
+tools/video_messenger/__pycache__/
+VM_*.mp4
