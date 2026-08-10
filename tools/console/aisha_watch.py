@@ -469,7 +469,21 @@ def main():
     global HUB
     rclpy.init()
     HUB = Hub()
-    threading.Thread(target=rclpy.spin, args=(HUB,), daemon=True).start()
+
+    def _spin():
+        # If this thread dies the node stops receiving camera frames, but the HTTP
+        # server keeps serving the LAST one — a console that looks alive and shows a
+        # frozen picture, which is worse than an obvious failure. Take the whole
+        # process down so the supervisor restarts it.
+        try:
+            rclpy.spin(HUB)
+        except Exception as e:                                # incl. ExternalShutdown
+            print(f"[watch] ROS spin ended ({type(e).__name__}); exiting so the "
+                  f"supervisor can restart a working console", flush=True)
+        finally:
+            os._exit(1)
+
+    threading.Thread(target=_spin, daemon=True).start()
     srv = ThreadingHTTPServer(("0.0.0.0", PORT), Handler)
     print(f"[aisha_watch] console at http://192.168.55.1:{PORT}  (Ctrl-C to stop)")
     try:

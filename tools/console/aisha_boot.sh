@@ -113,6 +113,11 @@ while true; do
   fi
   if ! kill -0 "$WATCH" 2>/dev/null; then
     say "web console died — restarting just the console"
+    # Clear any half-dead instance first. Without this a console whose ROS thread
+    # died but whose HTTP server still holds :8088 survives, the new one cannot
+    # bind, and the browser keeps being served a FROZEN camera frame by the old
+    # process. Three of them had accumulated that way.
+    pkill -9 -f "aisha_watc[h]" 2>/dev/null; sleep 1
     python3 "$HOME/aisha_watch.py" >> /tmp/aisha_watch.log 2>&1 &
     WATCH=$!
   fi
