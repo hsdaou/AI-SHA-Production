@@ -187,8 +187,12 @@ def run(intent, params, skip_auth=False):
             print("SPEAK: " + (body.get("speakable") or "Done."))
         return 0
 
-    if status == 200 and body.get("reason") == "not_in_session":
-        print("SPEAK: There is no lesson running at the moment.")
+    # A 200 with ok=false is a REASON, not a fault: the school is between lessons,
+    # or the enrolment data needed to answer is absent. Say the reason plainly
+    # rather than reporting a failure the administrator cannot act on.
+    if status == 200 and body.get("reason"):
+        print("SPEAK: " + (body.get("speakable")
+                           or "I cannot answer that at the moment."))
         return 0
 
     print(f"[timetable] FAILED (HTTP {status}): {body.get('error', body)}", file=sys.stderr)
