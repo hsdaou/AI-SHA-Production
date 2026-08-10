@@ -28,6 +28,7 @@ import os
 import re
 import sys
 import time
+from datetime import date as _date_cls, timedelta as _timedelta
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -37,6 +38,9 @@ CONFIG = os.path.join(HOME, "config.json")
 
 FACE_AUTH_HOME = os.environ.get("FACE_AUTH_HOME", os.path.expanduser("~/face_auth"))
 SESSION = os.path.join(FACE_AUTH_HOME, "session.json")
+
+ORDINALS = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5,
+            "sixth": 6, "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10}
 
 DAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 
@@ -130,11 +134,23 @@ def parse_params(utterance):
         if d in low:
             out["day"] = d.capitalize()
             break
-    if "tomorrow" in low or "today" in low:
-        out.pop("day", None)          # let the server resolve it
-    m = re.search(r"period\s*(\d{1,2})", low)
+    # "tomorrow" must be RESOLVED, not dropped. Dropping it let the server fall
+    # back to today, so "who is free tomorrow" silently answered for today - the
+    # worst kind of wrong, because it looks like an answer.
+    if "tomorrow" in low:
+        out["day"] = (_date_cls.today() + _timedelta(days=1)).strftime("%A")
+    elif "today" in low:
+        out["day"] = _date_cls.today().strftime("%A")
+
+    m = re.search(r"period\s*(\d{1,2})", low) or re.search(r"\b(\d{1,2})(?:st|nd|rd|th)\s+period", low)
     if m:
         out["period"] = f"Period {m.group(1)}"
+    else:
+        # People say "the third period", not "period 3".
+        for word, n in ORDINALS.items():
+            if re.search(rf"\b{word}\b\s+period|period\s+\b{word}\b", low):
+                out["period"] = f"Period {n}"
+                break
     return out
 
 
@@ -170,7 +186,8 @@ def run(intent, params, skip_auth=False):
         else:
             ok, desc = session_state()
             if not ok:
-                _fail(f"DENIED - {desc}. That answer names students, so it needs an "
+                who = "teachers" if intent == "free_teachers" else "students"
+                _fail(f"DENIED - {desc}. That answer names {who}, so it needs an "
                       "authenticated administrator.", 3)
             print(f"[timetable] {desc}")
 

@@ -221,14 +221,22 @@ class Hub(Node):
                 2: "I need a bit more detail — say e.g. \"what is the timetable for "
                    "grade 7 section A on Monday\", or \"how many students are free "
                    "in grade 10 period 3\".",
-                3: "That answer names students, so an administrator has to "
-                   "authenticate first.",
+                # Wording comes from the tool, which knows whether the question
+                # was about students or teachers; saying "students" for a teacher
+                # query made the robot look like it had misheard.
+                3: None,
                 4: "I could not reach the timetable system.",
             }.get(r.returncode)
             if msg is None:
-                detail = [l for l in out.splitlines() if l.strip()]
-                msg = ("The timetable system could not answer that. "
-                       + (detail[-1][:140] if detail else ""))
+                denied = [l for l in out.splitlines() if "DENIED" in l]
+                if denied:
+                    # e.g. "... That answer names teachers, so it needs an
+                    # authenticated administrator." Use the tool's own wording.
+                    msg = denied[-1].split(". ", 1)[-1].strip()
+                else:
+                    detail = [l for l in out.splitlines() if l.strip()]
+                    msg = ("The timetable system could not answer that. "
+                           + (detail[-1][:140] if detail else ""))
             self._push("AI-SHA", msg)
         except subprocess.TimeoutExpired:
             self._push("AI-SHA", "The timetable system did not respond in time.")
