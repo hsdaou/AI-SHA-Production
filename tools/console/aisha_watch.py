@@ -28,12 +28,24 @@ ANNOTATED   = "/detection/image_annotated"          # camera + detections
 RAW_COLOR   = "/camera/camera/color/image_raw"       # fallback if vision is off
 ASK_TOPIC   = "/speech/text"                          # question in
 VIDEO_HOME  = os.path.expanduser("~/video_messages")  # video-message skill lives here
+HRMS_HOME   = os.path.expanduser("~/hrms_query")       # HRMS skill config lives here
+HRMS_TOOL   = os.path.expanduser("~/robot_ws/tools/hrms_query/hrms_query.py")
 VIDEO_SECS  = 15                                       # length of a recorded message
 
 # Spoken/typed phrases that trigger the video-message skill instead of the LLM.
 VIDEO_INTENT = re.compile(
     r"(record|leave|send|take).{0,20}(video|vedio)\s*message"
     r"|video\s*message.{0,20}(to|for)\s+(sam|admin|hsdaou)", re.I)
+
+# HRMS staff-leave questions. Broad on purpose: hrms_query.py does the precise
+# routing and refuses anything it cannot map, so a false positive here costs a
+# clear refusal rather than a wrong answer. The ANSWER IS NEVER SPOKEN OR SHOWN -
+# the HRMS emails it. AI-SHA stands in a public corridor; reading out who is on
+# sick leave would disclose it to every passer-by.
+HRMS_INTENT = re.compile(
+    r"sick leave|on leave|leave balance|annual leave"
+    r"|who('?s| is)\s+(off|absent|away|out)"
+    r"|days\s+(left|remaining)|how many days", re.I)
 REPLY_TOPIC = "/robot_speech"                         # answer out
 
 
@@ -46,6 +58,7 @@ class Hub(Node):
         self._jpeg_src = "waiting"
         self._annot_t = 0.0
         self._vm_busy = False
+        self._hrms_busy = False
         self._selftest_until = 0.0
         self.log = []            # list of dicts: {t, who, text}
         img_q = QoSProfile(depth=2, reliability=ReliabilityPolicy.BEST_EFFORT,
@@ -110,6 +123,8 @@ class Hub(Node):
         self._push("you", m.data)
         if VIDEO_INTENT.search(m.data or ""):
             self._start_video_message()
+        elif HRMS_INTENT.search(m.data or ""):
+            self._start_hrms_query(m.data)
 
     # ── video-message skill ─────────────────────────────────────────────────
     def _start_video_message(self):
@@ -121,6 +136,49 @@ class Hub(Node):
                 return
             self._vm_busy = True
         threading.Thread(target=self._video_message_worker, daemon=True).start()
+
+    # ── HRMS staff-leave skill ──────────────────────────────────────────────
+    def _start_hrms_query(self, utterance):
+        with self.lock:
+            if self._hrms_busy:
+                return
+            self._hrms_busy = True
+        threading.Thread(target=self._hrms_worker, args=(utterance,), daemon=True).start()
+
+    def _hrms_worker(self, utterance):
+        """Hand the question to hrms_query.py, which authorises the admin, calls the
+        HRMS and lets the HRMS render and email the report. Nothing about any
+        employee comes back here - by design the robot only learns whether it
+        worked, so staff leave data never reaches this device."""
+        try:
+            self._push("AI-SHA", "Checking with the HR system. The report will be "
+                                 "emailed to the administrator — I will not read it out.")
+            r = subprocess.run(
+                f'python3 -u "{HRMS_TOOL}" ask {json.dumps(utterance)}',
+                shell=True, cwd=HRMS_HOME, capture_output=True, text=True, timeout=120)
+            code = r.returncode
+            msg = {
+                0: "The report has been sent to the administrator's email.",
+                2: "I could not tell which report you meant. Try: \"who is on sick "
+                   "leave today\", or \"how many days does <name> have left\".",
+                3: "An administrator must authenticate first — that report is "
+                   "restricted.",
+                4: "I could not reach the HR system.",
+                6: "I could not find an employee by that name.",
+                7: "Several staff match that name. Please be more specific.",
+            }.get(code)
+            if msg is None:
+                detail = (r.stderr or r.stdout or "").strip().splitlines()
+                msg = ("The HR system could not complete that request. "
+                       + (detail[-1][:140] if detail else ""))
+            self._push("AI-SHA", msg)
+        except subprocess.TimeoutExpired:
+            self._push("AI-SHA", "The HR system did not respond in time.")
+        except Exception as e:
+            self._push("AI-SHA", f"Sorry — the HR request failed ({type(e).__name__}).")
+        finally:
+            with self.lock:
+                self._hrms_busy = False
 
     def _sh(self, cmd, timeout=180):
         return subprocess.run(cmd, shell=True, cwd=VIDEO_HOME, capture_output=True,
@@ -228,6 +286,9 @@ class Hub(Node):
         # path can be kept clean.
         if VIDEO_INTENT.search(text or ""):
             self._start_video_message()
+            return
+        if HRMS_INTENT.search(text or ""):
+            self._start_hrms_query(text)
             return
         msg = String(); msg.data = text
         self.pub.publish(msg)

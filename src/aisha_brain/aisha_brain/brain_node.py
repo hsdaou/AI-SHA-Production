@@ -155,6 +155,19 @@ class BrainNode(Node):
                 self.get_logger().info(f'Keyword match "{kw}" -> SKILL_VIDEO (no LLM)')
                 return {"intent": "SKILL_VIDEO"}
 
+        # HRMS staff-leave questions are answered by the HRMS over email, never by
+        # this knowledge base and never out loud. Routed to the skill layer for the
+        # same reason as video messages: the school-info RAG knows nothing about
+        # staff leave, so the LLM would confidently invent an answer about a real
+        # employee's absence.
+        hrms_keywords = ['sick leave', 'on leave', 'leave balance', 'annual leave',
+                         'days left', 'days remaining', 'who is off', "who's off",
+                         'who is absent', 'who is away']
+        for kw in hrms_keywords:
+            if kw in text_lower:
+                self.get_logger().info(f'Keyword match "{kw}" -> SKILL_HRMS (no LLM)')
+                return {"intent": "SKILL_HRMS"}
+
         for kw in nav_keywords:
             if kw in text_lower:
                 self.get_logger().info(f'Keyword match "{kw}" -> NAV')
@@ -348,10 +361,10 @@ class BrainNode(Node):
         intent = decision.get("intent", "ADMIN")
 
         out_msg = String()
-        if intent == "SKILL_VIDEO":
+        if intent in ("SKILL_VIDEO", "SKILL_HRMS"):
             # Owned by the video-message skill; brain_node must stay silent so the
             # visitor sees only the recording prompts, not an invented answer.
-            self.get_logger().info("Route -> SKILL_VIDEO (handled by the skill layer)")
+            self.get_logger().info(f"Route -> {intent} (handled by the skill layer)")
             return
 
         if intent == "ADMIN":

@@ -49,9 +49,27 @@ SESSION = os.path.join(FACE_AUTH_HOME, "session.json")
 INTENTS = {
     "on_leave": {
         "path": "/api/reports/on-leave",
-        "keywords": ("on leave", "who is off", "absent", "away", "leave today"),
+        "keywords": ("on leave", "who is off", "absent", "away", "leave today",
+                     "sick leave", "on sick", "off today", "who's off"),
         "takes_date": True,
     },
+    "balance": {
+        "path": "/api/reports/leave-balance",
+        "keywords": ("days left", "leave balance", "balance for", "how many days",
+                     "days remaining", "remaining leave", "annual leave for",
+                     "vacation days"),
+        "takes_employee": True,
+    },
+}
+
+# Words that surround a name in a spoken request but are never part of it.
+_NAME_STOP = {
+    "how", "many", "days", "left", "does", "do", "has", "have", "is", "are",
+    "the", "a", "an", "of", "his", "her", "their", "from", "in", "on", "for",
+    "annual", "leave", "balance", "remaining", "vacation", "still", "got",
+    "what", "s", "tell", "me", "please", "send", "report", "email", "aisha",
+    "hey", "much", "and", "to", "employee", "staff", "member", "mr", "mrs",
+    "ms", "dr", "this", "that", "year", "check",
 }
 
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -110,11 +128,34 @@ def route_intent(utterance):
     return None
 
 
-def call_report(cfg, intent, date=None):
+def resolve_employee(text):
+    """Pull a person's name out of an utterance.
+
+    Deliberately crude: strip the words that frame the question and keep what is
+    left. The LLM is NOT asked to do this - a 1B model inventing a name would send
+    another employee's leave record to the administrator, which is a privacy
+    failure, not a formatting one. The server treats the result as a search term
+    and refuses when it matches more than one person, so a bad guess fails loudly
+    instead of answering about the wrong human.
+    """
+    if not text:
+        return None
+    cleaned = re.sub(r"[^a-zA-Z\s'-]", " ", text)
+    words = [w for w in cleaned.split() if w.lower() not in _NAME_STOP]
+    name = " ".join(words).strip()
+    return name if len(name) >= 2 else None
+
+
+def call_report(cfg, intent, date=None, employee=None):
     spec = INTENTS[intent]
     url = cfg["base_url"].rstrip("/") + spec["path"]
-    if date:
-        url += "?" + urllib.parse.urlencode({"date": date})
+    params = {}
+    if date and spec.get("takes_date"):
+        params["date"] = date
+    if employee and spec.get("takes_employee"):
+        params["employee"] = employee
+    if params:
+        url += "?" + urllib.parse.urlencode(params)
 
     req = urllib.request.Request(url, method="GET")
     req.add_header("x-robot-key", cfg["robot_key"])
@@ -166,7 +207,7 @@ def cmd_status(a):
     sys.exit(0 if os.path.exists(CONFIG) else 2)
 
 
-def run_report(intent, date, skip_auth, do_speak):
+def run_report(intent, date, skip_auth, do_speak, employee=None):
     cfg = load_config()
 
     if not cfg.get("enabled", False):
@@ -181,16 +222,40 @@ def run_report(intent, date, skip_auth, do_speak):
             _fail(f"DENIED - {desc}. Run: python3 auth_gate.py authenticate", 3)
         print(f"[hrms] {desc}")
 
-    status, body = call_report(cfg, intent, date)
+    if INTENTS[intent].get("takes_employee") and not employee:
+        _fail("this report needs an employee name -- say e.g. \"how many days "
+              "does Sara have left\"", 2)
+
+    status, body = call_report(cfg, intent, date, employee)
 
     if status == 200 and body.get("ok"):
         # Counts only -- the endpoint returns no personal data by design.
-        print(f"[hrms] OK  date={body.get('date')}  on_leave={body.get('count')}  "
-              f"emailed_to={body.get('recipientCount')} recipient(s)")
+        if intent == "balance":
+            print(f"[hrms] OK  balance emailed to "
+                  f"{body.get('recipients')} recipient(s)")
+        else:
+            print(f"[hrms] OK  date={body.get('date')}  on_leave={body.get('count')}  "
+                  f"emailed_to={body.get('recipientCount')} recipient(s)")
         if do_speak:
-            # Deliberately data-free: never say who is on leave.
-            speak("The leave report has been sent to the administrator's email.")
+            # Deliberately data-free: never say who is on leave, or how many days
+            # anyone has. The robot stands in a public corridor with a speaker.
+            speak("The report has been sent to the administrator's email.")
         return 0
+
+    # Name-matching failures deserve their own words: "no such employee" and
+    # "several people match" are user errors the administrator can fix by
+    # rephrasing, not faults. Still no names -- the count is all we may reveal.
+    if status == 404 and body.get("matched") == 0:
+        print("[hrms] NO MATCH - no employee by that name.", file=sys.stderr)
+        if do_speak:
+            speak("I could not find an employee by that name.")
+        return 6
+    if status == 409:
+        print(f"[hrms] AMBIGUOUS - {body.get('matched')} employees match that name; "
+              "be more specific.", file=sys.stderr)
+        if do_speak:
+            speak("Several staff match that name. Please be more specific.")
+        return 7
 
     print(f"[hrms] FAILED (HTTP {status}): {body.get('error', body)}", file=sys.stderr)
     if do_speak:
@@ -203,7 +268,7 @@ def cmd_report(a):
         _fail(f"unknown intent `{a.intent}` -- known: {', '.join(INTENTS)}", 2)
     if a.date and not DATE_RE.match(a.date):
         _fail("--date must be YYYY-MM-DD", 2)
-    sys.exit(run_report(a.intent, a.date, a.skip_auth, a.speak))
+    sys.exit(run_report(a.intent, a.date, a.skip_auth, a.speak, a.employee))
 
 
 def cmd_ask(a):
@@ -211,8 +276,10 @@ def cmd_ask(a):
     if not intent:
         _fail(f"no intent matched {a.utterance!r} -- known: {', '.join(INTENTS)}", 2)
     date = resolve_date(a.utterance)
-    print(f"[hrms] intent={intent} date={date or 'today'}")
-    sys.exit(run_report(intent, date, a.skip_auth, a.speak))
+    employee = (resolve_employee(a.utterance)
+                if INTENTS[intent].get("takes_employee") else None)
+    print(f"[hrms] intent={intent} date={date or 'today'} employee={employee or '-'}")
+    sys.exit(run_report(intent, date, a.skip_auth, a.speak, employee))
 
 
 def main():
@@ -225,6 +292,7 @@ def main():
     r = sub.add_parser("report", help="run a specific intent")
     r.add_argument("--intent", required=True)
     r.add_argument("--date", help="YYYY-MM-DD (default: today, school timezone)")
+    r.add_argument("--employee", help="name (required by the `balance` intent)")
     r.add_argument("--skip-auth", action="store_true", help="DEV ONLY")
     r.add_argument("--speak", action="store_true", help="publish confirmation on /robot_speech")
     r.set_defaults(func=cmd_report)
