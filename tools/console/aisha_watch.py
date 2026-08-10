@@ -9,7 +9,7 @@ on the machine with the browser, and NO new Python packages on the Jetson.
   Ask     : publishes your text on /speech/text  (same topic the mic would feed)
   Answer  : shows whatever the robot publishes on /robot_speech
 """
-import json, os, threading, time
+import json, os, re, subprocess, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
@@ -27,6 +27,13 @@ PORT        = 8088
 ANNOTATED   = "/detection/image_annotated"          # camera + detections
 RAW_COLOR   = "/camera/camera/color/image_raw"       # fallback if vision is off
 ASK_TOPIC   = "/speech/text"                          # question in
+VIDEO_HOME  = os.path.expanduser("~/video_messages")  # video-message skill lives here
+VIDEO_SECS  = 15                                       # length of a recorded message
+
+# Spoken/typed phrases that trigger the video-message skill instead of the LLM.
+VIDEO_INTENT = re.compile(
+    r"(record|leave|send|take).{0,20}(video|vedio)\s*message"
+    r"|video\s*message.{0,20}(to|for)\s+(sam|admin|hsdaou)", re.I)
 REPLY_TOPIC = "/robot_speech"                         # answer out
 
 
@@ -38,6 +45,7 @@ class Hub(Node):
         self._jpeg = None
         self._jpeg_src = "waiting"
         self._annot_t = 0.0
+        self._vm_busy = False
         self.log = []            # list of dicts: {t, who, text}
         img_q = QoSProfile(depth=2, reliability=ReliabilityPolicy.BEST_EFFORT,
                            history=HistoryPolicy.KEEP_LAST)
@@ -91,6 +99,82 @@ class Hub(Node):
         if "__selftest__" in m.data:      # boot pipeline probe; not a real question
             return
         self._push("you", m.data)
+        if VIDEO_INTENT.search(m.data or ""):
+            self._start_video_message()
+
+    # ── video-message skill ─────────────────────────────────────────────────
+    def _start_video_message(self):
+        """Record a video message and deliver it. Runs in a thread so the ROS
+        executor and the HTTP server keep serving (the camera must stay live —
+        the person needs to see themselves while recording)."""
+        with self.lock:
+            if self._vm_busy:
+                return
+            self._vm_busy = True
+        threading.Thread(target=self._video_message_worker, daemon=True).start()
+
+    def _sh(self, cmd, timeout=180):
+        return subprocess.run(cmd, shell=True, cwd=VIDEO_HOME, capture_output=True,
+                              text=True, timeout=timeout)
+
+    def _video_message_worker(self):
+        try:
+            self._push("AI-SHA", f"Sure. I will record a {VIDEO_SECS}-second video message "
+                                 "and send it to the administrator. Look at my camera — "
+                                 "recording starts after the countdown.")
+            # stt_node holds the ReSpeaker exclusively (ALSA capture is not shareable),
+            # so the recorder cannot open the mic until STT lets go. The launch only
+            # LOGS when a node exits, so stopping stt_node here is survivable; we
+            # start it again ourselves afterwards.
+            stt_was_running = subprocess.run("pgrep -f 'stt_nod[e]'", shell=True,
+                                             capture_output=True).returncode == 0
+            if stt_was_running:
+                subprocess.run("pkill -f 'stt_nod[e]'", shell=True)
+                time.sleep(4)          # let ALSA actually release the device
+
+            r = self._sh(f"python3 video_message.py record --seconds {VIDEO_SECS} "
+                         f'--note "requested from the web console"', timeout=180)
+            out = (r.stdout or "") + (r.stderr or "")
+            if "saved:" not in out:
+                tail = [l for l in out.splitlines() if "ERROR" in l or "error" in l]
+                self._push("AI-SHA", "Sorry — the recording failed. "
+                                     + (tail[-1] if tail else "No file was produced."))
+                return
+            self._push("AI-SHA", "Recording finished. Sending it now...")
+
+            d = self._sh("python3 deliver.py send", timeout=300)
+            dout = (d.stdout or "") + (d.stderr or "")
+            if "SENT" in dout:
+                self._push("AI-SHA", "Your video message has been sent to the "
+                                     "administrator by email. Thank you!")
+            elif "gate CLOSED" in dout:
+                self._push("AI-SHA", "The message is recorded and queued, but sending is "
+                                     "switched off. An administrator must open the "
+                                     "delivery gate.")
+            else:
+                detail = dout.strip().splitlines()[-1][:120] if dout.strip() else ""
+                self._push("AI-SHA", "The message is recorded and queued, but sending did "
+                                     "not succeed — it stays in the outbox and can be "
+                                     f"retried. {detail}")
+        except subprocess.TimeoutExpired:
+            self._push("AI-SHA", "Sorry — the video message timed out.")
+        except Exception as e:                                    # never kill the console
+            self._push("AI-SHA", f"Sorry — the video message failed ({type(e).__name__}).")
+        finally:
+            # bring speech recognition back however we exited
+            try:
+                subprocess.Popen(
+                        "source /opt/ros/humble/setup.bash && "
+                        "source ~/robot_ws/install/setup.bash && "
+                        "ros2 run aisha_brain stt_node --ros-args "
+                        "-p whisper_model:=small -p whisper_device:=cpu "
+                        "-p audio_device:=ReSpeaker -p wake_word_enabled:=true "
+                    "-p wake_word_timeout:=6.0 >> /tmp/aisha_stt_restart.log 2>&1",
+                    shell=True, executable="/bin/bash", start_new_session=True)
+            except Exception:
+                pass
+            with self.lock:
+                self._vm_busy = False
 
     def _push(self, who, text):
         with self.lock:
@@ -106,9 +190,18 @@ class Hub(Node):
             return list(self.log)
 
     def ask(self, text):
+        self._push("you", text + "  (typed)")
+        # A video-message request is handled HERE, not by the LLM. Publishing it on
+        # /speech/text as well would also reach brain_node, which routes it to the
+        # knowledge base and answers something irrelevant ("I cannot access private
+        # information...") right next to the recording prompt - confusing for the
+        # visitor. Spoken requests still pass through brain_node; only the typed
+        # path can be kept clean.
+        if VIDEO_INTENT.search(text or ""):
+            self._start_video_message()
+            return
         msg = String(); msg.data = text
         self.pub.publish(msg)
-        self._push("you", text + "  (typed)")
 
 
 PAGE = """<!DOCTYPE html><html><head><meta charset=utf-8>
@@ -141,7 +234,7 @@ __VOICEBAR__
   <div class=side>
     <div id=log></div>
     <form onsubmit="ask(event)">
-      <input id=q autocomplete=off placeholder="Ask AI-SHA a question, e.g. what are the tuition fees?">
+      <input id=q autocomplete=off placeholder="Ask a question, or say: record a video message">
       <button>Ask</button>
     </form>
   </div>
