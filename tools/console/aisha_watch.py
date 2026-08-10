@@ -30,6 +30,8 @@ ASK_TOPIC   = "/speech/text"                          # question in
 VIDEO_HOME  = os.path.expanduser("~/video_messages")  # video-message skill lives here
 HRMS_HOME   = os.path.expanduser("~/hrms_query")       # HRMS skill config lives here
 HRMS_TOOL   = os.path.expanduser("~/robot_ws/tools/hrms_query/hrms_query.py")
+TT_HOME     = os.path.expanduser("~/timetable_query")
+TT_TOOL     = os.path.expanduser("~/robot_ws/tools/timetable_query/timetable_query.py")
 VIDEO_SECS  = 15                                       # length of a recorded message
 
 # Spoken/typed phrases that trigger the video-message skill instead of the LLM.
@@ -46,6 +48,17 @@ HRMS_INTENT = re.compile(
     r"sick leave|on leave|leave balance|annual leave"
     r"|who('?s| is)\s+(off|absent|away|out)"
     r"|days\s+(left|remaining)|how many days", re.I)
+
+# School timetable questions. Unlike the HRMS skill these are NOT all private:
+# a class timetable and a COUNT of free students identify nobody, so the robot
+# says those out loud. A list of NAMED students is emailed instead - they are
+# minors. timetable_query.py enforces that split and requires an admin session
+# only for the naming answers.
+TIMETABLE_INTENT = re.compile(
+    r"time\s*table|timetable"
+    r"|(which|who|how many).{0,24}(students?|teachers?).{0,16}free"
+    r"|free\s+(students?|teachers?)"
+    r"|lessons? for grade|schedule for grade", re.I)
 REPLY_TOPIC = "/robot_speech"                         # answer out
 
 
@@ -59,6 +72,7 @@ class Hub(Node):
         self._annot_t = 0.0
         self._vm_busy = False
         self._hrms_busy = False
+        self._tt_busy = False
         self._selftest_until = 0.0
         self.log = []            # list of dicts: {t, who, text}
         img_q = QoSProfile(depth=2, reliability=ReliabilityPolicy.BEST_EFFORT,
@@ -125,6 +139,8 @@ class Hub(Node):
             self._start_video_message()
         elif HRMS_INTENT.search(m.data or ""):
             self._start_hrms_query(m.data)
+        elif TIMETABLE_INTENT.search(m.data or ""):
+            self._start_timetable_query(m.data)
 
     # ── video-message skill ─────────────────────────────────────────────────
     def _start_video_message(self):
@@ -179,6 +195,48 @@ class Hub(Node):
         finally:
             with self.lock:
                 self._hrms_busy = False
+
+    # ── School timetable skill ──────────────────────────────────────────────
+    def _start_timetable_query(self, utterance):
+        with self.lock:
+            if self._tt_busy:
+                return
+            self._tt_busy = True
+        threading.Thread(target=self._timetable_worker, args=(utterance,), daemon=True).start()
+
+    def _timetable_worker(self, utterance):
+        """Ask the timetable app. Speakable answers (a class timetable, a count of
+        free students) come back as text and are shown; anything that would name a
+        student is emailed by the app and only a confirmation comes back here."""
+        try:
+            r = subprocess.run(
+                f'python3 -u "{TT_TOOL}" ask {json.dumps(utterance)}',
+                shell=True, cwd=TT_HOME, capture_output=True, text=True, timeout=90)
+            out = (r.stdout or "") + (r.stderr or "")
+            spoken = [l[len("SPEAK: "):] for l in out.splitlines() if l.startswith("SPEAK: ")]
+            if r.returncode == 0 and spoken:
+                self._push("AI-SHA", spoken[-1])
+                return
+            msg = {
+                2: "I need a bit more detail — say e.g. \"what is the timetable for "
+                   "grade 7 section A on Monday\", or \"how many students are free "
+                   "in grade 10 period 3\".",
+                3: "That answer names students, so an administrator has to "
+                   "authenticate first.",
+                4: "I could not reach the timetable system.",
+            }.get(r.returncode)
+            if msg is None:
+                detail = [l for l in out.splitlines() if l.strip()]
+                msg = ("The timetable system could not answer that. "
+                       + (detail[-1][:140] if detail else ""))
+            self._push("AI-SHA", msg)
+        except subprocess.TimeoutExpired:
+            self._push("AI-SHA", "The timetable system did not respond in time.")
+        except Exception as e:
+            self._push("AI-SHA", f"Sorry — the timetable request failed ({type(e).__name__}).")
+        finally:
+            with self.lock:
+                self._tt_busy = False
 
     def _sh(self, cmd, timeout=180):
         return subprocess.run(cmd, shell=True, cwd=VIDEO_HOME, capture_output=True,
@@ -289,6 +347,9 @@ class Hub(Node):
             return
         if HRMS_INTENT.search(text or ""):
             self._start_hrms_query(text)
+            return
+        if TIMETABLE_INTENT.search(text or ""):
+            self._start_timetable_query(text)
             return
         msg = String(); msg.data = text
         self.pub.publish(msg)

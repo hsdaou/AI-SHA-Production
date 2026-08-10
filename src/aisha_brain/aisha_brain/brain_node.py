@@ -168,6 +168,18 @@ class BrainNode(Node):
                 self.get_logger().info(f'Keyword match "{kw}" -> SKILL_HRMS (no LLM)')
                 return {"intent": "SKILL_HRMS"}
 
+        # School timetable questions are answered by the timetable app, which holds
+        # the live schedule. The knowledge base holds prospectus documents and knows
+        # nothing about who is free in period 3, so the LLM would invent it.
+        timetable_keywords = ['timetable', 'time table', 'free students',
+                              'students are free', 'free teachers',
+                              'teachers are free', 'lessons for grade',
+                              'schedule for grade']
+        for kw in timetable_keywords:
+            if kw in text_lower:
+                self.get_logger().info(f'Keyword match "{kw}" -> SKILL_TIMETABLE (no LLM)')
+                return {"intent": "SKILL_TIMETABLE"}
+
         for kw in nav_keywords:
             if kw in text_lower:
                 self.get_logger().info(f'Keyword match "{kw}" -> NAV')
@@ -361,7 +373,7 @@ class BrainNode(Node):
         intent = decision.get("intent", "ADMIN")
 
         out_msg = String()
-        if intent in ("SKILL_VIDEO", "SKILL_HRMS"):
+        if intent in ("SKILL_VIDEO", "SKILL_HRMS", "SKILL_TIMETABLE"):
             # Owned by the video-message skill; brain_node must stay silent so the
             # visitor sees only the recording prompts, not an invented answer.
             self.get_logger().info(f"Route -> {intent} (handled by the skill layer)")
