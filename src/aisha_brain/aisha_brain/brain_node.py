@@ -141,6 +141,20 @@ class BrainNode(Node):
             'send to', 'message my',
         ]
 
+        # Video-message skill. Checked FIRST and answered by nobody here: the
+        # skill layer (tools/console/aisha_watch.py) records and delivers it and
+        # does all the talking. Without this rule the request reaches neither the
+        # NAV nor the ACTION list ("send a video message" does not contain "send a
+        # message" - "video" splits it), falls through to the ADMIN default, and
+        # the LLM invents an answer about logging into a school management system
+        # while the robot is actually recording. Misspellings are Whisper's.
+        video_keywords = ['video message', 'vedio message', 'video massage',
+                          'video mesage']
+        for kw in video_keywords:
+            if kw in text_lower:
+                self.get_logger().info(f'Keyword match "{kw}" -> SKILL_VIDEO (no LLM)')
+                return {"intent": "SKILL_VIDEO"}
+
         for kw in nav_keywords:
             if kw in text_lower:
                 self.get_logger().info(f'Keyword match "{kw}" -> NAV')
@@ -334,6 +348,12 @@ class BrainNode(Node):
         intent = decision.get("intent", "ADMIN")
 
         out_msg = String()
+        if intent == "SKILL_VIDEO":
+            # Owned by the video-message skill; brain_node must stay silent so the
+            # visitor sees only the recording prompts, not an invented answer.
+            self.get_logger().info("Route -> SKILL_VIDEO (handled by the skill layer)")
+            return
+
         if intent == "ADMIN":
             self.get_logger().info("Route -> ADMIN (Knowledge Base)")
             query_id = str(uuid.uuid4())

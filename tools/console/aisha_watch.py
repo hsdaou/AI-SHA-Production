@@ -46,6 +46,7 @@ class Hub(Node):
         self._jpeg_src = "waiting"
         self._annot_t = 0.0
         self._vm_busy = False
+        self._selftest_until = 0.0
         self.log = []            # list of dicts: {t, who, text}
         img_q = QoSProfile(depth=2, reliability=ReliabilityPolicy.BEST_EFFORT,
                            history=HistoryPolicy.KEEP_LAST)
@@ -93,11 +94,19 @@ class Hub(Node):
             self._encode(m, "raw colour")
 
     def _reply(self, m):
+        # The boot self-test asks a real question to prove brain_node routes, which
+        # means a real ANSWER comes back and would greet the visitor with a wall of
+        # tuition figures nobody asked for. Swallow replies for a short window after
+        # a probe; any genuine question clears the window immediately.
+        if time.time() < self._selftest_until:
+            return
         self._push("AI-SHA", m.data)
 
     def _heard(self, m):
         if "__selftest__" in m.data:      # boot pipeline probe; not a real question
+            self._selftest_until = time.time() + 120
             return
+        self._selftest_until = 0.0        # a real utterance — stop swallowing replies
         self._push("you", m.data)
         if VIDEO_INTENT.search(m.data or ""):
             self._start_video_message()
@@ -119,9 +128,8 @@ class Hub(Node):
 
     def _video_message_worker(self):
         try:
-            self._push("AI-SHA", f"Sure. I will record a {VIDEO_SECS}-second video message "
-                                 "and send it to the administrator. Look at my camera — "
-                                 "recording starts after the countdown.")
+            self._push("AI-SHA", f"Sure — a {VIDEO_SECS}-second video message for the "
+                                 "administrator. Look at my camera; I will count down.")
             # stt_node holds the ReSpeaker exclusively (ALSA capture is not shareable),
             # so the recorder cannot open the mic until STT lets go. The launch only
             # LOGS when a node exits, so stopping stt_node here is survivable; we
@@ -132,15 +140,35 @@ class Hub(Node):
                 subprocess.run("pkill -f 'stt_nod[e]'", shell=True)
                 time.sleep(4)          # let ALSA actually release the device
 
-            r = self._sh(f"python3 video_message.py record --seconds {VIDEO_SECS} "
-                         f'--note "requested from the web console"', timeout=180)
-            out = (r.stdout or "") + (r.stderr or "")
+            # Stream the recorder's own output instead of waiting for it to finish,
+            # so the countdown the visitor reads is the REAL one - a countdown faked
+            # here would drift from the process that is actually recording.
+            proc = subprocess.Popen(
+                # -u is REQUIRED: writing to a pipe makes Python block-buffer stdout,
+                # so without it the whole countdown arrives at once AFTER the
+                # recording has already finished - useless to the person in front.
+                f'python3 -u video_message.py record --seconds {VIDEO_SECS} '
+                f'--note "requested from the web console"',
+                shell=True, cwd=VIDEO_HOME, stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT, text=True, bufsize=1)
+            out = ""
+            for line in proc.stdout:
+                out += line
+                t = line.strip()
+                if re.search(r"^\[record\]\s+([321])\s*\.\.\.", t):
+                    n = re.search(r"([321])", t).group(1)
+                    self._push("AI-SHA", f"{n}...")
+                elif "RECORDING" in t:
+                    self._push("AI-SHA", f"● RECORDING NOW — speak your message "
+                                         f"({VIDEO_SECS} seconds).")
+                elif t.startswith("[record] ■ done"):
+                    self._push("AI-SHA", "Recording finished. Sending it now...")
+            proc.wait(timeout=60)
             if "saved:" not in out:
                 tail = [l for l in out.splitlines() if "ERROR" in l or "error" in l]
                 self._push("AI-SHA", "Sorry — the recording failed. "
                                      + (tail[-1] if tail else "No file was produced."))
                 return
-            self._push("AI-SHA", "Recording finished. Sending it now...")
 
             d = self._sh("python3 deliver.py send", timeout=300)
             dout = (d.stdout or "") + (d.stderr or "")
@@ -190,6 +218,7 @@ class Hub(Node):
             return list(self.log)
 
     def ask(self, text):
+        self._selftest_until = 0.0        # a real question — stop swallowing replies
         self._push("you", text + "  (typed)")
         # A video-message request is handled HERE, not by the LLM. Publishing it on
         # /speech/text as well would also reach brain_node, which routes it to the
