@@ -205,8 +205,12 @@ def run(intent, params, skip_auth=False):
         if body.get("emailed"):
             print(f"[timetable] OK  {body.get('count')} listed, emailed to "
                   f"{body.get('recipients')} recipient(s)")
-            # SPEAK is data-free on purpose: never read out who is free.
-            print("SPEAK: The list has been sent to the administrator's email.")
+            # SPEAK is data-free on purpose: never read out who is free. Prefer the
+            # server's wording, which carries the over-estimate caveat when the
+            # subject matching could not be trusted — a hardcoded "sent!" here hid
+            # that warning from the person acting on the list.
+            print("SPEAK: " + (body.get("speakable")
+                               or "The list has been sent to the administrator's email."))
         else:
             print(f"[timetable] OK  {json.dumps({k: v for k, v in body.items() if k != 'periods'})[:200]}")
             print("SPEAK: " + (body.get("speakable") or "Done."))
@@ -229,8 +233,13 @@ def cmd_ask(a):
     if not intent:
         _fail(f"no intent matched {a.utterance!r} -- known: {', '.join(INTENTS)}", 2)
     params = parse_params(a.utterance)
-    if intent in ("timetable", "free_count", "free_students") and "grade" not in params:
-        _fail("which grade? say e.g. \"what is the timetable for grade 7 section A on Monday\"", 2)
+    # Only a class timetable genuinely needs a grade — it describes ONE section.
+    # Student questions without a grade mean the whole school, which the server
+    # now answers by iterating the grades that have student records. Demanding a
+    # grade turned "which students are available today?" into a refusal.
+    if intent == "timetable" and "grade" not in params:
+        _fail("which grade and section? say e.g. \"the timetable for grade 7 section A "
+              "on Monday\"", 2)
     print(f"[timetable] intent={intent} params={params}")
     sys.exit(run(intent, params, a.skip_auth))
 

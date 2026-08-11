@@ -116,11 +116,16 @@ class Hub(Node):
         self.create_timer(20.0, self._reassert_mic)
 
     def set_mic_mute(self, muted: bool):
-        self.mic_muted = bool(muted)
-        m = self._Bool(); m.data = self.mic_muted
+        muted = bool(muted)
+        changed = muted != self.mic_muted
+        self.mic_muted = muted
+        m = self._Bool(); m.data = muted
         self.mic_pub.publish(m)
-        self._push("AI-SHA", "Microphone muted — I am not listening."
-                   if self.mic_muted else "Microphone on — I am listening again.")
+        # Only announce a real change. Echoing every request filled the transcript
+        # with "muted"/"on" pairs when the page re-sent the state.
+        if changed:
+            self._push("AI-SHA", "Microphone muted — I am not listening."
+                       if muted else "Microphone on — I am listening again.")
 
     def _reassert_mic(self):
         if self.mic_muted:                      # beat the 90 s stuck-mute watchdog
@@ -468,13 +473,15 @@ setInterval(function(){
   });
 }, 4000);
 
+var micBusy = false;
 async function togglemic(){
-  var b = document.getElementById('micbtn');
-  var muted = b.classList.contains('off');
-  var r = await fetch('/mic?mute=' + (muted ? '0' : '1'));
-  var d = await r.json();
-  setmic(d.muted);
-  poll();
+  if(micBusy) return;                 // a double-click used to fire mute then unmute
+  micBusy = true;
+  try{
+    var cur = await (await fetch('/mic')).json();   // server is the source of truth
+    var d = await (await fetch('/mic?mute=' + (cur.muted ? '0' : '1'))).json();
+    setmic(d.muted);
+  } finally { micBusy = false; }
 }
 function setmic(muted){
   var b = document.getElementById('micbtn');
@@ -491,7 +498,7 @@ async function poll(){try{var r=await fetch('/events');var d=await r.json();
       m.text.replace(/</g,'&lt;')+'</div>';});
   el.scrollTop=el.scrollHeight;
   var s=await fetch('/src');document.getElementById('src').textContent='source: '+await s.text();
-  var m=await (await fetch('/mic')).json(); setmic(m.muted);
+  if(!micBusy){ var m=await (await fetch('/mic')).json(); setmic(m.muted); }
 }catch(e){}}
 setInterval(poll,1000);poll();
 </script></body></html>"""
