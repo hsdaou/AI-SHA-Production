@@ -32,6 +32,12 @@ HRMS_HOME   = os.path.expanduser("~/hrms_query")       # HRMS skill config lives
 HRMS_TOOL   = os.path.expanduser("~/robot_ws/tools/hrms_query/hrms_query.py")
 TT_HOME     = os.path.expanduser("~/timetable_query")
 TT_TOOL     = os.path.expanduser("~/robot_ws/tools/timetable_query/timetable_query.py")
+FACE_HOME   = os.path.expanduser("~/face_auth")        # face-auth gate lives here
+AUTH_SECS   = 8                                         # camera window for a scan
+CAM_ROTATE  = os.environ.get("AISHA_CAM_ROTATE", "180")  # camera is mounted inverted
+# Experimental/demo default: face + passive anti-spoof only — no head-turn, no
+# PIN. Set AISHA_AUTH_RELAXED=0 to restore the full four-factor gate.
+AUTH_RELAXED = os.environ.get("AISHA_AUTH_RELAXED", "1") == "1"
 VIDEO_SECS  = 15                                       # length of a recorded message
 
 # Spoken/typed phrases that trigger the video-message skill instead of the LLM.
@@ -64,6 +70,14 @@ TIMETABLE_INTENT = re.compile(
     r"|available\s+(students?|teachers?)"
     r"|(students?|teachers?)\s+(are\s+)?available"
     r"|lessons? for grade|schedule for grade", re.I)
+
+# "Authenticate me." Without this the request fell through to the knowledge base,
+# which answered "I am an administrative assistant, please call the office" — the
+# robot could ASK for authentication but had no way to START it. This runs the
+# same face + liveness + head-turn + PIN gate that was previously CLI-only.
+AUTH_INTENT = re.compile(
+    r"authenticate|log ?me ?in|sign ?me ?in|verify me|verify my|scan my face"
+    r"|i('?m| am)\s+(an?\s+)?admin|log in as|it'?s me", re.I)
 REPLY_TOPIC = "/robot_speech"                         # answer out
 
 
@@ -78,6 +92,10 @@ class Hub(Node):
         self._vm_busy = False
         self._hrms_busy = False
         self._tt_busy = False
+        self._auth_busy = False
+        self._awaiting_pin = False      # next TYPED line is a PIN, not a question
+        self._pin_deadline = 0.0
+        self._pending_admin = None      # (kind, utterance) to replay after auth
         self._selftest_until = 0.0
         self.log = []            # list of dicts: {t, who, text}
         img_q = QoSProfile(depth=2, reliability=ReliabilityPolicy.BEST_EFFORT,
@@ -172,6 +190,8 @@ class Hub(Node):
         self._push("you", m.data)
         if VIDEO_INTENT.search(m.data or ""):
             self._start_video_message()
+        elif AUTH_INTENT.search(m.data or ""):
+            self._start_auth_prompt()      # PIN is then typed, never spoken
         elif HRMS_INTENT.search(m.data or ""):
             self._start_hrms_query(m.data)
         elif TIMETABLE_INTENT.search(m.data or ""):
@@ -268,6 +288,11 @@ class Hub(Node):
                     # e.g. "... That answer names teachers, so it needs an
                     # authenticated administrator." Use the tool's own wording.
                     msg = denied[-1].split(". ", 1)[-1].strip()
+                    # Remember it, so after the user authenticates we answer it
+                    # automatically instead of making them re-type it.
+                    if "authenticate" in msg.lower() or "administrator" in msg.lower():
+                        self._pending_admin = ("timetable", utterance)
+                        msg += " Say \"authenticate me\" and I will then answer this."
                 else:
                     detail = [l for l in out.splitlines() if l.strip()]
                     msg = ("The timetable system could not answer that. "
@@ -378,6 +403,21 @@ class Hub(Node):
 
     def ask(self, text):
         self._selftest_until = 0.0        # a real question — stop swallowing replies
+
+        # PIN entry: if we asked for a PIN, the next typed line IS the PIN. Consume
+        # it here, mask it in the transcript, and never publish it anywhere.
+        if self._awaiting_pin and time.time() < self._pin_deadline:
+            self._awaiting_pin = False
+            if re.fullmatch(r"\d{3,8}", text.strip()):
+                self._push("you", "•••• (PIN entered)")
+                self._start_auth(text.strip())
+                return
+            self._push("you", text + "  (typed)")
+            self._push("AI-SHA", "That did not look like a PIN. Say "
+                       "\"authenticate me\" to try again.")
+            return
+        self._awaiting_pin = False
+
         self._push("you", text + "  (typed)")
         # A video-message request is handled HERE, not by the LLM. Publishing it on
         # /speech/text as well would also reach brain_node, which routes it to the
@@ -388,6 +428,9 @@ class Hub(Node):
         if VIDEO_INTENT.search(text or ""):
             self._start_video_message()
             return
+        if AUTH_INTENT.search(text or ""):
+            self._start_auth_prompt()
+            return
         if HRMS_INTENT.search(text or ""):
             self._start_hrms_query(text)
             return
@@ -396,6 +439,93 @@ class Hub(Node):
             return
         msg = String(); msg.data = text
         self.pub.publish(msg)
+
+    # ── admin face authentication ───────────────────────────────────────────
+    def _start_auth_prompt(self):
+        if self._auth_busy:
+            return
+        if AUTH_RELAXED:
+            # Demo mode: just look at the camera. No PIN, no head turn.
+            self._push("AI-SHA", "Sure — look at my camera and hold still for a "
+                       "few seconds while I recognise you.")
+            self._start_auth(None)
+            return
+        # Full mode: the PIN is collected first, by TYPING, so it is never spoken
+        # aloud in the corridor and never leaves as a /speech/text message.
+        self._awaiting_pin = True
+        self._pin_deadline = time.time() + 90
+        self._push("AI-SHA", "Let's authenticate you. Type your PIN in the box "
+                   "below and press Ask — then look at my camera.")
+
+    def _start_auth(self, pin):
+        with self.lock:
+            if self._auth_busy:
+                return
+            self._auth_busy = True
+        threading.Thread(target=self._auth_worker, args=(pin,), daemon=True).start()
+
+    def _auth_worker(self, pin):
+        try:
+            import shlex
+            env = dict(os.environ, ROS_DOMAIN_ID="99", AISHA_CAM_ROTATE=CAM_ROTATE)
+            if AUTH_RELAXED:
+                cmd = f"python3 -u auth_gate.py authenticate --relaxed --seconds {AUTH_SECS}"
+            else:
+                self._push("AI-SHA", "Look at my camera now, and when I ask, slowly "
+                           "turn your head left and right. Keep within arm's length.")
+                cmd = (f"python3 -u auth_gate.py authenticate --pin {shlex.quote(pin)} "
+                       f"--seconds {AUTH_SECS}")
+            r = subprocess.run(cmd, shell=True, cwd=FACE_HOME, capture_output=True,
+                               text=True, timeout=90, env=env)
+            out = (r.stdout or "") + (r.stderr or "")
+            if "ACCESS GRANTED" in out:
+                m = re.search(r"admin '([^']+)'", out)
+                who = m.group(1) if m else "administrator"
+                self._push("AI-SHA", f"Access granted — welcome, {who}. You are "
+                           "authenticated for 15 minutes. I can now send named lists.")
+                self._replay_pending()
+            elif "not recognized" in out:
+                self._push("AI-SHA", "I did not recognise you as an enrolled "
+                           "administrator. Access denied.")
+            elif "SPOOF" in out or "too far" in out.lower():
+                self._push("AI-SHA", "I couldn't verify a live face — please sit "
+                           "within arm's length, facing the camera, and say "
+                           "\"authenticate me\" to try again.")
+            elif "active liveness" in out:
+                self._push("AI-SHA", "I didn't see a clear head turn. Say "
+                           "\"authenticate me\" and turn left then right when asked.")
+            elif "wrong PIN" in out:
+                self._push("AI-SHA", "Your face was recognised, but that PIN was "
+                           "incorrect. Access denied.")
+            elif "no face seen" in out or "no admin" in out:
+                self._push("AI-SHA", "I couldn't see a face — my camera may be "
+                           "pointed away from you. Check the live preview on this "
+                           "page shows your face, then say \"authenticate me\".")
+            else:
+                tail = [l for l in out.splitlines() if "DENIED" in l or "ERROR" in l]
+                self._push("AI-SHA", "Authentication did not complete. "
+                           + (tail[-1] if tail else ""))
+        except subprocess.TimeoutExpired:
+            self._push("AI-SHA", "The scan timed out. Say \"authenticate me\" to retry.")
+        except Exception as e:                                    # never kill the console
+            self._push("AI-SHA", f"Sorry — authentication failed ({type(e).__name__}).")
+        finally:
+            with self.lock:
+                self._auth_busy = False
+
+    def _replay_pending(self):
+        """Re-run the admin question that was blocked, so the user does not have to
+        re-ask it after authenticating."""
+        pend = self._pending_admin
+        self._pending_admin = None
+        if not pend:
+            return
+        kind, utt = pend
+        self._push("AI-SHA", f"Now answering: \"{utt}\"")
+        if kind == "timetable":
+            self._start_timetable_query(utt)
+        elif kind == "hrms":
+            self._start_hrms_query(utt)
 
 
 PAGE = """<!DOCTYPE html><html><head><meta charset=utf-8>

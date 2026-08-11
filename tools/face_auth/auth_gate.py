@@ -191,26 +191,43 @@ def cmd_authenticate(a):
     from collections import Counter
     tally = Counter(n for n, _ in votes)
     top = tally.most_common(1)[0] if tally else ("UNKNOWN", 0)
-    if not votes or top[0] == "UNKNOWN" or top[1] < max(3, len(votes) // 2):
+    # Distinguish "saw nobody" from "saw someone I don't know". The camera on this
+    # robot wanders off-target, and reporting "not recognized" when it is actually
+    # pointed at a wall sends the user hunting for a recognition fault that isn't
+    # there. Too few qualifying frames = no face in view.
+    if len(votes) + flat < 3:
+        node.destroy_node(); rclpy.shutdown()
+        print("[auth] DENIED - no face seen. Aim the camera at your face "
+              "(use the console preview) and try again."); sys.exit(6)
+    if top[0] == "UNKNOWN" or top[1] < max(3, len(votes) // 2):
         node.destroy_node(); rclpy.shutdown()
         print("[auth] DENIED - face not recognized as an enrolled admin."); sys.exit(3)
     identity = top[0]
     best_overall = max((s for _, s in votes), default=0.0)
     print(f"[auth]   identity candidate: {identity} (best={best_overall:.3f}, {top[1]}/{len(votes)} frames)")
 
-    # Phase 2 — ACTIVE liveness challenge
-    print("[auth] Phase 2/3 LIVENESS CHALLENGE:")
-    ok, info = active_challenge(node, det, rclpy)
-    node.destroy_node(); rclpy.shutdown()
-    if not ok:
-        print(f"[auth] DENIED - active liveness failed ({info})."); sys.exit(4)
-    print(f"[auth]   challenge passed (head swing={info['swing']} >= {info['need']}).")
+    # Phases 2 & 3 (head-turn challenge + PIN) are skipped in --relaxed mode.
+    # Passive depth liveness in Phase 1 still runs, so a printed photo is still
+    # rejected — relaxed lowers the friction, not the spoof resistance to a flat
+    # image. Intended for the experimental/demo phase; drop --relaxed to restore
+    # the full four-factor gate.
+    if getattr(a, "relaxed", False):
+        node.destroy_node(); rclpy.shutdown()
+        print("[auth]   relaxed mode: head-turn challenge and PIN skipped.")
+    else:
+        # Phase 2 — ACTIVE liveness challenge
+        print("[auth] Phase 2/3 LIVENESS CHALLENGE:")
+        ok, info = active_challenge(node, det, rclpy)
+        node.destroy_node(); rclpy.shutdown()
+        if not ok:
+            print(f"[auth] DENIED - active liveness failed ({info})."); sys.exit(4)
+        print(f"[auth]   challenge passed (head swing={info['swing']} >= {info['need']}).")
 
-    # Phase 3 — PIN
-    print("[auth] Phase 3/3 PIN:")
-    pin = a.pin if a.pin is not None else _read_pin()
-    if not _verify_pin(identity, pin):
-        print("[auth] DENIED - wrong PIN."); sys.exit(5)
+        # Phase 3 — PIN
+        print("[auth] Phase 3/3 PIN:")
+        pin = a.pin if a.pin is not None else _read_pin()
+        if not _verify_pin(identity, pin):
+            print("[auth] DENIED - wrong PIN."); sys.exit(5)
 
     s = _write_session(identity)
     print(f"[auth] ==================================================")
@@ -234,6 +251,8 @@ if __name__ == "__main__":
     sp = sub.add_parser("set-pin"); sp.add_argument("--name", required=True)
     sp.add_argument("--pin", required=True); sp.set_defaults(fn=cmd_set_pin)
     au = sub.add_parser("authenticate"); au.add_argument("--pin", default=None)
+    au.add_argument("--relaxed", action="store_true",
+                    help="demo mode: face + passive liveness only, no challenge/PIN")
     au.add_argument("--threshold", type=float, default=0.45)
     au.add_argument("--seconds", type=float, default=5); au.set_defaults(fn=cmd_authenticate)
     cs = sub.add_parser("check-session"); cs.set_defaults(fn=cmd_check_session)
