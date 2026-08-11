@@ -34,7 +34,11 @@ TT_HOME     = os.path.expanduser("~/timetable_query")
 TT_TOOL     = os.path.expanduser("~/robot_ws/tools/timetable_query/timetable_query.py")
 FACE_HOME   = os.path.expanduser("~/face_auth")        # face-auth gate lives here
 AUTH_SECS   = 8                                         # camera window for a scan
-CAM_ROTATE  = os.environ.get("AISHA_CAM_ROTATE", "180")  # camera is mounted inverted
+# Camera mounting rotation for the face gate: "0" now that the camera has been
+# re-aimed upright. It was 180 while the D435 was mounted inverted. Keep this in
+# step with the PHYSICAL mounting — a stale 180 flips an already-upright face and
+# the gate fails as "not recognized", which reads like a recognition fault.
+CAM_ROTATE  = os.environ.get("AISHA_CAM_ROTATE", "0")
 # Experimental/demo default: face + passive anti-spoof only — no head-turn, no
 # PIN. Set AISHA_AUTH_RELAXED=0 to restore the full four-factor gate.
 AUTH_RELAXED = os.environ.get("AISHA_AUTH_RELAXED", "1") == "1"
