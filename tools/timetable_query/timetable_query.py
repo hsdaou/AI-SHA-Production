@@ -55,19 +55,27 @@ INTENTS = {
     "free_count": {
         "path": "/api/robot/free-count",
         "keywords": ("how many students are free", "how many are free",
-                     "how many free students", "count of free"),
+                     "how many free students", "count of free",
+                     "how many students are available", "how many are available"),
         "needs_admin": False,
     },
     "free_students": {
         "path": "/api/robot/free-students",
+        # "available" is how people actually ask. Its absence sent every such
+        # question to the knowledge base, which invented teacher availability from
+        # prospectus documents.
         "keywords": ("which students are free", "who is free", "who's free",
-                     "free students", "students free", "list free students"),
+                     "free students", "students free", "list free students",
+                     "which students are available", "students are available",
+                     "which students available", "who is available"),
         "needs_admin": True,
     },
     "free_teachers": {
         "path": "/api/robot/free-teachers",
         "keywords": ("which teachers are free", "free teachers", "teachers free",
-                     "which teacher is free"),
+                     "which teacher is free", "which teachers are available",
+                     "teachers are available", "which teacher is available",
+                     "available teachers", "teachers available"),
         "needs_admin": True,
     },
 }

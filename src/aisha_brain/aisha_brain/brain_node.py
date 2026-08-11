@@ -174,7 +174,15 @@ class BrainNode(Node):
         timetable_keywords = ['timetable', 'time table', 'free students',
                               'students are free', 'free teachers',
                               'teachers are free', 'lessons for grade',
-                              'schedule for grade']
+                              'schedule for grade',
+                              # People ask who is "available", not who is "free".
+                              # Without these the question fell through to ADMIN and
+                              # the knowledge base invented teacher availability out
+                              # of prospectus text.
+                              'teachers are available', 'students are available',
+                              'available teachers', 'available students',
+                              'teachers available', 'students available',
+                              'who is available', 'which teacher is available']
         for kw in timetable_keywords:
             if kw in text_lower:
                 self.get_logger().info(f'Keyword match "{kw}" -> SKILL_TIMETABLE (no LLM)')

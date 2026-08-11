@@ -58,6 +58,11 @@ TIMETABLE_INTENT = re.compile(
     r"time\s*table|timetable"
     r"|(which|who|how many).{0,24}(students?|teachers?).{0,16}free"
     r"|free\s+(students?|teachers?)"
+    # "available" is how the question is actually asked; without it the request
+    # went to the knowledge base and came back invented.
+    r"|(which|who|how many).{0,24}(students?|teachers?).{0,16}available"
+    r"|available\s+(students?|teachers?)"
+    r"|(students?|teachers?)\s+(are\s+)?available"
     r"|lessons? for grade|schedule for grade", re.I)
 REPLY_TOPIC = "/robot_speech"                         # answer out
 
@@ -96,6 +101,31 @@ class Hub(Node):
         self.mode_pub = self.create_publisher(String, "/aisha/mode", mode_q)
         self._claim_gpu()
         self.create_timer(30.0, self._claim_gpu)   # re-assert for late joiners
+
+        # ── Mic mute ────────────────────────────────────────────────────────
+        # stt_node already mutes itself while the speaker is playing, via
+        # /speaker/playing. We reuse that: it is the only mute path that exists,
+        # and it avoids killing stt_node (which would reload Whisper on every
+        # toggle, ~10 s). Caveat: stt_node has a 90 s stuck-mute WATCHDOG that
+        # force-unmutes, so a one-shot True would silently wear off — we
+        # re-assert every 20 s for as long as the mute is held.
+        from std_msgs.msg import Bool
+        self._Bool = Bool
+        self.mic_muted = False
+        self.mic_pub = self.create_publisher(Bool, "/speaker/playing", 10)
+        self.create_timer(20.0, self._reassert_mic)
+
+    def set_mic_mute(self, muted: bool):
+        self.mic_muted = bool(muted)
+        m = self._Bool(); m.data = self.mic_muted
+        self.mic_pub.publish(m)
+        self._push("AI-SHA", "Microphone muted — I am not listening."
+                   if self.mic_muted else "Microphone on — I am listening again.")
+
+    def _reassert_mic(self):
+        if self.mic_muted:                      # beat the 90 s stuck-mute watchdog
+            m = self._Bool(); m.data = True
+            self.mic_pub.publish(m)
 
     def _claim_gpu(self):
         m = String(); m.data = "CONVERSING"
@@ -380,6 +410,11 @@ form{display:flex;gap:8px;margin-top:10px}
 input{flex:1;padding:11px;border-radius:7px;border:1px solid #333;background:#0d1117;color:#fff;font-size:15px}
 button{padding:11px 18px;border:0;border-radius:7px;background:#4136b8;color:#fff;font-size:15px;cursor:pointer}
 button:hover{background:#5346d8}
+.bar{display:flex;align-items:center;gap:10px;margin-top:8px}
+.mic{padding:9px 14px;border:0;border-radius:7px;font-size:14px;cursor:pointer;color:#fff}
+.mic.on{background:#2f6f4a}.mic.off{background:#8a3030}
+.stat{font-size:12px;color:#9aa4b2}
+.stat b.ok{color:#57d98b}.stat b.bad{color:#e08a8a}
 .voicebar{background:#203a2c;color:#bfe6cd;padding:9px 18px;font-size:14px;border-bottom:1px solid #2c5a3e}
 .voicebar b{color:#8fe0a8}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#57d98b;margin-right:7px;
@@ -389,7 +424,13 @@ button:hover{background:#5346d8}
 <header>AI-SHA console <small>camera + ask &amp; answer &nbsp;|&nbsp; nothing is spoken until the Pi 5 (TTS) exists</small></header>
 __VOICEBAR__
 <div class=wrap>
-  <div class=cam><img src="/stream"><div class=src id=src></div></div>
+  <div class=cam><img id=cam src="/stream">
+    <div class=bar>
+      <button id=micbtn class="mic on" onclick="togglemic()">&#127908; Mic: ON</button>
+      <span class=stat id=src></span>
+      <span class=stat>camera <b id=camstat class=ok>live</b></span>
+    </div>
+  </div>
   <div class=side>
     <div id=log></div>
     <form onsubmit="ask(event)">
@@ -399,6 +440,48 @@ __VOICEBAR__
   </div>
 </div>
 <script>
+// ── keep the camera alive ───────────────────────────────────────────────────
+// The MJPEG response is one long-lived HTTP connection. When it drops - Wi-Fi
+// blip, the console being restarted, a proxy timing it out - the <img> simply
+// stops updating and keeps showing the LAST frame. Nothing errors, so the page
+// looks fine while the picture is minutes old; that is what forced a manual
+// refresh every 20-30 s. Watch for staleness and rebuild the connection.
+var lastFrame = Date.now();
+var cam = document.getElementById('cam');
+cam.addEventListener('load', function(){ lastFrame = Date.now(); });
+cam.addEventListener('error', function(){ reconnect(); });
+function reconnect(){
+  document.getElementById('camstat').textContent = 'reconnecting';
+  document.getElementById('camstat').className = 'bad';
+  cam.src = '/stream?t=' + Date.now();     // cache-buster forces a NEW connection
+}
+setInterval(function(){
+  // A live MJPEG stream fires no 'load' events in some browsers, so also poll a
+  // single frame: if THAT fails the server is genuinely gone.
+  fetch('/frame?t=' + Date.now(), {cache:'no-store'}).then(function(r){
+    if(!r.ok) throw 0;
+    lastFrame = Date.now();
+    document.getElementById('camstat').textContent = 'live';
+    document.getElementById('camstat').className = 'ok';
+  }).catch(function(){
+    if(Date.now() - lastFrame > 6000) reconnect();
+  });
+}, 4000);
+
+async function togglemic(){
+  var b = document.getElementById('micbtn');
+  var muted = b.classList.contains('off');
+  var r = await fetch('/mic?mute=' + (muted ? '0' : '1'));
+  var d = await r.json();
+  setmic(d.muted);
+  poll();
+}
+function setmic(muted){
+  var b = document.getElementById('micbtn');
+  b.className = 'mic ' + (muted ? 'off' : 'on');
+  b.innerHTML = muted ? '&#128263; Mic: MUTED' : '&#127908; Mic: ON';
+}
+
 async function ask(e){e.preventDefault();var q=document.getElementById('q');
   if(!q.value.trim())return; await fetch('/ask?q='+encodeURIComponent(q.value)); q.value=''; poll();}
 async function poll(){try{var r=await fetch('/events');var d=await r.json();
@@ -407,7 +490,8 @@ async function poll(){try{var r=await fetch('/events');var d=await r.json();
     el.innerHTML+='<div class="msg '+c+'"><div class=who>'+m.who+' &middot; '+m.t+'</div>'+
       m.text.replace(/</g,'&lt;')+'</div>';});
   el.scrollTop=el.scrollHeight;
-  var s=await fetch('/src');document.getElementById('src').textContent='camera source: '+await s.text();
+  var s=await fetch('/src');document.getElementById('src').textContent='source: '+await s.text();
+  var m=await (await fetch('/mic')).json(); setmic(m.muted);
 }catch(e){}}
 setInterval(poll,1000);poll();
 </script></body></html>"""
@@ -440,6 +524,23 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, "text/html; charset=utf-8", PAGE.replace("__VOICEBAR__", bar).encode())
         elif p.path == "/events":
             self._send(200, "application/json", json.dumps(HUB.events()).encode())
+        elif p.path == "/frame":
+            frame, _ = HUB.jpeg()
+            if not frame:
+                self._send(503, "text/plain", b"no frame")
+            else:
+                self.send_response(200)
+                self.send_header("Content-Type", "image/jpeg")
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Length", str(len(frame)))
+                self.end_headers()
+                self.wfile.write(frame)
+        elif p.path == "/mic":
+            want = parse_qs(p.query).get("mute", ["?"])[0]
+            if want in ("1", "0"):
+                HUB.set_mic_mute(want == "1")
+            self._send(200, "application/json",
+                       json.dumps({"muted": HUB.mic_muted}).encode())
         elif p.path == "/src":
             self._send(200, "text/plain", HUB.jpeg()[1].encode())
         elif p.path == "/ask":
