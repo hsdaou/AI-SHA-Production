@@ -64,6 +64,17 @@ HRMS_INTENT = re.compile(
 # says those out loud. A list of NAMED students is emailed instead - they are
 # minors. timetable_query.py enforces that split and requires an admin session
 # only for the naming answers.
+# The console uses the SAME classifier as brain_node and the trigger. The regex
+# below survives only as a fallback if the import fails, so a broken deploy
+# degrades to the old behaviour rather than routing nothing at all.
+try:
+    import sys as _sys
+    _sys.path.insert(0, os.path.expanduser(
+        "~/robot_ws/install/aisha_brain/lib/python3.10/site-packages/aisha_brain"))
+    import skill_intents as _si
+except Exception:                                            # pragma: no cover
+    _si = None
+
 TIMETABLE_INTENT = re.compile(
     r"time\s*table|timetable"
     r"|(which|who|how many).{0,24}(students?|teachers?).{0,16}free"
@@ -83,6 +94,12 @@ AUTH_INTENT = re.compile(
     r"authenticate|log ?me ?in|sign ?me ?in|verify me|verify my|scan my face"
     r"|i('?m| am)\s+(an?\s+)?admin|log in as|it'?s me", re.I)
 REPLY_TOPIC = "/robot_speech"                         # answer out
+
+
+def _is_timetable(text: str) -> bool:
+    if _si is not None:
+        return _si.is_skill(text)
+    return bool(TIMETABLE_INTENT.search(text or ""))
 
 
 class Hub(Node):
@@ -198,7 +215,7 @@ class Hub(Node):
             self._start_auth_prompt()      # PIN is then typed, never spoken
         elif HRMS_INTENT.search(m.data or ""):
             self._start_hrms_query(m.data)
-        elif TIMETABLE_INTENT.search(m.data or ""):
+        elif _is_timetable(m.data or ""):
             self._start_timetable_query(m.data)
 
     # ── video-message skill ─────────────────────────────────────────────────
@@ -438,7 +455,7 @@ class Hub(Node):
         if HRMS_INTENT.search(text or ""):
             self._start_hrms_query(text)
             return
-        if TIMETABLE_INTENT.search(text or ""):
+        if _is_timetable(text or ""):
             self._start_timetable_query(text)
             return
         msg = String(); msg.data = text

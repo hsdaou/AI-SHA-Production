@@ -171,22 +171,18 @@ class BrainNode(Node):
         # School timetable questions are answered by the timetable app, which holds
         # the live schedule. The knowledge base holds prospectus documents and knows
         # nothing about who is free in period 3, so the LLM would invent it.
-        timetable_keywords = ['timetable', 'time table', 'free students',
-                              'students are free', 'free teachers',
-                              'teachers are free', 'lessons for grade',
-                              'schedule for grade',
-                              # People ask who is "available", not who is "free".
-                              # Without these the question fell through to ADMIN and
-                              # the knowledge base invented teacher availability out
-                              # of prospectus text.
-                              'teachers are available', 'students are available',
-                              'available teachers', 'available students',
-                              'teachers available', 'students available',
-                              'who is available', 'which teacher is available']
-        for kw in timetable_keywords:
-            if kw in text_lower:
-                self.get_logger().info(f'Keyword match "{kw}" -> SKILL_TIMETABLE (no LLM)')
+        # ONE classifier, shared with the skill trigger. Keyword lists here and a
+        # different set in the trigger is what let "how many teachers do I HAVE
+        # available" reach the knowledge base, which invented an answer beside the
+        # skill's own reply. If the skill owns the utterance, brain_node says
+        # nothing at all.
+        try:
+            from aisha_brain import skill_intents
+            if skill_intents.is_skill(text):
+                self.get_logger().info('skill_intents -> SKILL_TIMETABLE (no LLM)')
                 return {"intent": "SKILL_TIMETABLE"}
+        except Exception as e:            # never let the router die on an import
+            self.get_logger().warning(f'skill_intents unavailable ({e})')
 
         for kw in nav_keywords:
             if kw in text_lower:

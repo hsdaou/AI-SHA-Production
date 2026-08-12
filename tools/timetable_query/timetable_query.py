@@ -111,54 +111,37 @@ def session_state():
     return True, f"session VALID for {s.get('user', '?')} ({int(left)}s left)"
 
 
+# The ONE classifier, shared with brain_node so the two can never disagree about
+# a sentence again. Imported by path because this tool runs standalone, outside
+# the ROS package.
+sys.path.insert(0, os.path.expanduser(
+    "~/robot_ws/install/aisha_brain/lib/python3.10/site-packages/aisha_brain"))
+sys.path.insert(0, os.path.expanduser("~/robot_ws/src/aisha_brain/aisha_brain"))
+import skill_intents  # noqa: E402
+
+
 def route_intent(utterance):
-    """Longest keyword wins, so "how many students are free" does not match the
-    shorter "students free" and email a list nobody asked for."""
-    low = utterance.lower()
-    best, best_len = None, 0
-    for name, spec in INTENTS.items():
-        for kw in spec["keywords"]:
-            if kw in low and len(kw) > best_len:
-                best, best_len = name, len(kw)
-    return best
+    r = skill_intents.classify(utterance)
+    return None if r["intent"] == "none" else r["intent"]
 
 
 def parse_params(utterance):
-    """Grade, section and day out of plain speech. Anything absent is left to the
-    server, which falls back to today and the current period."""
-    low = utterance.lower()
+    """Slots from the shared classifier, in the wire format the app expects."""
+    r = skill_intents.classify(utterance)
     out = {}
-    m = re.search(r"grade\s*(\d{1,2})", low) or re.search(r"\bg(\d{1,2})\b", low)
-    if m:
-        out["grade"] = m.group(1)
-    m = re.search(r"section\s*([a-z])\b", low)
-    if m:
-        out["section"] = m.group(1).upper()
-    elif "grade" in low:
-        m = re.search(r"grade\s*\d{1,2}\s*([a-z])\b", low)
-        if m:
-            out["section"] = m.group(1).upper()
-    for d in DAYS:
-        if d in low:
-            out["day"] = d.capitalize()
-            break
-    # "tomorrow" must be RESOLVED, not dropped. Dropping it let the server fall
-    # back to today, so "who is free tomorrow" silently answered for today - the
-    # worst kind of wrong, because it looks like an answer.
-    if "tomorrow" in low:
-        out["day"] = (_date_cls.today() + _timedelta(days=1)).strftime("%A")
-    elif "today" in low:
-        out["day"] = _date_cls.today().strftime("%A")
-
-    m = re.search(r"period\s*(\d{1,2})", low) or re.search(r"\b(\d{1,2})(?:st|nd|rd|th)\s+period", low)
-    if m:
-        out["period"] = f"Period {m.group(1)}"
-    else:
-        # People say "the third period", not "period 3".
-        for word, n in ORDINALS.items():
-            if re.search(rf"\b{word}\b\s+period|period\s+\b{word}\b", low):
-                out["period"] = f"Period {n}"
-                break
+    if r.get("grade") is not None:
+        out["grade"] = str(r["grade"])
+    if r.get("section"):
+        out["section"] = r["section"]
+    day = skill_intents.resolve_day(r.get("day"))
+    if day:
+        out["day"] = day
+    if r.get("period") is not None:
+        out["period"] = f"Period {r['period']}"
+    # free_count applies to either population; without this the server assumed
+    # students and answered "950 students are free" to "how many TEACHERS...".
+    if r.get("subject"):
+        out["subject"] = r["subject"]
     return out
 
 
