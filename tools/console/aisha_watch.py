@@ -32,6 +32,8 @@ HRMS_HOME   = os.path.expanduser("~/hrms_query")       # HRMS skill config lives
 HRMS_TOOL   = os.path.expanduser("~/robot_ws/tools/hrms_query/hrms_query.py")
 TT_HOME     = os.path.expanduser("~/timetable_query")
 TT_TOOL     = os.path.expanduser("~/robot_ws/tools/timetable_query/timetable_query.py")
+REPORT_HOME = os.path.expanduser("~/student_report_query")
+REPORT_TOOL = os.path.expanduser("~/robot_ws/tools/student_report_query/student_report_query.py")
 FACE_HOME   = os.path.expanduser("~/face_auth")        # face-auth gate lives here
 AUTH_SECS   = 8                                         # camera window for a scan
 # Camera mounting rotation for the face gate: "0" now that the camera has been
@@ -93,6 +95,9 @@ TIMETABLE_INTENT = re.compile(
 AUTH_INTENT = re.compile(
     r"authenticate|log ?me ?in|sign ?me ?in|verify me|verify my|scan my face"
     r"|i('?m| am)\s+(an?\s+)?admin|log in as|it'?s me", re.I)
+STUDENT_REPORT_INTENT = re.compile(
+    r"\b(student|pupil)\s+(report|marks?|grades?|results?)\b"
+    r"|\b(report|marks?|grades?|results?)\s+(for|of)\s+(student|pupil)\b", re.I)
 REPLY_TOPIC = "/robot_speech"                         # answer out
 
 
@@ -113,6 +118,7 @@ class Hub(Node):
         self._vm_busy = False
         self._hrms_busy = False
         self._tt_busy = False
+        self._report_busy = False
         self._last_skill = None   # last answered timetable query, for follow-ups
         self._auth_busy = False
         self._awaiting_pin = False      # next TYPED line is a PIN, not a question
@@ -208,6 +214,10 @@ class Hub(Node):
         if "__selftest__" in m.data:      # boot pipeline probe; not a real question
             self._selftest_until = time.time() + 120
             return
+        if (m.data or "").strip() == "wake_word_triggered":
+            # Internal STT control event. brain_node owns the spoken greeting;
+            # never display this token as something the visitor said.
+            return
         self._selftest_until = 0.0        # a real utterance — stop swallowing replies
         self._push("you", m.data)
         if VIDEO_INTENT.search(m.data or ""):
@@ -216,6 +226,8 @@ class Hub(Node):
             self._start_auth_prompt()      # PIN is then typed, never spoken
         elif HRMS_INTENT.search(m.data or ""):
             self._start_hrms_query(m.data)
+        elif STUDENT_REPORT_INTENT.search(m.data or ""):
+            self._start_student_report(m.data)
         elif _is_timetable(m.data or "", self._last_skill):
             self._start_timetable_query(m.data)
 
@@ -250,6 +262,10 @@ class Hub(Node):
                 f'python3 -u "{HRMS_TOOL}" ask {json.dumps(utterance)}',
                 shell=True, cwd=HRMS_HOME, capture_output=True, text=True, timeout=120)
             code = r.returncode
+            if code == 3:
+                # Preserve the private question and replay it once the face/PIN
+                # gate succeeds, so the administrator need not ask twice.
+                self._pending_admin = ("hrms", utterance)
             msg = {
                 0: "The report has been sent to the administrator's email.",
                 2: "I could not tell which report you meant. Try: \"who is on sick "
@@ -274,6 +290,40 @@ class Hub(Node):
                 self._hrms_busy = False
 
     # ── School timetable skill ──────────────────────────────────────────────
+    def _start_student_report(self, utterance):
+        with self.lock:
+            if self._report_busy:
+                return
+            self._report_busy = True
+        threading.Thread(target=self._student_report_worker, args=(utterance,), daemon=True).start()
+
+    def _student_report_worker(self, utterance):
+        try:
+            result = subprocess.run(
+                ["python3", "-u", REPORT_TOOL, "ask", utterance], cwd=REPORT_HOME,
+                capture_output=True, text=True, timeout=60)
+            output = (result.stdout or "") + (result.stderr or "")
+            spoken = [line.split("SPEAK:", 1)[1].strip() for line in output.splitlines()
+                      if "SPEAK:" in line]
+            if result.returncode == 0 and spoken:
+                self._push("AI-SHA", spoken[-1])
+            elif result.returncode == 2:
+                self._push("AI-SHA", "Please include the student's computer number, for example: student report for 12345.")
+            elif result.returncode == 3:
+                self._pending_admin = ("student_report", utterance)
+                self._push("AI-SHA", "A student report is private. Say \"authenticate me\" and I will email it to the administrator.")
+            elif result.returncode == 4:
+                self._push("AI-SHA", "I could not reach the student report system.")
+            else:
+                self._push("AI-SHA", "The student report could not be sent.")
+        except subprocess.TimeoutExpired:
+            self._push("AI-SHA", "The student report system did not respond in time.")
+        except Exception as exc:
+            self._push("AI-SHA", f"Sorry — the student report request failed ({type(exc).__name__}).")
+        finally:
+            with self.lock:
+                self._report_busy = False
+
     def _start_timetable_query(self, utterance):
         with self.lock:
             if self._tt_busy:
@@ -477,12 +527,20 @@ class Hub(Node):
             rest = re.sub(AUTH_INTENT, " ", text or "", count=1)
             rest = re.sub(r"^[\s,.]*\b(and|then|also|please)\b", " ", rest.strip(),
                           flags=re.I).strip(" ,.")
-            if rest and _is_timetable(rest, self._last_skill):
-                self._pending_admin = ("timetable", rest)
+            if rest:
+                if HRMS_INTENT.search(rest):
+                    self._pending_admin = ("hrms", rest)
+                elif STUDENT_REPORT_INTENT.search(rest):
+                    self._pending_admin = ("student_report", rest)
+                elif _is_timetable(rest, self._last_skill):
+                    self._pending_admin = ("timetable", rest)
             self._start_auth_prompt()
             return
         if HRMS_INTENT.search(text or ""):
             self._start_hrms_query(text)
+            return
+        if STUDENT_REPORT_INTENT.search(text or ""):
+            self._start_student_report(text)
             return
         if _is_timetable(text or "", self._last_skill):
             self._start_timetable_query(text)
@@ -576,6 +634,8 @@ class Hub(Node):
             self._start_timetable_query(utt)
         elif kind == "hrms":
             self._start_hrms_query(utt)
+        elif kind == "student_report":
+            self._start_student_report(utt)
 
 
 PAGE = """<!DOCTYPE html><html><head><meta charset=utf-8>
