@@ -30,6 +30,10 @@ INTENT_FREE_STUDENTS = "free_students"
 INTENT_FREE_COUNT = "free_count"
 INTENT_TIMETABLE = "timetable"
 INTENT_NONE = "none"
+# A follow-up that carries no subject of its own: "send me the report",
+# "the name list please", "email it to me". Only resolvable against what was
+# asked a moment ago.
+INTENT_FOLLOWUP = "followup"
 
 WEEKDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday",
             "saturday", "sunday"]
@@ -105,6 +109,7 @@ _OTHER_SKILL = re.compile(
     r"\bvideo\s*message\b|\bvedio\s*message\b|\brecord\s+a\s+(video|message)\b"
     r"|\bsick\s+leave\b|\bannual\s+leave\b|\bon\s+leave\b|\bleave\s+balance\b"
     r"|\bdays?\s+(left|remaining)\b|\bwho.{0,6}\s+(off|absent|away)\b"
+    r"|\bhrms\b|\bleave\s+(report|records?|request)\b|\b(casual|maternity)\s+leave\b"
     r"|\bauthenticate\b|\blog\s*in\b|\bsign\s*in\b|\bverify\s+me\b")
 
 _KNOWLEDGE = re.compile(
@@ -127,6 +132,22 @@ _FACILITY = re.compile(
 _DIARY = re.compile(r"\b(meeting|appointment|interview|parent\s+conference)\b")
 _SINGLE_PERSON = re.compile(r"\b(is|will)\s+(mr|mrs|ms|miss|dr|the)\b"
                             r"|\bis\s+[a-z]+\s+(available|free|in)\b")
+
+# A request to be SENT something, with no subject of its own. On its own this is
+# unanswerable; against the previous query it means "the named list of that".
+# Without this it fell through to the knowledge base, which replied "I am AI-SHA,
+# the administrative assistant" and then invented a paragraph about student life
+# organisations.
+_FOLLOWUP = re.compile(
+    r"\b(send|email|mail|share|forward|give|get)\b[^.?]{0,24}"
+    r"\b(it|them|those|that|report|list|names?|details|by\s*e?-?mail)\b"
+    r"|\b(the\s+)?(name\s*list|report)\b"
+    r"|\bemail\s+(it|them|me)\b")
+
+# Speech-to-text renders "teachers" as "meters"/"metres" often enough to matter,
+# and this robot is never asked about lengths. Only consulted inside the
+# availability branch, so "how many metres of rope" could never reach it.
+_STT_TEACHER = re.compile(r"\b(meters?|metres?|readers?|preachers?)\b")
 
 # ── Slot extraction ─────────────────────────────────────────────────────────
 _GRADE_RE = re.compile(
@@ -240,8 +261,39 @@ def resolve_day(day: str | None, today: datetime.date | None = None) -> str | No
     return day
 
 
-def classify(text: str) -> dict:
-    """-> {intent, grade, section, day, period, why}. Never raises."""
+def is_followup(text: str) -> bool:
+    """A 'send me the report' with no subject of its own."""
+    t = _norm(text)
+    if not _FOLLOWUP.search(t):
+        return False
+    return not (_TEACHER.search(t) or _STUDENT.search(t) or _AVAILABLE.search(t)
+                or _TIMETABLE.search(t))
+
+
+def synthesize(context: dict) -> str:
+    """Rebuild a full question from a remembered query, so a follow-up can be
+    answered by the ordinary path instead of a second, parallel code path."""
+    if not context:
+        return ""
+    subject = context.get("subject") or (
+        "teachers" if context.get("intent") == INTENT_FREE_TEACHERS else "students")
+    parts = [f"send me the list of available {subject}"]
+    if context.get("grade"):
+        parts.append(f"in grade {context['grade']}")
+    if context.get("section"):
+        parts.append(f"section {context['section']}")
+    if context.get("day"):
+        parts.append(f"on {context['day']}")
+    if context.get("period"):
+        parts.append(f"period {context['period']}")
+    return " ".join(parts)
+
+
+def classify(text: str, context: dict | None = None) -> dict:
+    """-> {intent, grade, section, day, period, why}. Never raises.
+
+    `context` is the previously answered query. It is what lets "send me the
+    report by email" mean anything at all."""
     t = _norm(text)
     slots = extract_slots(text)
     res = {"intent": INTENT_NONE, **slots, "why": ""}
@@ -258,7 +310,28 @@ def classify(text: str) -> dict:
         res["why"] = "knowledge-base question"
         return res
 
-    has_teacher = bool(_TEACHER.search(t))
+    # "send me the report" - resolvable only against the last query.
+    if is_followup(text):
+        if context and context.get("intent") in (INTENT_FREE_TEACHERS,
+                                                 INTENT_FREE_STUDENTS,
+                                                 INTENT_FREE_COUNT):
+            subject = context.get("subject") or (
+                "teachers" if context["intent"] == INTENT_FREE_TEACHERS else "students")
+            res.update({
+                "intent": (INTENT_FREE_TEACHERS if subject == "teachers"
+                           else INTENT_FREE_STUDENTS),
+                "grade": context.get("grade"), "section": context.get("section"),
+                "day": context.get("day"), "period": context.get("period"),
+                "subject": subject,
+                "why": "follow-up resolved against the previous question",
+            })
+            return res
+        res["intent"] = INTENT_FOLLOWUP
+        res["why"] = "asked to send something, but nothing was asked before it"
+        return res
+
+    has_teacher = bool(_TEACHER.search(t)) or bool(
+        _STT_TEACHER.search(t) and _AVAILABLE.search(t))
     has_student = bool(_STUDENT.search(t))
     has_avail = bool(_AVAILABLE.search(t))
     has_count = bool(_COUNT.search(t))
@@ -331,7 +404,7 @@ def classify(text: str) -> dict:
     return res
 
 
-def is_skill(text: str) -> bool:
+def is_skill(text: str, context: dict | None = None) -> bool:
     """True when the timetable skill owns this utterance - brain_node uses this
     to stay silent instead of sending it to the knowledge base."""
-    return classify(text)["intent"] != INTENT_NONE
+    return classify(text, context)["intent"] != INTENT_NONE

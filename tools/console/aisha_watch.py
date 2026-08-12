@@ -96,9 +96,9 @@ AUTH_INTENT = re.compile(
 REPLY_TOPIC = "/robot_speech"                         # answer out
 
 
-def _is_timetable(text: str) -> bool:
+def _is_timetable(text: str, context=None) -> bool:
     if _si is not None:
-        return _si.is_skill(text)
+        return _si.is_skill(text, context)
     return bool(TIMETABLE_INTENT.search(text or ""))
 
 
@@ -113,6 +113,7 @@ class Hub(Node):
         self._vm_busy = False
         self._hrms_busy = False
         self._tt_busy = False
+        self._last_skill = None   # last answered timetable query, for follow-ups
         self._auth_busy = False
         self._awaiting_pin = False      # next TYPED line is a PIN, not a question
         self._pin_deadline = 0.0
@@ -215,7 +216,7 @@ class Hub(Node):
             self._start_auth_prompt()      # PIN is then typed, never spoken
         elif HRMS_INTENT.search(m.data or ""):
             self._start_hrms_query(m.data)
-        elif _is_timetable(m.data or ""):
+        elif _is_timetable(m.data or "", self._last_skill):
             self._start_timetable_query(m.data)
 
     # ── video-message skill ─────────────────────────────────────────────────
@@ -281,10 +282,29 @@ class Hub(Node):
         threading.Thread(target=self._timetable_worker, args=(utterance,), daemon=True).start()
 
     def _timetable_worker(self, utterance):
+        # A follow-up ("send me the report") carries no subject. Rebuild the full
+        # question from the last one and run it down the ordinary path, so there
+        # is no second code path that can drift from the first.
+        if _si is not None:
+            c = _si.classify(utterance, self._last_skill)
+            if c["intent"] == "followup":
+                self._push("AI-SHA", "Send you which report? Ask me about free "
+                                     "teachers or students first, then say "
+                                     "\"send me the list\".")
+                with self.lock:
+                    self._tt_busy = False
+                return
+            if _si.is_followup(utterance) and self._last_skill:
+                utterance = _si.synthesize(c)
         """Ask the timetable app. Speakable answers (a class timetable, a count of
         free students) come back as text and are shown; anything that would name a
         student is emailed by the app and only a confirmation comes back here."""
         try:
+            if _si is not None:
+                c2 = _si.classify(utterance, self._last_skill)
+                if c2["intent"] != "none":
+                    with self.lock:
+                        self._last_skill = c2      # remember for the next follow-up
             r = subprocess.run(
                 f'python3 -u "{TT_TOOL}" ask {json.dumps(utterance)}',
                 shell=True, cwd=TT_HOME, capture_output=True, text=True, timeout=90)
@@ -326,6 +346,7 @@ class Hub(Node):
         finally:
             with self.lock:
                 self._tt_busy = False
+        self._last_skill = None   # last answered timetable query, for follow-ups
 
     def _sh(self, cmd, timeout=180):
         return subprocess.run(cmd, shell=True, cwd=VIDEO_HOME, capture_output=True,
@@ -450,12 +471,20 @@ class Hub(Node):
             self._start_video_message()
             return
         if AUTH_INTENT.search(text or ""):
+            # "authenticate me and send me the report by email" is TWO commands.
+            # Queue the second so it runs the moment the gate opens, instead of
+            # letting the leftover clause fall through to the knowledge base.
+            rest = re.sub(AUTH_INTENT, " ", text or "", count=1)
+            rest = re.sub(r"^[\s,.]*\b(and|then|also|please)\b", " ", rest.strip(),
+                          flags=re.I).strip(" ,.")
+            if rest and _is_timetable(rest, self._last_skill):
+                self._pending_admin = ("timetable", rest)
             self._start_auth_prompt()
             return
         if HRMS_INTENT.search(text or ""):
             self._start_hrms_query(text)
             return
-        if _is_timetable(text or ""):
+        if _is_timetable(text or "", self._last_skill):
             self._start_timetable_query(text)
             return
         msg = String(); msg.data = text
