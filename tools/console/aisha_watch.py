@@ -709,7 +709,7 @@ async function shutdownAll(){
   // Two-step confirm: this powers the robot OFF, and it cannot be turned back on
   // remotely (a powered-off board has no network). A single misclick should not
   // strand the robot.
-  if(!confirm('Power OFF the robot?\n\nThis shuts down the Jetson (and the Pi 5 if '
+  if(!confirm('Power OFF the robot? This shuts down the Jetson (and the Pi 5 if '
     +'reachable). Neither can be switched back on remotely — someone has to press '
     +'power physically. Continue?')) return;
   if(!confirm('Are you sure? Final confirmation — the console will go offline.')) return;
