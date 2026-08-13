@@ -33,7 +33,11 @@ HRMS_TOOL   = os.path.expanduser("~/robot_ws/tools/hrms_query/hrms_query.py")
 TT_HOME     = os.path.expanduser("~/timetable_query")
 TT_TOOL     = os.path.expanduser("~/robot_ws/tools/timetable_query/timetable_query.py")
 FACE_HOME   = os.path.expanduser("~/face_auth")        # face-auth gate lives here
-AUTH_SECS   = 8                                         # camera window for a scan
+# Camera window for a scan. 8 s was too short: auth_gate loads the ArcFace model
+# BEFORE creating its ROS node, so model load + DDS discovery ate most of the
+# window and it collected <3 usable frames -> "I couldn't see a face" while the
+# user sat perfectly framed. 20 s leaves a real sampling window.
+AUTH_SECS   = 20
 # Camera mounting rotation for the face gate: "0" now that the camera has been
 # re-aimed upright. It was 180 while the D435 was mounted inverted. Keep this in
 # step with the PHYSICAL mounting — a stale 180 flips an already-upright face and
@@ -574,7 +578,13 @@ class Hub(Node):
     def _auth_worker(self, pin):
         try:
             import shlex
-            env = dict(os.environ, ROS_DOMAIN_ID="99", AISHA_CAM_ROTATE=CAM_ROTATE)
+            # INHERIT the console's own domain — never hardcode it. This was
+            # pinned to "99"; when the stack moved to domain 42 for the two-board
+            # mesh, the auth subprocess kept looking on 99, saw no camera at all,
+            # and reported "I couldn't see a face" while the user sat perfectly
+            # framed. Same class of bug as the stale camera rotation.
+            env = dict(os.environ, AISHA_CAM_ROTATE=CAM_ROTATE)
+            env.setdefault("ROS_DOMAIN_ID", os.environ.get("ROS_DOMAIN_ID", "42"))
             if AUTH_RELAXED:
                 cmd = f"python3 -u auth_gate.py authenticate --relaxed --seconds {AUTH_SECS}"
             else:
