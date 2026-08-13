@@ -213,9 +213,19 @@ class Hub(Node):
 
         self._push("AI-SHA", f"{pi_msg}. Powering off the Jetson now. Goodbye.")
         time.sleep(2)                        # let the message reach the browser
-        # NOPASSWD sudoers required (deploy note); without it this hangs on a
-        # password prompt with no TTY and the Jetson stays up.
-        subprocess.Popen("sudo -n /sbin/poweroff", shell=True)
+        # A successful poweroff never returns (the system goes down mid-call). So
+        # if this call DOES return, the shutdown FAILED — almost always a missing
+        # NOPASSWD sudoers rule (see SHUTDOWN_BUTTON.md). Report it instead of
+        # leaving the browser on "Shutting down…" forever, which is what happened
+        # when the sudoers file was silently empty.
+        try:
+            r = subprocess.run("sudo -n /usr/bin/systemctl poweroff", shell=True,
+                               capture_output=True, text=True, timeout=20)
+            self._push("AI-SHA", "SHUTDOWN FAILED — the Jetson could not power "
+                       "itself off (sudo was denied). It is still running; power "
+                       "it off physically. " + (r.stderr or "").strip()[:100])
+        except subprocess.TimeoutExpired:
+            pass                             # poweroff is in progress; expected
 
     def _encode(self, msg, src):
         try:
