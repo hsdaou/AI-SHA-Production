@@ -118,7 +118,6 @@ class Hub(Node):
         self._awaiting_pin = False      # next TYPED line is a PIN, not a question
         self._pin_deadline = 0.0
         self._pending_admin = None      # (kind, utterance) to replay after auth
-        self._selftest_until = 0.0
         self.log = []            # list of dicts: {t, who, text}
         img_q = QoSProfile(depth=2, reliability=ReliabilityPolicy.BEST_EFFORT,
                            history=HistoryPolicy.KEEP_LAST)
@@ -238,23 +237,19 @@ class Hub(Node):
             self._encode(m, "raw colour")
 
     def _reply(self, m):
-        # The boot self-test asks a real question to prove brain_node routes, which
-        # means a real ANSWER comes back and would greet the visitor with a wall of
-        # tuition figures nobody asked for. Swallow replies for a short window after
-        # a probe; any genuine question clears the window immediately.
-        if time.time() < self._selftest_until:
-            return
         self._push("AI-SHA", m.data)
 
     def _heard(self, m):
         if "__selftest__" in m.data:      # boot pipeline probe; not a real question
-            self._selftest_until = time.time() + 120
+            # NB: the probe routes to SKILL_VIDEO and produces NO /robot_speech
+            # reply, so there is nothing to suppress. The old 120 s reply-swallow
+            # window here was pure harm — it ate every real answer for two minutes
+            # after any restart, which looked like "the console stopped responding".
             return
         if (m.data or "").strip() == "wake_word_triggered":
             # Internal STT control event. brain_node owns the spoken greeting;
             # never display this token as something the visitor said.
             return
-        self._selftest_until = 0.0        # a real utterance — stop swallowing replies
         self._push("you", m.data)
         if VIDEO_INTENT.search(m.data or ""):
             self._start_video_message()
@@ -494,7 +489,6 @@ class Hub(Node):
             return list(self.log)
 
     def ask(self, text):
-        self._selftest_until = 0.0        # a real question — stop swallowing replies
 
         # PIN entry: if we asked for a PIN, the next typed line IS the PIN. Consume
         # it here, mask it in the transcript, and never publish it anywhere.
