@@ -32,8 +32,6 @@ HRMS_HOME   = os.path.expanduser("~/hrms_query")       # HRMS skill config lives
 HRMS_TOOL   = os.path.expanduser("~/robot_ws/tools/hrms_query/hrms_query.py")
 TT_HOME     = os.path.expanduser("~/timetable_query")
 TT_TOOL     = os.path.expanduser("~/robot_ws/tools/timetable_query/timetable_query.py")
-REPORT_HOME = os.path.expanduser("~/student_report_query")
-REPORT_TOOL = os.path.expanduser("~/robot_ws/tools/student_report_query/student_report_query.py")
 FACE_HOME   = os.path.expanduser("~/face_auth")        # face-auth gate lives here
 AUTH_SECS   = 8                                         # camera window for a scan
 # Camera mounting rotation for the face gate: "0" now that the camera has been
@@ -95,9 +93,6 @@ TIMETABLE_INTENT = re.compile(
 AUTH_INTENT = re.compile(
     r"authenticate|log ?me ?in|sign ?me ?in|verify me|verify my|scan my face"
     r"|i('?m| am)\s+(an?\s+)?admin|log in as|it'?s me", re.I)
-STUDENT_REPORT_INTENT = re.compile(
-    r"\b(student|pupil)\s+(report|marks?|grades?|results?)\b"
-    r"|\b(report|marks?|grades?|results?)\s+(for|of)\s+(student|pupil)\b", re.I)
 REPLY_TOPIC = "/robot_speech"                         # answer out
 
 
@@ -118,7 +113,6 @@ class Hub(Node):
         self._vm_busy = False
         self._hrms_busy = False
         self._tt_busy = False
-        self._report_busy = False
         self._last_skill = None   # last answered timetable query, for follow-ups
         self._auth_busy = False
         self._awaiting_pin = False      # next TYPED line is a PIN, not a question
@@ -182,6 +176,48 @@ class Hub(Node):
         m = String(); m.data = "CONVERSING"
         self.mode_pub.publish(m)
 
+    # ── Power off the whole robot ───────────────────────────────────────────
+    def shutdown_all(self):
+        threading.Thread(target=self._shutdown_worker, daemon=True).start()
+
+    def _shutdown_worker(self):
+        """Pi first (best-effort), then the Jetson last — the Jetson kills this
+        console, so it must go after everything the console still needs to do.
+
+        The Pi's SSH password lives ONLY in ~/robot_console/shutdown.json (0600,
+        git-ignored), never in this source. The Jetson powers itself off through a
+        NOPASSWD sudoers entry (see the deploy note), so no password is embedded
+        here either. In the current dev topology the Jetson cannot route to the
+        Pi, so the Pi step will report 'unreachable' - that is expected; it starts
+        working once the two boards share a network (deployment)."""
+        import shlex
+        cfg_path = os.path.expanduser("~/robot_console/shutdown.json")
+        pi_msg = "Pi: not configured (skipped)"
+        try:
+            if os.path.exists(cfg_path):
+                pi = json.load(open(cfg_path)).get("pi", {})
+                host, user, pw = pi.get("host"), pi.get("user"), pi.get("password")
+                if host and user and pw:
+                    self._push("AI-SHA", f"Powering off the Pi ({user}@{host})…")
+                    cmd = ("sshpass -p {pw} ssh -o StrictHostKeyChecking=no "
+                           "-o UserKnownHostsFile=/dev/null -o ConnectTimeout=8 "
+                           "-o PreferredAuthentications=password -o PubkeyAuthentication=no "
+                           "{user}@{host} 'echo {pw} | sudo -S poweroff'").format(
+                               pw=shlex.quote(pw), user=shlex.quote(user),
+                               host=shlex.quote(host))
+                    r = subprocess.run(cmd, shell=True, capture_output=True,
+                                       text=True, timeout=30)
+                    pi_msg = ("Pi: shutdown sent" if r.returncode == 0
+                              else "Pi: unreachable — power it off manually")
+        except Exception as e:                                    # never block the Jetson
+            pi_msg = f"Pi: error ({type(e).__name__}) — power it off manually"
+
+        self._push("AI-SHA", f"{pi_msg}. Powering off the Jetson now. Goodbye.")
+        time.sleep(2)                        # let the message reach the browser
+        # NOPASSWD sudoers required (deploy note); without it this hangs on a
+        # password prompt with no TTY and the Jetson stays up.
+        subprocess.Popen("sudo -n /sbin/poweroff", shell=True)
+
     def _encode(self, msg, src):
         try:
             bgr = self.bridge.imgmsg_to_cv2(msg, "bgr8")
@@ -226,8 +262,6 @@ class Hub(Node):
             self._start_auth_prompt()      # PIN is then typed, never spoken
         elif HRMS_INTENT.search(m.data or ""):
             self._start_hrms_query(m.data)
-        elif STUDENT_REPORT_INTENT.search(m.data or ""):
-            self._start_student_report(m.data)
         elif _is_timetable(m.data or "", self._last_skill):
             self._start_timetable_query(m.data)
 
@@ -290,40 +324,6 @@ class Hub(Node):
                 self._hrms_busy = False
 
     # ── School timetable skill ──────────────────────────────────────────────
-    def _start_student_report(self, utterance):
-        with self.lock:
-            if self._report_busy:
-                return
-            self._report_busy = True
-        threading.Thread(target=self._student_report_worker, args=(utterance,), daemon=True).start()
-
-    def _student_report_worker(self, utterance):
-        try:
-            result = subprocess.run(
-                ["python3", "-u", REPORT_TOOL, "ask", utterance], cwd=REPORT_HOME,
-                capture_output=True, text=True, timeout=60)
-            output = (result.stdout or "") + (result.stderr or "")
-            spoken = [line.split("SPEAK:", 1)[1].strip() for line in output.splitlines()
-                      if "SPEAK:" in line]
-            if result.returncode == 0 and spoken:
-                self._push("AI-SHA", spoken[-1])
-            elif result.returncode == 2:
-                self._push("AI-SHA", "Please include the student's computer number, for example: student report for 12345.")
-            elif result.returncode == 3:
-                self._pending_admin = ("student_report", utterance)
-                self._push("AI-SHA", "A student report is private. Say \"authenticate me\" and I will email it to the administrator.")
-            elif result.returncode == 4:
-                self._push("AI-SHA", "I could not reach the student report system.")
-            else:
-                self._push("AI-SHA", "The student report could not be sent.")
-        except subprocess.TimeoutExpired:
-            self._push("AI-SHA", "The student report system did not respond in time.")
-        except Exception as exc:
-            self._push("AI-SHA", f"Sorry — the student report request failed ({type(exc).__name__}).")
-        finally:
-            with self.lock:
-                self._report_busy = False
-
     def _start_timetable_query(self, utterance):
         with self.lock:
             if self._tt_busy:
@@ -530,17 +530,12 @@ class Hub(Node):
             if rest:
                 if HRMS_INTENT.search(rest):
                     self._pending_admin = ("hrms", rest)
-                elif STUDENT_REPORT_INTENT.search(rest):
-                    self._pending_admin = ("student_report", rest)
                 elif _is_timetable(rest, self._last_skill):
                     self._pending_admin = ("timetable", rest)
             self._start_auth_prompt()
             return
         if HRMS_INTENT.search(text or ""):
             self._start_hrms_query(text)
-            return
-        if STUDENT_REPORT_INTENT.search(text or ""):
-            self._start_student_report(text)
             return
         if _is_timetable(text or "", self._last_skill):
             self._start_timetable_query(text)
@@ -634,8 +629,6 @@ class Hub(Node):
             self._start_timetable_query(utt)
         elif kind == "hrms":
             self._start_hrms_query(utt)
-        elif kind == "student_report":
-            self._start_student_report(utt)
 
 
 PAGE = """<!DOCTYPE html><html><head><meta charset=utf-8>
@@ -666,7 +659,11 @@ button:hover{background:#5346d8}
      animation:pulse 1.3s infinite}
 @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
 </style></head><body>
-<header>AI-SHA console <small>camera + ask &amp; answer &nbsp;|&nbsp; nothing is spoken until the Pi 5 (TTS) exists</small></header>
+<header>AI-SHA console
+  <button onclick="shutdownAll()" title="Power off the robot (Jetson, and the Pi if reachable)"
+    style="float:right;background:#8a3030;color:#fff;border:0;border-radius:7px;padding:7px 13px;
+           font-size:13px;cursor:pointer;font-weight:bold">&#9211; Shut down</button>
+  <small>camera + ask &amp; answer</small></header>
 __VOICEBAR__
 <div class=wrap>
   <div class=cam><img id=cam src="/stream">
@@ -714,6 +711,25 @@ setInterval(function(){
 }, 4000);
 
 var micBusy = false;
+async function shutdownAll(){
+  // Two-step confirm: this powers the robot OFF, and it cannot be turned back on
+  // remotely (a powered-off board has no network). A single misclick should not
+  // strand the robot.
+  if(!confirm('Power OFF the robot?\n\nThis shuts down the Jetson (and the Pi 5 if '
+    +'reachable). Neither can be switched back on remotely — someone has to press '
+    +'power physically. Continue?')) return;
+  if(!confirm('Are you sure? Final confirmation — the console will go offline.')) return;
+  try{
+    await fetch('/shutdown', {method:'POST'});
+  }catch(e){}   // the connection drops as the Jetson goes down; that is expected
+  document.body.innerHTML =
+    '<div style="font-family:Arial;color:#e6ecf3;padding:40px;font-size:18px">'
+    +'⏻ Shutting the robot down…<br><br>'
+    +'<span style="font-size:14px;color:#9aa4b2">The Pi is powered off first (if reachable), '
+    +'then the Jetson. This page will stop responding. To use the robot again, press the '
+    +'power button on the board(s).</span></div>';
+}
+
 async function togglemic(){
   if(micBusy) return;                 // a double-click used to fire mute then unmute
   micBusy = true;
@@ -754,6 +770,16 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+    def do_POST(self):
+        p = urlparse(self.path)
+        if p.path == "/shutdown":
+            # Reply BEFORE anything powers off, so the browser gets a clean 200
+            # rather than a dropped connection it might retry.
+            self._send(200, "application/json", b'{"ok":true}')
+            HUB.shutdown_all()
+        else:
+            self._send(404, "text/plain", b"not found")
 
     def do_GET(self):
         p = urlparse(self.path)
