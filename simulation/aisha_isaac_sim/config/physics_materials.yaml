@@ -1,0 +1,50 @@
+# AI-SHA Isaac Sim baseline physics configuration.
+# Values are simulation starting assumptions, not measured tyre/tile data.
+
+physics:
+  physics_hz: 120
+  render_hz: 60
+  gravity_mps2: 9.81
+  solver: TGS
+  broadphase: MBP
+  enable_ccd: true
+  enable_stabilization: true
+  gpu_dynamics: false
+  seed: 20260820
+
+materials:
+  drive_wheel:
+    static_friction: 0.65
+    dynamic_friction: 0.55
+    restitution: 0.0
+    friction_combine_mode: min
+    restitution_combine_mode: min
+    status: simulation
+  castor_low_friction:
+    static_friction: 0.20
+    dynamic_friction: 0.15
+    restitution: 0.0
+    friction_combine_mode: min
+    restitution_combine_mode: min
+    status: simulation
+  polished_tile:
+    static_friction: 0.60
+    dynamic_friction: 0.50
+    restitution: 0.0
+    friction_combine_mode: min
+    restitution_combine_mode: min
+    status: simulation
+
+limitations:
+  - Calibrate all coefficients using the delivered tyres, castors, and actual tile.
+  - The fixed-sphere castor proxy cannot validate swivel reversal, flutter, or pivot current.
+  - The rigid URDF cannot validate compliant drive-wheel contact-load distribution.
+
+contact_tuning:
+  drive_wheel_rest_offset_m: 0.001
+  contact_offset_m: 0.010
+  status: simulation
+  note: >
+    A symmetric 1 mm drive-wheel rest offset biases the statically indeterminate
+    rigid six-contact proxy toward both driven wheels. It represents neither a
+    physical tyre-radius change nor the measured compliant-carrier preload.

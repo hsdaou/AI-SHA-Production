@@ -1,0 +1,37 @@
+{
+  "flat": {
+    "material_bindings": {
+      "castor_low_friction": [
+        "/World/AISHA/base_link/castor_fl_link",
+        "/World/AISHA/base_link/castor_fr_link",
+        "/World/AISHA/base_link/castor_rl_link",
+        "/World/AISHA/base_link/castor_rr_link"
+      ],
+      "drive_wheel": [
+        "/World/AISHA/base_link/left_wheel_link",
+        "/World/AISHA/base_link/right_wheel_link"
+      ]
+    },
+    "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/validation_flat.usd"
+  },
+  "payload": "loaded",
+  "thresholds": {
+    "cases": [
+      {
+        "height_mm": 5,
+        "y_m": -2.5
+      },
+      {
+        "height_mm": 10,
+        "y_m": 0.0
+      },
+      {
+        "height_mm": 20,
+        "y_m": 2.5
+      }
+    ],
+    "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/validation_thresholds.usd",
+    "validation_status": "blocked_high_fidelity_asset_required"
+  },
+  "timestamp_utc": "2026-08-20T15:16:37.021215+00:00"
+}
