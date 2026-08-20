@@ -1,0 +1,294 @@
+{
+  "importer": "isaacsim.asset.importer.urdf",
+  "isaac_sim_version": "5.1.0",
+  "timestamp_utc": "2026-08-20T15:16:29.376820+00:00",
+  "variants": [
+    {
+      "articulation_root": "/aisha_poc/base_link",
+      "contact_tuning": {
+        "contact_offset_m": 0.01,
+        "drive_wheel_rest_offset_m": 0.001,
+        "note": "A symmetric 1 mm drive-wheel rest offset biases the statically indeterminate rigid six-contact proxy toward both driven wheels. It represents neither a physical tyre-radius change nor the measured compliant-carrier preload.\n",
+        "status": "simulation"
+      },
+      "empty_visual_reference_targets_repaired": [
+        "front_camera_link",
+        "front_camera_optical_frame",
+        "imu_link",
+        "cargo_payload_frame"
+      ],
+      "errors": [],
+      "expected_design_mass_kg": 59.25,
+      "frame_prims": {
+        "base_link": [
+          "/aisha_poc/base_link",
+          "/aisha_poc/base_link/base_link"
+        ],
+        "cargo_payload_frame": [
+          "/aisha_poc/base_link/cargo_payload_frame"
+        ],
+        "front_camera_link": [
+          "/aisha_poc/base_link/front_camera_link"
+        ],
+        "front_camera_optical_frame": [
+          "/aisha_poc/base_link/front_camera_optical_frame"
+        ],
+        "front_lidar_link": [
+          "/aisha_poc/base_link/front_lidar_link"
+        ],
+        "imu_link": [
+          "/aisha_poc/base_link/imu_link"
+        ],
+        "lidar_link": [
+          "/aisha_poc/base_link/lidar_link"
+        ]
+      },
+      "mass_attribute_sum_kg": 59.2504,
+      "mass_attributes": [
+        {
+          "mass_kg": 11.0,
+          "prim": "/aisha_poc/base_link/base_link"
+        },
+        {
+          "mass_kg": 11.25,
+          "prim": "/aisha_poc/base_link/battery_link"
+        },
+        {
+          "mass_kg": 9.999999747378752e-05,
+          "prim": "/aisha_poc/base_link/cargo_payload_frame"
+        },
+        {
+          "mass_kg": 1.0,
+          "prim": "/aisha_poc/base_link/cargo_posts_link"
+        },
+        {
+          "mass_kg": 4.0,
+          "prim": "/aisha_poc/base_link/cargo_tray_link"
+        },
+        {
+          "mass_kg": 0.5,
+          "prim": "/aisha_poc/base_link/castor_fl_link"
+        },
+        {
+          "mass_kg": 0.5,
+          "prim": "/aisha_poc/base_link/castor_fr_link"
+        },
+        {
+          "mass_kg": 0.5,
+          "prim": "/aisha_poc/base_link/castor_rl_link"
+        },
+        {
+          "mass_kg": 0.5,
+          "prim": "/aisha_poc/base_link/castor_rr_link"
+        },
+        {
+          "mass_kg": 2.200000047683716,
+          "prim": "/aisha_poc/base_link/electronics_link"
+        },
+        {
+          "mass_kg": 0.30000001192092896,
+          "prim": "/aisha_poc/base_link/front_lidar_link"
+        },
+        {
+          "mass_kg": 8.199999809265137,
+          "prim": "/aisha_poc/base_link/head_link"
+        },
+        {
+          "mass_kg": 9.999999747378752e-05,
+          "prim": "/aisha_poc/base_link/front_camera_link"
+        },
+        {
+          "mass_kg": 9.999999747378752e-05,
+          "prim": "/aisha_poc/base_link/front_camera_optical_frame"
+        },
+        {
+          "mass_kg": 0.30000001192092896,
+          "prim": "/aisha_poc/base_link/lidar_link"
+        },
+        {
+          "mass_kg": 9.999999747378752e-05,
+          "prim": "/aisha_poc/base_link/imu_link"
+        },
+        {
+          "mass_kg": 1.5,
+          "prim": "/aisha_poc/base_link/mast_link"
+        },
+        {
+          "mass_kg": 10.0,
+          "prim": "/aisha_poc/base_link/structure_link"
+        },
+        {
+          "mass_kg": 3.75,
+          "prim": "/aisha_poc/base_link/left_wheel_link"
+        },
+        {
+          "mass_kg": 3.75,
+          "prim": "/aisha_poc/base_link/right_wheel_link"
+        }
+      ],
+      "output_usd": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_empty.usd",
+      "physics_material_bindings": {
+        "castor_low_friction": [
+          "/colliders/castor_fl_link/mesh_0/sphere",
+          "/colliders/castor_fr_link/mesh_0/sphere",
+          "/colliders/castor_rl_link/mesh_0/sphere",
+          "/colliders/castor_rr_link/mesh_0/sphere"
+        ],
+        "drive_wheel": [
+          "/colliders/left_wheel_link/mesh_0/cylinder",
+          "/colliders/right_wheel_link/mesh_0/cylinder"
+        ]
+      },
+      "source_urdf": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/urdf/aisha.urdf",
+      "source_urdf_sha256": "41927a1e9ca9ef6e32783becba26c6d24e7926baf29b04338b5e9a8685e99a76",
+      "variant": "empty",
+      "wheel_drive_prims": {
+        "left_wheel_joint": "/aisha_poc/base_link/joints/left_wheel_joint",
+        "right_wheel_joint": "/aisha_poc/base_link/joints/right_wheel_joint"
+      }
+    },
+    {
+      "articulation_root": "/aisha_poc_loaded/base_link",
+      "contact_tuning": {
+        "contact_offset_m": 0.01,
+        "drive_wheel_rest_offset_m": 0.001,
+        "note": "A symmetric 1 mm drive-wheel rest offset biases the statically indeterminate rigid six-contact proxy toward both driven wheels. It represents neither a physical tyre-radius change nor the measured compliant-carrier preload.\n",
+        "status": "simulation"
+      },
+      "empty_visual_reference_targets_repaired": [
+        "front_camera_link",
+        "front_camera_optical_frame",
+        "imu_link"
+      ],
+      "errors": [],
+      "expected_design_mass_kg": 69.25,
+      "frame_prims": {
+        "base_link": [
+          "/aisha_poc_loaded/base_link",
+          "/aisha_poc_loaded/base_link/base_link"
+        ],
+        "cargo_payload_frame": [
+          "/aisha_poc_loaded/base_link/cargo_payload_frame"
+        ],
+        "front_camera_link": [
+          "/aisha_poc_loaded/base_link/front_camera_link"
+        ],
+        "front_camera_optical_frame": [
+          "/aisha_poc_loaded/base_link/front_camera_optical_frame"
+        ],
+        "front_lidar_link": [
+          "/aisha_poc_loaded/base_link/front_lidar_link"
+        ],
+        "imu_link": [
+          "/aisha_poc_loaded/base_link/imu_link"
+        ],
+        "lidar_link": [
+          "/aisha_poc_loaded/base_link/lidar_link"
+        ]
+      },
+      "mass_attribute_sum_kg": 69.2503,
+      "mass_attributes": [
+        {
+          "mass_kg": 11.0,
+          "prim": "/aisha_poc_loaded/base_link/base_link"
+        },
+        {
+          "mass_kg": 11.25,
+          "prim": "/aisha_poc_loaded/base_link/battery_link"
+        },
+        {
+          "mass_kg": 10.0,
+          "prim": "/aisha_poc_loaded/base_link/cargo_payload_frame"
+        },
+        {
+          "mass_kg": 1.0,
+          "prim": "/aisha_poc_loaded/base_link/cargo_posts_link"
+        },
+        {
+          "mass_kg": 4.0,
+          "prim": "/aisha_poc_loaded/base_link/cargo_tray_link"
+        },
+        {
+          "mass_kg": 0.5,
+          "prim": "/aisha_poc_loaded/base_link/castor_fl_link"
+        },
+        {
+          "mass_kg": 0.5,
+          "prim": "/aisha_poc_loaded/base_link/castor_fr_link"
+        },
+        {
+          "mass_kg": 0.5,
+          "prim": "/aisha_poc_loaded/base_link/castor_rl_link"
+        },
+        {
+          "mass_kg": 0.5,
+          "prim": "/aisha_poc_loaded/base_link/castor_rr_link"
+        },
+        {
+          "mass_kg": 2.200000047683716,
+          "prim": "/aisha_poc_loaded/base_link/electronics_link"
+        },
+        {
+          "mass_kg": 0.30000001192092896,
+          "prim": "/aisha_poc_loaded/base_link/front_lidar_link"
+        },
+        {
+          "mass_kg": 8.199999809265137,
+          "prim": "/aisha_poc_loaded/base_link/head_link"
+        },
+        {
+          "mass_kg": 9.999999747378752e-05,
+          "prim": "/aisha_poc_loaded/base_link/front_camera_link"
+        },
+        {
+          "mass_kg": 9.999999747378752e-05,
+          "prim": "/aisha_poc_loaded/base_link/front_camera_optical_frame"
+        },
+        {
+          "mass_kg": 0.30000001192092896,
+          "prim": "/aisha_poc_loaded/base_link/lidar_link"
+        },
+        {
+          "mass_kg": 9.999999747378752e-05,
+          "prim": "/aisha_poc_loaded/base_link/imu_link"
+        },
+        {
+          "mass_kg": 1.5,
+          "prim": "/aisha_poc_loaded/base_link/mast_link"
+        },
+        {
+          "mass_kg": 10.0,
+          "prim": "/aisha_poc_loaded/base_link/structure_link"
+        },
+        {
+          "mass_kg": 3.75,
+          "prim": "/aisha_poc_loaded/base_link/left_wheel_link"
+        },
+        {
+          "mass_kg": 3.75,
+          "prim": "/aisha_poc_loaded/base_link/right_wheel_link"
+        }
+      ],
+      "output_usd": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_loaded.usd",
+      "physics_material_bindings": {
+        "castor_low_friction": [
+          "/colliders/castor_fl_link/mesh_0/sphere",
+          "/colliders/castor_fr_link/mesh_0/sphere",
+          "/colliders/castor_rl_link/mesh_0/sphere",
+          "/colliders/castor_rr_link/mesh_0/sphere"
+        ],
+        "drive_wheel": [
+          "/colliders/left_wheel_link/mesh_0/cylinder",
+          "/colliders/right_wheel_link/mesh_0/cylinder"
+        ]
+      },
+      "source_urdf": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/urdf/aisha_max_payload.urdf",
+      "source_urdf_sha256": "7ebe8bc8d70938db2ac80b7bcd1a65b9deec33454be0edd77ea74f8196aec5e4",
+      "variant": "loaded",
+      "wheel_drive_prims": {
+        "left_wheel_joint": "/aisha_poc_loaded/base_link/joints/left_wheel_joint",
+        "right_wheel_joint": "/aisha_poc_loaded/base_link/joints/right_wheel_joint"
+      }
+    }
+  ]
+}

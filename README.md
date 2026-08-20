@@ -53,6 +53,7 @@ src/
   speaker_monitor/  robot_display/  llm_display/   audio + face/eyes UI
   aisha_integration/  bringup meta-package
 docs/                 hardware setup, Jetson integration, TTS troubleshooting
+simulation/           Isaac Sim 5.1 Rev D differential-drive validation and presentation proxy
 ```
 
 ## Quick start
@@ -82,3 +83,11 @@ ros2 launch robot_bringup slam.launch.py
 
 See the **[ADR](src/aisha_brain/docs/adr/0001-gpu-multiplexing-navigating-conversing.md)**
 for the complete rationale and benchmarks.
+
+## Isaac Sim implementation
+
+The [simulation package](simulation/README.md) contains the separate Rev D
+differential-drive Isaac Sim 5.1 model, deterministic validation evidence, and a
+route-scoped Administration presentation proxy. The A1 page-2 plan is not in
+this repository, so all assumed office geometry and door/threshold values remain
+explicitly labelled and are not a physical-route or safety release.

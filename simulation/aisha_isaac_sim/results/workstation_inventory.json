@@ -1,0 +1,59 @@
+{
+  "architecture": "x86_64",
+  "display": {
+    "display": ":1",
+    "session_type": "x11",
+    "wayland_display": null
+  },
+  "gpu": {
+    "available": true,
+    "command": [
+      "nvidia-smi",
+      "--query-gpu=name,memory.total,driver_version",
+      "--format=csv,noheader"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "NVIDIA GeForce RTX 5080, 16303 MiB, 580.159.03"
+  },
+  "hostname": "robot-wst",
+  "isaac_lab": {
+    "found": false,
+    "launchers": []
+  },
+  "isaac_sim": [
+    {
+      "launcher": "/home/robot-wst/Downloads/isaac-sim-standalone-5.1 (2).0-linux-x86_64/isaac-sim.sh",
+      "python": "/home/robot-wst/Downloads/isaac-sim-standalone-5.1 (2).0-linux-x86_64/python.sh",
+      "root": "/home/robot-wst/Downloads/isaac-sim-standalone-5.1 (2).0-linux-x86_64",
+      "version": "5.1.0-rc.19+release.26219.9c81211b.gl"
+    },
+    {
+      "launcher": "/home/robot-wst/Downloads/isaac-sim-standalone-5.1.0-linux-x86_64/isaac-sim.sh",
+      "python": "/home/robot-wst/Downloads/isaac-sim-standalone-5.1.0-linux-x86_64/python.sh",
+      "root": "/home/robot-wst/Downloads/isaac-sim-standalone-5.1.0-linux-x86_64",
+      "version": "5.1.0-rc.19+release.26219.9c81211b.gl"
+    }
+  ],
+  "kernel": "6.17.0-35-generic",
+  "os_release": {
+    "BUG_REPORT_URL": "https://bugs.launchpad.net/ubuntu/",
+    "HOME_URL": "https://www.ubuntu.com/",
+    "ID": "ubuntu",
+    "ID_LIKE": "debian",
+    "LOGO": "ubuntu-logo",
+    "NAME": "Ubuntu",
+    "PRETTY_NAME": "Ubuntu 24.04.4 LTS",
+    "PRIVACY_POLICY_URL": "https://www.ubuntu.com/legal/terms-and-policies/privacy-policy",
+    "SUPPORT_URL": "https://help.ubuntu.com/",
+    "UBUNTU_CODENAME": "noble",
+    "VERSION": "24.04.4 LTS (Noble Numbat)",
+    "VERSION_CODENAME": "noble",
+    "VERSION_ID": "24.04"
+  },
+  "ros2_executable": "/opt/ros/jazzy/bin/ros2",
+  "ros_distros": [
+    "jazzy"
+  ],
+  "timestamp_utc": "2026-08-20T14:38:14.286459+00:00"
+}

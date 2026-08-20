@@ -1,0 +1,163 @@
+{
+  "a1_page_2": {
+    "authoritative_geometry_used": false,
+    "plan_argument": null,
+    "plan_sha256": null,
+    "status": "unavailable_not_confirmed"
+  },
+  "assumptions_file": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
+  "assumptions_sha256": "e7eb332baf3c27322627f23221e012a1a9f9aa5f7789524d0f83b085b186e5b4",
+  "blocked_for_physical_release": [
+    "approved A1 page-2 plan remains unavailable",
+    "both door clear widths and thresholds remain unmeasured",
+    "threshold contact requires the articulated compliant carrier and measured caster/spring properties",
+    "sensors are not a protective safety system"
+  ],
+  "checks": {
+    "all_presentation_door_widths_pass": true,
+    "hallway_supports_pivot_circle": true,
+    "scene_reopens": true
+  },
+  "contact_material_bindings": {
+    "castor_low_friction": [
+      "/World/AISHA/base_link/castor_fl_link",
+      "/World/AISHA/base_link/castor_fr_link",
+      "/World/AISHA/base_link/castor_rl_link",
+      "/World/AISHA/base_link/castor_rr_link"
+    ],
+    "drive_wheel": [
+      "/World/AISHA/base_link/left_wheel_link",
+      "/World/AISHA/base_link/right_wheel_link"
+    ]
+  },
+  "door_survey": {
+    "status": "not_supplied_assumptions_used",
+    "survey_argument": null
+  },
+  "doors": {
+    "principal": {
+      "clear_width_m": 1.05,
+      "high_fidelity_threshold_validation": "blocked",
+      "minimum_required_m": 0.92,
+      "nominal_side_clearance_m": 0.14100000000000001,
+      "presentation_width_gate_passed": true,
+      "threshold_height_mm": 5,
+      "threshold_status": "presentation_assumption_not_measured",
+      "width_status": "presentation_assumption_not_measured"
+    },
+    "vice_principal": {
+      "clear_width_m": 1.1,
+      "high_fidelity_threshold_validation": "blocked",
+      "minimum_required_m": 0.92,
+      "nominal_side_clearance_m": 0.16600000000000004,
+      "presentation_width_gate_passed": true,
+      "threshold_height_mm": 3,
+      "threshold_status": "presentation_assumption_not_measured",
+      "width_status": "presentation_assumption_not_measured"
+    }
+  },
+  "known_dimensions": {
+    "atrium_diagonal_m": {
+      "status": "supplied_bundle_record",
+      "value": 12.75
+    },
+    "hallway_clear_width_m": {
+      "status": "supplied_bundle_record",
+      "value": 2.8
+    }
+  },
+  "passed": true,
+  "payload": "loaded",
+  "physical_route_released": false,
+  "presentation_ready": true,
+  "robot_asset": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_loaded.usd",
+  "route": [
+    {
+      "action": "start_and_end",
+      "id": "home",
+      "x_m": 0.0,
+      "y_m": 0.0,
+      "yaw_deg": 0.0
+    },
+    {
+      "action": "transit",
+      "id": "corridor_entry",
+      "x_m": 7.0,
+      "y_m": 0.0,
+      "yaw_deg": 0.0
+    },
+    {
+      "action": "align_in_hallway",
+      "id": "vice_principal_approach",
+      "x_m": 10.0,
+      "y_m": 0.0,
+      "yaw_deg": -90.0
+    },
+    {
+      "action": "presentation_stop",
+      "id": "vice_principal",
+      "x_m": 10.0,
+      "y_m": -3.0,
+      "yaw_deg": -90.0
+    },
+    {
+      "action": "transit",
+      "id": "vice_principal_exit",
+      "x_m": 10.0,
+      "y_m": 0.0,
+      "yaw_deg": 90.0
+    },
+    {
+      "action": "align_in_hallway",
+      "id": "principal_approach",
+      "x_m": 14.55,
+      "y_m": 0.0,
+      "yaw_deg": -90.0
+    },
+    {
+      "action": "presentation_stop",
+      "id": "principal",
+      "x_m": 14.55,
+      "y_m": -3.0,
+      "yaw_deg": -90.0
+    },
+    {
+      "action": "transit",
+      "id": "principal_exit",
+      "x_m": 14.55,
+      "y_m": 0.0,
+      "yaw_deg": 90.0
+    },
+    {
+      "action": "transit",
+      "id": "return_corridor",
+      "x_m": 7.0,
+      "y_m": 0.0,
+      "yaw_deg": 180.0
+    },
+    {
+      "action": "end",
+      "id": "home_return",
+      "x_m": 0.0,
+      "y_m": 0.0,
+      "yaw_deg": 180.0
+    }
+  ],
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+  "sensor_contracts": [
+    {
+      "model": "Intel RealSense D435",
+      "prim": "/World/AISHA/base_link/front_camera_link"
+    },
+    {
+      "model": "LDLiDAR LD19",
+      "prim": "/World/AISHA/base_link/lidar_link"
+    },
+    {
+      "model": "Bosch BNO055",
+      "prim": "/World/AISHA/base_link/imu_link"
+    }
+  ],
+  "status": "presentation_proxy_built",
+  "timestamp_utc": "2026-08-20T15:16:44.842708+00:00"
+}

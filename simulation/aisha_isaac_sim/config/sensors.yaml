@@ -1,0 +1,88 @@
+# Sensor-frame contract for the baseline AI-SHA asset. Hardware/interface facts
+# are reconciled against hsdaou/AI-SHA-Production commit 8893535. Values absent
+# from that repository stay assumptions or hold points. These sensors are not
+# credited as a protective safety system.
+
+source:
+  repository: "https://github.com/hsdaou/AI-SHA-Production"
+  commit: "8893535b4043ff766d914e8bfe54a789cf3deba0"
+  files:
+    - src/robot_bringup/config/ld19.yaml
+    - src/aisha_brain/config/LD19_2D.json
+    - src/aisha_integration/launch/jetson_launch.py
+    - src/aisha_integration/launch/rpi_launch.py
+    - src/robot_bringup/config/ekf.yaml
+    - docs/JETSON_INTEGRATION.md
+
+frames:
+  crown_lidar:
+    prim_name: lidar_link
+    scan_height_m: 1.170
+    role: mapping_and_localisation
+    model: "LDLiDAR LD19"
+    model_status: repository_contract
+    ros_topic: /scan
+    ros_frame_in_production: base_laser
+    serial: {port: /dev/ttyUSB0, baud: 230400}
+    hardware_profile:
+      scan_type: rotary_2d
+      rotation_direction: clockwise
+      horizontal_field_of_view_deg: 360.0
+      near_range_m: 0.02
+      far_range_m: 12.0
+      range_resolution_m: 0.001
+      range_accuracy_m: 0.03
+      scan_rate_hz: 10.0
+      report_rate_hz: 4500
+    nav2_operating_limits:
+      minimum_range_m: 0.12
+      maximum_range_m: 10.0
+      obstacle_marking_maximum_m: 8.0
+  front_lidar:
+    prim_name: front_lidar_link
+    position_m: [0.455, 0.0, 0.250]
+    role: low_front_obstacle_layer
+    model: null
+    model_status: not_identified_in_production_repository
+    presentation_visualisation: geometric_role_only
+  front_camera:
+    body_prim_name: front_camera_link
+    optical_prim_name: front_camera_optical_frame
+    optical_convention: "+Z forward, +X right, +Y down"
+    model: "Intel RealSense D435"
+    model_status: repository_contract
+    aligned_depth_enabled: true
+    pointcloud_enabled: false
+    color_topic: /camera/camera/color/image_raw
+    aligned_depth_topic: /camera/camera/aligned_depth_to_color/image_raw
+    target_vision_rate_hz: 30
+    presentation_projection:
+      horizontal_field_of_view_deg: 87.0
+      vertical_field_of_view_deg: 58.0
+      near_m: 0.10
+      far_m: 10.0
+      status: presentation_assumption_not_repository_specification
+  imu:
+    prim_name: imu_link
+    position_m: null
+    position_status: hold_point
+    role: inertial_odometry_fusion
+    model: "Bosch BNO055"
+    model_status: repository_contract
+    type: 9_dof_fused_imu
+    ros_topic: /imu/data
+    ros_frame: imu_link
+    publish_rate_hz: 50.0
+    integration: "Arduino Mega I2C -> unified ODOM packet -> Raspberry Pi 5"
+    ekf_usage: [orientation, angular_velocity]
+    ekf_linear_acceleration_used: false
+
+safety_boundary:
+  protective_sensor_credit: false
+  reverse_covered: false
+  side_swipe_covered: false
+  pivot_covered: false
+  note: >
+    The crown sensor is too high for low hazards and the front sensor is not
+    all-direction coverage. Physical release requires a separate risk assessment,
+    protective fields, bumpers, hardwired stop circuit, and measured stop distances.

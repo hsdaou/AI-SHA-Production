@@ -1,0 +1,13 @@
+{
+  "authoritative_blockers": [
+    "approved A1 page-2 plan remains unavailable",
+    "both door clear widths and thresholds remain unmeasured",
+    "threshold contact requires the articulated compliant carrier and measured caster/spring properties",
+    "sensors are not a protective safety system"
+  ],
+  "physical_route_released": false,
+  "presentation_ready": true,
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+  "status": "presentation_assumptions_accepted",
+  "timestamp_utc": "2026-08-20T15:16:44.842708+00:00"
+}

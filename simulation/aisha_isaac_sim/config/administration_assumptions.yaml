@@ -1,0 +1,80 @@
+# Route-scoped Block A administration proxy for presentation use only.
+#
+# The approved A1 page-2 plan was not present in the supplied bundle or in
+# hsdaou/AI-SHA-Production at commit 8893535. Values tagged `presentation_assumption`
+# are deliberately replaceable and must never be represented as site measurements.
+
+provenance:
+  revision: "PRESENTATION-PROXY-A"
+  date: "2026-08-20"
+  plan_status: unavailable_not_confirmed
+  plan_search:
+    - supplied Isaac Sim bundle and reference directory
+    - AI-SHA-Production default branch, all remote branches, issues, pull requests, and releases
+  production_repository:
+    url: "https://github.com/hsdaou/AI-SHA-Production"
+    commit: "8893535b4043ff766d914e8bfe54a789cf3deba0"
+    permitted_use: sensor_interfaces_and_general_context_only
+  walkthrough_use: appearance_only
+  geometry_status: presentation_assumption_not_surveyed
+
+known_dimensions:
+  atrium_diagonal_m:
+    value: 12.75
+    status: supplied_bundle_record
+  hallway_clear_width_m:
+    value: 2.80
+    status: supplied_bundle_record
+
+assumed_geometry:
+  convention: "+X east/corridor, +Y north, +Z up"
+  ceiling_height_m: {value: 3.00, status: presentation_assumption}
+  wall_height_m: {value: 3.00, status: presentation_assumption}
+  wall_thickness_m: {value: 0.15, status: presentation_assumption}
+  corridor_x_range_m: [5.89, 18.00]
+  corridor_y_range_m: [-1.40, 1.40]
+  offices_y_range_m: [-5.90, -1.40]
+  vice_principal_room_x_range_m: [7.80, 12.10]
+  principal_room_x_range_m: [12.30, 16.90]
+
+doors:
+  vice_principal:
+    centre_xy_m: [10.00, -1.40]
+    clear_width_m: 1.10
+    width_status: presentation_assumption_not_measured
+    threshold_height_mm: 3
+    threshold_status: presentation_assumption_not_measured
+    swing: inward_open_90_deg_for_presentation
+  principal:
+    centre_xy_m: [14.55, -1.40]
+    clear_width_m: 1.05
+    width_status: presentation_assumption_not_measured
+    threshold_height_mm: 5
+    threshold_status: presentation_assumption_not_measured
+    swing: inward_open_90_deg_for_presentation
+
+route:
+  speed_mps: 0.30
+  approach_speed_mps: 0.20
+  waypoints:
+    - {id: home, x_m: 0.00, y_m: 0.00, yaw_deg: 0.0, action: start_and_end}
+    - {id: corridor_entry, x_m: 7.00, y_m: 0.00, yaw_deg: 0.0, action: transit}
+    - {id: vice_principal_approach, x_m: 10.00, y_m: 0.00, yaw_deg: -90.0, action: align_in_hallway}
+    - {id: vice_principal, x_m: 10.00, y_m: -3.00, yaw_deg: -90.0, action: presentation_stop}
+    - {id: vice_principal_exit, x_m: 10.00, y_m: 0.00, yaw_deg: 90.0, action: transit}
+    - {id: principal_approach, x_m: 14.55, y_m: 0.00, yaw_deg: -90.0, action: align_in_hallway}
+    - {id: principal, x_m: 14.55, y_m: -3.00, yaw_deg: -90.0, action: presentation_stop}
+    - {id: principal_exit, x_m: 14.55, y_m: 0.00, yaw_deg: 90.0, action: transit}
+    - {id: return_corridor, x_m: 7.00, y_m: 0.00, yaw_deg: 180.0, action: transit}
+    - {id: home_return, x_m: 0.00, y_m: 0.00, yaw_deg: 180.0, action: end}
+
+presentation_release:
+  minimum_demo_door_clear_width_m: 0.920
+  robot_transit_width_m: 0.768
+  pivot_clear_circle_m: 1.640
+  accepted_for_scripted_presentation: true
+  accepted_for_physical_or_unsupervised_operation: false
+  threshold_contact_claim_allowed: false
+  replacement_rule: >
+    Replace every presentation assumption with an approved-plan or measured value,
+    rebuild the scene, and rerun doorway/contact validation before physical release.
