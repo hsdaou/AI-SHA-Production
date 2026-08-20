@@ -21,7 +21,14 @@ USD_DIR = PACKAGE_ROOT / "usd"
 
 
 def ensure_output_dirs() -> None:
-    for path in (RESULTS_DIR, SCENES_DIR, USD_DIR, PACKAGE_ROOT / "media" / "screenshots"):
+    for path in (
+        RESULTS_DIR,
+        SCENES_DIR,
+        USD_DIR,
+        PACKAGE_ROOT / "media" / "screenshots",
+        PACKAGE_ROOT / "media" / "route_frames",
+        PACKAGE_ROOT / "media" / "videos",
+    ):
         path.mkdir(parents=True, exist_ok=True)
 
 

@@ -74,3 +74,6 @@ tools/video_messenger/sent/
 tools/video_messenger/config.json
 tools/video_messenger/__pycache__/
 VM_*.mp4
+
+# Isaac Sim cinematic intermediates (final MP4 is kept under media/videos)
+simulation/aisha_isaac_sim/media/route_frames/

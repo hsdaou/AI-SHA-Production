@@ -5,22 +5,23 @@ commit `8893535b4043ff766d914e8bfe54a789cf3deba0` (`master`). The default branch
 all remote branches, repository issues, pull requests, releases, and recursive
 file trees were checked.
 
-## A1 page 2
+## Plan-source separation
 
-The approved A1 Block A ground-floor plan, page 2, is **not present** in the
-repository. The repository contains `campus-map.md`, but it describes campus
-zones in prose and provides no scaled wall or doorway geometry. Navigation
-locations for the Principal and Vice-Principal offices are present but remain
-zero-valued placeholders. The repository therefore cannot confirm the A1 plan.
+The approved Block A ground-floor plan, page 2, is **not present in the production
+repository** and the repository is not used to confirm it. The supplied external
+`DownloadBuildingRequestApprovedPlan.pdf` is the geometry source; its reviewed
+SHA-256 is recorded in `config/administration_assumptions.yaml`. The repository's
+`campus-map.md` describes campus zones in prose and its Principal/Vice-Principal
+locations remain zero-valued placeholders.
 
-`administration.usd` is consequently a disclosed presentation proxy. It retains
-the bundle's recorded 12.75 m atrium diagonal and 2.80 m hallway width, then uses
-replaceable assumptions for the route-scoped office geometry:
+`administration.usd` now derives the 12.75 m atrium, 2.80 m hallway, room
+adjacency and office orientation from the supplied approved plan. The following
+route-scoped values remain replaceable presentation assumptions:
 
 - Vice-Principal clear door width: 1.10 m; threshold: 3 mm.
 - Principal clear door width: 1.05 m; threshold: 5 mm.
 - Ceiling/wall height: 3.00 m.
-- Office placement, room size, door swings, and goal poses: presentation assumptions.
+- Door swings, final goal offsets, ceiling/wall height, furniture and decorative detail: presentation assumptions.
 
 These values pass the 0.920 m presentation width gate but are not measurements,
 do not validate threshold contact, and do not release physical or unsupervised

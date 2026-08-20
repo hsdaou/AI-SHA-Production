@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev E - 2026-08-20 - differential-drive design baseline, two-office demo scope**
+**Rev F - 2026-08-20 - approved-plan Block A cinematic, two-office demo scope**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -38,6 +38,10 @@ urdf/aisha.urdf               59.25 kg design-empty baseline
 urdf/aisha_max_payload.urdf   69.25 kg with the 10 kg PoC payload
 config/aisha_drive.yaml       geometry, sources/status, limits, safety and hold points
 config/demo_route.yaml        two-office demo route (Vice-Principal, Principal)
+config/administration_assumptions.yaml  page-2 trace, appearance and disclosed assumptions
+scripts/build_administration.py         plan-derived Block A USD builder
+scripts/render_administration_route.py  four-shot Isaac Sim route renderer
+tools/encode_route_video.py             verified MP4 encoder for rendered frames
 tools/generate_aisha_urdf.py  canonical source for both URDFs
 tools/validate_urdf.py        mass, inertia, frames, drive and stability checks
 ```
@@ -189,8 +193,11 @@ python3 tools/test_controller.py
 "$ISAAC_ROOT/python.sh" scripts/build_validation_scenes.py --headless --payload loaded
 "$ISAAC_ROOT/python.sh" scripts/run_validation.py --headless --suite smoke --payload loaded
 "$ISAAC_ROOT/python.sh" scripts/run_validation.py --headless --suite full --payload loaded
-"$ISAAC_ROOT/python.sh" scripts/build_administration.py --headless --payload loaded --presentation-assumptions
+"$ISAAC_ROOT/python.sh" scripts/build_administration.py --headless --payload loaded \
+  --plan /path/to/DownloadBuildingRequestApprovedPlan.pdf --presentation-assumptions
 "$ISAAC_ROOT/python.sh" scripts/render_administration.py --headless
+"$ISAAC_ROOT/python.sh" scripts/render_administration_route.py --headless
+python3 tools/encode_route_video.py
 ```
 
 Generated evidence is written to `results/`. The import report records the exact
@@ -217,16 +224,26 @@ validation requires the articulated compliant carrier, measured spring curve,
 and measured caster properties.
 
 `scripts/build_administration.py` remains a strict input gate by default. The
-explicit `--presentation-assumptions` mode now builds `scenes/administration.usd`
-as a disclosed route-scoped proxy. It uses the recorded 12.75 m atrium and 2.80 m
-hallway dimensions, plus assumed 1.10/1.05 m door clearances and 3/5 mm
-thresholds. These are presentation values, not survey measurements; the scene's
-metadata and report keep physical release false.
+explicit `--presentation-assumptions` mode builds `scenes/administration.usd`
+from page 2 of the approved ground-floor plan. The central 12.75 m atrium,
+2.80 m east hallway, east Vice-Principal placement and angled south-east
+Principal placement now control the route topology. Corridor/office finishes,
+furniture and lighting follow the supplied walkthrough video. The accepted
+1.10/1.05 m door clearances and 3/5 mm thresholds remain presentation values,
+not site measurements; scene metadata and reports keep physical release false.
 
-AI-SHA-Production was reviewed at commit `8893535`. It does not contain the A1
-page-2 plan, scaled building geometry, or non-zero Principal/Vice-Principal goal
-poses. It does confirm the deployed LD19, RealSense D435, and BNO055 contracts,
-which are recorded in `config/sensors.yaml`. Its older mecanum chassis footprint
+`scripts/render_administration_route.py` renders four reproducible camera shots:
+atrium departure, Vice-Principal visit, transfer to the angled Principal suite,
+and Principal visit. It moves the robot with a scripted USD presentation
+transform; it is visual evidence, not a claim that Nav2 or contact validation ran.
+`tools/encode_route_video.py` checks every frame and writes
+`media/videos/administration_route.mp4`.
+
+AI-SHA-Production was reviewed at commit `8893535` for sensor and general-system
+information only. The approved plan was supplied separately and is recorded by
+filename, page and SHA-256 in `config/administration_assumptions.yaml`. The
+production repository confirms the deployed LD19, RealSense D435, and BNO055
+contracts recorded in `config/sensors.yaml`; its older mecanum chassis footprint
 is intentionally not applied to this Rev D differential-drive model. See
 `results/PRODUCTION_REPOSITORY_REVIEW.md`.
 

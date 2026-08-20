@@ -1,52 +1,81 @@
-# Route-scoped Block A administration proxy for presentation use only.
+# Route-scoped Block A administration scene for a scripted presentation.
 #
-# The approved A1 page-2 plan was not present in the supplied bundle or in
-# hsdaou/AI-SHA-Production at commit 8893535. Values tagged `presentation_assumption`
-# are deliberately replaceable and must never be represented as site measurements.
+# Page 2 of the approved ground-floor plan now controls scale, room adjacency,
+# office orientation and route topology. Values tagged `presentation_assumption`
+# are accepted only for the cinematic and must not be represented as measured.
 
 provenance:
-  revision: "PRESENTATION-PROXY-A"
+  revision: "BLOCK-A-PLAN-TRACE-B"
   date: "2026-08-20"
-  plan_status: unavailable_not_confirmed
-  plan_search:
-    - supplied Isaac Sim bundle and reference directory
-    - AI-SHA-Production default branch, all remote branches, issues, pull requests, and releases
+  plan_status: approved_page_2_reviewed
+  plan_source:
+    filename: DownloadBuildingRequestApprovedPlan.pdf
+    page: 2
+    sha256: 4d8698f868c296442ebd6e667d4700f2e9bc7f27b4787639395a370d76779112
+    sheet_content: "Block A ground-floor administration"
+    note: "PDF canvas is A1-sized; the drawing title block states SIZE A2."
   production_repository:
     url: "https://github.com/hsdaou/AI-SHA-Production"
     commit: "8893535b4043ff766d914e8bfe54a789cf3deba0"
     permitted_use: sensor_interfaces_and_general_context_only
-  walkthrough_use: appearance_only
-  geometry_status: presentation_assumption_not_surveyed
+  walkthrough_use: appearance_and_furniture_reference_only
+  geometry_status: plan_derived_route_scoped
 
 known_dimensions:
   atrium_diagonal_m:
     value: 12.75
-    status: supplied_bundle_record
+    status: approved_plan_page_2_dimension
   hallway_clear_width_m:
     value: 2.80
-    status: supplied_bundle_record
+    status: approved_plan_page_2_dimension
+  conference_room_m:
+    value: [7.80, 6.30]
+    status: approved_plan_page_2_dimension
 
-assumed_geometry:
-  convention: "+X east/corridor, +Y north, +Z up"
-  ceiling_height_m: {value: 3.00, status: presentation_assumption}
-  wall_height_m: {value: 3.00, status: presentation_assumption}
+# World convention: atrium centre is (0,0); +X is east, +Y is north, +Z is up.
+# The plan-derived values below are a route-scoped trace of the labelled Block A
+# arrangement. The source is a PDF rather than a DWG, so only explicitly printed
+# dimensions are treated as measured dimensions.
+plan_geometry:
+  convention: "+X east, +Y north, +Z up; origin at centre of Block A atrium"
+  trace_status: route_scoped_plan_derived
+  ceiling_height_m: {value: 3.00, status: presentation_assumption_from_walkthrough_appearance}
+  wall_height_m: {value: 3.00, status: presentation_assumption_from_walkthrough_appearance}
   wall_thickness_m: {value: 0.15, status: presentation_assumption}
-  corridor_x_range_m: [5.89, 18.00]
-  corridor_y_range_m: [-1.40, 1.40]
-  offices_y_range_m: [-5.90, -1.40]
-  vice_principal_room_x_range_m: [7.80, 12.10]
-  principal_room_x_range_m: [12.30, 16.90]
+  atrium:
+    centre_xy_m: [0.00, 0.00]
+    diagonal_m: 12.75
+    orientation_deg: 22.5
+  east_hallway:
+    x_range_m: [5.89, 22.00]
+    y_range_m: [-1.40, 1.40]
+  south_east_cluster:
+    relationship: "south of the east hallway; Vice-Principal east of Principal"
+    office_manager: {centre_xy_m: [9.10, -3.20], size_xy_m: [3.25, 3.60], rotation_deg: 0.0}
+    meeting_room_1: {centre_xy_m: [12.40, -3.20], size_xy_m: [3.20, 3.60], rotation_deg: 0.0}
+    meeting_room_2: {centre_xy_m: [15.65, -3.20], size_xy_m: [3.10, 3.60], rotation_deg: 0.0}
+    vice_principal: {centre_xy_m: [17.10, -6.55], size_xy_m: [6.30, 3.00], rotation_deg: 0.0}
+    secretary: {centre_xy_m: [8.25, -5.70], size_xy_m: [3.20, 2.60], rotation_deg: -45.0}
+    principal: {centre_xy_m: [8.65, -9.30], size_xy_m: [4.75, 3.60], rotation_deg: -45.0}
+  main_entrance:
+    centre_xy_m: [0.00, -12.80]
+    status: plan_derived
+  east_side_entrance:
+    centre_xy_m: [22.00, 0.00]
+    status: plan_derived
 
 doors:
   vice_principal:
-    centre_xy_m: [10.00, -1.40]
+    centre_xy_m: [17.10, -5.05]
+    wall_rotation_deg: 0.0
     clear_width_m: 1.10
     width_status: presentation_assumption_not_measured
     threshold_height_mm: 3
     threshold_status: presentation_assumption_not_measured
     swing: inward_open_90_deg_for_presentation
   principal:
-    centre_xy_m: [14.55, -1.40]
+    centre_xy_m: [6.971, -7.621]
+    wall_rotation_deg: 45.0
     clear_width_m: 1.05
     width_status: presentation_assumption_not_measured
     threshold_height_mm: 5
@@ -54,19 +83,33 @@ doors:
     swing: inward_open_90_deg_for_presentation
 
 route:
+  status: plan_derived_topology_with_presentation_goal_offsets
   speed_mps: 0.30
   approach_speed_mps: 0.20
   waypoints:
     - {id: home, x_m: 0.00, y_m: 0.00, yaw_deg: 0.0, action: start_and_end}
-    - {id: corridor_entry, x_m: 7.00, y_m: 0.00, yaw_deg: 0.0, action: transit}
-    - {id: vice_principal_approach, x_m: 10.00, y_m: 0.00, yaw_deg: -90.0, action: align_in_hallway}
-    - {id: vice_principal, x_m: 10.00, y_m: -3.00, yaw_deg: -90.0, action: presentation_stop}
-    - {id: vice_principal_exit, x_m: 10.00, y_m: 0.00, yaw_deg: 90.0, action: transit}
-    - {id: principal_approach, x_m: 14.55, y_m: 0.00, yaw_deg: -90.0, action: align_in_hallway}
-    - {id: principal, x_m: 14.55, y_m: -3.00, yaw_deg: -90.0, action: presentation_stop}
-    - {id: principal_exit, x_m: 14.55, y_m: 0.00, yaw_deg: 90.0, action: transit}
-    - {id: return_corridor, x_m: 7.00, y_m: 0.00, yaw_deg: 180.0, action: transit}
+    - {id: east_atrium_exit, x_m: 5.20, y_m: 0.00, yaw_deg: 0.0, action: transit}
+    - {id: vice_principal_turn, x_m: 17.10, y_m: 0.00, yaw_deg: -90.0, action: align_in_hallway}
+    - {id: vice_principal_approach, x_m: 17.10, y_m: -3.80, yaw_deg: -90.0, action: straight_door_approach}
+    - {id: vice_principal, x_m: 17.10, y_m: -6.25, yaw_deg: -90.0, action: presentation_stop}
+    - {id: vice_principal_depart, x_m: 17.10, y_m: -3.80, yaw_deg: 90.0, action: room_turn_and_depart}
+    - {id: hallway_return, x_m: 10.20, y_m: 0.00, yaw_deg: 180.0, action: transit}
+    - {id: principal_turn, x_m: 5.10, y_m: -3.80, yaw_deg: -45.0, action: align_in_open_atrium_edge}
+    - {id: principal_approach, x_m: 6.45, y_m: -6.95, yaw_deg: -45.0, action: straight_door_approach}
+    - {id: principal, x_m: 8.65, y_m: -9.10, yaw_deg: -45.0, action: presentation_stop}
+    - {id: principal_depart, x_m: 6.45, y_m: -6.95, yaw_deg: 135.0, action: room_turn_and_depart}
+    - {id: atrium_return, x_m: 4.20, y_m: -3.40, yaw_deg: 135.0, action: transit}
     - {id: home_return, x_m: 0.00, y_m: 0.00, yaw_deg: 180.0, action: end}
+
+appearance:
+  source: administration_walkthrough_2026-08-20.mp4
+  status: video_derived_not_dimensioned
+  corridor_floor: polished_grey_terrazzo
+  office_floor: light_oak_laminate
+  wall_palette: [warm_white, dark_vertical_timber, light_grey]
+  partitions: frosted_glass_with_grey_frames
+  ceiling: white_suspended_grid_with_led_panels
+  furniture: timber_desks_black_chairs_low_cabinets_and_planters
 
 presentation_release:
   minimum_demo_door_clear_width_m: 0.920
@@ -76,5 +119,5 @@ presentation_release:
   accepted_for_physical_or_unsupervised_operation: false
   threshold_contact_claim_allowed: false
   replacement_rule: >
-    Replace every presentation assumption with an approved-plan or measured value,
+    Replace the presentation door and threshold assumptions with site measurements,
     rebuild the scene, and rerun doorway/contact validation before physical release.
