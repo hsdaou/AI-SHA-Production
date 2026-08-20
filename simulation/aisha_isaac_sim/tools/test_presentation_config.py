@@ -36,6 +36,32 @@ class PresentationConfigTests(unittest.TestCase):
                 self.assertIn("assumption", door["width_status"])
                 self.assertIn("assumption", door["threshold_status"])
 
+    def test_approved_page_two_is_the_geometry_source(self) -> None:
+        provenance = self.scene["provenance"]
+        self.assertEqual(provenance["plan_status"], "approved_page_2_reviewed")
+        self.assertEqual(provenance["plan_source"]["page"], 2)
+        self.assertEqual(
+            provenance["plan_source"]["sha256"],
+            "4d8698f868c296442ebd6e667d4700f2e9bc7f27b4787639395a370d76779112",
+        )
+        self.assertEqual(provenance["geometry_status"], "plan_derived_route_scoped")
+
+    def test_office_relationship_matches_block_a_plan(self) -> None:
+        cluster = self.scene["plan_geometry"]["south_east_cluster"]
+        vice = cluster["vice_principal"]["centre_xy_m"]
+        principal = cluster["principal"]["centre_xy_m"]
+        self.assertGreater(vice[0], principal[0])
+        self.assertGreater(principal[1], -12.80)
+        self.assertLess(principal[1], vice[1])
+
+    def test_route_visits_vice_then_principal(self) -> None:
+        stops = [
+            waypoint["id"]
+            for waypoint in self.scene["route"]["waypoints"]
+            if waypoint["action"] == "presentation_stop"
+        ]
+        self.assertEqual(stops, ["vice_principal", "principal"])
+
     def test_pivot_circle_fits_declared_rotation_zones(self) -> None:
         hallway = self.scene["known_dimensions"]["hallway_clear_width_m"]["value"]
         pivot = self.scene["presentation_release"]["pivot_clear_circle_m"]

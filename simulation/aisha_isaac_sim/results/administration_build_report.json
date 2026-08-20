@@ -1,23 +1,42 @@
 {
-  "a1_page_2": {
-    "authoritative_geometry_used": false,
-    "plan_argument": null,
-    "plan_sha256": null,
-    "status": "unavailable_not_confirmed"
+  "appearance": {
+    "ceiling": "white_suspended_grid_with_led_panels",
+    "corridor_floor": "polished_grey_terrazzo",
+    "furniture": "timber_desks_black_chairs_low_cabinets_and_planters",
+    "office_floor": "light_oak_laminate",
+    "partitions": "frosted_glass_with_grey_frames",
+    "source": "administration_walkthrough_2026-08-20.mp4",
+    "status": "video_derived_not_dimensioned",
+    "wall_palette": [
+      "warm_white",
+      "dark_vertical_timber",
+      "light_grey"
+    ]
   },
-  "assumptions_file": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
-  "assumptions_sha256": "e7eb332baf3c27322627f23221e012a1a9f9aa5f7789524d0f83b085b186e5b4",
+  "approved_plan_page_2": {
+    "authoritative_geometry_used": true,
+    "expected_sha256": "4d8698f868c296442ebd6e667d4700f2e9bc7f27b4787639395a370d76779112",
+    "page": 2,
+    "source_filename": "DownloadBuildingRequestApprovedPlan.pdf",
+    "status": "reviewed_and_traced",
+    "supplied_plan": "/home/robot-wst/Downloads/DownloadBuildingRequestApprovedPlan.pdf",
+    "supplied_plan_sha256": "4d8698f868c296442ebd6e667d4700f2e9bc7f27b4787639395a370d76779112"
+  },
   "blocked_for_physical_release": [
-    "approved A1 page-2 plan remains unavailable",
     "both door clear widths and thresholds remain unmeasured",
+    "ceiling, wall thickness, office furniture offsets and some traced PDF offsets are presentation assumptions",
     "threshold contact requires the articulated compliant carrier and measured caster/spring properties",
     "sensors are not a protective safety system"
   ],
   "checks": {
     "all_presentation_door_widths_pass": true,
     "hallway_supports_pivot_circle": true,
-    "scene_reopens": true
+    "plan_hash_matches_reviewed_source": true,
+    "scene_reopens": true,
+    "vice_principal_is_east_of_principal": true
   },
+  "config_file": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
+  "config_sha256": "00882348a6cce513a0eedd6791b63cfb23bee0a985e392df4ddbd3d87fd53466",
   "contact_material_bindings": {
     "castor_low_friction": [
       "/World/AISHA/base_link/castor_fl_link",
@@ -36,6 +55,10 @@
   },
   "doors": {
     "principal": {
+      "centre_xy_m": [
+        6.971,
+        -7.621
+      ],
       "clear_width_m": 1.05,
       "high_fidelity_threshold_validation": "blocked",
       "minimum_required_m": 0.92,
@@ -43,9 +66,14 @@
       "presentation_width_gate_passed": true,
       "threshold_height_mm": 5,
       "threshold_status": "presentation_assumption_not_measured",
+      "wall_rotation_deg": 45.0,
       "width_status": "presentation_assumption_not_measured"
     },
     "vice_principal": {
+      "centre_xy_m": [
+        17.1,
+        -5.05
+      ],
       "clear_width_m": 1.1,
       "high_fidelity_threshold_validation": "blocked",
       "minimum_required_m": 0.92,
@@ -53,22 +81,147 @@
       "presentation_width_gate_passed": true,
       "threshold_height_mm": 3,
       "threshold_status": "presentation_assumption_not_measured",
+      "wall_rotation_deg": 0.0,
       "width_status": "presentation_assumption_not_measured"
     }
   },
   "known_dimensions": {
     "atrium_diagonal_m": {
-      "status": "supplied_bundle_record",
+      "status": "approved_plan_page_2_dimension",
       "value": 12.75
     },
+    "conference_room_m": {
+      "status": "approved_plan_page_2_dimension",
+      "value": [
+        7.8,
+        6.3
+      ]
+    },
     "hallway_clear_width_m": {
-      "status": "supplied_bundle_record",
+      "status": "approved_plan_page_2_dimension",
       "value": 2.8
     }
   },
   "passed": true,
   "payload": "loaded",
   "physical_route_released": false,
+  "plan_geometry": {
+    "atrium": {
+      "centre_xy_m": [
+        0.0,
+        0.0
+      ],
+      "diagonal_m": 12.75,
+      "orientation_deg": 22.5
+    },
+    "ceiling_height_m": {
+      "status": "presentation_assumption_from_walkthrough_appearance",
+      "value": 3.0
+    },
+    "convention": "+X east, +Y north, +Z up; origin at centre of Block A atrium",
+    "east_hallway": {
+      "x_range_m": [
+        5.89,
+        22.0
+      ],
+      "y_range_m": [
+        -1.4,
+        1.4
+      ]
+    },
+    "east_side_entrance": {
+      "centre_xy_m": [
+        22.0,
+        0.0
+      ],
+      "status": "plan_derived"
+    },
+    "main_entrance": {
+      "centre_xy_m": [
+        0.0,
+        -12.8
+      ],
+      "status": "plan_derived"
+    },
+    "south_east_cluster": {
+      "meeting_room_1": {
+        "centre_xy_m": [
+          12.4,
+          -3.2
+        ],
+        "rotation_deg": 0.0,
+        "size_xy_m": [
+          3.2,
+          3.6
+        ]
+      },
+      "meeting_room_2": {
+        "centre_xy_m": [
+          15.65,
+          -3.2
+        ],
+        "rotation_deg": 0.0,
+        "size_xy_m": [
+          3.1,
+          3.6
+        ]
+      },
+      "office_manager": {
+        "centre_xy_m": [
+          9.1,
+          -3.2
+        ],
+        "rotation_deg": 0.0,
+        "size_xy_m": [
+          3.25,
+          3.6
+        ]
+      },
+      "principal": {
+        "centre_xy_m": [
+          8.65,
+          -9.3
+        ],
+        "rotation_deg": -45.0,
+        "size_xy_m": [
+          4.75,
+          3.6
+        ]
+      },
+      "relationship": "south of the east hallway; Vice-Principal east of Principal",
+      "secretary": {
+        "centre_xy_m": [
+          8.25,
+          -5.7
+        ],
+        "rotation_deg": -45.0,
+        "size_xy_m": [
+          3.2,
+          2.6
+        ]
+      },
+      "vice_principal": {
+        "centre_xy_m": [
+          17.1,
+          -6.55
+        ],
+        "rotation_deg": 0.0,
+        "size_xy_m": [
+          6.3,
+          3.0
+        ]
+      }
+    },
+    "trace_status": "route_scoped_plan_derived",
+    "wall_height_m": {
+      "status": "presentation_assumption_from_walkthrough_appearance",
+      "value": 3.0
+    },
+    "wall_thickness_m": {
+      "status": "presentation_assumption",
+      "value": 0.15
+    }
+  },
   "presentation_ready": true,
   "robot_asset": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_loaded.usd",
   "route": [
@@ -81,59 +234,80 @@
     },
     {
       "action": "transit",
-      "id": "corridor_entry",
-      "x_m": 7.0,
+      "id": "east_atrium_exit",
+      "x_m": 5.2,
       "y_m": 0.0,
       "yaw_deg": 0.0
     },
     {
       "action": "align_in_hallway",
-      "id": "vice_principal_approach",
-      "x_m": 10.0,
+      "id": "vice_principal_turn",
+      "x_m": 17.1,
       "y_m": 0.0,
+      "yaw_deg": -90.0
+    },
+    {
+      "action": "straight_door_approach",
+      "id": "vice_principal_approach",
+      "x_m": 17.1,
+      "y_m": -3.8,
       "yaw_deg": -90.0
     },
     {
       "action": "presentation_stop",
       "id": "vice_principal",
-      "x_m": 10.0,
-      "y_m": -3.0,
+      "x_m": 17.1,
+      "y_m": -6.25,
       "yaw_deg": -90.0
     },
     {
-      "action": "transit",
-      "id": "vice_principal_exit",
-      "x_m": 10.0,
-      "y_m": 0.0,
+      "action": "room_turn_and_depart",
+      "id": "vice_principal_depart",
+      "x_m": 17.1,
+      "y_m": -3.8,
       "yaw_deg": 90.0
     },
     {
-      "action": "align_in_hallway",
-      "id": "principal_approach",
-      "x_m": 14.55,
+      "action": "transit",
+      "id": "hallway_return",
+      "x_m": 10.2,
       "y_m": 0.0,
-      "yaw_deg": -90.0
+      "yaw_deg": 180.0
+    },
+    {
+      "action": "align_in_open_atrium_edge",
+      "id": "principal_turn",
+      "x_m": 5.1,
+      "y_m": -3.8,
+      "yaw_deg": -45.0
+    },
+    {
+      "action": "straight_door_approach",
+      "id": "principal_approach",
+      "x_m": 6.45,
+      "y_m": -6.95,
+      "yaw_deg": -45.0
     },
     {
       "action": "presentation_stop",
       "id": "principal",
-      "x_m": 14.55,
-      "y_m": -3.0,
-      "yaw_deg": -90.0
+      "x_m": 8.65,
+      "y_m": -9.1,
+      "yaw_deg": -45.0
+    },
+    {
+      "action": "room_turn_and_depart",
+      "id": "principal_depart",
+      "x_m": 6.45,
+      "y_m": -6.95,
+      "yaw_deg": 135.0
     },
     {
       "action": "transit",
-      "id": "principal_exit",
-      "x_m": 14.55,
-      "y_m": 0.0,
-      "yaw_deg": 90.0
-    },
-    {
-      "action": "transit",
-      "id": "return_corridor",
-      "x_m": 7.0,
-      "y_m": 0.0,
-      "yaw_deg": 180.0
+      "id": "atrium_return",
+      "x_m": 4.2,
+      "y_m": -3.4,
+      "yaw_deg": 135.0
     },
     {
       "action": "end",
@@ -158,6 +332,6 @@
       "prim": "/World/AISHA/base_link/imu_link"
     }
   ],
-  "status": "presentation_proxy_built",
-  "timestamp_utc": "2026-08-20T15:16:44.842708+00:00"
+  "status": "plan_derived_presentation_scene_built",
+  "timestamp_utc": "2026-08-20T16:01:54.986432+00:00"
 }

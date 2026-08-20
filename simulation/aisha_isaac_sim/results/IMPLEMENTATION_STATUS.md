@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-20. Baseline import and deterministic flat-floor validation implemented.**
+**Updated 2026-08-20. Approved-plan Block A cinematic and deterministic baseline implemented.**
 
 ## Completed
 
@@ -25,10 +25,18 @@
 - Empty and loaded smoke suites pass.
 - Parameterized 5/10/20 mm threshold geometry exists, but is correctly marked
   as unsuitable for contact conclusions until the articulated asset is built.
-- A route-scoped `administration.usd` presentation proxy builds and reopens
-  cleanly. It includes the atrium, south-east hallway, both office approaches,
-  assumed doors/thresholds, furniture cues, route markers, loaded robot and
-  presentation camera.
+- Page 2 of `DownloadBuildingRequestApprovedPlan.pdf` was reviewed and checksum
+  locked. The route-scoped `administration.usd` now uses the plan's Block A
+  topology: central 12.75 m atrium, 2.80 m east hallway, Vice-Principal in the
+  east room cluster and Principal in the angled south-east suite.
+- The walkthrough supplies appearance only: polished terrazzo, dark timber
+  slats, warm-white walls, frosted glazing, light-oak offices, suspended LED
+  panels, desks, chairs, cabinets and planters.
+- A presentation shell makes the engineering URDF read as finished AI-SHA while
+  leaving the Rev D collision, mass, drive and sensor model unchanged.
+- Three ray-traced stills and a 10 s, 1280 x 720, 24 fps four-shot MP4 were
+  rendered and visually checked. The MP4 contains 240 verified frames covering
+  atrium departure, Vice-Principal visit, plan-derived transfer and Principal visit.
 - The assumed Vice-Principal 1.10 m opening provides 166 mm nominal clearance
   per side; the assumed Principal 1.05 m opening provides 141 mm per side.
 - AI-SHA-Production commit `8893535` was reconciled for sensor/system contracts:
@@ -44,17 +52,19 @@ claim. See `config/physics_materials.yaml`.
 
 ## Presentation assumptions and authoritative blockers
 
-- The A1 page-2 plan is absent from both the supplied bundle and the reviewed
-  production repository. The presentation scene is explicitly not plan-confirmed.
-- Principal and Vice-Principal goal poses are presentation assumptions, not
-  documented site coordinates.
+- The approved plan is now present and controls printed dimensions, room
+  relationship and route topology. PDF trace offsets and final in-room goal
+  offsets remain presentation placements rather than survey-grade coordinates.
 - Door widths (1.10/1.05 m) and thresholds (3/5 mm) are presentation assumptions;
   both measured clear widths and threshold heights remain absent.
+- Wall/ceiling height, wall thickness, office furniture offsets and decorative
+  detail remain walkthrough-derived or presentation assumptions.
 - High-fidelity contact asset: measured carrier spring curve and caster
   trail/inertia/height are absent.
 - The LD19, D435 and BNO055 models/interfaces are known, but the low front LiDAR
   model and exact camera intrinsics remain hold points.
-- Physical Nav2 release still depends on a scaled building map and measured route.
+- Physical Nav2 release still depends on measured door/threshold data, an
+  as-built navigation survey and closed-route commissioning.
 
 ## Evidence
 
@@ -66,5 +76,9 @@ claim. See `config/physics_materials.yaml`.
 - `validation_full_loaded.json`
 - `administration_build_gate.json`
 - `administration_build_report.json`
+- `administration_render_report.json`
 - `PRODUCTION_REPOSITORY_REVIEW.md`
 - `../media/screenshots/administration_overview.png`
+- `../media/screenshots/administration_vice_principal.png`
+- `../media/screenshots/administration_principal.png`
+- `../media/videos/administration_route.mp4`

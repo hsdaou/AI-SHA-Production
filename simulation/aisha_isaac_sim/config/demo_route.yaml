@@ -1,5 +1,5 @@
 # AI-SHA - Isaac Sim demonstration route
-# Rev A - 2026-08-20
+# Rev B - 2026-08-20 - approved page-2 Block A plan traced
 #
 # SCOPE CHANGE: the demonstration visits TWO offices only - Principal and
 # Vice-Principal. Front desk, Conference, Meeting Rooms, Secretary, Office
@@ -13,28 +13,29 @@
 #                 before the run is credible
 
 demo:
-  revision: "A"
+  revision: "B"
   date: "2026-08-20"
   building: "Block A ground floor, administration"
   stops_total: 2
   navigation_stack: "Nav2"
   demo_speed_mps: 0.50          # commissioning starts at 0.30, see aisha_drive.yaml
   approach_speed_mps: 0.20      # within 1.5 m of any door or person
-  status: design
+  status: plan_derived_scripted_presentation
 
 # ---------------------------------------------------------------------------
 # Goals
 # ---------------------------------------------------------------------------
-# Both target offices are in the south-east cluster of the ground floor. These
-# poses drive the route-scoped presentation proxy and are assumptions, not
-# approved-plan coordinates. Replace them when the A1 page-2 plan is supplied.
+# Both target offices are in the south-east cluster of the ground floor. Room
+# topology and orientation are derived from approved plan page 2; goal offsets
+# within rooms remain presentation placements because the source is a PDF, not a
+# survey-grade DWG or as-built navigation map.
 
 goals:
   - id: home
     label: "Atrium home / dock"
     type: start_and_end
     pose: {x: 0.00, y: 0.00, yaw_deg: 0.0}
-    pose_status: presentation_assumption
+    pose_status: plan_derived_atrium_centre
     notes: >
       Open floor in the octagonal atrium (12.75 m across the diagonal). Must
       allow a full 1.640 m turn-in-place circle with no wall inside 0.820 m of
@@ -44,8 +45,8 @@ goals:
     label: "Vice-Principal office"
     sequence: 1
     type: delivery_stop
-    pose: {x: 10.00, y: -3.00, yaw_deg: -90.0}
-    pose_status: presentation_assumption
+    pose: {x: 17.10, y: -6.25, yaw_deg: -90.0}
+    pose_status: plan_derived_room_presentation_offset
     door:
       measured_clear_width_m: null
       presentation_assumed_clear_width_m: 1.100
@@ -62,8 +63,8 @@ goals:
     label: "Principal office"
     sequence: 2
     type: delivery_stop
-    pose: {x: 14.55, y: -3.00, yaw_deg: -90.0}
-    pose_status: presentation_assumption
+    pose: {x: 8.65, y: -9.10, yaw_deg: -45.0}
+    pose_status: plan_derived_room_presentation_offset
     door:
       measured_clear_width_m: null
       presentation_assumed_clear_width_m: 1.050
@@ -84,9 +85,9 @@ goals:
 # the first door act as the rehearsal for the second.
 
 legs:
-  - {from: home,           to: vice_principal, via: ["atrium", "south_east_hallway"]}
-  - {from: vice_principal, to: principal,      via: ["south_east_hallway"]}
-  - {from: principal,      to: home,           via: ["south_east_hallway", "atrium"]}
+  - {from: home,           to: vice_principal, via: ["atrium", "east_hallway", "vice_principal_access"]}
+  - {from: vice_principal, to: principal,      via: ["vice_principal_access", "east_hallway", "south_east_atrium_edge", "secretary_passage"]}
+  - {from: principal,      to: home,           via: ["secretary_passage", "atrium"]}
 
 # ---------------------------------------------------------------------------
 # Route constraints - author these, do not hope the planner finds them
@@ -147,7 +148,7 @@ hold_points:
      and 1.050 m widths and 3/5 mm thresholds are accepted only for the scripted
      presentation proxy. If either measured width is below 0.920 m, report a
      route/mechanical failure - never shrink the Nav2 footprint to force a pass."
-  - "Office interior dimensions and furniture come from the walkthrough video and
-     are not on the approved plan. Label them as video-derived."
+  - "Room location, adjacency and orientation come from approved plan page 2.
+     Furniture and finishes come from the walkthrough video and remain video-derived."
   - "Turn-around space inside each office is unknown until the video is traced."
   - "Threshold heights at both office doors are unmeasured."
