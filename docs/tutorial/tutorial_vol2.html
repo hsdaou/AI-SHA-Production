@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin:0; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:#2b2b2b; }
+
+.page { position:relative; width:210mm; height:297mm; padding:15mm 17mm 16mm 17mm;
+        page-break-after:always; overflow:hidden; }
+.page:last-child { page-break-after:auto; }
+
+/* ── masthead ─────────────────────────────────────────── */
+.kicker { font-size:7.6pt; font-weight:700; letter-spacing:.09em; color:#8a6f1e; margin-bottom:5mm; }
+h1.title { font-size:27pt; font-weight:700; letter-spacing:-.5px; margin:0; color:#141414; }
+.subtitle { font-size:10.5pt; color:#6a7280; margin:1.5mm 0 5mm; }
+p.lead { font-size:8.8pt; line-height:1.55; text-align:justify; margin:0 0 5mm; color:#3a3a3a; }
+
+h2.sec { font-size:12.5pt; font-weight:700; color:#161616; margin:6mm 0 3mm; }
+
+/* ── checkpoint chips ─────────────────────────────────── */
+.chips { display:flex; gap:2.4mm; margin:0 0 1.5mm; }
+.chip { flex:1; text-align:center; font-size:7.2pt; font-weight:700; padding:2.1mm 0;
+        border-radius:2.2mm; letter-spacing:.03em; }
+.chip.done { background:#cdd3e8; color:#5a6180; }
+.chip.now  { background:#4136b8; color:#fff; }
+.chip.gap  { background:#fff; color:#b0562a; border:1.1pt dashed #d08a52; }
+.chip.later{ background:#fff; color:#8a90a0; border:.9pt solid #d3d7e2; }
+.chiprow { display:flex; justify-content:space-between; font-size:6.9pt; letter-spacing:.05em; }
+.chiprow .l { color:#4136b8; font-weight:700; }
+.chiprow .r { color:#9299a8; }
+
+/* ── callouts ─────────────────────────────────────────── */
+.box { padding:3.2mm 4mm; margin:3.2mm 0; font-size:8.2pt; line-height:1.5; }
+.box .lab { font-size:6.9pt; font-weight:700; letter-spacing:.08em; margin-bottom:1.3mm; }
+.trap  { background:#fdf2f3; border-left:3.2pt solid #b5303a; }
+.trap .lab { color:#b5303a; }
+.field { background:#eef1f6; border-left:3.2pt solid #2b3a4d; }
+.field .lab { color:#2b3a4d; }
+.dec   { background:#eef0fa; border-left:3.2pt solid #3b4bc4; }
+.dec .lab { color:#3b4bc4; }
+.gate  { background:#f3faf5; border:.9pt solid #8ac9a2; border-radius:1.6mm; padding:3.2mm 4mm; margin:3.5mm 0; }
+.gate .lab { font-size:8.3pt; font-weight:700; color:#2c7a4d; margin-bottom:2mm; }
+.gate ul { margin:0; padding:0; list-style:none; }
+.gate li { font-size:8pt; line-height:1.65; padding-left:5.6mm; position:relative; color:#2f3d34; }
+.gate li:before { content:""; position:absolute; left:0; top:.9mm; width:2.7mm; height:2.7mm;
+                  border:.9pt solid #6d8a78; border-radius:.4mm; }
+
+/* ── checkpoint banner ────────────────────────────────── */
+.cp { display:flex; align-items:center; border-radius:2mm; padding:3.6mm 5mm; margin:0 0 3.5mm; color:#fff; }
+.cp .id { width:34mm; font-size:19pt; font-weight:700; letter-spacing:.5px; }
+.cp .ttl { font-size:12.5pt; font-weight:700; line-height:1.2; }
+.cp .meta { font-size:7.4pt; opacity:.85; margin-top:1mm; }
+.c-cp5   { background:#b5731d; }
+.c-cp6   { background:#94374f; }
+.c-sk1   { background:#553ba3; }
+.c-sk2   { background:#276b8a; }
+.c-gapbn { background:#7d8592; }
+
+/* ── steps ────────────────────────────────────────────── */
+.step { display:flex; align-items:center; gap:2.6mm; margin:4mm 0 2mm; }
+.step .n { flex:none; width:5.2mm; height:5.2mm; border-radius:50%; background:#3b6fd4; color:#fff;
+           font-size:7.4pt; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.step .h { font-size:9.6pt; font-weight:700; color:#161616; }
+p.body { font-size:8.4pt; line-height:1.55; margin:0 0 2mm; color:#3a3a3a; text-align:justify; }
+
+/* ── code ─────────────────────────────────────────────── */
+.tag { display:inline-block; font-size:6.4pt; font-weight:700; letter-spacing:.07em; color:#fff;
+       padding:.9mm 2.2mm; border-radius:1mm 1mm 0 0; }
+.t-jet { background:#4136b8; } .t-both { background:#2b3a4d; } .t-pi { background:#17706a; }
+.t-ws  { background:#8a6f1e; }
+pre { margin:0 0 2.4mm; background:#1e2b3a; color:#e6ecf3; border-radius:0 1.4mm 1.4mm 1.4mm;
+      padding:3mm 4mm; font-family:"DejaVu Sans Mono","Courier New",monospace;
+      font-size:7.5pt; line-height:1.55; white-space:pre-wrap; word-break:break-word; }
+pre .c { color:#7e90a6; }
+.note { font-size:7.6pt; color:#6a7280; margin:0 0 2.5mm; line-height:1.45; }
+.note b { color:#3a3a3a; }
+code { font-family:"DejaVu Sans Mono","Courier New",monospace; font-size:.93em;
+       background:#eef0f4; padding:.2mm .8mm; border-radius:.6mm; }
+.box code, .note code { background:rgba(0,0,0,.055); }
+
+/* ── footer ───────────────────────────────────────────── */
+.foot { position:absolute; left:17mm; right:17mm; bottom:9mm; border-top:.6pt solid #d8dce3;
+        padding-top:1.6mm; font-size:7pt; color:#8b919c; }
+.foot .r1 { display:flex; justify-content:space-between; }
+.foot .r2 { font-style:italic; color:#aeb3bd; margin-top:.5mm; }
+table.kv { width:100%; border-collapse:collapse; font-size:8pt; margin:2mm 0 3mm; }
+table.kv th { background:#2b3a4d; color:#fff; text-align:left; padding:1.8mm 2.5mm; font-size:7.4pt;
+              letter-spacing:.04em; }
+table.kv td { border-bottom:.6pt solid #e2e5ea; padding:1.7mm 2.5mm; vertical-align:top; color:#3a3a3a; }
+table.kv td.k { font-weight:700; color:#161616; width:34%; }
+</style></head><body>
+
+<!-- ══════════════════ PAGE 1 — COVER ══════════════════ -->
+<div class="page">
+  <div class="kicker">ISC-SHARJAH | APPLIED-AI INITIATIVE</div>
+  <h1 class="title">AI-SHA Foundation Tutorial</h1>
+  <div class="subtitle">Volume II — CP5, CP6 and the Skill Layer: giving the brain eyes, ears and jobs</div>
+
+  <p class="lead">Volume I took a blank Jetson to a built workspace (FLASH through CP3). This volume covers
+  what the reference build did next and proved on real hardware: the camera and detection stack (CP5), the
+  voice and knowledge loop (CP6), and two working <b>skills</b> — administrator face authentication and
+  video messaging. Same rules as Volume I: every command here already dodges something that cost us hours,
+  and the coloured boxes tell you what would otherwise have gone wrong. Read the gate at the end of each
+  section before moving on.</p>
+
+  <h2 class="sec">Where you are</h2>
+  <div class="chips">
+    <div class="chip done">FLASH</div><div class="chip done">CP0</div><div class="chip done">CP1</div>
+    <div class="chip done">CP2</div><div class="chip done">CP3</div><div class="chip gap">CP4</div>
+    <div class="chip now">CP5</div><div class="chip now">CP6</div><div class="chip now">SKILLS</div>
+    <div class="chip later">CP7-9</div>
+  </div>
+  <div class="chiprow"><span class="l">THIS TUTORIAL</span><span class="r">CP4 = the two-board mesh, still open — see below</span></div>
+
+  <h2 class="sec">The traps this tutorial defuses for you</h2>
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>Ten detours removed from your path.</b> (1) <b>Install the Jetson-specific torch wheel</b> — the
+    generic PyPI torch runs CPU-only on this board and you will not notice until inference crawls.
+    (2) <b>Install ultralytics with <code>--no-deps</code></b> — otherwise it drags in an OpenCV that shadows
+    the JetPack <code>cv2</code>. (3) <b>Pin <code>protobuf==4.25.8</code></b> or mediapipe and the ML stack
+    fight. (4) <b>Use the mediapipe Tasks API</b>, not <code>mediapipe.solutions</code> from-imports.
+    (5) <b>Kill <code>yolov8_node</code> explicitly</b> — the arbiter spawns it detached and it survives the
+    launch, holding the GPU. (6) <b>Address the microphone by name</b> (<code>ReSpeaker</code>), never
+    <code>plughw:1,0</code> — that is the dead on-board APE. (7) <b>Retry the audio open</b> — the array
+    throws ALSA <code>-9985</code> on a release race. (8) <b>Use <code>llama3.2:1b</code></b>, never the bare
+    tag — it resolves to <code>:latest</code> and 404s. (9) <b>Never trust liveness that only measures depth
+    range</b> — a printed photo defeats it; you need planarity. (10) <b>Install the JetPack build of Ollama and cap its context</b> — otherwise the LLM silently runs on the CPU and answers take 30-80 s instead of 2-4 s.
+  </div>
+
+  <div class="box field">
+    <div class="lab">FROM THE FIELD</div>
+    <b>Version anchor.</b> Everything here was validated on the ISC-Sharjah reference build: JetPack 6.2.2
+    (L4T R36.5.0), ROS 2 Humble, master at <code>c622edf</code> plus the CP5/CP6 work and the two skill
+    branches. The Jetson in the reference build is user <code>hsdaou</code> on host <code>orin-nano</code>,
+    reached over the USB device-mode link at <code>192.168.55.1</code> — substitute your own.
+  </div>
+
+  <div class="box dec">
+    <div class="lab">DECISION — WHY CP4 IS SKIPPED HERE</div>
+    CP4 is the DDS mesh: the first time the Jetson and the Pi 5 talk to each other. It is <b>not covered in
+    this volume because it was not achieved on the reference build</b> — the Pi 5 is still blocked on
+    hardware (see the closing page). Everything in CP5, CP6 and the skills runs on the <b>Jetson alone</b>
+    and was validated that way, so you can follow this volume before your Pi exists. The one visible
+    consequence: the robot <b>cannot speak yet</b>. It hears, reasons and answers, but the answer is
+    published as text on <code>/robot_speech</code> and waits for the Pi's text-to-speech at CP4.
+  </div>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 1</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<!-- ══════════════════ PAGE 2 — CP5 ══════════════════ -->
+<div class="page">
+  <div class="cp c-cp5"><div class="id">CP5</div>
+    <div><div class="ttl">Camera and detection - giving it eyes</div>
+    <div class="meta">Runs on: Jetson Orin Nano &nbsp; Time: ~0.5 day (plus a one-off engine build)</div></div></div>
+
+  <p class="body">The RealSense D435 gives colour and depth; YOLOv8 finds objects; mediapipe finds faces and
+  hands. The traps here are all about <b>which build of which library</b> you install — the wrong torch and
+  the wrong OpenCV both install perfectly happily and then quietly cripple the board.</p>
+
+  <div class="step"><div class="n">1</div><div class="h">Confirm the D435 is on a USB 3 port</div></div>
+  <p class="body">Depth streaming needs SuperSpeed. On USB 2 the camera enumerates, the driver starts, and
+  frames simply never arrive at the advertised rate:</p>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre><span class="c"># must report 5000M — 480M means USB 2 and depth will starve</span>
+lsusb -t | grep -i -B1 realsense
+rs-enumerate-devices | head -20        <span class="c"># serial + firmware appear</span></pre>
+
+  <div class="step"><div class="n">2</div><div class="h">Install the Jetson build of torch (not the PyPI one)</div></div>
+  <p class="body">This is the single highest-value line in CP5. The generic wheel is compiled against a CUDA
+  that does not match JetPack, so it silently falls back to CPU:</p>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>pip install --no-cache-dir \
+  --index-url https://pypi.jetson-ai-lab.io/jp6/cu126 \
+  torch==2.8.0 torchvision==0.23.0
+python3 -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+<span class="c"># MUST print: 2.8.0  True     — if False, you have the wrong wheel</span></pre>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>What bit us:</b> <code>pip install torch</code> pulled a generic <code>2.12.x+cu130</code> build.
+    It imports, it runs, <code>torch.cuda.is_available()</code> returns <code>False</code>, and every model
+    silently runs on the CPU — so you diagnose a "slow model" for hours instead of a wrong wheel. Check the
+    boolean, not the version string.
+  </div>
+
+  <div class="step"><div class="n">3</div><div class="h">Install ultralytics WITHOUT its dependencies</div></div>
+  <p class="body">Ultralytics depends on its own <code>opencv-python</code>. Installed normally it shadows
+  the JetPack-built <code>cv2</code> 4.5.4 that every other node already uses:</p>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>pip install --no-deps ultralytics==8.4.89
+python3 -c "import cv2, ultralytics; print(cv2.__version__, ultralytics.__version__)"
+<span class="c"># expect: 4.5.4  8.4.89   — a 4.10/4.11 cv2 means the shadow happened</span></pre>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 2</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<!-- ══════════════════ PAGE 3 — CP5 cont ══════════════════ -->
+<div class="page">
+  <div class="step" style="margin-top:0"><div class="n">4</div><div class="h">Pin protobuf for mediapipe compatibility</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>pip install "protobuf==4.25.8"
+<span class="c"># add the same pin to constraints-jetson.txt so it survives the next install</span></pre>
+  <p class="note"><b>Note:</b> Volume I's inline pin list omits this one. The committed
+  <code>constraints-jetson.txt</code> in the reference build has it — if you are typing the pins by hand,
+  add <code>protobuf==4.25.8</code>.</p>
+
+  <div class="step"><div class="n">5</div><div class="h">Fetch the mediapipe Tasks models</div></div>
+  <p class="body">The models are binary assets, deliberately kept out of git. The repo ships a fetch script:</p>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>cd ~/robot_ws &amp;&amp; ./scripts/fetch_mediapipe_task_models.sh
+ls -la models/
+<span class="c"># expect: blaze_face_short_range.tflite   hand_landmarker.task</span></pre>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>Why the code uses the Tasks API.</b> On this mediapipe build,
+    <code>from mediapipe.solutions import face_detection</code> raises <b>ImportError</b>, while
+    <code>mp.solutions.face_detection</code> works — the package resolves submodules lazily through
+    <code>__getattr__</code>. That inconsistency makes the legacy API a trap for anyone editing the nodes
+    later, so the reference build was ported to the <b>Tasks API</b> with the <code>.tflite</code> /
+    <code>.task</code> files above. Do not "fix" a from-import back in.
+  </div>
+
+  <div class="step"><div class="n">6</div><div class="h">Build the TensorRT engine (one-off, ~15 min)</div></div>
+  <p class="body">PyTorch weights run; a TensorRT engine runs about three times faster. Build it once on the
+  board it will run on — engines are not portable between machines or JetPack versions:</p>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>cd ~/robot_ws
+yolo export model=yolov8m.pt format=engine device=0 half=True
+ls -lh yolov8m.engine        <span class="c"># ~52 MB on the reference build</span></pre>
+  <p class="note"><b>Note:</b> the exporter auto-installs <code>onnx</code>, <code>onnxruntime</code>,
+  <code>onnxslim</code>, <code>coloredlogs</code> and <code>humanfriendly</code> as it runs. That is expected
+  and did not disturb the CP1 pins — but do the export <b>after</b> the constraints are in place, not before.</p>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 3</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<!-- ══════════════════ PAGE 4 — CP5 verification + gate ══════════════════ -->
+<div class="page">
+  <div class="step" style="margin-top:0"><div class="n">7</div><div class="h">Launch and confirm detections on real frames</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>source /opt/ros/humble/setup.bash &amp;&amp; source ~/robot_ws/install/setup.bash
+export ROS_DOMAIN_ID=99
+ros2 launch realsense2_camera rs_launch.py align_depth.enable:=true &amp;
+
+ros2 topic hz /camera/camera/color/image_raw               <span class="c"># ~30 Hz</span>
+ros2 topic hz /camera/camera/aligned_depth_to_color/image_raw   <span class="c"># ~27 Hz</span>
+ros2 topic echo /detection/faces_simple --once             <span class="c"># conf + depth in metres</span></pre>
+
+  <div class="box field">
+    <div class="lab">FROM THE FIELD</div>
+    <b>Measured on the reference build.</b> Colour 30 Hz, aligned depth 27 Hz, D435 negotiated at 5000M.
+    YOLOv8m through TensorRT: ~35 ms per frame (~28 FPS). A face detected at confidence 0.86 and 0.42 m
+    on <code>/detection/faces_simple</code>. If your depth rate is roughly half the colour rate, that is
+    normal; if it is zero, revisit step 1.
+  </div>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>The orphan that holds your GPU.</b> The arbiter starts <code>yolov8_node</code> as a <i>detached</i>
+    <code>ros2 run</code> child. Killing the launch leaves it alive, still holding the GPU and the camera —
+    so your next launch fails on a busy device and the cause is invisible. Always shut down with an explicit
+    kill, and use a bracketed pattern so the command does not match its own shell:
+  </div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>pkill -9 -f 'yolov8_nod[e]'
+pkill -9 -f 'realsense2_camera_nod[e]'</pre>
+
+  <div class="gate"><div class="lab">GATE - proceed only when:</div><ul>
+    <li><code>torch.cuda.is_available()</code> prints <b>True</b> and <code>cv2.__version__</code> is still 4.5.4.</li>
+    <li><code>yolov8m.engine</code> exists and the node reports frames in the 25-30 FPS range.</li>
+    <li>Colour ~30 Hz and aligned depth ~27 Hz on the two camera topics.</li>
+    <li>A real face appears on <code>/detection/faces_simple</code> with a plausible depth in metres.</li>
+    <li>After shutdown, <code>pgrep -f 'yolov8_nod[e]'</code> returns nothing.</li>
+  </ul></div>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 4</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<!-- ══════════════════ PAGE 4 — CP6 ══════════════════ -->
+<div class="page">
+  <div class="cp c-cp6"><div class="id">CP6</div>
+    <div><div class="ttl">Voice and knowledge - giving it ears</div>
+    <div class="meta">Runs on: Jetson Orin Nano (Jetson half of CP6) &nbsp; Time: ~0.5 day</div></div></div>
+
+  <p class="body">The loop is: microphone → Whisper transcription → wake word → intent → RAG retrieval over
+  the school knowledge base → local LLM answer → published as text. On the Jetson alone the answer arrives
+  as a ROS message; the spoken half waits for the Pi 5.</p>
+
+  <div class="step"><div class="n">1</div><div class="h">Find the microphone and prove it captures</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>arecord -l | grep -i respeaker
+<span class="c"># card 2: ArrayUAC10 [ReSpeaker 4 Mic Array (UAC1.0)], device 0</span>
+arecord -D plughw:ArrayUAC10,0 -f S16_LE -r 16000 -c 6 -d 3 /tmp/t.wav
+python3 -c "import wave,numpy as np; w=wave.open('/tmp/t.wav'); \
+  d=np.frombuffer(w.readframes(w.getnframes()),'&lt;i2'); \
+  print('RMS', int(np.sqrt((d.astype(float)**2).mean())))"
+<span class="c"># RMS in the hundreds = speech present. Single digits = wrong device.</span></pre>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>Three names, only one works.</b> The default <code>plughw:1,0</code> is the Jetson's on-board APE —
+    it is a real ALSA card that captures pure silence, so you get a working pipeline with no audio and
+    nothing to debug. <code>plughw:2,0</code> is the right hardware but the launch file's device matcher
+    does not recognise the numeric form. <b>Pass the name:</b> <code>audio_device:=ReSpeaker</code>.
+  </div>
+
+  <div class="step"><div class="n">2</div><div class="h">Pre-fetch the Whisper model while you still have bandwidth</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>python3 -c "from faster_whisper import WhisperModel; \
+  WhisperModel('base', device='cpu', compute_type='int8')"
+<span class="c"># downloads + caches; do this before you need the robot to work</span></pre>
+  <p class="note"><b>Note:</b> STT runs on the <b>CPU</b>. There is no aarch64 CUDA build of CTranslate2 for
+  this platform, so GPU transcription is not available — <code>base</code> at int8 runs about 1.3× realtime,
+  which is fine for turn-taking. Do not lose a day trying to force it onto the GPU.</p>
+
+  <div class="step"><div class="n">3</div><div class="h">Launch the voice stack</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>ros2 launch aisha_bringup jetson_launch.py \
+    audio_device:=ReSpeaker llm_model:=llama3.2:1b</pre>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>The bare model tag 404s.</b> <code>llm_model:=llama3.2</code> resolves to <code>llama3.2:latest</code>,
+    which is <i>not</i> what CP1 pulled — so the admin node gets a 404 from Ollama on the first question and
+    the robot goes mute with no obvious cause. Always the explicit <code>:1b</code> tag. The reference build
+    changed the launch default so a fresh follow-along cannot hit this.
+  </div>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>ALSA <code>-9985</code>, "Device unavailable".</b> The ReSpeaker is a UAC1.0 device and does not
+    release its capture endpoint instantly — restart a node too quickly and the open fails. The fix is not a
+    longer sleep, it is a retry: <b>4 attempts, 3 seconds apart</b>. Both <code>stt_node</code> and the
+    video-message skill do this; anything new you write against the array must too.
+  </div>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 5</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<!-- ══════════════════ PAGE 5 — CP6 cont ══════════════════ -->
+<div class="page">
+  <div class="step" style="margin-top:0"><div class="n">4</div><div class="h">Say the wake word, watch the transcription</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>ros2 topic echo /speech/text
+<span class="c"># say: "Hey Aisha, can you hear me?"</span>
+<span class="c"># expect wake_word_triggered in the node log, then the stripped question</span></pre>
+  <p class="note"><b>Note:</b> the wake regex is deliberately punctuation-tolerant — Whisper writes
+  <i>"Hey, Aisha!"</i> with a comma, which a naive <code>"hey aisha" in text</code> check misses. It also
+  accepts the <i>Ayesha</i> and <i>Aysha</i> spellings, because the transcriber picks whichever it likes on
+  the day.</p>
+
+  <div class="step"><div class="n">5</div><div class="h">Verify the knowledge loop WITHOUT a microphone</div></div>
+  <p class="body">This is the most useful debugging technique in CP6: skip audio entirely and inject the
+  text a perfect transcription would have produced. It separates "the microphone is wrong" from "the
+  knowledge base is wrong", which otherwise look identical:</p>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>ros2 launch aisha_bringup jetson_launch.py enable_stt:=false &amp;
+<span class="c"># WAIT for "Knowledge Base Online" in the log before injecting</span>
+ros2 topic pub --once /speech/text std_msgs/String \
+    "{data: 'what are the tuition fees?'}"
+ros2 topic echo /robot_speech</pre>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>The cold-start race.</b> Publish before the knowledge base finishes loading and your message lands on
+    a topic nobody is subscribed to yet — it is silently discarded, you see no answer, and you conclude RAG
+    is broken. Wait for <b>"Knowledge Base Online"</b>. This costs one second and saves an afternoon.
+  </div>
+
+  <div class="step"><div class="n">6</div><div class="h">Confirm the arbiter frees the GPU for the LLM</div></div>
+  <p class="body">Vision and language cannot both own the GPU on an 8 GB board. The arbiter flips between
+  <code>NAVIGATING</code> and <code>CONVERSING</code>; on the flip the admin node re-offloads the LLM and
+  the vision node is stopped:</p>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>ros2 topic pub --once /speech/text std_msgs/String "{data: 'aisha stop'}"
+<span class="c"># log: mode=CONVERSING -> LLM num_gpu=999   (and yolov8_node terminated)</span>
+<span class="c"># the reverse flip logs: mode=NAVIGATING -> LLM num_gpu=0</span></pre>
+
+  <div class="box field">
+    <div class="lab">FROM THE FIELD</div>
+    <b>What a passing CP6 looked like.</b> Wake word triggered on a spoken <i>"Hey, Aisha!"</i>; a spoken
+    tuition question returned a grounded answer citing the real fee table (Grade 7, AED 31,500) from 5
+    retrieved chunks of the 621-chunk knowledge base, generated by <code>llama3.2:1b</code>; and the
+    <code>aisha stop</code> command flipped the arbiter, freed the GPU and re-offloaded the LLM. The answer
+    was <b>text on a topic</b> — nothing was audible, and that is correct until the Pi arrives.
+  </div>
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 6</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+
+<!-- ══════════════════ CP6 PERFORMANCE ══════════════════ -->
+<div class="page">
+  <div class="cp c-cp6"><div class="id">CP6+</div>
+    <div><div class="ttl">Making answers fast - the GPU trap</div>
+    <div class="meta">Runs on: Jetson Orin Nano &nbsp; Time: ~30 min &nbsp; Effect: 30-80 s -&gt; 2-4 s per answer</div></div></div>
+
+  <p class="body">A freshly built AI-SHA answers correctly but takes <b>30 to 80 seconds</b>, which is
+  unusable in a corridor. It is not that the model is big — <code>llama3.2:1b</code> is tiny. It is that
+  <b>four separate things must all be right</b> before the Orin's GPU is actually used, and every one of
+  them fails silently. On the reference build all four were wrong at once. Fix them and the same question
+  answers in <b>2-4 seconds</b>.</p>
+
+  <div class="step"><div class="n">1</div><div class="h">First, check whether the LLM is on the GPU at all</div></div>
+  <p class="body">One command decides everything that follows:</p>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>ollama ps
+<span class="c"># PROCESSOR column:  100% GPU = healthy    100% CPU = you have this problem</span></pre>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED - THE BIG ONE</div>
+    <b>Ollama ignores the Orin's GPU by default.</b> The Orin's GPU is <b>integrated</b> — it shares the
+    8 GB system RAM instead of having its own VRAM — and Ollama skips integrated GPUs unless told
+    otherwise. It reported <code>total_vram="0 B"</code> and ran everything on the CPU. On top of that the
+    generic arm64 build carries no Tegra CUDA runner at all. <b>You need the JetPack build</b>, which ships
+    a <code>cuda_jetpack6</code> runner built against CUDA 12.6.
+  </div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre><span class="c"># match YOUR installed version - and note the extension is .tar.zst, NOT .tgz</span>
+V=$(ollama --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+wget --continue https://github.com/ollama/ollama/releases/download/v$V/ollama-linux-arm64-jetpack6.tar.zst
+sudo cp -a /usr/local/lib/ollama /usr/local/lib/ollama.bak      <span class="c"># rollback safety</span>
+sudo systemctl stop ollama
+zstd -d ollama-linux-arm64-jetpack6.tar.zst -o /tmp/o.tar &amp;&amp; sudo tar -C /usr/local -xf /tmp/o.tar
+sudo systemctl start ollama
+
+<span class="c"># proof it worked:</span>
+journalctl -u ollama | grep "inference compute"
+<span class="c">#  library=CUDA compute=8.7 name=Orin type=iGPU total="7.4 GiB"   &lt;- correct</span></pre>
+
+  <div class="step"><div class="n">2</div><div class="h">Enable the integrated GPU; keep the model resident</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>sudo mkdir -p /etc/systemd/system/ollama.service.d
+sudo tee /etc/systemd/system/ollama.service.d/override.conf &lt;&lt;'EOF'
+[Service]
+Environment="OLLAMA_IGPU_ENABLE=1"
+Environment="OLLAMA_KEEP_ALIVE=30m"
+EOF
+sudo systemctl daemon-reload &amp;&amp; sudo systemctl restart ollama</pre>
+  <p class="note"><b>Note:</b> <code>admin_node</code> also sends <code>keep_alive</code> on every request,
+  and a per-request value <b>overrides</b> the server default. It shipped as <code>"30s"</code>, so the
+  1.5 GB model was evicted between questions and each query paid a full GPU reload. Change it to
+  <code>"30m"</code> in <code>admin_node.py</code> as well, or the setting above achieves nothing.</p>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 7</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<!-- ══════════════════ CP6 PERFORMANCE cont ══════════════════ -->
+<div class="page">
+  <div class="step" style="margin-top:0"><div class="n">3</div><div class="h">Cap the context, or CUDA runs out of memory</div></div>
+  <p class="body">With the GPU finally in use, the robot began failing outright with
+  <i>"I encountered an error processing your question."</i> The cause is specific to a shared-memory board:</p>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>A 131k context does not fit next to ROS.</b> <code>llama3.2</code> advertises a <b>131 072</b>-token
+    context. Sized for that, the <b>KV cache alone requests ~2 GiB</b> — and on the Orin that is the same
+    8 GB the camera driver, Whisper and ChromaDB are already using. You get
+    <code>cudaMalloc failed: out of memory</code>, <code>llama-server</code> <b>segfaults</b>, and the robot
+    returns a generic error that tells you nothing about the real cause. It only ever feeds the model ~5
+    knowledge chunks, so a 2048 context is generous.
+  </div>
+
+  <p class="body">Bake the small context into a dedicated model so every caller inherits it:</p>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>cat &gt; Modelfile &lt;&lt;'EOF'
+FROM llama3.2:1b
+PARAMETER num_ctx 2048
+EOF
+ollama create aisha:1b -f Modelfile
+<span class="c"># then launch with  llm_model:=aisha:1b</span>
+ollama ps      <span class="c"># CONTEXT must read 2048, PROCESSOR 100% GPU</span></pre>
+
+  <div class="step"><div class="n">4</div><div class="h">Fix the client that overrides your context anyway</div></div>
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED - WHY THE MODELFILE ALONE IS NOT ENOUGH</div>
+    Even with the Modelfile in place the server still logged <code>n_ctx = 131072</code>. The culprit is the
+    client: <b>llama_index's <code>Ollama</code> defaults <code>context_window</code> to <code>-1</code></b>,
+    meaning "use the model's maximum", and sends <i>that</i> as the request's <code>num_ctx</code> —
+    overriding both the Modelfile and the server environment. Passing <code>num_ctx=2048</code> is
+    <b>not</b> sufficient; <code>context_window</code> must be set too, in <code>admin_node.py</code>:
+  </div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>self._llm_kwargs = dict(
+    model=llm_model, base_url=ollama_url,
+    request_timeout=llm_timeout, keep_alive="30m",
+    num_ctx=ollama_num_ctx,
+    context_window=ollama_num_ctx,   <span class="c"># &lt;- without this, 131072 wins</span>
+)</pre>
+
+  <div class="box field">
+    <div class="lab">FROM THE FIELD</div>
+    <b>Measured on the reference build.</b> Before: <b>30-80 s</b> per answer, <code>ollama ps</code> reading
+    <code>100% CPU</code>, the GPU idle on a board chosen for its GPU. After all four fixes: <b>2 s, 3 s and
+    4 s</b> on three consecutive school questions, <code>100% GPU</code>, context 2048, model resident —
+    roughly <b>20x faster</b> with the same model, knowledge base and answers.
+    <br><br><b>Diagnose in this order</b> — each symptom masks the next: <code>ollama ps</code> →
+    <code>journalctl -u ollama | grep "inference compute"</code> → <code>grep n_ctx</code> →
+    <code>keep_alive</code>.
+  </div>
+
+  <div class="box dec">
+    <div class="lab">DECISION — WHO GETS THE GPU, AND WHEN</div>
+    Vision (YOLO holds ~1.2 GB of CUDA context) and the LLM cannot comfortably share an 8 GB board, so the
+    natural design is to hand the GPU back and forth: load the LLM while conversing, return it to YOLO
+    afterwards. <b>The repo already implements exactly this</b> — <code>gpu_arbiter</code> publishes
+    <code>/aisha/mode</code>, and <code>admin_node</code> responds with <code>num_gpu=999</code> when
+    <b>CONVERSING</b> and <code>num_gpu=0</code> when <b>NAVIGATING</b>, terminating
+    <code>yolov8_node</code> on the flip. <b>Beware the default:</b> <code>admin_node</code> starts in
+    <code>NAVIGATING</code>, so if you run <i>without</i> the arbiter (as the browser console does) nobody
+    ever publishes a mode and the LLM stays pinned to the CPU forever. Either run the arbiter, or publish
+    <code>CONVERSING</code> on <code>/aisha/mode</code> yourself with transient-local (latched) durability.
+  </div>
+
+  <div class="gate"><div class="lab">GATE - proceed only when:</div><ul>
+    <li><code>ollama ps</code> shows <b>100% GPU</b> and a <b>CONTEXT of 2048</b> — not 131072.</li>
+    <li><code>journalctl -u ollama</code> shows <code>library=CUDA ... name=Orin type=iGPU</code>.</li>
+    <li>A school question is answered in <b>under ~5 seconds</b>, twice in a row.</li>
+    <li>No <code>cudaMalloc failed</code> or <code>segmentation fault</code> in the Ollama log.</li>
+  </ul></div>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 8</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<div class="page">
+
+  <div class="gate"><div class="lab">GATE - proceed only when:</div><ul>
+    <li>A 3-second capture from the ReSpeaker has an RMS in the hundreds, not single digits.</li>
+    <li>Speaking the wake word puts your stripped question on <code>/speech/text</code>.</li>
+    <li>An injected school question returns a grounded answer on <code>/robot_speech</code> — one that
+        quotes real figures from the knowledge base, not a generic reply.</li>
+    <li>The arbiter flip appears in the log with <code>num_gpu</code> changing, and no orphaned vision node
+        is left behind.</li>
+  </ul></div>
+
+  <div class="box dec">
+    <div class="lab">DECISION — DNS, THE RECURRING SABOTEUR</div>
+    On a school network the upstream resolver address changes without warning, and the symptom is never
+    "DNS is broken" — it is <code>build_ros.sh</code> hanging on its setuptools pin, or pip timing out
+    mid-install. When anything network-shaped misbehaves, re-point the resolver first:
+    read the host's current one with <code>resolvectl status | grep 'Current DNS'</code> and write it to
+    <code>/etc/resolvconf/resolv.conf.d/head</code> on the Jetson.
+  </div>
+
+  <h2 class="sec" style="margin-top:0">The skill layer</h2>
+  <p class="body">With eyes and ears working, the robot can be given <b>jobs</b>. A skill in this build is a
+  small, self-contained program that uses the sensors already running, adds <b>no new pip dependencies</b>
+  (the pinned stack from CP1 is fragile and must not be disturbed), keeps its data <b>outside the
+  repository</b>, and ships with a gate that says when it is working. The two below are complete and were
+  validated on real hardware.</p>
+
+  <div class="cp c-sk1"><div class="id">SKILL 1</div>
+    <div><div class="ttl">Administrator face authentication</div>
+    <div class="meta">Runs on: Jetson + RealSense &nbsp; Time: ~2 h &nbsp; Doc: docs/skills/FACE_AUTH.md</div></div></div>
+
+  <p class="body">Recognises an enrolled administrator and unlocks restricted data for a limited session.
+  Because a face alone is a <i>public</i> credential — anyone can photograph it — this skill requires
+  <b>four independent factors</b>, and refuses if any one fails:</p>
+
+  <table class="kv">
+    <tr><th style="width:34%">Factor</th><th>What it proves, and how</th></tr>
+    <tr><td class="k">1. Identity</td><td>ArcFace embedding (<code>w600k_mbf.onnx</code>, InsightFace
+      buffalo_s) through onnxruntime; 512-d L2-normalised vector compared against the enrolled gallery.</td></tr>
+    <tr><td class="k">2. Passive liveness</td><td>The depth camera: a real face is <b>convex</b>, a photo is
+      <b>flat</b>. Measured as RMS residual from a best-fit plane, plus depth spread.</td></tr>
+    <tr><td class="k">3. Active liveness</td><td>A randomly chosen head-turn challenge that a static image
+      cannot satisfy.</td></tr>
+    <tr><td class="k">4. Knowledge</td><td>A PIN, stored only as a salted PBKDF2-SHA256 hash — never in
+      plaintext, not even on the robot.</td></tr>
+  </table>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 9</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<div class="page">
+  <div class="step" style="margin-top:0"><div class="n">1</div><div class="h">Fetch the recognition model</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>mkdir -p ~/face_auth/models &amp;&amp; cd ~/face_auth/models
+<span class="c"># w600k_mbf.onnx from the InsightFace buffalo_s pack (MobileFaceNet,</span>
+<span class="c"># input [None,3,112,112] -> 512-d embedding). Face detection reuses</span>
+<span class="c"># the CP5 model at ~/robot_ws/models/blaze_face_short_range.tflite</span>
+python3 -c "import onnxruntime; print(onnxruntime.get_available_providers())"</pre>
+  <p class="note"><b>Note:</b> recognition runs on <b>CPU</b> via onnxruntime and is fast enough (tens of
+  milliseconds per face). This is deliberate — it adds no GPU contention and, critically, no new pip
+  packages beyond what CP5 and CP6 already installed.</p>
+
+  <div class="step"><div class="n">2</div><div class="h">Enrol an administrator</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>cd ~/face_auth
+python3 face_auth.py enroll --name Sam --count 25 --timeout 60
+<span class="c"># look at the camera; turn slightly L/R/up/down between captures</span>
+<span class="c"># writes gallery/sam.npz (embeddings) + sam_montage.png (visual check)</span></pre>
+  <p class="note"><b>Note:</b> vary your pose between shots. 25 near-identical frames produce a gallery that
+  only recognises you sitting exactly where you enrolled.</p>
+
+  <div class="step"><div class="n">3</div><div class="h">Set the PIN, then authenticate</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>python3 auth_gate.py set-pin --name Sam --pin 4729
+python3 auth_gate.py authenticate
+<span class="c"># Phase 1  look at the camera            (identity + passive liveness)</span>
+<span class="c"># Phase 2  "look LEFT, then RIGHT"       (active liveness challenge)</span>
+<span class="c"># Phase 3  PIN prompt                    (getpass, not echoed)</span>
+<span class="c"># -> ACCESS GRANTED, 15-minute session token</span>
+python3 auth_gate.py check-session    <span class="c"># for the protected command to call</span>
+python3 auth_gate.py logout</pre>
+  <p class="note"><b>Note:</b> <code>admins.json</code> and <code>session.json</code> are written
+  <code>0600</code> and live outside the repo. The gallery, the models and the session are all git-ignored —
+  <b>never commit biometric data</b>. Audit your staged files before every commit on this skill.</p>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 10</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<div class="page">
+  <div class="box trap" style="margin-top:0">
+    <div class="lab">TRAP AVOIDED — THE ONE THAT ACTUALLY BIT US</div>
+    <b>A printed photograph beat the first version.</b> The original liveness test measured only the
+    <i>depth range</i> across the face, reasoning that a flat photo has none. It does — hold a photo at a
+    slight angle and the range across the tilted sheet is large enough to pass. Worse, the decision logic
+    voted only over frames that had passed liveness, so the failures were discarded rather than counted.
+    A photo of the enrolled admin authenticated successfully. <b>Two changes fixed it:</b> (1) fit a plane
+    to the face depth and require the <b>RMS residual ≥ 4.5 mm</b> — a real face is convex and deviates from
+    any plane, a sheet does not, at any angle; (2) <b>count the failures</b> — reject outright if more than
+    <b>30 %</b> of frames fail liveness, instead of quietly ignoring them.
+  </div>
+
+  <div class="box field">
+    <div class="lab">FROM THE FIELD</div>
+    <b>Measured thresholds and results.</b> Valid-depth fraction ≥ 0.35, depth spread ≥ 18 mm, planarity
+    residual ≥ 4.5 mm, spoof-frame rejection above 30 %, head-turn swing ≥ 0.25 normalised nose offset.
+    On the reference build the live administrator matched at <b>0.789 on 59 of 63 frames with 0 % spoof
+    frames</b>; a printed photo of the same person produced <b>42-54 % spoof frames and was rejected</b> —
+    <i>even when the correct PIN was supplied</i>. The head-turn threshold started at 0.32 and false-rejected
+    a genuine turn measured at 0.312; it was lowered to 0.25, still far above the ~0 a static image produces.
+  </div>
+
+  <div class="gate"><div class="lab">GATE - proceed only when:</div><ul>
+    <li>The enrolled administrator authenticates and receives a session token.</li>
+    <li>A <b>photograph</b> of that administrator is rejected <b>even with the correct PIN</b>.</li>
+    <li>A wrong PIN is refused, and no plaintext PIN appears anywhere in <code>admins.json</code>.</li>
+    <li>The session expires on its own and <code>logout</code> clears it.</li>
+    <li><code>git status</code> shows no gallery, model, or session file staged.</li>
+  </ul></div>
+
+  <div class="box dec">
+    <div class="lab">DECISION — BE HONEST ABOUT WHAT THIS DOES NOT STOP</div>
+    This is a <b>convenience gate for a school administration corridor</b>, not a bank vault. It defeats a
+    printed photo and a casual impostor. It has <b>not</b> been tested against a video replay on a screen,
+    a 3D mask, or an identical twin; and the match threshold has <b>not</b> yet been calibrated against a
+    second live person — that test needs a willing volunteer and should be run before any genuinely
+    sensitive data sits behind it. Never make the face the <i>only</i> factor: the PIN is what makes a
+    successful spoof insufficient on its own.
+  </div>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 11</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<!-- ══════════════════ PAGE 8 — SKILL 2 ══════════════════ -->
+<div class="page">
+  <div class="cp c-sk2"><div class="id">SKILL 2</div>
+    <div><div class="ttl">Video message to the administration</div>
+    <div class="meta">Runs on: Jetson + RealSense + ReSpeaker &nbsp; Time: ~2 h &nbsp; Doc: docs/skills/VIDEO_MESSAGE.md</div></div></div>
+
+  <p class="body">The robot stands in the administration and offers a visitor to record a short video message
+  for a named administrator. The design rule is the one that governs the whole robot: <b>it operates
+  entirely locally</b>. Recording never touches the network. Sending is a separate, deliberate <b>gate</b>
+  that is <b>closed by default</b> — so the robot is useful with no internet at all, and only reaches
+  outside when an administrator has explicitly opened it.</p>
+
+  <div class="step"><div class="n">1</div><div class="h">Install ffmpeg (the only new system package)</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>sudo apt-get install -y ffmpeg
+mkdir -p ~/video_messages &amp;&amp; cd ~/video_messages
+cp ~/robot_ws/tools/video_messenger/{video_message.py,deliver.py} .</pre>
+
+  <div class="step"><div class="n">2</div><div class="h">Offer, then record</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>python3 video_message.py offer          <span class="c"># the spoken invitation</span>
+python3 video_message.py record --seconds 15
+<span class="c"># 3-2-1 countdown, then records; queues an .mp4 in outbox/</span>
+python3 video_message.py list</pre>
+  <p class="note"><b>Note:</b> <code>offer</code> also publishes the invitation on <code>/robot_speech</code>,
+  so it becomes <i>audible</i> the moment the Pi's text-to-speech exists at CP4 — no code change needed.</p>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>Two names for one microphone.</b> ALSA calls the array <code>ArrayUAC10</code>; the Python
+    <code>sounddevice</code> layer calls it <i>"ReSpeaker 4 Mic Array (UAC1.0)"</i>. Match on
+    <b><code>ReSpeaker</code></b> — a matcher written against the ALSA name finds nothing and the recorder
+    aborts before the camera even starts. And expect the same ALSA <code>-9985</code> release race as CP6:
+    retry the open 4 times, 3 seconds apart.
+  </div>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>Audio and video drift apart if you trust the nominal frame rate.</b> The camera advertises 30 FPS; a
+    node doing real work receives ~24.5. Encode at 30 and the video finishes before the audio, so the
+    speaker's voice runs progressively out of sync. The recorder therefore <b>counts the frames it actually
+    captured, divides by the measured elapsed time</b>, and hands <i>that</i> rate to ffmpeg.
+  </div>
+
+  <div class="step"><div class="n">3</div><div class="h">Inspect the gate (it is closed)</div></div>
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>python3 deliver.py init      <span class="c"># writes a DISABLED config template, 0600</span>
+python3 deliver.py status    <span class="c"># gate: CLOSED | network | queue depth</span>
+python3 deliver.py send      <span class="c"># refuses, exit 1 — nothing leaves the robot</span></pre>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 12</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<!-- ══════════════════ PAGE 9 — SKILL 2 cont ══════════════════ -->
+<div class="page">
+  <div class="step" style="margin-top:0"><div class="n">4</div><div class="h">Open the gate — choose a transport</div></div>
+  <p class="body">Edit <code>~/video_messages/config.json</code> (mode <code>0600</code>, outside the repo,
+  git-ignored) and set <code>"enabled": true</code> plus one transport:</p>
+
+  <table class="kv">
+    <tr><th style="width:26%">Transport</th><th>What it needs</th></tr>
+    <tr><td class="k">email<br><span style="font-weight:400;color:#6a7280">simplest; validated</span></td>
+        <td>An SMTP account and an <b>app password</b> (never the real account password). Set
+        <code>user</code>, <code>app_password</code>, <code>to</code>.</td></tr>
+    <tr><td class="k">whatsapp<br><span style="font-weight:400;color:#6a7280">official Cloud API</span></td>
+        <td>A free Meta developer app with the WhatsApp product: <code>access_token</code>,
+        <code>phone_number_id</code>, and the destination number in international format.</td></tr>
+  </table>
+
+  <div><span class="tag t-jet">JETSON</span></div>
+<pre>python3 deliver.py send --dry-run   <span class="c"># shows what would go; sends nothing</span>
+python3 deliver.py send             <span class="c"># delivers, then moves the file to sent/</span></pre>
+
+  <div class="box dec">
+    <div class="lab">DECISION — WHY NOT AN UNOFFICIAL WHATSAPP LIBRARY</div>
+    Several Python packages drive WhatsApp by automating a logged-in web session. They are easier to set up
+    than the Cloud API and they are <b>rejected here on purpose</b>: they violate WhatsApp's terms of
+    service and the realistic penalty is a <b>permanent ban of the school's phone number</b>. A messaging
+    convenience is not worth that. Use the official API, or use email.
+  </div>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>Gmail will reject your password — that is not a typo.</b> Google no longer accepts ordinary account
+    passwords over SMTP; you get <code>535 5.7.8 BadCredentials</code> no matter how carefully you retype it.
+    You must enable 2-Step Verification and mint a 16-character <b>App Password</b>. Two further surprises:
+    a <b>brand-new sending account is held for roughly half an hour</b> before its first message is
+    delivered (it shows in "Sent" and simply has not arrived yet — do not debug a working system), and the
+    reachability probe must use <b>HTTPS on port 443</b>, because the school network blocks the classic
+    <code>8.8.8.8:53</code> check and makes an online robot look offline.
+  </div>
+
+  <div class="box field">
+    <div class="lab">FROM THE FIELD</div>
+    <b>Validated end to end.</b> A 10-second message recorded as 245 frames at a measured 24.5 FPS, muxed to
+    H.264 + AAC with <code>+faststart</code> (0.6 MB, audio peaking at −8 dB, confirmed with
+    <code>ffprobe</code> and a extracted thumbnail). With the gate closed, <code>send</code> exited 1 and
+    nothing left the board. With the gate opened and an app password in place, the message was accepted by
+    SMTP and <b>arrived in the administrator's inbox</b>, and the file moved to <code>sent/</code>.
+    Delivery failures leave the message queued — a dropped Wi-Fi link loses nothing.
+  </div>
+
+  <div class="gate"><div class="lab">GATE - proceed only when:</div><ul>
+    <li>A recorded message plays back with <b>lip-synced audio</b> — this is what proves the measured-FPS fix.</li>
+    <li><code>ffprobe</code> reports an <code>h264</code> video stream and an <code>aac</code> audio stream.</li>
+    <li>With <code>"enabled": false</code>, <code>send</code> exits 1 and the outbox is untouched.</li>
+    <li>With the gate open, a message is delivered and moves to <code>sent/</code>.</li>
+    <li>No credential and no recording is staged in git — both paths are git-ignored.</li>
+  </ul></div>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 13</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+<!-- ══════════════════ PAGE 10 — WHAT REMAINS ══════════════════ -->
+<div class="page">
+  <div class="cp c-gapbn"><div class="id">OPEN</div>
+    <div><div class="ttl">What is not done yet - and what it blocks</div>
+    <div class="meta">Read before planning the next build session</div></div></div>
+
+  <p class="body">Volume I and Volume II together cover everything the reference build has actually proved.
+  This page is the honest remainder, so nobody follows the tutorial expecting a capability that does not
+  exist yet.</p>
+
+  <div class="box trap">
+    <div class="lab">THE CRITICAL GAP - THE RASPBERRY PI 5</div>
+    <b>The robot cannot speak, and cannot move.</b> Both live on the Pi 5 (CP2), which is not yet stood up
+    on the reference build. Until it is, CP4 (the DDS mesh), CP7-CP9, text-to-speech, SLAM and navigation
+    are all blocked. Nothing on the Jetson is waiting on redesign — the answers are already published on
+    <code>/robot_speech</code> and the video-message invitation with them; they simply have no voice to come
+    out of. Getting the Pi running is <b>the single highest-value next step</b> in the whole project.
+  </div>
+
+  <p class="body">On the reference build the Pi is blocked by four ordinary hardware problems, all of which
+  are worth solving before the next session rather than during it:</p>
+  <table class="kv">
+    <tr><th style="width:34%">Blocker</th><th>What is needed</th></tr>
+    <tr><td class="k">SSH credentials are wrong</td><td>The image's login does not work, so the card must be
+      re-flashed. Set the username and password during imaging and record them immediately.</td></tr>
+    <tr><td class="k">No SD card reader</td><td>A USB SD reader for the workstation — without it the card
+      cannot be re-imaged at all.</td></tr>
+    <tr><td class="k">Runs very hot / unstable</td><td>A heatsink and fan. A Pi 5 under sustained ROS load
+      throttles and drops off the network, which looks exactly like a software fault.</td></tr>
+    <tr><td class="k">Power supply</td><td>A genuine 5 V / 5 A USB-C supply. Under-powering a Pi 5 causes
+      random resets that are commonly misdiagnosed for days.</td></tr>
+  </table>
+
+  <h2 class="sec">Smaller open items</h2>
+  <p class="body">
+  <b>1. Impostor calibration.</b> The face-auth match threshold has only ever been tested against the
+  enrolled administrator and a photograph of him. It needs one session with a second live person to
+  confirm a stranger is refused.<br>
+  <b>2. Voice-triggered video messages.</b> The recorder is driven from the command line today. Hooking a
+  "yes" intent on <code>/speech/text</code> to <code>record</code> makes the skill conversational.<br>
+  <b>3. WhatsApp transport.</b> Written and ready; needs a Meta developer app before it can be enabled.<br>
+  <b>4. Volume I corrections.</b> Two values in Volume I differ from the reference build and should be
+  reconciled on the next revision: the UDP buffer sizes (Volume I shows 4194304 / 1048576, the build uses
+  2147483647), and the CP1 inline pin list, which omits <code>protobuf==4.25.8</code>. CP0 is documented
+  but was not performed on the reference build — it becomes mandatory at CP4, when the two boards must find
+  each other on fixed addresses.</p>
+
+  <div class="box field">
+    <div class="lab">FROM THE FIELD — HOUSEKEEPING THAT PAYS FOR ITSELF</div>
+    <b>Secrets.</b> Every credential this build uses lives in a <code>0600</code> file outside the git
+    repository — the mail app password in <code>~/video_messages/config.json</code>, the administrator PIN
+    as a hash in <code>~/face_auth/admins.json</code>, the GitHub token in
+    <code>~/.config/gh/hosts.yml</code>. Keep it that way, and audit the staged file list before every
+    commit rather than trusting <code>.gitignore</code> alone.<br><br>
+    <b>Recordings are personal data.</b> The <code>sent/</code> folder accumulates videos of real visitors.
+    Decide a retention period and delete on it.<br><br>
+    <b>Default passwords.</b> A board that is about to live on a school network should not still be using
+    the password it was imaged with.
+  </div>
+
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume II: CP5, CP6, Skills — field-hardened</span><span>Page 14</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+</body></html>

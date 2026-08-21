@@ -157,10 +157,11 @@ class AdminNode(Node):
                 model_name="BAAI/bge-small-en-v1.5",
                 local_files_only=True
             )
-            # keep_alive="30s": unload Llama 3.2 after 30s of inactivity to
-            # free VRAM (e.g. for YOLO vision).  Ollama's default (5 min) would
-            # hold the model in memory far too long, risking OOM.  30s covers
-            # multi-turn follow-ups while allowing VRAM recycling.
+            # keep_alive="30m": keep Llama 3.2 resident on the GPU. At the old 30s
+            # the 1.5GB model was evicted between questions and every single query
+            # paid a full GPU reload - that, not inference, was the latency. Raise
+            # this only while vision is disabled; if YOLO needs the VRAM back, the
+            # gpu_arbiter mode flip is the mechanism for that.
             #
             # num_ctx / num_gpu: OLLAMA_NUM_GPU and OLLAMA_NUM_CTX are
             # SERVER-side env vars — setting them on the ROS 2 client
@@ -174,8 +175,15 @@ class AdminNode(Node):
             # engine's ~1.2 GB CUDA context.
             self._llm_kwargs = dict(
                 model=llm_model, base_url=ollama_url,
-                request_timeout=llm_timeout, keep_alive="30s",
+                request_timeout=llm_timeout, keep_alive="30m",
                 num_ctx=ollama_num_ctx,
+                # context_window MUST be set too. llama_index's Ollama defaults it
+                # to -1 = "use the model's maximum", and it sends that as num_ctx —
+                # so llama3.2's advertised 131072 won regardless of num_ctx above,
+                # and the KV cache alone asked for ~2 GiB of the Orin's shared RAM
+                # (cudaMalloc OOM -> llama-server segfault -> "error processing
+                # your question"). Keep the two values equal.
+                context_window=ollama_num_ctx,
             )
             self._num_gpu_conversing = int(os.environ.get('OLLAMA_NUM_GPU', '999'))
             self._num_gpu_navigating = 0
