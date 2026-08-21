@@ -1,7 +1,7 @@
 # Cambridge and AP External Examination Timetable for 2026
 
 ## Which Examinations This Timetable Covers
-This document is the 2026 external examination timetable for ISC-Sharjah students, covering Cambridge IGCSE, Cambridge International AS and A Level, and College Board AP. These examinations were held between 24 April 2026 and 9 June 2026. They are set by Cambridge International and the College Board, not by ISC-Sharjah, and they are separate from the ISC-Sharjah Term 1, Term 2 and Term 3 school examinations. Timetables for 2027 are not held in this knowledge base. If a subject, component or date is not listed here, no examination has been scheduled for it in this timetable; say so explicitly and give the school number +971 6 558 2211 rather than guessing.
+These are the 2026 external examinations for ISC-Sharjah students, covering Cambridge IGCSE, Cambridge International AS and A Level, and College Board AP. These examinations were held between 24 April 2026 and 9 June 2026. They are set by Cambridge International and the College Board, not by ISC-Sharjah, and they are separate from the ISC-Sharjah Term 1, Term 2 and Term 3 school examinations. Timetables for 2027 are not available from AI-SHA. If a subject, component or date does not appear here, no examination has been scheduled for it; say so explicitly and give the school number +971 6 558 2211 rather than guessing.
 
 ## How to Read These Entries
 Each entry gives the subject, the syllabus number, the component (paper) number, the day and date in 2026, whether the paper is in the Morning or the Afternoon session, and the length of the paper. A syllabus number identifies the subject, and a component number identifies which paper of that subject is being sat.
@@ -83,5 +83,5 @@ These are the College Board AP examinations sat by ISC-Sharjah students in 2026.
 - AP examination in 2026: Environmental Science (Fully Digital): Friday 15 May, Morning (2 hours 50 minutes)
 - AP examination in 2026: Computer Science A (Hybrid): Friday 15 May, Afternoon (3 hours 10 minutes)
 
-## External Examination Information Not Held in This Knowledge Base
-This knowledge base does not hold examination entry fees, examination room or seating allocations, results or grades for any student, results release dates, remarking or resit procedures, or any timetable for 2027. For any of these, contact the school office on +971 6 558 2211.
+## External Examination Information AI-SHA Does Not Have
+AI-SHA does not have examination entry fees, examination room or seating allocations, results or grades for any student, results release dates, remarking or resit procedures, or any timetable for 2027. For any of these, contact the school office on +971 6 558 2211.

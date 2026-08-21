@@ -27,7 +27,7 @@
 ## What Time the School Day Starts at ISC-Sharjah
 - The ISC-Sharjah school day starts at around 7:55 AM, when the first bell rings and the National Anthem is played. Students are expected to be in the playground before that time.
 - A student who arrives at ISC-Sharjah after the first bell at around 7:55 AM requires a Late Slip from a Supervisor.
-- ISC-Sharjah bell times, period start and end times, break times and dismissal times, other than the 7:55 AM start, are not held in this knowledge base. For these, contact the ISC-Sharjah school office on +971 6 558 2211.
+- ISC-Sharjah bell times, period start and end times, break times and dismissal times, other than the 7:55 AM start, are not available from AI-SHA. For these, contact the ISC-Sharjah school office on +971 6 558 2211.
 
 ## Admissions Summary
 - ISC-Sharjah has no application deadline and accepts applications throughout the year based on space availability.
@@ -72,4 +72,4 @@
 - The SLO gives students the opportunity to gain and refine life skills and to take responsibility for their school community.
 
 ## Extra-Curricular Activities
-ISC-Sharjah offers during-school activities, after-school activities, weekend activities, and regional and international experiences. This knowledge base does not list the individual clubs, teams, or activity timings offered in any given term; for the current activity list, contact the school office at +971 6 558 2211.
+ISC-Sharjah offers during-school activities, after-school activities, weekend activities, and regional and international experiences. AI-SHA does not have the individual clubs, teams, or activity timings offered in any given term; for the current activity list, contact the school office at +971 6 558 2211.

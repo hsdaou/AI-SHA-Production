@@ -1,22 +1,22 @@
 # ISC-Sharjah Term 2 Examination Timetable for the 2025-2026 Academic Year
 
 ## Which Term and Year This Timetable Covers
-Every date in this document is a **Term 2 examination of the 2025-2026 academic year**, held in March 2026. This is not the timetable for Term 1, for Term 3, or for any other academic year. ISC-Sharjah examination timetables for the 2026-2027 academic year are not held in this knowledge base. If a grade, subject or date is not listed in this document, then no examination has been scheduled for it in this timetable; say so explicitly and give the school number +971 6 558 2211 rather than guessing.
+All of these are **Term 2 examinations of the 2025-2026 academic year**, held in March 2026. These are not the Term 1, Term 3, or any other year's examinations. ISC-Sharjah examination timetables for the 2026-2027 academic year are not available from AI-SHA. If a grade, subject or date does not appear here, no examination has been scheduled for it; say so explicitly and give the school number +971 6 558 2211 rather than guessing.
 
 ## Scope of This Timetable
 - Grades 2 to 9 at ISC-Sharjah sat Term 2 final examinations from Monday 2 March 2026 to Thursday 12 March 2026.
-- Grades 10, 11 and 12 at ISC-Sharjah did not sit Term 2 final examinations in that window. They had normal school days until 14 March 2026 and sat scheduled Continuous Assessment and Periodic tests, which are listed separately at the end of this document.
+- Grades 10, 11 and 12 at ISC-Sharjah did not sit Term 2 final examinations in that window. They had normal school days until 14 March 2026 and sat scheduled Continuous Assessment and Periodic tests, which are listed separately below.
 - Make-up examinations for absent students were held on Saturday 7 March 2026 and Saturday 14 March 2026.
 - Grades 2, 3 and 4 sat their finals on SDP (the SABIS Digital Platform).
 - 3rd Language Composition for Grades 6, 7, 8 and 9 was done in class during Week 8 of Term 2.
 - French and Chinese Language examinations for the YAS and Ajman schools were held on Friday 6 March or Friday 13 March 2026.
-- All times shown are local Sharjah times on a 12-hour clock; examinations run between 9:00 in the morning and 2:50 in the afternoon.
+- All times shown are local Sharjah times on a 12-hour clock. These are examination slot times only. They are not the ISC-Sharjah daily class start or finish times, and must never be used to answer a question about when the school day or classes begin or end.
 
 ## How UAE Grades Map to GULF Grades and SABIS Levels
 At ISC-Sharjah the UAE grade number is used. In GULF SABIS schools the same cohort is numbered one grade higher, and SABIS letter Levels run alongside: Level E is UAE Grade 2, Level F is UAE Grade 3, and each following letter is the next grade, up to Level L for UAE Grade 9, Level M for Grade 10, Level N for Grade 11 and Level O for Grade 12.
 
 ## Term 2 Final Examinations — Grades 2 to 9
-The sections below list every Term 2 final examination scheduled for each ISC-Sharjah grade in March 2026.
+Every Term 2 final examination scheduled for each ISC-Sharjah grade in March 2026 is listed below.
 
 ## Grade 2 Term 2 Final Examinations
 These are the Term 2 final examinations for ISC-Sharjah Grade 2 in March 2026 (Grade 3 in GULF schools, Level E). This grade sat its finals on SDP, the SABIS Digital Platform.
@@ -217,5 +217,5 @@ These are the scheduled Continuous Assessment and Periodic tests for ISC-Sharjah
 - Grade 12L Term 2 scheduled test: Wednesday 11 March 2026, 12:55–1:30: AMS Period 7
 - Grade 12L Term 2 scheduled test: Thursday 12 March 2026, 12:55–1:30: AMS Period 7
 
-## Examination Information Not Held in This Knowledge Base
-This knowledge base does not hold ISC-Sharjah Term 1 or Term 3 examination timetables, examination room or seating allocations, examination results or grades for any student, resit policy, or any timetable for the 2026-2027 academic year. For any of these, contact the school office on +971 6 558 2211.
+## Examination Information AI-SHA Does Not Have
+AI-SHA does not have ISC-Sharjah Term 1 or Term 3 examination timetables, examination room or seating allocations, examination results or grades for any student, resit policy, or any timetable for the 2026-2027 academic year. For any of these, contact the school office on +971 6 558 2211.

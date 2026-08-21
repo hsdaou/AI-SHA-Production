@@ -28,5 +28,5 @@ To book a tour of ISC-Sharjah, contact the school directly or complete the Inter
 - The ISC-Sharjah admissions email address is info@iscsharjah.sabis.net.
 - The ISC-Sharjah address is P.O. Box 2077, University City Road, Industrial Area 6, Sharjah, U.A.E.
 
-## Information Not Held in This Knowledge Base
-This knowledge base does not hold ISC-Sharjah entrance-test dates or content, class-size or availability figures for any specific grade, sibling or staff discount policies, scholarship information, or the status of any individual application. For any of these, contact the Admissions Office on +971 6 558 2211.
+## Admissions Information AI-SHA Does Not Have
+AI-SHA does not have ISC-Sharjah entrance-test dates or content, class-size or availability figures for any specific grade, sibling or staff discount policies, scholarship information, or the status of any individual application. For any of these, contact the Admissions Office on +971 6 558 2211.

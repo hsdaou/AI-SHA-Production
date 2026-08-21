@@ -155,5 +155,5 @@ The ISC-Sharjah campus has two floors. The Ground Floor is divided into Zones 1 
 - Grades 3, 6 and 10 at ISC-Sharjah are each split between the Ground Floor and the First Floor, so the classroom letter matters when giving directions.
 - When giving the location of a room at ISC-Sharjah, state the floor, the zone and the nearest landmark.
 
-## Campus Information Not Held in This Knowledge Base
-This knowledge base does not hold ISC-Sharjah room numbers, step-by-step walking directions between rooms, staff seating allocations, which teacher or class occupies a given room, lift or accessibility routes, or visitor parking arrangements. For any of these, ask at the Reception desk or call +971 6 558 2211.
+## Campus Information AI-SHA Does Not Have
+AI-SHA does not have ISC-Sharjah room numbers, step-by-step walking directions between rooms, staff seating allocations, which teacher or class occupies a given room, lift or accessibility routes, or visitor parking arrangements. For any of these, ask at the Reception desk or call +971 6 558 2211.

@@ -1,7 +1,7 @@
 # ISC-Sharjah Tuition and Fees
 
 ## Which Year These Fees Cover
-Every fee figure in this knowledge base is for the **2025-2026 academic year** and is stated in UAE Dirhams (AED). ISC-Sharjah fees for the 2026-2027 academic year are not held in this knowledge base. If someone asks about current or next-year fees, give the 2025-2026 figure, say clearly that it is the 2025-2026 figure, and tell them to confirm the current year's fees with the school office on +971 6 558 2211 or info@iscsharjah.sabis.net.
+Every ISC-Sharjah fee figure AI-SHA has is for the **2025-2026 academic year** and is stated in UAE Dirhams (AED). ISC-Sharjah fees for the 2026-2027 academic year are not available from AI-SHA. If someone asks about current or next-year fees, give the 2025-2026 figure, say clearly that it is the 2025-2026 figure, and tell them to confirm the current year's fees with the school office on +971 6 558 2211 or info@iscsharjah.sabis.net.
 
 ## Annual Tuition Fees for the 2025-2026 Academic Year (AED)
 
@@ -44,7 +44,7 @@ ISC-Sharjah tuition is payable in three installments across the year.
 | Grade 12 | 12,400 | 12,400 | 12,400 |
 
 ## Installment Split for Grade 8 and Grade 9
-The annual tuition fee for Grade 8 and for Grade 9 is AED 32,600 for 2025-2026, payable in three installments. The exact split of those three installments is not confirmed in this knowledge base. Give the annual figure of AED 32,600 and ask the person to confirm the installment amounts with the Accounts Office on +971 6 558 2211.
+The annual tuition fee for Grade 8 and for Grade 9 is AED 32,600 for 2025-2026, payable in three installments. The exact split of those three installments is not confirmed. Give the annual figure of AED 32,600 and ask the person to confirm the installment amounts with the Accounts Office on +971 6 558 2211.
 
 ## Transportation Fees for the 2025-2026 Academic Year (AED)
 Transportation is charged separately from tuition and is payable in three installments.
@@ -61,5 +61,5 @@ Transportation is charged separately from tuition and is payable in three instal
 - ISC-Sharjah has no application deadline; enrollment is based on space availability.
 - For any fee inquiry, contact ISC-Sharjah on +971 6 558 2211 or info@iscsharjah.sabis.net.
 
-## Fee Information Not Held in This Knowledge Base
-This knowledge base does not hold ISC-Sharjah fees for the 2026-2027 academic year, uniform prices, meal or cafeteria subscription prices, extra-curricular activity charges, examination entry fees, sibling or staff discounts, late-payment penalties, or refund policy. For any of these, contact the school office on +971 6 558 2211.
+## Fee Information AI-SHA Does Not Have
+AI-SHA does not have ISC-Sharjah fees for the 2026-2027 academic year, uniform prices, meal or cafeteria subscription prices, extra-curricular activity charges, examination entry fees, sibling or staff discounts, late-payment penalties, or refund policy. For any of these, contact the school office on +971 6 558 2211.
