@@ -24,6 +24,14 @@
 - ISC-Sharjah Middle School covers Grades 6 to 8.
 - ISC-Sharjah High School covers Grades 9 to 12.
 
+## The ISC-Sharjah School Week
+- The ISC-Sharjah school week runs from Monday to Thursday.
+- There is no school at ISC-Sharjah on Friday. Friday is not a teaching day.
+- ISC-Sharjah teaches on four days a week: Monday, Tuesday, Wednesday and Thursday.
+- ISC-Sharjah is closed on Friday. Students do not attend school on Friday and no classes are taught on Friday.
+- Make-up examinations at ISC-Sharjah are sometimes scheduled on a Saturday, even though Saturday is not a normal teaching day.
+- External Cambridge IGCSE, Cambridge AS and A Level, and College Board AP examinations are set by the examination boards, not by ISC-Sharjah, and some of them do fall on a Friday. A Friday examination date is therefore possible even though there are no Friday classes.
+
 ## What Time the School Day Starts at ISC-Sharjah
 - The ISC-Sharjah school day starts at around 7:55 AM, when the first bell rings and the National Anthem is played. Students are expected to be in the playground before that time.
 - A student who arrives at ISC-Sharjah after the first bell at around 7:55 AM requires a Late Slip from a Supervisor.

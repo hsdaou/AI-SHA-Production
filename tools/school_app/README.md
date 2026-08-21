@@ -36,10 +36,15 @@ So the two agree up to period 5 and are **off by one after it**:
 Passing `6` straight through matches nothing, so no teacher is marked busy, the endpoint reports
 every teacher free, and `busy_free_sane()` refuses the answer.
 
-## Known data gap
+## The school week is Monday to Thursday
 
-`timetable_entries` contains **Monday, Tuesday, Wednesday and Thursday only — there is no Friday**.
-Friday questions cannot be answered until the Friday timetable is loaded.
+`timetable_entries` contains **Monday, Tuesday, Wednesday and Thursday only, and that is correct** —
+Sharjah runs a four-day school week and there is no school on Friday. This is not a missing-data
+bug; do not go looking for a Friday timetable to load.
+
+Two things follow. A Friday query should be answered there is no school on Friday, not treated as
+a lookup failure. And any school-day count that assumes a five-day week is wrong — the 2025-2026
+calendar's stated 182 days implies five days a week and does not fit this timetable.
 
 ## Privacy split
 
