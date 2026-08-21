@@ -1,0 +1,12 @@
+[Unit]
+Description=Check the AI-SHA direct link every 30s
+Documentation=https://github.com/hsdaou/AI-SHA-Production
+
+[Timer]
+OnBootSec=60s
+OnUnitActiveSec=30s
+AccuracySec=5s
+Unit=aisha-link-watchdog.service
+
+[Install]
+WantedBy=timers.target

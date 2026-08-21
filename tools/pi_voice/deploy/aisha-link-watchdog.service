@@ -1,0 +1,10 @@
+[Unit]
+Description=AI-SHA direct-link watchdog (recovers a wedged eth0 TX queue)
+Documentation=https://github.com/hsdaou/AI-SHA-Production
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/aisha-link-watchdog.sh
+# Bouncing a link needs CAP_NET_ADMIN; nothing else here is privileged.
+User=root
