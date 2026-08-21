@@ -1,0 +1,18 @@
+[Unit]
+Description=AI-SHA SLAM (slam_toolbox + map bridge for the console)
+After=network.target aisha-lidar.service
+Requires=aisha-lidar.service
+
+[Service]
+Type=simple
+User=pi5
+# Runs the bring-up in the foreground so systemd owns the children; the script
+# ends with a wait so the unit stays active.
+ExecStart=/home/pi5/slam_bringup.sh
+Restart=always
+RestartSec=5
+Environment=ROS_DOMAIN_ID=44
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

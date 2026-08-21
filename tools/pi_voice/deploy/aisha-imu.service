@@ -1,0 +1,22 @@
+[Unit]
+Description=AI-SHA BNO055 IMU (driver + sensor_msgs/Imu bridge)
+After=network.target
+
+[Service]
+Type=simple
+User=pi5
+# lgpio (pulled in by adafruit_blinka "import board") creates its .lgd-nfy notify
+# pipe in the CWD. systemd defaults CWD to /, which pi5 cannot write, so the
+# driver died on import until this was set.
+WorkingDirectory=/home/pi5
+ExecStart=/home/pi5/imu_bringup.sh
+Restart=always
+RestartSec=3
+# Domain 44 to match aisha-lidar / aisha-slam: the IMU feeds Pi-side navigation.
+# This also keeps the Jazzy-only BNO055Data custom message off the mesh domain 42,
+# avoiding the cross-distro DDS problems seen with the Jetson Humble stack.
+Environment=ROS_DOMAIN_ID=44
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

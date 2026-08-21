@@ -1,0 +1,2402 @@
+[
+ {
+  "text": "Send me a list of the teachers who are free during period 3 today.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 3,
+  "note": "\"Send me a list\" = named list -> emailed. Explicit day + period.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "How many teachers do we have free right now?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "\"How many\" -> count. \"right now\" is not the literal word today/tomorrow, so day left null; router resolves current time itself.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Do we have any teachers free in period 5 tomorrow? Send me their names.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": 5,
+  "note": "Starts like a yes/no but \"send me their names\" settles it as a named list.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "I have a substitution to cover, how many teachers are available in period 2?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": 2,
+  "note": "Director filler \"I have ...\" must not derail the how-many count. No day stated.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Who is free on Monday period 1? I need someone for assembly duty.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Monday",
+  "period": 1,
+  "note": "\"Who\" + duty context = teachers, not students. Hard case: no explicit noun 'teacher'.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Give me the names of all the teachers who are free on Wednesday.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Wednesday",
+  "period": null,
+  "note": "\"names of\" -> list. Whole-day request, no period.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "How many free teachers do we have on Thursday period 6?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "Thursday",
+  "period": 6,
+  "note": "Word order puts \"free teachers\" adjacent; still a count.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Send me a report of teacher availability for tomorrow.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": null,
+  "note": "\"report\" -> emailed named list per the routing rule.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Do we have enough teachers free in period 4 to run the trip? Just tell me the number.",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": 4,
+  "note": "\"just tell me the number\" is the decisive cue for count over list.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Which teachers are not teaching during period 7 today?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 7,
+  "note": "Negated phrasing \"not teaching\" means free; \"which\" -> named list.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "How many of my teachers are free tomorrow morning?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": null,
+  "note": "\"morning\" is not a period number, so period stays null.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "I need cover for grade 6 section B in period 3, which teachers are free then?",
+  "intent": "free_teachers",
+  "grade": 6,
+  "section": "B",
+  "day": null,
+  "period": 3,
+  "note": "Grade/section belong to the class needing cover but are still extractable slots.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Email me the teachers who have a free period on Friday period 2.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Friday",
+  "period": 2,
+  "note": "\"a free period\" is generic; the real period slot is the trailing \"period 2\".",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "How many teachers are available on Monday for the parent meeting?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "Monday",
+  "period": null,
+  "note": "Count with day only.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Can you tell me who is free in period 8 today? I need to send someone to reception.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 8,
+  "note": "\"can you tell me who\" is still a who-question -> named list, not a count.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Just give me a count of the free teachers in period 1 tomorrow.",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": 1,
+  "note": "\"count\" without \"how many\" must still route to free_count.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Send the list of available teachers for Tuesday period 5 to my email.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Tuesday",
+  "period": 5,
+  "note": "Explicit email destination; list intent.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "How many staff are free right now? I need two people at the gate.",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "\"staff\" is director shorthand for teachers; still a count.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Names of the teachers who are free after period 4 today, please.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 4,
+  "note": "Ambiguous: \"after period 4\" could mean 5 onwards. A careful human anchors on the stated number 4 and lets the router decide the offset.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Do we have anyone free sixth period on Wednesday? Send me who.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Wednesday",
+  "period": 6,
+  "note": "Spelled-out ordinal \"sixth period\" -> 6; \"send me who\" -> list.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "How many teachers are free during period 3 and period 4 today?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 3,
+  "note": "Two periods asked but the slot holds one; a careful human takes the first (3). Genuinely ambiguous, kept as a stress case.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Report on free teachers for grade 4 tomorrow.",
+  "intent": "free_teachers",
+  "grade": 4,
+  "section": null,
+  "day": "tomorrow",
+  "period": null,
+  "note": "Clipped director style; \"report\" -> emailed list. Grade 4 = the grade-4 teaching team.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "How many teachers do we have available on Friday period 9?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "Friday",
+  "period": 9,
+  "note": "Boundary period 9.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "I want the names of every teacher free in the second period today.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 2,
+  "note": "\"the second period\" written out -> 2.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Roughly how many teachers are free at the moment?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Hedge word \"roughly\" before \"how many\" should not break the count cue.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Send me who is available to invigilate on Thursday period 3.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Thursday",
+  "period": 3,
+  "note": "\"invigilate\" implies teachers; \"send me who\" -> emailed list.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "How many teachers are free in period 7 on Tuesday?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "Tuesday",
+  "period": 7,
+  "note": "Plain count with both day and period.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Which of the grade 5 section A teachers are free tomorrow?",
+  "intent": "free_teachers",
+  "grade": 5,
+  "section": "A",
+  "day": "tomorrow",
+  "period": null,
+  "note": "Grade and section attach to the teachers, not to a timetable lookup; must not route to timetable.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Do we have a spare teacher this period? How many?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "\"this period\" gives no number, so period is null; trailing \"how many\" makes it a count.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "List the teachers with a free slot on Monday period 4 and email it to me.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Monday",
+  "period": 4,
+  "note": "\"List ... and email it\" -> named list.",
+  "lens": "director-teachers"
+ },
+ {
+  "text": "Which students in grade 9 are free right now?",
+  "intent": "free_students",
+  "grade": 9,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "'Which students' = named list -> emailed. 'Right now' is resolved from the wall clock, so no explicit day/period slot.",
+  "lens": "director-students"
+ },
+ {
+  "text": "How many students are free in grade 7 during period 3 today?",
+  "intent": "free_count",
+  "grade": 7,
+  "section": null,
+  "day": "today",
+  "period": 3,
+  "note": "'How many' -> spoken count. All slots explicit.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Send me the names of the free students in grade 10 section B on Monday period 5.",
+  "intent": "free_students",
+  "grade": 10,
+  "section": "B",
+  "day": "Monday",
+  "period": 5,
+  "note": "'Send me the names' is the clearest emailed-list trigger; every slot filled.",
+  "lens": "director-students"
+ },
+ {
+  "text": "AI-SHA, how many grade 11 students have a free period tomorrow morning?",
+  "intent": "free_count",
+  "grade": 11,
+  "section": null,
+  "day": "tomorrow",
+  "period": null,
+  "note": "Wake word ignored. 'Morning' is not a period number, so period stays null.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Who is free in grade 8 section C right now?",
+  "intent": "free_students",
+  "grade": 8,
+  "section": "C",
+  "day": null,
+  "period": null,
+  "note": "'Who' -> named list. Section spoken as a separate word.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Give me a list of available students in grade 6 for period 2 on Wednesday.",
+  "intent": "free_students",
+  "grade": 6,
+  "section": null,
+  "day": "Wednesday",
+  "period": 2,
+  "note": "'List of' -> named list even though the word 'names' never appears.",
+  "lens": "director-students"
+ },
+ {
+  "text": "How many kids in grade twelve are free fourth period on Thursday?",
+  "intent": "free_count",
+  "grade": 12,
+  "section": null,
+  "day": "Thursday",
+  "period": 4,
+  "note": "Grade and period both spoken as words ('twelve', 'fourth'); 'kids' means students.",
+  "lens": "director-students"
+ },
+ {
+  "text": "I need the names of every free student in grade 5 section A today.",
+  "intent": "free_students",
+  "grade": 5,
+  "section": "A",
+  "day": "today",
+  "period": null,
+  "note": "No period given - the router must ask or default; intent is still the emailed list.",
+  "lens": "director-students"
+ },
+ {
+  "text": "How many students across the school are free right now?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Whole-school count, no grade slot. Count is safe to speak aloud.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Which grade 9 section D students are available during period 6 tomorrow?",
+  "intent": "free_students",
+  "grade": 9,
+  "section": "D",
+  "day": "tomorrow",
+  "period": 6,
+  "note": "'Available' is a synonym for free; 'which' still forces the named list.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Just tell me the number of free students in grade 10 on Tuesday period 1.",
+  "intent": "free_count",
+  "grade": 10,
+  "section": null,
+  "day": "Tuesday",
+  "period": 1,
+  "note": "'The number of' is a count request, not a list - easy to misread as free_students.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Email me the free students in 7B for period 4.",
+  "intent": "free_students",
+  "grade": 7,
+  "section": "B",
+  "day": null,
+  "period": 4,
+  "note": "'7B' is the common school shorthand: grade 7, section B. 'Email me' is decisive.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Quick one - how many students are free in grade 4 right now?",
+  "intent": "free_count",
+  "grade": 4,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Low grade number at the edge of the 2..12 range; conversational filler must be ignored.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Who's not in class in grade 11 section A on Friday?",
+  "intent": "free_students",
+  "grade": 11,
+  "section": "A",
+  "day": "Friday",
+  "period": null,
+  "note": "'Not in class' means free without using the word 'free'; 'who's' -> named list.",
+  "lens": "director-students"
+ },
+ {
+  "text": "How many free students do we have in grade 8 during period 7 tomorrow?",
+  "intent": "free_count",
+  "grade": 8,
+  "section": null,
+  "day": "tomorrow",
+  "period": 7,
+  "note": "'How many ... do we have' is still a count.",
+  "lens": "director-students"
+ },
+ {
+  "text": "List the students in grade 12 section C who are free on Monday.",
+  "intent": "free_students",
+  "grade": 12,
+  "section": "C",
+  "day": "Monday",
+  "period": null,
+  "note": "'List' -> emailed named list; no period named.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Roughly how many grade 6 students are free in period 5 today?",
+  "intent": "free_count",
+  "grade": 6,
+  "section": null,
+  "day": "today",
+  "period": 5,
+  "note": "'Roughly how many' is a hedged count, not a request for names.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Report of free students, grade 10, section A, Wednesday, period 3, please.",
+  "intent": "free_students",
+  "grade": 10,
+  "section": "A",
+  "day": "Wednesday",
+  "period": 3,
+  "note": "Clipped telegram-style phrasing a busy director actually uses; 'report' -> named list.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Are there a lot of grade 9 students free tomorrow?",
+  "intent": "free_count",
+  "grade": 9,
+  "section": null,
+  "day": "tomorrow",
+  "period": null,
+  "note": "'Are there a lot of' is a quantity question -> count, even though 'how many' is absent.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Can you send me which students are free in grade 5 during the second period on Tuesday?",
+  "intent": "free_students",
+  "grade": 5,
+  "section": null,
+  "day": "Tuesday",
+  "period": 2,
+  "note": "'Send me which students' -> named list; 'the second period' -> period 2.",
+  "lens": "director-students"
+ },
+ {
+  "text": "How many students in grade 11 section B are free in period 8 on Thursday?",
+  "intent": "free_count",
+  "grade": 11,
+  "section": "B",
+  "day": "Thursday",
+  "period": 8,
+  "note": "A section is named but the ask is still a count - naming a section must not flip the intent.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Names of the free grade 7 students for tomorrow's first period.",
+  "intent": "free_students",
+  "grade": 7,
+  "section": null,
+  "day": "tomorrow",
+  "period": 1,
+  "note": "No verb at all; 'names of' carries the intent. Possessive 'tomorrow's' still yields day=tomorrow.",
+  "lens": "director-students"
+ },
+ {
+  "text": "What's the count of available students in grade 3 today?",
+  "intent": "free_count",
+  "grade": 3,
+  "section": null,
+  "day": "today",
+  "period": null,
+  "note": "'What's the count' -> spoken number; grade 3 is near the low end of the valid range.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Show me who's free in grade 8 section E during period 9 on Friday.",
+  "intent": "free_students",
+  "grade": 8,
+  "section": "E",
+  "day": "Friday",
+  "period": 9,
+  "note": "'Show me who' -> named list; period 9 is the top of the valid range.",
+  "lens": "director-students"
+ },
+ {
+  "text": "How many of our grade 12 students are free right now? I need bodies for the assembly setup.",
+  "intent": "free_count",
+  "grade": 12,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trailing justification clause must not add slots; the ask is still a count.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Pull the list of free students in grade 6 section B for Monday period 6.",
+  "intent": "free_students",
+  "grade": 6,
+  "section": "B",
+  "day": "Monday",
+  "period": 6,
+  "note": "'Pull the list' -> emailed named list.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Tell me how many students are free in section A of grade 10 on Friday.",
+  "intent": "free_count",
+  "grade": 10,
+  "section": "A",
+  "day": "Friday",
+  "period": null,
+  "note": "Slots arrive in reversed order (section before grade); 'tell me how many' is still a count.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Which students in grade 9 don't have a class in period 2 tomorrow?",
+  "intent": "free_students",
+  "grade": 9,
+  "section": null,
+  "day": "tomorrow",
+  "period": 2,
+  "note": "'Don't have a class' = free; 'which students' -> named list.",
+  "lens": "director-students"
+ },
+ {
+  "text": "How many students are free in grade 7 section C right now?",
+  "intent": "free_count",
+  "grade": 7,
+  "section": "C",
+  "day": null,
+  "period": null,
+  "note": "Near-minimal-pair with case 5 - same grade/section shape, but 'how many' makes it a count.",
+  "lens": "director-students"
+ },
+ {
+  "text": "Send the availability list for grade 11 students on Wednesday, period 7.",
+  "intent": "free_students",
+  "grade": 11,
+  "section": null,
+  "day": "Wednesday",
+  "period": 7,
+  "note": "'Availability list' plus 'send' -> emailed named list of students, not a count.",
+  "lens": "director-students"
+ },
+ {
+  "text": "What's the timetable for grade 7 section A on Monday?",
+  "intent": "timetable",
+  "grade": 7,
+  "section": "A",
+  "day": "Monday",
+  "period": null,
+  "note": "Canonical form with all slots present.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Show me the timetable for grade 10 B tomorrow.",
+  "intent": "timetable",
+  "grade": 10,
+  "section": "B",
+  "day": "tomorrow",
+  "period": null,
+  "note": "'tomorrow' kept literal per spec. 'Show me' does NOT make this a list intent - it's a class schedule, not names of people.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What does grade 5 section C study today?",
+  "intent": "timetable",
+  "grade": 5,
+  "section": "C",
+  "day": "today",
+  "period": null,
+  "note": "No word 'timetable'; 'study' signals schedule.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What subjects does 8D have on Wednesday?",
+  "intent": "timetable",
+  "grade": 8,
+  "section": "D",
+  "day": "Wednesday",
+  "period": null,
+  "note": "Compact '8D' form real people use.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What lessons do grade 6 A have tomorrow?",
+  "intent": "timetable",
+  "grade": 6,
+  "section": "A",
+  "day": "tomorrow",
+  "period": null,
+  "note": "'lessons' phrasing.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Can you tell me grade 9 section B's schedule for Thursday?",
+  "intent": "timetable",
+  "grade": 9,
+  "section": "B",
+  "day": "Thursday",
+  "period": null,
+  "note": "'schedule' synonym.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What's on for grade 4 C today?",
+  "intent": "timetable",
+  "grade": 4,
+  "section": "C",
+  "day": "today",
+  "period": null,
+  "note": "Very colloquial, no schedule keyword at all.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What class does grade 7 B have in period 3 on Tuesday?",
+  "intent": "timetable",
+  "grade": 7,
+  "section": "B",
+  "day": "Tuesday",
+  "period": 3,
+  "note": "Period slot filled - single-period timetable lookup.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Which subject is grade 11 A doing right now?",
+  "intent": "timetable",
+  "grade": 11,
+  "section": "A",
+  "day": "today",
+  "period": null,
+  "note": "'right now' implies today; period is unresolved clock time, router resolves later so period stays null. Note 'Which' here does NOT mean free_teachers - it asks about a subject, not people.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Timetable for grade 12 section A please.",
+  "intent": "timetable",
+  "grade": 12,
+  "section": "A",
+  "day": null,
+  "period": null,
+  "note": "No day given - day null, router should ask or default.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What are grade 3 B studying on Sunday?",
+  "intent": "timetable",
+  "grade": 3,
+  "section": "B",
+  "day": null,
+  "period": null,
+  "note": "Sunday is outside Monday-Friday range. Grade 3 is inside 2..12. Day slot left null since 'Sunday' is not a valid enumerated day - router should reject the day, not the intent. Good hard case.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What's the schedule for 6C on Friday?",
+  "intent": "timetable",
+  "grade": 6,
+  "section": "C",
+  "day": "Friday",
+  "period": null,
+  "note": "Compact section form again with explicit weekday.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Read me the timetable for grade 2 section A on Monday.",
+  "intent": "timetable",
+  "grade": 2,
+  "section": "A",
+  "day": "Monday",
+  "period": null,
+  "note": "Lower grade boundary (2). 'Read me' is fine - timetables are spoken, not emailed.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What does class 8 A have first period tomorrow?",
+  "intent": "timetable",
+  "grade": 8,
+  "section": "A",
+  "day": "tomorrow",
+  "period": 1,
+  "note": "'first period' -> ordinal must map to period 1.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Give me the lesson plan for grade 10 section D on Wednesday.",
+  "intent": "timetable",
+  "grade": 10,
+  "section": "D",
+  "day": "Wednesday",
+  "period": null,
+  "note": "'lesson plan' used loosely to mean timetable, as staff actually say it.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What's grade 9 C up to in period 5 today?",
+  "intent": "timetable",
+  "grade": 9,
+  "section": "C",
+  "day": "today",
+  "period": 5,
+  "note": "Casual 'up to' phrasing with period.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Timetable grade 7 A Monday",
+  "intent": "timetable",
+  "grade": 7,
+  "section": "A",
+  "day": "Monday",
+  "period": null,
+  "note": "Telegraphic, no verb - robot users often clip like this.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What subject is grade 5 B in during the last period on Thursday?",
+  "intent": "timetable",
+  "grade": 5,
+  "section": "B",
+  "day": "Thursday",
+  "period": null,
+  "note": "'last period' is not a fixed number (varies by day), so period stays null. Hard case - router must not guess 8 or 9.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Do grade 11 section B have maths tomorrow?",
+  "intent": "timetable",
+  "grade": 11,
+  "section": "B",
+  "day": "tomorrow",
+  "period": null,
+  "note": "Yes/no phrased against the timetable - still a timetable lookup, subject named but subject is not a slot.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What are the classes for grade 4 section A this Tuesday?",
+  "intent": "timetable",
+  "grade": 4,
+  "section": "A",
+  "day": "Tuesday",
+  "period": null,
+  "note": "'this Tuesday' -> day Tuesday.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Tell me what grade 12 D is doing in period 2 on Monday.",
+  "intent": "timetable",
+  "grade": 12,
+  "section": "D",
+  "day": "Monday",
+  "period": 2,
+  "note": "Upper grade boundary (12) plus period.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What's after break for grade 6 section B today?",
+  "intent": "timetable",
+  "grade": 6,
+  "section": "B",
+  "day": "today",
+  "period": null,
+  "note": "'after break' is a real corridor phrasing; not resolvable to a period number here.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Which periods does grade 8 C have PE on Wednesday?",
+  "intent": "timetable",
+  "grade": 8,
+  "section": "C",
+  "day": "Wednesday",
+  "period": null,
+  "note": "Starts with 'Which' but asks about periods/subject, NOT free people. Must stay timetable, not free_teachers. Key trap case.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Schedule for section A grade 7 on Friday?",
+  "intent": "timetable",
+  "grade": 7,
+  "section": "A",
+  "day": "Friday",
+  "period": null,
+  "note": "Section stated before grade - slot order inverted.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What are the grade 10 boys doing in period 4 tomorrow?",
+  "intent": "timetable",
+  "grade": 10,
+  "section": null,
+  "day": "tomorrow",
+  "period": 4,
+  "note": "No section given - section null. 'boys' is not a section letter.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Kids in grade 3 B, what have they got on Thursday?",
+  "intent": "timetable",
+  "grade": 3,
+  "section": "B",
+  "day": "Thursday",
+  "period": null,
+  "note": "Fronted subject, informal. Mentions 'kids' but asks about lessons, not free students - must not be free_students.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Any idea what grade 9 A studies on Monday mornings?",
+  "intent": "timetable",
+  "grade": 9,
+  "section": "A",
+  "day": "Monday",
+  "period": null,
+  "note": "'mornings' does not pin a period.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What's happening in grade 5 section D during period 6 on Tuesday?",
+  "intent": "timetable",
+  "grade": 5,
+  "section": "D",
+  "day": "Tuesday",
+  "period": 6,
+  "note": "All four slots present, indirect phrasing.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Print the timetable for grade 11 section C for Friday.",
+  "intent": "timetable",
+  "grade": 11,
+  "section": "C",
+  "day": "Friday",
+  "period": null,
+  "note": "'Print' is an output-channel word but the content is a class timetable, not minors' names - still timetable.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "What's the timetable?",
+  "intent": "timetable",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "All slots absent - router must ask follow-ups rather than guess. Minimal-slot boundary case.",
+  "lens": "timetable-lookups"
+ },
+ {
+  "text": "Which teachers are free in period 3 today?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 3,
+  "note": "Plain 'period N' + 'today'. 'Which teachers' -> named list.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Which teachers are free during the third period today?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 3,
+  "note": "Ordinal word 'third period' must map to period=3.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Who is free in period three on Tuesday?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Tuesday",
+  "period": 3,
+  "note": "Spelled-out number 'three'. Bare 'who is free' in a staff context defaults to teachers.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "How many teachers are free in the 3rd period tomorrow?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": 3,
+  "note": "'How many' -> count, spoken. '3rd period' numeric ordinal.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "How many students are free during the fifth period on Wednesday?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "Wednesday",
+  "period": 5,
+  "note": "'How many students' -> count even though subject is students.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Send me the names of the students who are free in the 5th tomorrow.",
+  "intent": "free_students",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": 5,
+  "note": "'the 5th' with no word 'period' still means period 5. 'Send me the names' -> emailed list.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Give me a list of teachers free in the last period on Thursday.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Thursday",
+  "period": null,
+  "note": "'last period' is not a number the router can resolve; period stays null rather than guessing 8 or 9.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Who's free next Monday period 2?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Monday",
+  "period": 2,
+  "note": "'next Monday' normalises to Monday; 'next' carries no extra slot.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "How many teachers are free on Monday?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "Monday",
+  "period": null,
+  "note": "Day only, no period at all.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Which students in grade 7 section A are free in period 4 on Friday?",
+  "intent": "free_students",
+  "grade": 7,
+  "section": "A",
+  "day": "Friday",
+  "period": 4,
+  "note": "Full slot set. 'Which students' -> named list, emailed.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "What does grade 7 section A study on Monday?",
+  "intent": "timetable",
+  "grade": 7,
+  "section": "A",
+  "day": "Monday",
+  "period": null,
+  "note": "Classic timetable ask, whole day.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "What do grade 9 B have in the second period tomorrow?",
+  "intent": "timetable",
+  "grade": 9,
+  "section": "B",
+  "day": "tomorrow",
+  "period": 2,
+  "note": "Timetable narrowed to one period via ordinal word.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "What's on for grade 5 C today, period one?",
+  "intent": "timetable",
+  "grade": 5,
+  "section": "C",
+  "day": "today",
+  "period": 1,
+  "note": "Period stated after the day, spelled out as 'one'.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Which teachers are free right now?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": null,
+  "note": "'right now' implies today; the current period is not stated so period stays null.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "How many students are free in period 6 right now?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 6,
+  "note": "'right now' -> today, but an explicit period is given too.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "List the teachers free in periods 3 and 4 on Tuesday.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Tuesday",
+  "period": 3,
+  "note": "Two periods spoken; schema holds one integer, so take the first mentioned.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Report of students free on Thursday during the seventh period, please.",
+  "intent": "free_students",
+  "grade": null,
+  "section": null,
+  "day": "Thursday",
+  "period": 7,
+  "note": "'Report of' is a named-list cue like 'send me' / 'list'.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "How many free teachers do we have in the 8th period today?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 8,
+  "note": "'how many free teachers' word order reversed; still a count.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Who are the free teachers tomorrow morning?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": null,
+  "note": "'morning' is not a period number; period stays null.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Which students are free in period 9 on Wednesday?",
+  "intent": "free_students",
+  "grade": null,
+  "section": null,
+  "day": "Wednesday",
+  "period": 9,
+  "note": "Top-of-range period 9.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "How many kids in grade 4 are free during period two today?",
+  "intent": "free_count",
+  "grade": 4,
+  "section": null,
+  "day": "today",
+  "period": 2,
+  "note": "'kids' = students, but 'how many' still wins -> count. Grade present, section absent.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Names of the teachers free the ninth period on Friday.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Friday",
+  "period": 9,
+  "note": "'Names of' -> emailed list. 'the ninth period' with no preposition.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Is anyone free in the 6th on Monday?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Monday",
+  "period": 6,
+  "note": "'Is anyone free' asks who, not how many -> named list of teachers.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "How many are free tomorrow in period 1?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": 1,
+  "note": "Subject omitted entirely; 'how many' still forces count.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Show me the timetable for grade 12 section D on Tuesday.",
+  "intent": "timetable",
+  "grade": 12,
+  "section": "D",
+  "day": "Tuesday",
+  "period": null,
+  "note": "'Show me the timetable' is timetable, not a free-list, despite the list-ish verb.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "What period is it now?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Mentions 'period' but asks the clock, not the timetable -> none.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "What time does school finish tomorrow?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": null,
+  "note": "Has a day word but is not a timetable question; day may be captured, intent is none.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Which teachers are free during periods on Saturday?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Saturday is outside Monday-Friday, so day cannot be filled; treat as unanswerable rather than dropping the day silently.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "Give me the students free in the fourth period, grade 10 section B, tomorrow.",
+  "intent": "free_students",
+  "grade": 10,
+  "section": "B",
+  "day": "tomorrow",
+  "period": 4,
+  "note": "Slots in scrambled order; section letter follows the grade.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "How many teachers are free the period after lunch on Wednesday?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "Wednesday",
+  "period": null,
+  "note": "'the period after lunch' is not resolvable to an integer; period null, count intent intact.",
+  "lens": "period-day-forms"
+ },
+ {
+  "text": "ll send me the names of teachers free in period three tomorrow",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": 3,
+  "note": "Leading word clipped by STT ('ll' = 'you'll'). 'names of' is the named-list trigger, so emailed list, not a count.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "how many teachers are free right now",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": null,
+  "note": "'how many' => spoken count. 'right now' resolves to today; period is unknown so left null.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "grade tan section be timetable for monday",
+  "intent": "timetable",
+  "grade": 10,
+  "section": "B",
+  "day": "Monday",
+  "period": null,
+  "note": "'tan' = ten, 'be' = B. Classic Gulf-accent digit/letter garble; word order is also inverted.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "ow many students are free in grade seven period for",
+  "intent": "free_count",
+  "grade": 7,
+  "section": null,
+  "day": null,
+  "period": 4,
+  "note": "'ow' = how (dropped h), 'for' = four. Still a count question despite the mangling.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "which teachers available fifth period thursday um",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Thursday",
+  "period": 5,
+  "note": "Verb 'are' dropped, ordinal 'fifth period' = period 5, trailing filler.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "send the vedio message to my mother not the timetable thing",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "'vedio' misspelling plus the word 'timetable' appearing as a negation - must not be pulled into timetable intent.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "uh sorry never mind cancel that",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Corridor self-correction; nothing to route.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "list of students free grade nine sec a period two",
+  "intent": "free_students",
+  "grade": 9,
+  "section": "A",
+  "day": null,
+  "period": 2,
+  "note": "'sec a' = section A. 'list of' is the named-list trigger for minors - must be emailed, never spoken.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "whats grade for section see studying today",
+  "intent": "timetable",
+  "grade": 4,
+  "section": "C",
+  "day": "today",
+  "period": null,
+  "note": "'for' = four, 'see' = C. Homophone trap on both slots at once.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "i want the report of free teachers on wednesday",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Wednesday",
+  "period": null,
+  "note": "'report of' = named list. No period given, so the whole day is in scope.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "how many free students grade eleven section d tomorrow period six",
+  "intent": "free_count",
+  "grade": 11,
+  "section": "D",
+  "day": "tomorrow",
+  "period": 6,
+  "note": "Run-on with no punctuation, all four slots present, but 'how many' still forces a count.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "who is free among the teachers in period one",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": 1,
+  "note": "'who' => named list. Awkward spoken phrasing 'free among the teachers'.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "just give me a count of the teachers free tomorrow",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": null,
+  "note": "'count of' is the count trigger even though 'give me' looks like a list request.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "send me the timetable for grade six section be on friday please",
+  "intent": "timetable",
+  "grade": 6,
+  "section": "B",
+  "day": "Friday",
+  "period": null,
+  "note": "'send me' would normally hint at an email list, but the object is a timetable - intent must stay timetable.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "names of the students who are free in period ate",
+  "intent": "free_students",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": 8,
+  "note": "'ate' = eight. Named list of minors.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "so like what does grade twelve section a have on tuesday second period",
+  "intent": "timetable",
+  "grade": 12,
+  "section": "A",
+  "day": "Tuesday",
+  "period": 2,
+  "note": "Filler-laden opener; 'second period' ordinal at the very end after the day.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "howmany teachers free",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Words fused by the STT engine; maximally terse, no slots at all.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "which teachers are free in grade tan during period three",
+  "intent": "free_teachers",
+  "grade": 10,
+  "section": null,
+  "day": null,
+  "period": 3,
+  "note": "'tan' = ten again, this time mid-sentence; grade applies to the class the teacher would be teaching.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "who all is free students wise in grade eight section see right now",
+  "intent": "free_students",
+  "grade": 8,
+  "section": "C",
+  "day": "today",
+  "period": null,
+  "note": "Indian-English 'who all' and 'students wise'; 'see' = C; 'right now' => today.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "is it going to rain today or what",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Contains 'today' but is not a timetable question - day slot must not leak out of a none.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "period nine on monday which students are free",
+  "intent": "free_students",
+  "grade": null,
+  "section": null,
+  "day": "Monday",
+  "period": 9,
+  "note": "Slots stated before the question word - order inversion typical of dictated speech.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "ok so send the free teacher report for period seven today thanks",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 7,
+  "note": "Politeness wrapper on both ends; 'report' = named list.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "how many kids are free in grade five",
+  "intent": "free_count",
+  "grade": 5,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "'kids' = students in corridor speech; still a count.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "i need the timetable grade three section a",
+  "intent": "timetable",
+  "grade": 3,
+  "section": "A",
+  "day": null,
+  "period": null,
+  "note": "Preposition 'for' dropped entirely; no day given.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "eh what class does seven be have tomorrow",
+  "intent": "timetable",
+  "grade": 7,
+  "section": "B",
+  "day": "tomorrow",
+  "period": null,
+  "note": "'seven be' = grade 7 section B with the word 'grade' and 'section' both swallowed by the STT.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "can you email me the names of free teachers period too",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": 2,
+  "note": "'too' = two. Explicit 'email me' plus 'names of' - unambiguous list request.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "how many teachers dont have class in period six on wednesday",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "Wednesday",
+  "period": 6,
+  "note": "'free' is never said - it is paraphrased as 'dont have class'; apostrophe dropped.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "which students in grade ten section e are free like on thursday",
+  "intent": "free_students",
+  "grade": 10,
+  "section": "E",
+  "day": "Thursday",
+  "period": null,
+  "note": "Filler 'like' inserted right before the day, which can push a naive parser off the day slot.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "tell me the number of free students in period four tomorrow",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": 4,
+  "note": "'number of' = count. 'tell me' phrasing looks like a list request but must stay spoken count - no minor names.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "um can you give me the timetable for grade nine section d on monday and also how many teachers are free then",
+  "intent": "timetable",
+  "grade": 9,
+  "section": "D",
+  "day": "Monday",
+  "period": null,
+  "note": "Run-on with two asks glued by 'and also'. Router must pick ONE; the primary/leading request is the timetable, and the count clause has no period so it cannot be answered anyway.",
+  "lens": "whisper-mangled"
+ },
+ {
+  "text": "The students which are free in grade 7 tomorrow period 3, send me their names please.",
+  "intent": "free_students",
+  "grade": 7,
+  "section": null,
+  "day": "tomorrow",
+  "period": 3,
+  "note": "Non-native relative pronoun 'which' for people; 'send me their names' is the named-list trigger -> emailed.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Give me the teachers free tomorrow in period 2.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": 2,
+  "note": "Post-nominal adjective 'teachers free'. 'Give me' = list, not count. Teacher queries carry no grade/section.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "I want to know who is not teaching on Monday period 5.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "Monday",
+  "period": 5,
+  "note": "'Who is not teaching' = free teachers by negation; 'who' forces the named list.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "How much teachers are free today in the fourth period?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 4,
+  "note": "'How much' used for 'how many' (common L2 slip) - still a count. Ordinal 'the fourth period' -> period 4.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Kindly tell me how many students of grade 9 are free on Wednesday period 6.",
+  "intent": "free_count",
+  "grade": 9,
+  "section": null,
+  "day": "Wednesday",
+  "period": 6,
+  "note": "'Kindly' + 'how many' -> spoken count, no section given so all sections of grade 9.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "What they are studying in grade 8 section B on Thursday?",
+  "intent": "timetable",
+  "grade": 8,
+  "section": "B",
+  "day": "Thursday",
+  "period": null,
+  "note": "Missing auxiliary inversion ('what they are' vs 'what are they'); whole-day timetable so period is null.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Please, the timetable of grade 10 section C for tomorrow.",
+  "intent": "timetable",
+  "grade": 10,
+  "section": "C",
+  "day": "tomorrow",
+  "period": null,
+  "note": "Verbless request, 'of ... for ...' possessive chain. Explicit word 'timetable'.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Which are the teachers having no class in period 7 today?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": 7,
+  "note": "'Which are the teachers' fronting; 'having no class' = free. Named list.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Send on my email the names of the free students, grade 6 section A, Tuesday period 1.",
+  "intent": "free_students",
+  "grade": 6,
+  "section": "A",
+  "day": "Tuesday",
+  "period": 1,
+  "note": "'Send on my email' preposition slip; 'names of' is the strongest list marker. All four slots present.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Only the number please, how many students are free in grade 11 tomorrow period 8?",
+  "intent": "free_count",
+  "grade": 11,
+  "section": null,
+  "day": "tomorrow",
+  "period": 8,
+  "note": "Speaker pre-empts privacy by asking only for the number - unambiguous count.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Who is free from the teachers side tomorrow?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": null,
+  "note": "'From the teachers side' = among the teachers. No period given - whole day.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "I am wanting the list of the students who are free in grade 5 section D on Friday.",
+  "intent": "free_students",
+  "grade": 5,
+  "section": "D",
+  "day": "Friday",
+  "period": null,
+  "note": "Stative verb in progressive ('I am wanting'), a classic L2 marker. 'The list of' -> named list.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Robot, what is the class of grade 2 section A in the first period on Monday?",
+  "intent": "timetable",
+  "grade": 2,
+  "section": "A",
+  "day": "Monday",
+  "period": 1,
+  "note": "'What is the class' = what subject. Lowest valid grade (2) and ordinal period 1.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Can you make me a report which teachers are available in period 3?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": 3,
+  "note": "'Report' + 'which teachers' -> named list. Day absent entirely; router must not invent one.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "How many teachers they are having free time on Wednesday period 2?",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "Wednesday",
+  "period": 2,
+  "note": "Resumptive pronoun 'teachers they are'. 'How many' -> count even though it is about teachers.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "The names of the teachers who are not busy tomorrow period 5, you can give me?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": 5,
+  "note": "Topic-fronted with tag-style question at the end. 'Not busy' = free.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Where is the canteen please, I am new in this school.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Corridor small talk, nothing to do with the timetable.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Which subjects grade 12 section B is taking on Tuesday?",
+  "intent": "timetable",
+  "grade": 12,
+  "section": "B",
+  "day": "Tuesday",
+  "period": null,
+  "note": "Trap: starts with 'Which' but asks about SUBJECTS, not people - timetable, not a free-list. Highest grade.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Just count for me the free students of grade 7 section C today in period 4.",
+  "intent": "free_count",
+  "grade": 7,
+  "section": "C",
+  "day": "today",
+  "period": 4,
+  "note": "'Count for me' is an explicit count request even without the words 'how many'.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "List down for me the students free in grade 10 on Thursday period 6.",
+  "intent": "free_students",
+  "grade": 10,
+  "section": null,
+  "day": "Thursday",
+  "period": 6,
+  "note": "'List down' (South-Asian/Gulf English for 'list') -> named list, must be emailed not spoken.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Some teacher is free in period 9 tomorrow? Give me the names.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": 9,
+  "note": "'Some teacher' for 'any teacher'; rising-intonation yes/no question, but 'give me the names' settles it as a list. Highest period 9.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Tell me please what is the timetable of grade 3 section A for today.",
+  "intent": "timetable",
+  "grade": 3,
+  "section": "A",
+  "day": "today",
+  "period": null,
+  "note": "Embedded question keeps main-clause order ('what is' inside 'tell me').",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "How many students from grade 8 section E are not having class on Friday?",
+  "intent": "free_count",
+  "grade": 8,
+  "section": "E",
+  "day": "Friday",
+  "period": null,
+  "note": "Count with grade+section but no period - the whole Friday. Section E exercises the A..J range.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "I need to know who all are the free students in grade 9 section B, period 2, Monday.",
+  "intent": "free_students",
+  "grade": 9,
+  "section": "B",
+  "day": "Monday",
+  "period": 2,
+  "note": "'Who all' (Gulf/Indian English plural interrogative) = which people -> named list, NOT a count.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Grade 7 section A they are having exam on Monday or not?",
+  "intent": "none",
+  "grade": 7,
+  "section": "A",
+  "day": "Monday",
+  "period": null,
+  "note": "Distractor: real school question with real slots, but exams are not in the timetable data - must be 'none', not timetable.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Which students are free? Grade 6, tomorrow.",
+  "intent": "free_students",
+  "grade": 6,
+  "section": null,
+  "day": "tomorrow",
+  "period": null,
+  "note": "Slots delivered as a telegraphic afterthought in a second sentence; router must still bind them.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "Give me the count of the free teachers for period 1 on Thursday only.",
+  "intent": "free_count",
+  "grade": null,
+  "section": null,
+  "day": "Thursday",
+  "period": 1,
+  "note": "'Give me' would suggest a list, but 'the count of' overrides it -> spoken number.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "For grade 4 section B, what they are having in period 5 tomorrow?",
+  "intent": "timetable",
+  "grade": 4,
+  "section": "B",
+  "day": "tomorrow",
+  "period": 5,
+  "note": "'What they are having' = which subject. Single-period timetable lookup.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "The teacher who is having no period today, tell me his name.",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "today",
+  "period": null,
+  "note": "Singular 'the teacher ... his name' but the real answer is a list of all free teachers today.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "How many teachers are free tomorrow and who they are?",
+  "intent": "free_teachers",
+  "grade": null,
+  "section": null,
+  "day": "tomorrow",
+  "period": null,
+  "note": "Deliberately ambiguous: 'how many' + 'who they are'. Names requested, so it must go to the emailed list, never spoken as a count-plus-names.",
+  "lens": "arabic-english"
+ },
+ {
+  "text": "How much is the tuition fee for grade 7 at ISC Sharjah?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Fee question in the knowledge base. Contains the literal token 'grade 7' - the router must not latch onto the grade and route to timetable.",
+  "lens": "negative"
+ },
+ {
+  "text": "When do admissions open for the next academic year?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Pure admissions KB question; no timetable vocabulary at all. Baseline none.",
+  "lens": "negative"
+ },
+ {
+  "text": "Can you list the documents required for admission?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Uses the word 'list', which is the strongest lexical cue for free_teachers/free_students. Nothing here is about who is free, so it must stay none.",
+  "lens": "negative"
+ },
+ {
+  "text": "Send me the fee structure for the next academic year.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "'Send me' is the emailed-named-list trigger phrase. A false positive would email a roster of minors instead of answering a fees question.",
+  "lens": "negative"
+ },
+ {
+  "text": "What time does the school office open on Saturday?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Opening-hours KB question. Carries a day-of-week token, but Saturday is outside the Monday-Friday slot vocabulary and the question is not about classes.",
+  "lens": "negative"
+ },
+ {
+  "text": "Which bus route serves Al Nahda in the morning?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Starts with 'which', the named-list cue, but asks about transport. Router must require the free/available concept before choosing free_teachers or free_students.",
+  "lens": "negative"
+ },
+ {
+  "text": "What time does bus number 12 leave school in the afternoon?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Bus routes KB. The bare number 12 is a decoy that could be misparsed as grade 12; there is no class or period being asked about.",
+  "lens": "negative"
+ },
+ {
+  "text": "Is the winter uniform compulsory after the November break?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Uniform policy KB question with a date-like token ('November'). No intent slots apply.",
+  "lens": "negative"
+ },
+ {
+  "text": "Where can parents buy the school uniform in Sharjah?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Plain uniform-policy KB lookup; must be handed to the knowledge base, not refused as an unsupported timetable query.",
+  "lens": "negative"
+ },
+ {
+  "text": "When do the end of term exams start?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Exam dates KB. 'When' plus a school-calendar noun is close to a day-slot question but concerns exams, not a daily class schedule.",
+  "lens": "negative"
+ },
+ {
+  "text": "Where do I download the exam schedule for the summer exams?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Highest-risk timetable false positive: 'schedule' is a synonym of timetable. It is an exam-calendar document request, so it belongs to the knowledge base.",
+  "lens": "negative"
+ },
+ {
+  "text": "How many students are there in the whole school?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Highest-risk free_count false positive: 'how many students' verbatim. Enrolment size is a KB fact, not a free-period count, so the count skill would answer with the wrong number.",
+  "lens": "negative"
+ },
+ {
+  "text": "Which teachers are qualified to teach the IB diploma?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Highest-risk free_teachers false positive: 'which teachers are ...' verbatim. 'Qualified' is not 'free/available', so answering with a free-period roster would be wrong and would leak staff scheduling.",
+  "lens": "negative"
+ },
+ {
+  "text": "Is there a sibling discount on tuition fees?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Fees KB question, no overlapping vocabulary. Baseline none.",
+  "lens": "negative"
+ },
+ {
+  "text": "Is the school closed on Monday for the national holiday?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Contains an explicit day slot value ('Monday'), the single strongest timetable cue, yet asks about a holiday closure. Day alone must never be enough to fire timetable.",
+  "lens": "negative"
+ },
+ {
+  "text": "Who do I contact about a late bus pick-up?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Begins with 'who', the named-list cue used by free_teachers/free_students, but asks for a contact point in the transport KB.",
+  "lens": "negative"
+ },
+ {
+  "text": "What is the school policy on mobile phones in class?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Policy KB question. The word 'class' is a decoy that could pull toward timetable; no grade, section, day or period is being asked about.",
+  "lens": "negative"
+ },
+ {
+  "text": "How do I apply for a transfer certificate for my son in grade 9?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Administrative KB question carrying a valid grade token ('grade 9'). The grade is incidental context about the child, not a timetable lookup key.",
+  "lens": "negative"
+ },
+ {
+  "text": "Are there any after-school clubs on Wednesday?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Combines a day slot value with an activity question. Extracurriculars live in the knowledge base, so day plus school-activity must not be routed to timetable.",
+  "lens": "negative"
+ },
+ {
+  "text": "What are the school timings for kindergarten?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "'Timings' is one edit away from 'timetable' and kindergarten is outside the grade 2-12 range, so this opening-hours question must be answered by the knowledge base.",
+  "lens": "negative"
+ },
+ {
+  "text": "Hey AI-SHA.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Bare wake word, no request at all. Router must idle/acknowledge, not fall through to a timetable default.",
+  "lens": "negative"
+ },
+ {
+  "text": "Good morning AI-SHA, how are you today?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Greeting. Contains the word 'today' which is a day slot value - must NOT be treated as a day-scoped timetable query.",
+  "lens": "negative"
+ },
+ {
+  "text": "Thank you AI-SHA, that's all for now.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Closing pleasantry. No intent, no slots. Must end the turn gracefully.",
+  "lens": "negative"
+ },
+ {
+  "text": "AI-SHA, record a video message for my mum.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Video-message skill. Clean negative - nothing timetable-shaped except the wake word.",
+  "lens": "negative"
+ },
+ {
+  "text": "I want to leave a video message for Miss Fatima, can you start recording?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Video-message skill. Adversarial: the verb 'leave' plus a teacher's name can key-match 'free teacher' logic. Here 'leave' means 'leave a message'.",
+  "lens": "negative"
+ },
+ {
+  "text": "Delete the video message I recorded on Monday, please.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Video-message skill. Adversarial: an explicit weekday ('Monday') appears but scopes a recording, not a timetable. Slots must stay null.",
+  "lens": "negative"
+ },
+ {
+  "text": "Send the video message I just recorded to my father on WhatsApp.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Video-message delivery. Adversarial: 'send' is the trigger verb for the emailed named-list intents, but there is no roster request here.",
+  "lens": "negative"
+ },
+ {
+  "text": "Can you record a video message for the grade 7 section A class teacher?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Video-message skill. Hardest negative in this set: grade, section and 'teacher' are all literally present, yet the ask is recording. Intent none and ALL slots null - slot presence must never imply intent.",
+  "lens": "negative"
+ },
+ {
+  "text": "Authenticate me, I'm the vice principal.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Face + PIN auth skill. Must reach the auth flow; a timetable hijack here would block staff from admin functions.",
+  "lens": "negative"
+ },
+ {
+  "text": "AI-SHA, verify my face and PIN so I can open admin mode.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Face-auth skill, explicit 4-factor phrasing. Clean negative.",
+  "lens": "negative"
+ },
+ {
+  "text": "Log me out of admin mode.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Session/auth control. Must not be answered by any data skill.",
+  "lens": "negative"
+ },
+ {
+  "text": "How many days of annual leave do I have left this year?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "HRMS leave balance. Adversarial: 'how many' is the free_count trigger and 'leave/left' collides with 'free'. This is a staff entitlement balance, not a free-period count.",
+  "lens": "negative"
+ },
+ {
+  "text": "What is my sick leave balance?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "HRMS. 'leave' must route to HRMS, never to availability logic.",
+  "lens": "negative"
+ },
+ {
+  "text": "Apply for casual leave for me tomorrow.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "HRMS leave request. Adversarial: 'tomorrow' is a valid day slot value but scopes the absence, not a lesson lookup.",
+  "lens": "negative"
+ },
+ {
+  "text": "Who is on approved sick leave today?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "HRMS absence report. Very high-risk false positive: 'who ... today' looks exactly like free_teachers. Absent-on-leave is an HR record, not a free-period roster - misrouting returns the wrong people entirely.",
+  "lens": "negative"
+ },
+ {
+  "text": "Show me the HRMS leave report for the science department this month.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "HRMS reporting. Adversarial: 'show me' + 'report' are the emailed-named-list triggers, but the subject is leave records.",
+  "lens": "negative"
+ },
+ {
+  "text": "How many students are enrolled at ISC Sharjah?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Knowledge-base fact. Adversarial: 'how many students' is the free_count pattern minus the word 'free'. Enrolment total is a KB answer; the counts skill would return a wrong number.",
+  "lens": "negative"
+ },
+ {
+  "text": "How many teachers does the school employ in total?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Knowledge-base staffing fact. Same trap as above for teachers - a headcount, not an availability count.",
+  "lens": "negative"
+ },
+ {
+  "text": "Where is the nurse's office?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Wayfinding / knowledge base. Clean negative with zero timetable vocabulary.",
+  "lens": "negative"
+ },
+ {
+  "text": "Never mind, cancel that.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Dialogue control. Must abort the current flow, not be parsed as a slotless timetable request.",
+  "lens": "negative"
+ },
+ {
+  "text": "Is Mr. Haddad available for a parent meeting sometime this week?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: 'teacher' + 'available'. This is a meeting-booking request about one named adult, not a query for the list of teachers with a free period. Belongs to calendar/KB, not the timetable skill.",
+  "lens": "negative"
+ },
+ {
+  "text": "When is my free time this afternoon?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: 'free' + time window. First-person personal schedule with no grade/section/teacher/student cohort; the router has no subject to resolve. Route to personal calendar, not free_count.",
+  "lens": "negative"
+ },
+ {
+  "text": "What time does school finish on Thursday?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: carries a valid day token (Thursday). Asks school operating hours, not what a class studies. Day slot must NOT be extracted into a timetable lookup.",
+  "lens": "negative"
+ },
+ {
+  "text": "Which room is free right now for a club rehearsal?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: 'which ... free' pattern that normally signals free_teachers/free_students. Subject is a ROOM (a facility), so no named list of people exists. Must go to room booking.",
+  "lens": "negative"
+ },
+ {
+  "text": "Is the hall available tomorrow for the assembly?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: 'available tomorrow' plus a relative day token. Facility availability, not people availability. Emailing a person list here would be a nonsense answer.",
+  "lens": "negative"
+ },
+ {
+  "text": "How many teachers work here at ISC Sharjah?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: exact 'how many teachers' prefix of free_count, but missing the free/available predicate. This is total headcount (a KB fact), not how many are free in a period.",
+  "lens": "negative"
+ },
+ {
+  "text": "How many students are enrolled in grade 7?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: 'how many students' + a real grade number. Enrolment roll, not free-period availability. Extracting grade=7 and answering a free count would be flatly wrong.",
+  "lens": "negative"
+ },
+ {
+  "text": "What time is the lunch break?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: bell-schedule adjacent and easily confused with period timings. General school-day info with no cohort or day; answer from the knowledge base.",
+  "lens": "negative"
+ },
+ {
+  "text": "Can you book a meeting with the principal on Monday period 3?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: contains BOTH a day and a period slot, the strongest timetable signal. The verb is 'book' - an action request, not a lookup. Slot presence must not override intent.",
+  "lens": "negative"
+ },
+ {
+  "text": "Where is the grade 9 section B classroom?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: contains a clean grade + section pair. Asks for a physical location, not the lesson schedule. Wayfinding, not timetable.",
+  "lens": "negative"
+ },
+ {
+  "text": "Who is the head of the mathematics department?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: 'who is' about staff, which resembles free_teachers phrasing. No free/available predicate; this is a staff-directory fact and must not trigger an email of a teacher list.",
+  "lens": "negative"
+ },
+ {
+  "text": "Is the school open on Friday?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: valid day token plus an availability-flavoured verb ('open'). Academic-calendar question; no class, no people.",
+  "lens": "negative"
+ },
+ {
+  "text": "How long is each period at this school?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: the word 'period' appears but as a generic noun, not a numbered slot. Asks lesson duration, a KB fact. Router must not invent period=1.",
+  "lens": "negative"
+ },
+ {
+  "text": "Which teachers are trained in first aid?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: literal 'which teachers' - the canonical free_teachers opener - but the filter is a qualification, not availability. Wrong route would email the wrong list entirely.",
+  "lens": "negative"
+ },
+ {
+  "text": "How many periods are there in a school day?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: 'how many' + 'periods' looks like free_count. It counts schedule structure, not free people. Answer is a fixed KB number.",
+  "lens": "negative"
+ },
+ {
+  "text": "Is the library free of charge for printing?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: 'free' used in the cost sense, not the availability sense. Pure lexical decoy for the free_* family.",
+  "lens": "negative"
+ },
+ {
+  "text": "When does the exam timetable get published?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: contains the literal keyword 'timetable'. Asks about a publication date for exams, not what a section studies on a day. Keyword match alone must not win.",
+  "lens": "negative"
+ },
+ {
+  "text": "Show me the football training schedule for this term.",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: 'show me the ... schedule' mirrors the timetable request shape. Extracurricular calendar with no grade/section; not the academic timetable.",
+  "lens": "negative"
+ },
+ {
+  "text": "Is Ms. Fatima in school today?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: named teacher + 'today' + presence verb reads like availability. This is attendance/whereabouts of one adult, not the set of teachers with a free period.",
+  "lens": "negative"
+ },
+ {
+  "text": "Are there any free seats left on the trip to Dubai next week?",
+  "intent": "none",
+  "grade": null,
+  "section": null,
+  "day": null,
+  "period": null,
+  "note": "Trap: 'are there any free' + implicit counting, very close to free_count phrasing. Subject is trip capacity, not students or teachers.",
+  "lens": "negative"
+ }
+]

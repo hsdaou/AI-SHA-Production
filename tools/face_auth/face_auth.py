@@ -33,10 +33,33 @@ _ARCFACE = np.array([[38.2946,51.6963],[73.5318,51.5014],[56.0252,71.7366]], dty
 # Liveness thresholds (mm) — a real face spans several cm front-to-back.
 LIVENESS_MIN_RANGE_MM = 18.0   # nose-to-cheek/ear depth spread
 LIVENESS_MIN_VALID    = 0.35   # fraction of face pixels with valid depth
-LIVENESS_MIN_RESIDMM  = 4.5    # RMS deviation from best-fit PLANE: a real face
-                               # is convex (nose protrudes) -> high; a flat photo
-                               # is planar even when tilted -> low.
-LIVENESS_NEAR_MM, LIVENESS_FAR_MM = 200, 1200  # plausible face distance
+LIVENESS_MIN_RESIDMM  = 4.5    # RMS deviation from the best-fit PLANE: a real
+                               # face is convex (the nose protrudes) -> high; a
+                               # flat photo is planar even when tilted -> low.
+# Beyond this the depth sensor cannot resolve facial convexity: the residual
+# collapses towards the threshold and a REAL face reads as flat. Such a frame
+# carries no spoof signal either way, so it must be SKIPPED, not counted as
+# evidence of a photo — counting it is what rejected a genuine administrator
+# standing 70 cm away as a spoof, 76% of frames "flat" while a held-still test at
+# 48 cm measured 8.9 mm residual and passed every frame.
+LIVENESS_DECIDABLE_MM = 700.0
+LIVENESS_NEAR_MM, LIVENESS_FAR_MM = 200, 1200
+
+# Camera mounting rotation, degrees clockwise: 0 / 90 / 180 / 270.
+# The D435 can be mounted inverted on the robot. mediapipe's face detector does
+# NOT find upside-down faces, so an inverted camera fails as "face not recognized"
+# — which reads like a recognition problem and is really a mounting one. Depth is
+# rotated with the colour so the liveness ROI still lines up.
+CAM_ROTATE = int(os.environ.get("AISHA_CAM_ROTATE", "0"))
+_ROT = {90: cv2.ROTATE_90_CLOCKWISE, 180: cv2.ROTATE_180,
+        270: cv2.ROTATE_90_COUNTERCLOCKWISE}
+
+
+def orient(img):
+    """Apply the configured mounting rotation. Identity when CAM_ROTATE is 0."""
+    if img is None or CAM_ROTATE not in _ROT:
+        return img
+    return cv2.rotate(img, _ROT[CAM_ROTATE])  # plausible face distance
 
 
 class Embedder:
@@ -114,6 +137,13 @@ def depth_liveness(depth_u16, bbox):
         A = np.stack([X, Y, np.ones_like(X)], 1)
         coef, *_ = np.linalg.lstsq(A, Z, rcond=None)
         resid = float(np.sqrt(np.mean((Z - A @ coef) ** 2)))
+    # Too far to judge? Report it as undecidable rather than flat.
+    median_mm = float(np.median(valid))
+    if median_mm > LIVENESS_DECIDABLE_MM:
+        return False, {"kind": "too_far", "range_mm": round(rng, 1),
+                       "resid_mm": round(resid, 1), "distance_mm": round(median_mm),
+                       "reason": f"face {median_mm:.0f}mm away — too far to judge liveness"}
+
     live = (rng >= LIVENESS_MIN_RANGE_MM) and (resid >= LIVENESS_MIN_RESIDMM)
     kind = "live" if live else "flat"   # valid depth but planar => photo-spoof evidence
     return live, {"range_mm": round(rng, 1), "resid_mm": round(resid, 1),
@@ -136,8 +166,8 @@ def make_grabber():
                            history=HistoryPolicy.KEEP_LAST)
             self.create_subscription(Image, '/camera/camera/color/image_raw', self._c, q)
             self.create_subscription(Image, '/camera/camera/aligned_depth_to_color/image_raw', self._d, q)
-        def _c(self, m): self.color = self.bridge.imgmsg_to_cv2(m, 'bgr8')
-        def _d(self, m): self.depth = self.bridge.imgmsg_to_cv2(m, '16UC1')
+        def _c(self, m): self.color = orient(self.bridge.imgmsg_to_cv2(m, 'bgr8'))
+        def _d(self, m): self.depth = orient(self.bridge.imgmsg_to_cv2(m, '16UC1'))
     return rclpy, Grab
 
 

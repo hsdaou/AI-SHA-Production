@@ -1,0 +1,256 @@
+#!/usr/bin/env python3
+"""AI-SHA skill: school timetable questions (free students, free teachers, class schedule).
+
+Thin trigger over the school timetable app's /api/robot/* surface. Zero new pip
+deps (stdlib urllib only), matching the HRMS and video-message skills.
+
+TWO CLASSES OF ANSWER, and the difference is deliberate:
+
+  SPEAKABLE  timetable for a section, and COUNTS of free students. These identify
+             nobody, so the robot may say them out loud in the corridor. No admin
+             session is required - a student may reasonably ask what Grade 7 A has
+             on Monday.
+
+  EMAILED    any list of NAMED students or teachers. These are minors and staff;
+             the app renders and emails the list, the robot receives only
+             {ok, count} and says it has been sent. Requires an authenticated
+             admin session, exactly like the HRMS skill.
+
+Config: ~/timetable_query/config.json (0600), or $TIMETABLE_QUERY_HOME.
+    {"enabled": true, "base_url": "http://...", "robot_key": "...", "timeout_s": 20}
+
+Exit codes: 0 ok · 2 usage/no intent · 3 gate closed or no admin session ·
+            4 app unreachable · 5 app returned an error
+"""
+import argparse
+import json
+import os
+import re
+import sys
+import time
+from datetime import date as _date_cls, timedelta as _timedelta
+import urllib.error
+import urllib.parse
+import urllib.request
+
+HOME = os.environ.get("TIMETABLE_QUERY_HOME", os.path.expanduser("~/timetable_query"))
+CONFIG = os.path.join(HOME, "config.json")
+
+FACE_AUTH_HOME = os.environ.get("FACE_AUTH_HOME", os.path.expanduser("~/face_auth"))
+SESSION = os.path.join(FACE_AUTH_HOME, "session.json")
+
+ORDINALS = {"first": 1, "second": 2, "third": 3, "fourth": 4, "fifth": 5,
+            "sixth": 6, "seventh": 7, "eighth": 8, "ninth": 9, "tenth": 10}
+
+DAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+
+# needs_admin marks the intents that cause a NAMED list to be emailed.
+INTENTS = {
+    "timetable": {
+        "path": "/api/robot/timetable",
+        "keywords": ("timetable", "time table", "schedule for", "what does grade",
+                     "what do they have", "lessons for"),
+        "needs_admin": False,
+    },
+    "free_count": {
+        "path": "/api/robot/free-count",
+        "keywords": ("how many students are free", "how many are free",
+                     "how many free students", "count of free",
+                     "how many students are available", "how many are available"),
+        "needs_admin": False,
+    },
+    "free_students": {
+        "path": "/api/robot/free-students",
+        # "available" is how people actually ask. Its absence sent every such
+        # question to the knowledge base, which invented teacher availability from
+        # prospectus documents.
+        "keywords": ("which students are free", "who is free", "who's free",
+                     "free students", "students free", "list free students",
+                     "which students are available", "students are available",
+                     "which students available", "who is available"),
+        "needs_admin": True,
+    },
+    "free_teachers": {
+        "path": "/api/robot/free-teachers",
+        "keywords": ("which teachers are free", "free teachers", "teachers free",
+                     "which teacher is free", "which teachers are available",
+                     "teachers are available", "which teacher is available",
+                     "available teachers", "teachers available"),
+        "needs_admin": True,
+    },
+}
+
+
+def _fail(msg, code=1):
+    print(f"[timetable] {msg}", file=sys.stderr)
+    sys.exit(code)
+
+
+def load_config():
+    if not os.path.exists(CONFIG):
+        _fail(f"no config at {CONFIG} -- run `status` for the expected shape.", 2)
+    with open(CONFIG) as f:
+        cfg = json.load(f)
+    for key in ("base_url", "robot_key"):
+        if not cfg.get(key):
+            _fail(f"config.json missing `{key}`", 2)
+    return cfg
+
+
+def session_state():
+    """(valid, description) -- same contract as auth_gate check-session."""
+    if not os.path.exists(SESSION):
+        return False, "no active admin session"
+    try:
+        s = json.load(open(SESSION))
+    except (OSError, ValueError) as e:
+        return False, f"unreadable session file ({e})"
+    left = s.get("expires_at", 0) - time.time()
+    if left <= 0:
+        return False, f"session EXPIRED for {s.get('user', '?')}"
+    return True, f"session VALID for {s.get('user', '?')} ({int(left)}s left)"
+
+
+# The ONE classifier, shared with brain_node so the two can never disagree about
+# a sentence again. Imported by path because this tool runs standalone, outside
+# the ROS package.
+sys.path.insert(0, os.path.expanduser(
+    "~/robot_ws/install/aisha_brain/lib/python3.10/site-packages/aisha_brain"))
+sys.path.insert(0, os.path.expanduser("~/robot_ws/src/aisha_brain/aisha_brain"))
+import skill_intents  # noqa: E402
+
+
+def route_intent(utterance):
+    r = skill_intents.classify(utterance)
+    return None if r["intent"] == "none" else r["intent"]
+
+
+def parse_params(utterance):
+    """Slots from the shared classifier, in the wire format the app expects."""
+    r = skill_intents.classify(utterance)
+    out = {}
+    if r.get("grade") is not None:
+        out["grade"] = str(r["grade"])
+    if r.get("section"):
+        out["section"] = r["section"]
+    day = skill_intents.resolve_day(r.get("day"))
+    if day:
+        out["day"] = day
+    if r.get("period") is not None:
+        out["period"] = f"Period {r['period']}"
+    # free_count applies to either population; without this the server assumed
+    # students and answered "950 students are free" to "how many TEACHERS...".
+    if r.get("subject"):
+        out["subject"] = r["subject"]
+    return out
+
+
+def call_api(cfg, intent, params):
+    spec = INTENTS[intent]
+    url = cfg["base_url"].rstrip("/") + spec["path"]
+    if params:
+        url += "?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, method="GET")
+    req.add_header("x-robot-key", cfg["robot_key"])
+    req.add_header("Accept", "application/json")
+    try:
+        with urllib.request.urlopen(req, timeout=cfg.get("timeout_s", 20)) as resp:
+            return resp.status, json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        try:
+            return e.code, json.loads(e.read().decode("utf-8"))
+        except Exception:
+            return e.code, {"error": e.reason}
+    except urllib.error.URLError as e:
+        _fail(f"cannot reach the timetable app at {cfg['base_url']}: {e.reason}", 4)
+
+
+def run(intent, params, skip_auth=False):
+    cfg = load_config()
+    if not cfg.get("enabled", False):
+        _fail("gate CLOSED (`enabled: false` in config.json) -- refusing to query.", 3)
+
+    if INTENTS[intent]["needs_admin"]:
+        if skip_auth:
+            print("[timetable] *** WARNING: --skip-auth bypasses the admin gate. DEV ONLY. ***",
+                  file=sys.stderr)
+        else:
+            ok, desc = session_state()
+            if not ok:
+                who = "teachers" if intent == "free_teachers" else "students"
+                _fail(f"DENIED - {desc}. That answer names {who}, so it needs an "
+                      "authenticated administrator.", 3)
+            print(f"[timetable] {desc}")
+
+    status, body = call_api(cfg, intent, params)
+
+    if status == 200 and body.get("ok"):
+        if body.get("emailed"):
+            print(f"[timetable] OK  {body.get('count')} listed, emailed to "
+                  f"{body.get('recipients')} recipient(s)")
+            # SPEAK is data-free on purpose: never read out who is free. Prefer the
+            # server's wording, which carries the over-estimate caveat when the
+            # subject matching could not be trusted — a hardcoded "sent!" here hid
+            # that warning from the person acting on the list.
+            print("SPEAK: " + (body.get("speakable")
+                               or "The list has been sent to the administrator's email."))
+        else:
+            print(f"[timetable] OK  {json.dumps({k: v for k, v in body.items() if k != 'periods'})[:200]}")
+            print("SPEAK: " + (body.get("speakable") or "Done."))
+        return 0
+
+    # A 200 with ok=false is a REASON, not a fault: the school is between lessons,
+    # or the enrolment data needed to answer is absent. Say the reason plainly
+    # rather than reporting a failure the administrator cannot act on.
+    if status == 200 and body.get("reason"):
+        print("SPEAK: " + (body.get("speakable")
+                           or "I cannot answer that at the moment."))
+        return 0
+
+    print(f"[timetable] FAILED (HTTP {status}): {body.get('error', body)}", file=sys.stderr)
+    return 5
+
+
+def cmd_ask(a):
+    intent = route_intent(a.utterance)
+    if not intent:
+        _fail(f"no intent matched {a.utterance!r} -- known: {', '.join(INTENTS)}", 2)
+    params = parse_params(a.utterance)
+    # Only a class timetable genuinely needs a grade — it describes ONE section.
+    # Student questions without a grade mean the whole school, which the server
+    # now answers by iterating the grades that have student records. Demanding a
+    # grade turned "which students are available today?" into a refusal.
+    if intent == "timetable" and "grade" not in params:
+        _fail("which grade and section? say e.g. \"the timetable for grade 7 section A "
+              "on Monday\"", 2)
+    print(f"[timetable] intent={intent} params={params}")
+    sys.exit(run(intent, params, a.skip_auth))
+
+
+def cmd_status(a):
+    print(f"config:  {CONFIG} {'(present)' if os.path.exists(CONFIG) else '(MISSING)'}")
+    if os.path.exists(CONFIG):
+        cfg = json.load(open(CONFIG))
+        print(f"enabled: {cfg.get('enabled')}")
+        print(f"base_url:{cfg.get('base_url')}")
+        print(f"key:     {'<set>' if cfg.get('robot_key') else '<MISSING>'}")
+    ok, desc = session_state()
+    print(f"session: {desc}")
+    print("intents: " + ", ".join(
+        f"{k}{'*' if v['needs_admin'] else ''}" for k, v in INTENTS.items()))
+    print("         * = names people, so it is emailed and needs an admin session")
+
+
+def main():
+    p = argparse.ArgumentParser(description="AI-SHA -> school timetable trigger")
+    sub = p.add_subparsers(dest="cmd", required=True)
+    s = sub.add_parser("status"); s.set_defaults(func=cmd_status)
+    k = sub.add_parser("ask"); k.add_argument("utterance")
+    k.add_argument("--skip-auth", action="store_true", help="DEV ONLY")
+    k.set_defaults(func=cmd_ask)
+    a = p.parse_args()
+    a.func(a)
+
+
+if __name__ == "__main__":
+    main()

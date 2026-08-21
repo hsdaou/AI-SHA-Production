@@ -1,0 +1,26 @@
+[Unit]
+Description=AI-SHA private student report service
+After=network.target
+
+[Service]
+Type=simple
+User=hsdaou
+Group=hsdaou
+WorkingDirectory=/home/hsdaou/student_report_app
+EnvironmentFile=/home/hsdaou/.student_report.env
+ExecStart=/home/hsdaou/student_report_app/.venv/bin/python /home/hsdaou/student_report_app/start_server.py
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadOnlyPaths=/home/hsdaou/student_report_app
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+StandardOutput=append:/tmp/student_report.log
+StandardError=append:/tmp/student_report.log
+
+[Install]
+WantedBy=multi-user.target

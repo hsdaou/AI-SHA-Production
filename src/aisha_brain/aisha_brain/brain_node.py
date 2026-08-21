@@ -155,6 +155,52 @@ class BrainNode(Node):
                 self.get_logger().info(f'Keyword match "{kw}" -> SKILL_VIDEO (no LLM)')
                 return {"intent": "SKILL_VIDEO"}
 
+        # HRMS staff-leave questions are answered by the HRMS over email, never by
+        # this knowledge base and never out loud. Routed to the skill layer for the
+        # same reason as video messages: the school-info RAG knows nothing about
+        # staff leave, so the LLM would confidently invent an answer about a real
+        # employee's absence.
+        hrms_keywords = ['sick leave', 'on leave', 'leave balance', 'annual leave',
+                         'days left', 'days remaining', 'who is off', "who's off",
+                         'who is absent', 'who is away']
+        for kw in hrms_keywords:
+            if kw in text_lower:
+                self.get_logger().info(f'Keyword match "{kw}" -> SKILL_HRMS (no LLM)')
+                return {"intent": "SKILL_HRMS"}
+
+        # Authentication is performed by the console's face/PIN gate. Letting
+        # the school-information RAG see the same command produces a second,
+        # delayed and invented answer while the real gate is already running.
+        if re.search(r'\b(authenticate|log\s*me\s*in|sign\s*me\s*in|verify\s+me'
+                     r'|scan\s+my\s+face|log\s+in\s+as)\b', text_lower):
+            self.get_logger().info('Authentication request -> SKILL_AUTH (no LLM)')
+            return {"intent": "SKILL_AUTH"}
+
+        # Student reports contain named minors and academic/behaviour records.
+        # The console skill authenticates the administrator and emails the report;
+        # the general-purpose LLM must never answer or invent one.
+        if re.search(r'\b(student|pupil)\s+(report|marks?|grades?|results?)\b'
+                     r'|\b(report|marks?|grades?|results?)\s+(for|of)\s+(student|pupil)\b',
+                     text_lower):
+            self.get_logger().info('Student report request -> SKILL_STUDENT_REPORT (no LLM)')
+            return {"intent": "SKILL_STUDENT_REPORT"}
+
+        # School timetable questions are answered by the timetable app, which holds
+        # the live schedule. The knowledge base holds prospectus documents and knows
+        # nothing about who is free in period 3, so the LLM would invent it.
+        # ONE classifier, shared with the skill trigger. Keyword lists here and a
+        # different set in the trigger is what let "how many teachers do I HAVE
+        # available" reach the knowledge base, which invented an answer beside the
+        # skill's own reply. If the skill owns the utterance, brain_node says
+        # nothing at all.
+        try:
+            from aisha_brain import skill_intents
+            if skill_intents.is_skill(text):
+                self.get_logger().info('skill_intents -> SKILL_TIMETABLE (no LLM)')
+                return {"intent": "SKILL_TIMETABLE"}
+        except Exception as e:            # never let the router die on an import
+            self.get_logger().warning(f'skill_intents unavailable ({e})')
+
         for kw in nav_keywords:
             if kw in text_lower:
                 self.get_logger().info(f'Keyword match "{kw}" -> NAV')
@@ -348,10 +394,11 @@ class BrainNode(Node):
         intent = decision.get("intent", "ADMIN")
 
         out_msg = String()
-        if intent == "SKILL_VIDEO":
-            # Owned by the video-message skill; brain_node must stay silent so the
-            # visitor sees only the recording prompts, not an invented answer.
-            self.get_logger().info("Route -> SKILL_VIDEO (handled by the skill layer)")
+        if intent in ("SKILL_VIDEO", "SKILL_HRMS", "SKILL_TIMETABLE",
+                      "SKILL_AUTH", "SKILL_STUDENT_REPORT"):
+            # Owned by a deterministic skill; brain_node must stay silent so the
+            # visitor sees only the skill prompts, not an invented RAG answer.
+            self.get_logger().info(f"Route -> {intent} (handled by the skill layer)")
             return
 
         if intent == "ADMIN":

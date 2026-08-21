@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin:0; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:#2b2b2b; }
+
+.page { position:relative; width:210mm; height:297mm; padding:15mm 17mm 16mm 17mm;
+        page-break-after:always; overflow:hidden; }
+.page:last-child { page-break-after:auto; }
+
+/* ── masthead ─────────────────────────────────────────── */
+.kicker { font-size:7.6pt; font-weight:700; letter-spacing:.09em; color:#8a6f1e; margin-bottom:5mm; }
+h1.title { font-size:27pt; font-weight:700; letter-spacing:-.5px; margin:0; color:#141414; }
+.subtitle { font-size:10.5pt; color:#6a7280; margin:1.5mm 0 5mm; }
+p.lead { font-size:8.8pt; line-height:1.55; text-align:justify; margin:0 0 5mm; color:#3a3a3a; }
+
+h2.sec { font-size:12.5pt; font-weight:700; color:#161616; margin:6mm 0 3mm; }
+
+/* ── checkpoint chips ─────────────────────────────────── */
+.chips { display:flex; gap:2.4mm; margin:0 0 1.5mm; }
+.chip { flex:1; text-align:center; font-size:7.2pt; font-weight:700; padding:2.1mm 0;
+        border-radius:2.2mm; letter-spacing:.03em; }
+.chip.done { background:#cdd3e8; color:#5a6180; }
+.chip.now  { background:#4136b8; color:#fff; }
+.chip.gap  { background:#fff; color:#b0562a; border:1.1pt dashed #d08a52; }
+.chip.later{ background:#fff; color:#8a90a0; border:.9pt solid #d3d7e2; }
+.chiprow { display:flex; justify-content:space-between; font-size:6.9pt; letter-spacing:.05em; }
+.chiprow .l { color:#4136b8; font-weight:700; }
+.chiprow .r { color:#9299a8; }
+
+/* ── callouts ─────────────────────────────────────────── */
+.box { padding:3.2mm 4mm; margin:3.2mm 0; font-size:8.2pt; line-height:1.5; }
+.box .lab { font-size:6.9pt; font-weight:700; letter-spacing:.08em; margin-bottom:1.3mm; }
+.trap  { background:#fdf2f3; border-left:3.2pt solid #b5303a; }
+.trap .lab { color:#b5303a; }
+.field { background:#eef1f6; border-left:3.2pt solid #2b3a4d; }
+.field .lab { color:#2b3a4d; }
+.dec   { background:#eef0fa; border-left:3.2pt solid #3b4bc4; }
+.dec .lab { color:#3b4bc4; }
+.gate  { background:#f3faf5; border:.9pt solid #8ac9a2; border-radius:1.6mm; padding:3.2mm 4mm; margin:3.5mm 0; }
+.gate .lab { font-size:8.3pt; font-weight:700; color:#2c7a4d; margin-bottom:2mm; }
+.gate ul { margin:0; padding:0; list-style:none; }
+.gate li { font-size:8pt; line-height:1.65; padding-left:5.6mm; position:relative; color:#2f3d34; }
+.gate li:before { content:""; position:absolute; left:0; top:.9mm; width:2.7mm; height:2.7mm;
+                  border:.9pt solid #6d8a78; border-radius:.4mm; }
+
+/* ── checkpoint banner ────────────────────────────────── */
+.cp { display:flex; align-items:center; border-radius:2mm; padding:3.6mm 5mm; margin:0 0 3.5mm; color:#fff; }
+.cp .id { width:34mm; font-size:19pt; font-weight:700; letter-spacing:.5px; }
+.cp .ttl { font-size:12.5pt; font-weight:700; line-height:1.2; }
+.cp .meta { font-size:7.4pt; opacity:.85; margin-top:1mm; }
+.c-cp5   { background:#b5731d; }
+.c-cp6   { background:#94374f; }
+.c-sk1   { background:#553ba3; }
+.c-sk2   { background:#276b8a; }
+.c-gapbn { background:#7d8592; }
+.c-cp2   { background:#17706a; }
+.c-cp4   { background:#5b3fa8; }
+
+/* ── steps ────────────────────────────────────────────── */
+.step { display:flex; align-items:center; gap:2.6mm; margin:4mm 0 2mm; }
+.step .n { flex:none; width:5.2mm; height:5.2mm; border-radius:50%; background:#3b6fd4; color:#fff;
+           font-size:7.4pt; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.step .h { font-size:9.6pt; font-weight:700; color:#161616; }
+p.body { font-size:8.4pt; line-height:1.55; margin:0 0 2mm; color:#3a3a3a; text-align:justify; }
+
+/* ── code ─────────────────────────────────────────────── */
+.tag { display:inline-block; font-size:6.4pt; font-weight:700; letter-spacing:.07em; color:#fff;
+       padding:.9mm 2.2mm; border-radius:1mm 1mm 0 0; }
+.t-jet { background:#4136b8; } .t-both { background:#2b3a4d; } .t-pi { background:#17706a; }
+.t-ws  { background:#8a6f1e; }
+pre { margin:0 0 2.4mm; background:#1e2b3a; color:#e6ecf3; border-radius:0 1.4mm 1.4mm 1.4mm;
+      padding:3mm 4mm; font-family:"DejaVu Sans Mono","Courier New",monospace;
+      font-size:7.5pt; line-height:1.55; white-space:pre-wrap; word-break:break-word; }
+pre .c { color:#7e90a6; }
+.note { font-size:7.6pt; color:#6a7280; margin:0 0 2.5mm; line-height:1.45; }
+.note b { color:#3a3a3a; }
+code { font-family:"DejaVu Sans Mono","Courier New",monospace; font-size:.93em;
+       background:#eef0f4; padding:.2mm .8mm; border-radius:.6mm; }
+.box code, .note code { background:rgba(0,0,0,.055); }
+
+/* ── footer ───────────────────────────────────────────── */
+.foot { position:absolute; left:17mm; right:17mm; bottom:9mm; border-top:.6pt solid #d8dce3;
+        padding-top:1.6mm; font-size:7pt; color:#8b919c; }
+.foot .r1 { display:flex; justify-content:space-between; }
+.foot .r2 { font-style:italic; color:#aeb3bd; margin-top:.5mm; }
+table.kv { width:100%; border-collapse:collapse; font-size:8pt; margin:2mm 0 3mm; }
+table.kv th { background:#2b3a4d; color:#fff; text-align:left; padding:1.8mm 2.5mm; font-size:7.4pt;
+              letter-spacing:.04em; }
+table.kv td { border-bottom:.6pt solid #e2e5ea; padding:1.7mm 2.5mm; vertical-align:top; color:#3a3a3a; }
+table.kv td.k { font-weight:700; color:#161616; width:34%; }
+</style></head><body>
+
+<div class="page">
+  <div class="kicker">ISC-SHARJAH | APPLIED-AI INITIATIVE</div>
+  <h1 class="title">AI-SHA Foundation Tutorial</h1>
+  <div class="subtitle">Volume III — CP2 and CP4: the second board, and making the two talk</div>
+
+  <p class="lead">Volume I built the Jetson (FLASH-CP3). Volume II gave it eyes and ears (CP5, CP6).
+  This volume covers the <b>other half of the robot</b>: the Raspberry Pi 5 tier that owns the voice,
+  the drive and the sensors (CP2), and the two-board mesh that connects it to the Jetson (CP4). Same
+  rules as before - every command dodges something that cost us hours, and the coloured boxes say what
+  would otherwise have gone wrong. <b>Skills are deliberately out of scope here</b>; they are Volume II
+  and later.</p>
+
+  <h2 class="sec">Where you are</h2>
+  <div class="chips">
+    <div class="chip done">FLASH</div><div class="chip done">CP0</div><div class="chip done">CP1</div>
+    <div class="chip now">CP2</div><div class="chip done">CP3</div><div class="chip now">CP4</div>
+    <div class="chip done">CP5</div><div class="chip done">CP6</div>
+    <div class="chip later">CP7-9</div>
+  </div>
+  <div class="chiprow"><span class="l">THIS TUTORIAL</span><span class="r">CP4 reaches a documented
+  limit - read page 7 before planning on it</span></div>
+
+  <h2 class="sec">The traps this tutorial defuses for you</h2>
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>Eight detours removed from your path.</b> (1) <b>The Pi login is the BOARD NAME</b>, not a
+    person or a project name - three sets of "correct" credentials failed on the username alone.
+    (2) <b>A Pi 5 that freezes with the network light still on is UNDER-POWERED, not hot</b> - check
+    <code>throttled</code> before you buy a fan. (3) <b>Copy files OFF the Pi rather than searching on
+    it</b> - a directory scan is enough load to hang an under-powered board. (4) <b>Your SSID may not
+    be what you think</b>: a router can store an HTML-escaped apostrophe <i>as part of the name</i>.
+    (5) <b>Write SSID and password to files</b> before handing them to <code>nmcli</code>. (6) <b>Both
+    boards need the same <code>ROS_DOMAIN_ID</code></b> and nothing warns you when they differ - they
+    simply never see each other. (7) <b>Never hardcode the domain</b> in a helper script; it silently
+    breaks the day you change it. (8) <b>Humble and Jazzy discover each other but do NOT exchange data
+    with real node subscriptions</b> - plan a bridge, not a reflash.
+  </div>
+
+  <div class="box field">
+    <div class="lab">FROM THE FIELD</div>
+    <b>Version anchor.</b> Jetson Orin Nano: JetPack 6.2.2 (L4T R36.5.0), Ubuntu 22.04, <b>ROS 2
+    Humble</b>. Raspberry Pi 5 Model B: <b>Ubuntu 24.04.3</b>, <b>ROS 2 Jazzy</b>, kernel 6.8. That
+    distro split is not a mistake to be corrected - it is forced by the hardware, and page 7 explains
+    why.
+  </div>
+
+  <div class="box dec">
+    <div class="lab">DECISION — WHY THIS VOLUME EXISTS SEPARATELY</div>
+    Earlier project notes recorded the Pi tier as <b>"not started - blocked"</b> and said the robot had
+    <b>no voice output</b>. Both were wrong: they were written without ever logging into the board.
+    When we finally did, we found a built ROS 2 workspace, two working text-to-speech engines and a
+    full sensor suite. This volume documents what is actually there, so nobody plans around a gap that
+    does not exist.
+  </div>
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume III: CP2, CP4 — the second board and the mesh</span><span>Page 1</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+
+<div class="page">
+  <div class="cp c-cp2"><div class="id">CP2</div>
+    <div><div class="ttl">The Raspberry Pi 5 tier - voice, drive, sensors</div>
+    <div class="meta">Runs on: Raspberry Pi 5 &nbsp; Time: ~1 h to survey an existing board</div></div></div>
+
+  <p class="body">The Pi owns everything the Jetson does not: the <b>speaker</b>, the wheels, and the
+  environmental sensors. If you are following this with a board somebody else prepared, your first job
+  is not to install anything - it is to find out what is already there.</p>
+
+  <div class="step"><div class="n">1</div><div class="h">Find the board, then log in as the BOARD NAME</div></div>
+  <p class="body">If the Pi has no DHCP address yet, it is still reachable over IPv6 link-local on the
+  wired interface. Ask every device on the wire to answer, then pick out the Raspberry Pi by its
+  hardware address:</p>
+  <div><span class="tag t-ws">WORKSTATION</span></div>
+<pre>ping6 -c3 -I eth0 ff02::1              <span class="c"># all-nodes multicast: everyone replies</span>
+ip neigh show dev eth0                  <span class="c"># 2c:cf:67:* = Raspberry Pi Trading</span>
+ssh pi5@fe80::2ecf:67ff:fec6:d08e%eth0  <span class="c"># %iface is REQUIRED for link-local</span></pre>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED - THE ONE THAT COST DAYS</div>
+    <b>The username is the board's hostname.</b> Two sets of credentials we were given
+    (<code>nvidia</code> and <code>aisharjah</code>, with their passwords) failed for weeks and the
+    board was written off as "needs a reflash". The passwords were <i>right</i>; only the username was
+    wrong. This build names the user after the board - the Pi 5 is <code>pi5</code>, and an earlier
+    Pi 4 was <code>pi4</code>. Before assuming a reflash, try the hostname as the username. Evidence
+    lives in ordinary places: shell history (<code>ssh pi5@pi5.local</code>) and Raspberry Pi Imager's
+    saved settings, which record the username it wrote (<code>sshUserName</code>) - the password there
+    is a one-way hash and cannot be recovered.
+  </div>
+
+  <div class="step"><div class="n">2</div><div class="h">Survey what is already installed - gently</div></div>
+  <div><span class="tag t-pi">PI 5</span></div>
+<pre>hostname; . /etc/os-release; echo "$PRETTY_NAME"; uname -r
+ls /opt/ros/                            <span class="c"># expect: jazzy</span>
+ls ~/ros2_ws/src/                       <span class="c"># the packages</span>
+ls ~/ros2_ws/install/ | grep -v setup   <span class="c"># what is actually BUILT</span>
+lsusb | grep -vi hub                    <span class="c"># LiDAR / Arduino / mic</span>
+aplay -l | grep ^card                   <span class="c"># the speaker</span></pre>
+  <p class="note"><b>Note:</b> a package can exist in <code>install/</code> but no longer in
+  <code>src/</code> - somebody cleaned the source and left the build. It still runs, but you cannot
+  rebuild it. Check both lists, not one.</p>
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume III: CP2, CP4 — the second board and the mesh</span><span>Page 2</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+
+<div class="page">
+  <div class="step" style="margin-top:0"><div class="n">3</div><div class="h">Diagnose the freezes BEFORE you build anything</div></div>
+  <p class="body">Our Pi dropped off the network repeatedly - mid-command, roughly a minute after boot.
+  Diagnosing that first saved a lot of wasted integration work:</p>
+  <div><span class="tag t-pi">PI 5</span></div>
+<pre>vcgencmd measure_temp     <span class="c"># throttling starts near 80C</span>
+vcgencmd get_throttled    <span class="c"># 0x0 = never under-volted or throttled</span>
+cat /sys/class/net/eth0/carrier   <span class="c"># 1 = link still up while the OS is gone</span></pre>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED - "IT IS OVERHEATING" USUALLY IS NOT</div>
+    Ours read <b>54 C with <code>throttled=0x0</code></b> - no thermal event at all - yet it locked up
+    under a trivial load (a <code>find</code> across the workspace). The giveaway is the <b>Ethernet
+    carrier staying UP</b> while the OS stops answering: the PHY has power, the SoC does not. That is
+    a <b>brownout from an inadequate supply</b>, not heat. A Pi 5 wants a genuine <b>5 V / 5 A</b>
+    USB-C supply; anything less produces exactly these random, unattributable hangs, and people spend
+    days chasing them as software faults.
+  </div>
+
+  <div class="box field">
+    <div class="lab">FROM THE FIELD — WORK AROUND AN UNSTABLE BOARD</div>
+    Until the supply is fixed, keep the board idle: <b>copy files off it and read them on the
+    workstation</b> rather than grepping on the Pi. <code>scp</code> barely touches the CPU; a
+    recursive search is enough to hang it. This one habit turned a board we could not survey into one
+    we could.
+  </div>
+
+  <div class="step"><div class="n">4</div><div class="h">Know what the tier gives you</div></div>
+  <p class="body">On the reference build, <code>~/ros2_ws</code> held <b>17 built packages</b>:</p>
+  <table class="kv">
+    <tr><th style="width:26%">Group</th><th>Packages</th></tr>
+    <tr><td class="k">Voice (the point)</td><td><code>tts_speaker</code> (Piper, local, free, ~0.5 s)
+      and <code>tts_elevenlabs</code> (cloud, higher quality, needs an API key), plus
+      <code>speaker_monitor</code>. <b>Run only ONE TTS node at a time.</b></td></tr>
+    <tr><td class="k">Drive</td><td><code>mecanum_driver</code>, <code>motor_control</code>,
+      <code>linear_actuator</code></td></tr>
+    <tr><td class="k">Sensors</td><td><code>bno055_imu</code>, <code>neo6m_gps</code>,
+      <code>bmp180_pressure</code>, <code>dht11_sensor</code>, <code>rain_sensor</code>,
+      <code>soil_moisture</code>, with <code>sensors_bringup/launch/sensors.launch.py</code></td></tr>
+    <tr><td class="k">Display / other</td><td><code>llm_display</code>, <code>robot_display</code>,
+      <code>esp32cam</code>, <code>plant_disease_bottom</code></td></tr>
+  </table>
+  <p class="note"><b>Note:</b> SLAM and navigation (<code>slam-toolbox</code>,
+  <code>robot-localization</code>, <code>rf2o</code>) were <b>not</b> present. The LiDAR is wired
+  (a CP210x USB-UART bridge appears in <code>lsusb</code>), but turning it into a map is still to do.</p>
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume III: CP2, CP4 — the second board and the mesh</span><span>Page 3</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+
+<div class="page">
+  <div class="step" style="margin-top:0"><div class="n">5</div><div class="h">Give the robot a voice (Piper, local)</div></div>
+  <p class="body">Piper needs no network and no API key, which makes it the right thing to prove first.
+  The node expects the binary and the voice model at fixed paths:</p>
+  <div><span class="tag t-pi">PI 5</span></div>
+<pre>ls ~/.local/bin/piper                       <span class="c"># the binary</span>
+ls ~/piper_models/en_US-lessac-medium.onnx  <span class="c"># the voice</span>
+
+source /opt/ros/jazzy/setup.bash
+source ~/ros2_ws/install/setup.bash
+export ROS_DOMAIN_ID=42
+ros2 run tts_speaker tts_speaker_node</pre>
+  <p class="note"><b>Note:</b> the node subscribes <code>/tts_text</code> and publishes
+  <code>/robot/speaking</code> and <code>/speaker/playing</code>. That last one is the feedback guard -
+  the Jetson's speech recogniser mutes its microphone while the speaker is playing, so the robot does
+  not transcribe its own voice.</p>
+
+  <div class="step"><div class="n">6</div><div class="h">Make it speak, without any of the rest</div></div>
+  <div><span class="tag t-pi">PI 5</span></div>
+<pre>ros2 topic pub --once /tts_text std_msgs/msg/String "{data: 'Hello, I am AI-SHA'}"
+aplay -l | grep -i max98357   <span class="c"># the I2S amplifier, usually card 0</span></pre>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED</div>
+    <b>Check a speaker is physically connected before debugging silence.</b> We spent a stretch
+    diagnosing a "TTS problem" on a rig with <b>no speaker plugged in</b>. The node was fine.
+    <code>aplay -l</code> lists the <i>amplifier</i> whether or not a driver is attached to it, so the
+    hardware list is not proof of sound - your ears are.
+  </div>
+
+  <div class="gate"><div class="lab">GATE - proceed only when:</div><ul>
+    <li>You can SSH in with the board-name user and <code>/opt/ros/jazzy</code> exists.</li>
+    <li><code>ls ~/ros2_ws/install</code> lists the packages you expect, including a TTS node.</li>
+    <li><code>vcgencmd get_throttled</code> reads <code>0x0</code> AND the board survives several
+        minutes of light work without dropping off the network.</li>
+    <li>A message published on <code>/tts_text</code> is <b>audible</b> from the speaker.</li>
+  </ul></div>
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume III: CP2, CP4 — the second board and the mesh</span><span>Page 4</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+
+<div class="page">
+  <div class="cp c-cp4"><div class="id">CP4</div>
+    <div><div class="ttl">The two-board mesh - making them see each other</div>
+    <div class="meta">Runs on: both boards &nbsp; Time: ~1 h &nbsp; Read page 7 before relying on it</div></div></div>
+
+  <p class="body">CP4 is where the Jetson's answers reach the Pi's speaker. Every guide starts at
+  <code>ROS_DOMAIN_ID</code> - but there is a step before it that nobody writes down, and it is the one
+  that actually blocks people.</p>
+
+  <div class="step"><div class="n">1</div><div class="h">First: give the boards a route to each other</div></div>
+  <p class="body">Both of our boards were reachable from the workstation, which made it <i>look</i> like
+  they were networked. They were not: the Jetson was on a USB device-mode link and the Pi on wired
+  Ethernet - two separate segments that both ended at the workstation. DDS cannot discover across that.
+  Check honestly, from one board to the other:</p>
+  <div><span class="tag t-both">BOTH BOARDS</span></div>
+<pre><span class="c"># from the JETSON, ping the PI's address - not the workstation's</span>
+ping -c3 &lt;pi-address&gt;</pre>
+  <p class="note"><b>Note:</b> "I can SSH to both" is not the test. The test is whether <b>board A can
+  reach board B</b>. Ours could not, and no amount of domain configuration would have helped.</p>
+
+  <div class="step"><div class="n">2</div><div class="h">Put both boards on the same wireless network</div></div>
+  <div><span class="tag t-both">BOTH BOARDS</span></div>
+<pre><span class="c"># write the credentials to files first - see the trap below</span>
+printf '%s' 'YOUR_SSID'     &gt; /tmp/ssid.txt
+printf '%s' 'YOUR_PASSWORD' &gt; /tmp/psk.txt
+sudo nmcli dev wifi connect "$(cat /tmp/ssid.txt)" \
+     password "$(cat /tmp/psk.txt)" ifname &lt;wifi-iface&gt;
+rm -f /tmp/psk.txt
+ip -4 addr show &lt;wifi-iface&gt;    <span class="c"># both must land on the SAME subnet</span></pre>
+  <p class="note"><b>Note:</b> the Wi-Fi interface is <code>wlP1p1s0</code> on the Orin Nano and
+  <code>wlan0</code> on the Pi. Joining Wi-Fi is additive - the USB link and the wired link keep
+  working, so you do not lose your way in.</p>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED - THE SSID MAY NOT BE WHAT YOU SEE</div>
+    <code>nmcli dev wifi connect</code> failed with <b>"No network with SSID found"</b> for a network
+    that was plainly in the scan list. The router had stored an apostrophe <b>HTML-escaped</b>, and
+    that escaped text <i>is</i> the broadcast name: <code>Daou&amp;#x27;s</code>, not
+    <code>Daou's</code>. <b>Copy the SSID from the scan output verbatim.</b> And pass both SSID and
+    password through files - an SSID containing quotes and a password containing <code>$</code> will
+    otherwise be mangled by the shell before <code>nmcli</code> ever sees them.
+  </div>
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume III: CP2, CP4 — the second board and the mesh</span><span>Page 5</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+
+<div class="page">
+  <div class="step" style="margin-top:0"><div class="n">3</div><div class="h">Put both boards on the same ROS domain</div></div>
+  <p class="body">The reference build uses <b>domain 42</b>. Set it everywhere the robot starts nodes -
+  service files, launch wrappers, shell profiles - not just in your interactive shell:</p>
+  <div><span class="tag t-both">BOTH BOARDS</span></div>
+<pre>export ROS_DOMAIN_ID=42</pre>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED - NEVER HARDCODE THE DOMAIN IN A HELPER</div>
+    Changing the stack to domain 42 broke the robot's face-authentication, which had nothing to do with
+    the mesh. The console launched the auth helper with the domain <b>hardcoded to the old value</b>,
+    so that one process kept listening on the old domain, saw <b>no camera at all</b>, and reported
+    <i>"I couldn't see a face"</i> while the user sat perfectly framed in the preview. Helpers must
+    <b>inherit</b> the domain from their parent. The same lesson applies to any pinned constant - we
+    hit an identical failure with a camera-rotation value that outlived the mounting it described.
+  </div>
+
+  <div class="step"><div class="n">4</div><div class="h">Verify discovery in BOTH directions</div></div>
+  <div><span class="tag t-both">BOTH BOARDS</span></div>
+<pre><span class="c"># on board A</span>
+ros2 topic pub -r 2 /mesh_probe std_msgs/String "{data: hello}"
+
+<span class="c"># on board B - name the TYPE explicitly, see the note</span>
+ros2 topic list | grep mesh_probe
+ros2 topic echo /mesh_probe std_msgs/msg/String --once</pre>
+  <p class="note"><b>Note:</b> start the publisher <b>before</b> the listener. A subscriber that opens
+  first has no publisher to learn the type from, and reports "does not appear to be published yet" even
+  though the topic is about to exist.</p>
+
+  <div class="box field">
+    <div class="lab">FROM THE FIELD — WHAT A HEALTHY MESH LOOKS LIKE</div>
+    After joining the network and matching domains, the Pi could list the Jetson's entire graph -
+    <code>/robot_speech</code>, <code>/admin_response</code>, <code>/aisha/mode</code> and every
+    <code>/camera/**</code> topic - and <code>ros2 topic info</code> reported the <b>same publisher and
+    subscription counts from both boards</b>. Discovery across the two machines was complete. That is
+    the good news; page 7 is the qualification.
+  </div>
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume III: CP2, CP4 — the second board and the mesh</span><span>Page 6</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+
+<div class="page">
+  <div class="step" style="margin-top:0"><div class="n">5</div><div class="h">Understand the limit before you design around it</div></div>
+
+  <div class="box trap">
+    <div class="lab">TRAP AVOIDED - DISCOVERY IS NOT DELIVERY</div>
+    Our two boards run <b>different ROS 2 distributions</b> - Humble on the Jetson, Jazzy on the Pi -
+    and the result is genuinely confusing: <b>discovery works, data does not.</b>
+    <br><br>
+    <b>Works:</b> <code>ros2 topic list</code> and <code>ros2 topic info</code> agree from both sides;
+    a CLI <code>ros2 topic pub</code> on one board reaches a CLI <code>ros2 topic echo</code> on the
+    other - <i>provided you name the message type explicitly</i>.
+    <br>
+    <b>Fails:</b> an ordinary node subscription (a normal <code>create_subscription</code> in your own
+    program) receives <b>nothing</b>, while running perfectly happily.
+    <br><br>
+    The tell is the one that looks harmless: on the newer distro, <code>ros2 topic echo</code> without
+    a type says <b>"Could not determine the type"</b>. Newer ROS 2 releases publish a <b>type hash</b>
+    with each endpoint that the older release never sends, so real subscriptions never match. You may
+    also see <code>sequence size exceeds remaining buffer</code>.
+  </div>
+
+  <div class="box dec">
+    <div class="lab">DECISION — BRIDGE, DO NOT REFLASH</div>
+    The instinct is to make both boards run the same distribution. <b>On this hardware you cannot.</b>
+    The Pi runs Ubuntu 24.04, and the older distro has no packages for it; the Jetson's JetPack pins it
+    to Ubuntu 22.04 with CUDA and TensorRT built against that, so it cannot move forward either.
+    Matching them means <b>reflashing the Pi and rebuilding a working tier from scratch</b> - a large,
+    risky job to move a few short strings.
+    <br><br>
+    Look at what actually crosses the boards: <b>answer text and two boolean flags</b>. So bridge it:
+    <br>• <b>A small TCP bridge</b> - one script per board, each subscribing and publishing only on its
+    OWN distro, passing text between them over a socket. No DDS crossing, immune to distro drift, and
+    trivial to debug. This is the recommended route.
+    <br>• <b>A DDS router</b> (e.g. eProsima DDS Router) - heavier, but it forwards arbitrary topics
+    and is the right answer if you later need shared transforms, LiDAR scans or navigation goals
+    across the two boards.
+    <br><br>
+    Reflashing only makes sense if you are rebuilding the Pi tier anyway.
+  </div>
+
+  <div class="gate"><div class="lab">GATE - proceed only when:</div><ul>
+    <li>Board A can <b>ping board B directly</b> - not merely "both reachable from my laptop".</li>
+    <li>Both boards report the same <code>ROS_DOMAIN_ID</code>, including inside services and launch
+        wrappers, with no hardcoded copies left behind.</li>
+    <li><code>ros2 topic list</code> on each board shows the other board's topics.</li>
+    <li>You have decided how application data will cross: <b>same distro</b> (native DDS), or a
+        <b>bridge</b> if the distros differ - and you have tested it with a real node subscription,
+        not just <code>ros2 topic echo</code>.</li>
+  </ul></div>
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume III: CP2, CP4 — the second board and the mesh</span><span>Page 7</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+
+<div class="page">
+  <div class="cp c-gapbn"><div class="id">OPEN</div>
+    <div><div class="ttl">What CP2 and CP4 do not yet give you</div>
+    <div class="meta">Read before planning the next build session</div></div></div>
+
+  <p class="body">Both checkpoints are real, but neither is finished. This page is the honest remainder
+  so nobody plans on a capability that is not there yet.</p>
+
+  <div class="box trap">
+    <div class="lab">THE BLOCKER THAT GATES EVERYTHING ELSE - POWER</div>
+    The Pi froze repeatedly under trivial load, with the network carrier still up and no thermal event
+    recorded. Until it runs from a genuine <b>5 V / 5 A</b> supply, every integration session will be
+    interrupted mid-task and you will misattribute the failures to software. <b>Fix the supply before
+    building on this tier.</b> It is the cheapest item on this page and it blocks the rest.
+  </div>
+
+  <table class="kv">
+    <tr><th style="width:30%">Open item</th><th>What is needed</th></tr>
+    <tr><td class="k">The audible loop</td><td>The Jetson answers and the Pi can speak, but the two
+      halves are not yet joined by a working data path - see the bridge decision on page 7. A speaker
+      must also be physically connected; ours was not.</td></tr>
+    <tr><td class="k">Navigation / SLAM</td><td>The LiDAR is wired and detected, but
+      <code>slam-toolbox</code>, <code>robot-localization</code> and <code>rf2o</code> are not
+      installed. Mapping and autonomous movement are genuinely new work, not configuration.</td></tr>
+    <tr><td class="k">Static addressing</td><td>Both boards currently take DHCP leases. The moment
+      anything references an address, a re-lease will silently break it. CP0's static-IP step becomes
+      real here.</td></tr>
+    <tr><td class="k">Sensor bring-up</td><td>The sensor packages are built but were not exercised in
+      this pass; <code>sensors.launch.py</code> is the entry point.</td></tr>
+  </table>
+
+  <div class="box field">
+    <div class="lab">FROM THE FIELD — THE HABIT THAT SAVED THE MOST TIME</div>
+    Three separate failures in this volume - the login, the freezes, and the face gate - were each
+    misdiagnosed at first because the <b>symptom named the wrong layer</b>. "Wrong password" was a
+    wrong username. "Overheating" was under-power. "Cannot recognise the face" was a process listening
+    on the wrong ROS domain. When a symptom points at a component, <b>measure that component
+    directly</b> before changing it: read the temperature, print the environment, dump a frame from the
+    camera. Every one of those measurements took under a minute and each overturned the obvious
+    explanation.
+  </div>
+  <div class="foot"><div class="r1"><span>AI-SHA Foundation Tutorial &nbsp;-&nbsp; Volume III: CP2, CP4 — the second board and the mesh</span><span>Page 8</span></div>
+  <div class="r2">ISC-Sharjah &nbsp;-&nbsp; validated on the reference build, for network replication</div></div>
+</div>
+
+</body></html>

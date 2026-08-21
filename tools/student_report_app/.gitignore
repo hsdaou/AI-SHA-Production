@@ -1,0 +1,7 @@
+__pycache__/
+*.py[cod]
+.venv/
+Houssam Report.csv
+*.csv
+.env
+.student_report.env
