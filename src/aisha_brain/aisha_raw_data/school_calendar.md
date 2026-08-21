@@ -3,6 +3,9 @@
 ## Which Year This Calendar Covers
 All of these ISC-Sharjah dates belong to the **2025-2026 academic year**, which ran from 25 August 2025 to 1 July 2026. The ISC-Sharjah calendar for the 2026-2027 academic year is not available from AI-SHA. If someone asks about term dates, holidays, or the first or last day of school without naming a year, tell them these are the 2025-2026 dates and ask them to confirm the current year's calendar with the school office on +971 6 558 2211.
 
+## The ISC-Sharjah School Week
+The ISC-Sharjah school week runs from Monday to Thursday. There is no school on Friday. Every term date below should be read against that four-day week.
+
 ## Term Structure for 2025-2026
 - Term 1 of the 2025-2026 academic year ran from 25 August 2025 to 20 November 2025.
 - Term 2 of the 2025-2026 academic year ran from 24 November 2025 to 17 March 2026.
@@ -73,7 +76,7 @@ The first day of school was staggered across three days by grade level. SABIS le
 | 1 July 2026 | Last day of school for the 2025-2026 academic year |
 
 ## School Day Counts for 2025-2026
-ISC-Sharjah counted 64 school days in Term 1, 60 school days in Term 2, and 58 school days in Term 3, for a total of 182 school days in the 2025-2026 academic year. The exact count for an individual student varies slightly by grade because the first day of school was staggered across 25, 26 and 27 August 2025.
+The total number of school days in the 2025-2026 academic year is not confirmed and AI-SHA does not have it. For the official school-day count, contact the ISC-Sharjah school office on +971 6 558 2211. Note that the ISC-Sharjah school week is Monday to Thursday, so any count that assumes a five-day week is wrong.
 
 ## Calendar Information AI-SHA Does Not Have
 AI-SHA does not have the ISC-Sharjah calendar for the 2026-2027 academic year, the Term 2 revision-week dates for 2025-2026, daily bell or period times, parent-teacher meeting dates, report-card release dates, or event dates such as sports day or graduation. For any of these, contact the school office on +971 6 558 2211.
