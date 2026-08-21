@@ -1,36 +1,65 @@
-# ISC-Sharjah Tuition and Fees — Academic Year 2025-2026
+# ISC-Sharjah Tuition and Fees
 
-## Tuition Fees (Annual, in AED)
+## Which Year These Fees Cover
+Every fee figure in this knowledge base is for the **2025-2026 academic year** and is stated in UAE Dirhams (AED). ISC-Sharjah fees for the 2026-2027 academic year are not held in this knowledge base. If someone asks about current or next-year fees, give the 2025-2026 figure, say clearly that it is the 2025-2026 figure, and tell them to confirm the current year's fees with the school office on +971 6 558 2211 or info@iscsharjah.sabis.net.
 
-| Grade   | Annual Fee | 1st Installment | 2nd Installment | 3rd Installment |
-|---------|-----------|-----------------|-----------------|-----------------|
-| KG1     | 21,000    | 7,000           | 7,000           | 7,000           |
-| KG2     | 22,100    | 7,500           | 7,300           | 7,300           |
-| Grade 1 | 24,000    | 8,000           | 8,000           | 8,000           |
-| Grade 2 | 24,600    | 8,200           | 8,200           | 8,200           |
-| Grade 3 | 25,400    | 8,600           | 8,400           | 8,400           |
-| Grade 4 | 27,000    | 9,000           | 9,000           | 9,000           |
-| Grade 5 | 27,100    | 9,100           | 9,000           | 9,000           |
-| Grade 6 | 28,100    | 9,500           | 9,300           | 9,300           |
-| Grade 7 | 31,500    | 10,500          | 10,500          | 10,500          |
-| Grade 8 | 32,600    | 11,000          | 11,000          | 11,000          |
-| Grade 9 | 32,600    | 11,000          | 11,000          | 11,000          |
-| Grade 10| 36,000    | 12,000          | 12,000          | 12,000          |
-| Grade 11| 36,800    | 12,400          | 12,200          | 12,200          |
-| Grade 12| 37,200    | 12,400          | 12,400          | 12,400          |
+## Annual Tuition Fees for the 2025-2026 Academic Year (AED)
 
-Note: Tuition fees do not include Transportation, Uniform, Extra-Curricular Activities, or Meals Subscriptions.
+| Grade | Annual Tuition Fee for 2025-2026 |
+|---------|-----------|
+| KG1 | 21,000 |
+| KG2 | 22,100 |
+| Grade 1 | 24,000 |
+| Grade 2 | 24,600 |
+| Grade 3 | 25,400 |
+| Grade 4 | 27,000 |
+| Grade 5 | 27,100 |
+| Grade 6 | 28,100 |
+| Grade 7 | 31,500 |
+| Grade 8 | 32,600 |
+| Grade 9 | 32,600 |
+| Grade 10 | 36,000 |
+| Grade 11 | 36,800 |
+| Grade 12 | 37,200 |
 
-## Transportation Fees (Annual, in AED)
+## What the Tuition Fee Does Not Include
+The annual tuition fee at ISC-Sharjah does not include transportation, uniform, extra-curricular activities, or meal subscriptions. Those are charged separately.
 
-| Area            | Annual Fee | Per Installment (x3) |
+## Tuition Installment Plan for the 2025-2026 Academic Year (AED)
+ISC-Sharjah tuition is payable in three installments across the year.
+
+| Grade | 1st Installment | 2nd Installment | 3rd Installment |
+|---------|-----------------|-----------------|-----------------|
+| KG1 | 7,000 | 7,000 | 7,000 |
+| KG2 | 7,500 | 7,300 | 7,300 |
+| Grade 1 | 8,000 | 8,000 | 8,000 |
+| Grade 2 | 8,200 | 8,200 | 8,200 |
+| Grade 3 | 8,600 | 8,400 | 8,400 |
+| Grade 4 | 9,000 | 9,000 | 9,000 |
+| Grade 5 | 9,100 | 9,000 | 9,000 |
+| Grade 6 | 9,500 | 9,300 | 9,300 |
+| Grade 7 | 10,500 | 10,500 | 10,500 |
+| Grade 10 | 12,000 | 12,000 | 12,000 |
+| Grade 11 | 12,400 | 12,200 | 12,200 |
+| Grade 12 | 12,400 | 12,400 | 12,400 |
+
+## Installment Split for Grade 8 and Grade 9
+The annual tuition fee for Grade 8 and for Grade 9 is AED 32,600 for 2025-2026, payable in three installments. The exact split of those three installments is not confirmed in this knowledge base. Give the annual figure of AED 32,600 and ask the person to confirm the installment amounts with the Accounts Office on +971 6 558 2211.
+
+## Transportation Fees for the 2025-2026 Academic Year (AED)
+Transportation is charged separately from tuition and is payable in three installments.
+
+| Area | Annual Transportation Fee for 2025-2026 | Approximate Amount per Installment |
 |-----------------|-----------|----------------------|
-| Sharjah         | 6,000     | 2,000                |
-| Dubai           | 7,000     | 2,333                |
-| Ajman           | 6,200     | 2,066                |
-| Umm Al Quwain  | 6,500     | 2,166                |
+| Sharjah | 6,000 | 2,000 |
+| Dubai | 7,000 | about 2,333 |
+| Ajman | 6,200 | about 2,067 |
+| Umm Al Quwain | 6,500 | about 2,167 |
 
 ## Other Fee Policies
-- There is no joining fee.
-- There is no application deadline; enrollment is based on space availability.
-- For fee inquiries, contact: +971 6 558 2211 or info@iscsharjah.sabis.net
+- ISC-Sharjah charges no joining fee.
+- ISC-Sharjah has no application deadline; enrollment is based on space availability.
+- For any fee inquiry, contact ISC-Sharjah on +971 6 558 2211 or info@iscsharjah.sabis.net.
+
+## Fee Information Not Held in This Knowledge Base
+This knowledge base does not hold ISC-Sharjah fees for the 2026-2027 academic year, uniform prices, meal or cafeteria subscription prices, extra-curricular activity charges, examination entry fees, sibling or staff discounts, late-payment penalties, or refund policy. For any of these, contact the school office on +971 6 558 2211.

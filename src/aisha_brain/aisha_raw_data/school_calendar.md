@@ -1,102 +1,79 @@
-# Academic Calendar 2025-2026 — International School of Choueifat (ISC) Sharjah
+# ISC-Sharjah Academic Calendar for the 2025-2026 Academic Year
 
-## Term Structure Overview
-- **Term 1**: August 25, 2025 – November 20, 2025
-- **Term 2**: November 24, 2025 – March 17, 2026
-- **Term 3**: April 6, 2026 – July 1, 2026
+## Which Year This Calendar Covers
+Every date in this document belongs to the **2025-2026 academic year**, which ran from 25 August 2025 to 1 July 2026. The ISC-Sharjah calendar for the 2026-2027 academic year is not held in this knowledge base. If someone asks about term dates, holidays, or the first or last day of school without naming a year, tell them these are the 2025-2026 dates and ask them to confirm the current year's calendar with the school office on +971 6 558 2211.
 
----
+## Term Structure for 2025-2026
+- Term 1 of the 2025-2026 academic year ran from 25 August 2025 to 20 November 2025.
+- Term 2 of the 2025-2026 academic year ran from 24 November 2025 to 17 March 2026.
+- Term 3 of the 2025-2026 academic year ran from 6 April 2026 to 1 July 2026.
 
-## Term 1 (August 25 – November 20, 2025)
+## First Days of School in 2025-2026
+The first day of school was staggered across three days by grade level. SABIS letter Levels map to grades as follows: Level A is Pre-KG, Level B is KG 1, Level C is KG 2, Level D is Grade 1, and each following letter is the next grade, so Level I is Grade 6, Level J is Grade 7 and Level O is Grade 12.
+- 25 August 2025 was the first day of school for Grades 7 to 12 (Levels J to O) and for Pre-KG and KG 1 (Levels A and B).
+- 26 August 2025 was the first day of school for Grades 1 to 6 (Levels D to I).
+- 27 August 2025 was the first day of school for KG 2 (Level C).
 
-### Start of Academic Year
-- **August 25, 2025**: First day of school for Grades 7–12 and Pre-KG / KG 1 (Level A-B and Level J-N)
-- **August 26, 2025**: First day of school for Grades 1–6 (Level D-I)
-- **August 27, 2025**: First day of school for KG 2 (Level C)
+## Term 1 Dates in 2025-2026
+- 4 September 2025 was the Prophet's Birthday holiday. ISC-Sharjah was closed. The exact date of this holiday depends on the Islamic calendar and was subject to confirmation.
+- 3 to 7 November 2025 was Term 1 Revision Week. Students attended school during Revision Week.
+- 10 to 20 November 2025 was the Term 1 final examination period.
+- Term 1 ended on 20 November 2025, after the final examinations.
 
-### Term 1 Key Dates
-- **September 4, 2025**: Prophet's Birthday (exact date to be confirmed) — school holiday
-- **November 3–7, 2025**: Revision Week (students in school)
-- **November 10–20, 2025**: Term 1 Final Exams
+## Term 2 Dates in 2025-2026
+- Term 2 began on 24 November 2025.
+- 1 December 2025 was the Martyrs' Day holiday. ISC-Sharjah was closed.
+- 2 and 3 December 2025 was the UAE National Day holiday. ISC-Sharjah was closed.
+- 15 December 2025 to 4 January 2026 was the Winter Holiday. ISC-Sharjah was closed for the whole of that period.
+- 5 January 2026 was the day school resumed after the Winter Holiday.
+- 16 to 20 February 2026 was a Student Holiday, marking the expected start of Ramadan. The exact date depended on the Islamic calendar and was subject to confirmation.
+- 16 to 19 February 2026 were Professional Development Days for staff.
+- 2 to 17 March 2026 was the Term 2 examination period. Grades 2 to 9 sat their Term 2 final examinations from 2 to 12 March 2026; make-up examinations for absent students were held on Saturday 7 March and Saturday 14 March 2026; Grades 10, 11 and 12 had normal school days until 14 March 2026. The exact examination for each grade, subject and time is listed in the ISC-Sharjah Term 2 examination timetable.
+- 19 and 20 March 2026 was the Eid Al-Fitr holiday. ISC-Sharjah was closed. The exact date depended on the Islamic calendar and was subject to confirmation.
+- Term 2 ended on 17 March 2026.
 
-### Term 1 End
-Term 1 ends after the final exams on **November 20, 2025**.
+## Holiday Between Term 2 and Term 3 in 2025-2026
+23 March 2026 to 5 April 2026 was the Spring Holiday. ISC-Sharjah was closed for the whole of that period.
 
----
+## Term 3 Dates in 2025-2026
+- Term 3 began on 6 April 2026.
+- 27 May 2026 was the Eid Al-Adha holiday. ISC-Sharjah was closed. The exact date depended on the Islamic calendar and was subject to confirmation.
+- 8 to 12 June 2026 was the Term 3 Revision Period. Students attended school during the Revision Period.
+- 15 to 26 June 2026 was the Term 3 and end-of-year final examination period.
+- 16 June 2026 was the Islamic New Year holiday. ISC-Sharjah was closed. The exact date depended on the Islamic calendar and was subject to confirmation.
+- 1 July 2026 was the last day of school for the 2025-2026 academic year.
 
-## Term 2 (November 24 – March 17, 2026)
+## Quick Reference Table of 2025-2026 Dates
 
-### Term 2 Start
-- **November 24, 2025**: Term 2 starts
-
-### Term 2 Key Dates
-- **December 1, 2025**: Martyrs' Day — school holiday
-- **December 2–3, 2025**: UAE National Day — school holiday
-- **December 15–January 4, 2026**: Winter Holiday (school closed; includes Dec 15 – Jan 4)
-- **January 5, 2026**: School resumes after Winter Holiday
-- **February 16–20, 2026**: Student Holiday (Ramadan expected to start Feb 16; exact date to be confirmed)
-- **February 16–19, 2026**: Professional Development Days for Staff
-- **March 3–6, 2026**: Revision Week (students in school)
-- **March 9–17, 2026**: Term 2 Final Exams
-- **March 19–20, 2026**: Eid Al-Fitr Holiday (exact date to be confirmed)
-
-### Term 2 End
-Term 2 ends after the final exams on **March 17, 2026**.
-
----
-
-## Holiday / Break Between Term 2 and Term 3
-- **March 23 – April 5, 2026**: Spring Holiday (school closed)
-
----
-
-## Term 3 (April 6 – July 1, 2026)
-
-### Term 3 Start
-- **April 6, 2026**: Term 3 starts
-
-### Term 3 Key Dates
-- **May 27, 2026**: Eid Al-Adha (exact date to be confirmed) — school holiday
-- **June 8–12, 2026**: Revision Period (students in school)
-- **June 15–26, 2026**: Term 3 / End-of-Year Final Exams
-- **June 16, 2026**: Islamic New Year Holiday (exact date to be confirmed)
-
-### Last Day of School
-- **July 1, 2026**: Last day of school
-
----
-
-## Quick Reference — Important Dates
-
-| Date | Event |
+| Date in the 2025-2026 Academic Year | Event at ISC-Sharjah |
 |------|-------|
-| Aug 25, 2025 | First day of school (Gr. 7–12, Pre-KG / KG 1) |
-| Aug 26, 2025 | First day of school (Gr. 1–6) |
-| Aug 27, 2025 | First day of school (KG 2) |
-| Sep 4, 2025 | Prophet's Birthday holiday (TBC) |
-| Nov 3–7, 2025 | Term 1 Revision Week |
-| Nov 10–20, 2025 | Term 1 Final Exams |
-| Nov 24, 2025 | Term 2 Starts |
-| Dec 1, 2025 | Martyrs' Day holiday |
-| Dec 2–3, 2025 | UAE National Day holiday |
-| Dec 15, 2025 – Jan 4, 2026 | Winter Holiday |
-| Jan 5, 2026 | School resumes (Term 2 continues) |
-| Feb 16–20, 2026 | Student Holiday / Ramadan begins (TBC) |
-| Mar 3–6, 2026 | Term 2 Revision Week |
-| Mar 9–17, 2026 | Term 2 Final Exams |
-| Mar 19–20, 2026 | Eid Al-Fitr holiday (TBC) |
-| Mar 23 – Apr 5, 2026 | Spring Holiday |
-| Apr 6, 2026 | Term 3 Starts |
-| May 27, 2026 | Eid Al-Adha holiday (TBC) |
-| Jun 8–12, 2026 | Term 3 Revision Period |
-| Jun 15–26, 2026 | Term 3 / End-of-Year Final Exams |
-| Jun 16, 2026 | Islamic New Year holiday (TBC) |
-| Jul 1, 2026 | Last Day of School |
+| 25 August 2025 | First day of school for Grades 7 to 12, Pre-KG and KG 1 |
+| 26 August 2025 | First day of school for Grades 1 to 6 |
+| 27 August 2025 | First day of school for KG 2 |
+| 4 September 2025 | Prophet's Birthday holiday, school closed, date was subject to confirmation |
+| 3 to 7 November 2025 | Term 1 Revision Week, students in school |
+| 10 to 20 November 2025 | Term 1 final examinations |
+| 20 November 2025 | Term 1 ends |
+| 24 November 2025 | Term 2 begins |
+| 1 December 2025 | Martyrs' Day holiday, school closed |
+| 2 to 3 December 2025 | UAE National Day holiday, school closed |
+| 15 December 2025 to 4 January 2026 | Winter Holiday, school closed |
+| 5 January 2026 | School resumes after the Winter Holiday |
+| 16 to 20 February 2026 | Student Holiday for the expected start of Ramadan, date was subject to confirmation |
+| 2 to 12 March 2026 | Term 2 final examinations for Grades 2 to 9 |
+| 7 March 2026 and 14 March 2026 | Make-up examinations for absent students |
+| 17 March 2026 | Term 2 ends |
+| 19 to 20 March 2026 | Eid Al-Fitr holiday, school closed, date was subject to confirmation |
+| 23 March 2026 to 5 April 2026 | Spring Holiday, school closed |
+| 6 April 2026 | Term 3 begins |
+| 27 May 2026 | Eid Al-Adha holiday, school closed, date was subject to confirmation |
+| 8 to 12 June 2026 | Term 3 Revision Period, students in school |
+| 15 to 26 June 2026 | Term 3 and end-of-year final examinations |
+| 16 June 2026 | Islamic New Year holiday, school closed, date was subject to confirmation |
+| 1 July 2026 | Last day of school for the 2025-2026 academic year |
 
----
+## School Day Counts for 2025-2026
+ISC-Sharjah counted 64 school days in Term 1, 60 school days in Term 2, and 58 school days in Term 3, for a total of 182 school days in the 2025-2026 academic year. The exact count for an individual student varies slightly by grade because the first day of school was staggered across 25, 26 and 27 August 2025.
 
-## School Day Count
-- Term 1: 64 school days
-- Term 2: 60 school days
-- Term 3: 58 school days
-- Total: 182 school days
+## Calendar Information Not Held in This Knowledge Base
+This knowledge base does not hold the ISC-Sharjah calendar for the 2026-2027 academic year, the Term 2 revision-week dates for 2025-2026, daily bell or period times, parent-teacher meeting dates, report-card release dates, or event dates such as sports day or graduation. For any of these, contact the school office on +971 6 558 2211.
