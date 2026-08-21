@@ -1,0 +1,22 @@
+[Unit]
+Description=AI-SHA voice (Piper TTS on /tts_text -> I2S speaker)
+After=network.target
+
+[Service]
+Type=simple
+User=pi5
+# piper and its models are addressed as ~/..., and aplay needs HOME to find the
+# .asoundrc that provides the dmix + softvol chain the volume control drives.
+WorkingDirectory=/home/pi5
+ExecStart=/bin/bash -lc "source /opt/ros/jazzy/setup.bash && source /home/pi5/ros2_ws/install/setup.bash && exec ros2 run tts_speaker tts_speaker_node"
+Restart=always
+RestartSec=3
+# Domain 44, NOT the mesh domain 42. The Jetson reaches this node over HTTP via
+# speech_bridge.py, so it must NOT sit on 42: Jazzy nodes there flood the Jetson
+# Humble stack with "sequence size exceeds remaining buffer".
+# Do NOT run tts_elevenlabs at the same time: one TTS node owns the speaker.
+Environment=ROS_DOMAIN_ID=44
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

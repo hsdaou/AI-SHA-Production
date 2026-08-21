@@ -8,7 +8,7 @@
 export HOME=/home/hsdaou
 source /opt/ros/humble/setup.bash
 source "$HOME/robot_ws/install/setup.bash"
-export ROS_DOMAIN_ID=99
+export ROS_DOMAIN_ID=42
 export PATH=$HOME/.local/bin:$PATH
 export AISHA_VOICE=1
 

@@ -1,0 +1,16 @@
+[Unit]
+Description=AI-SHA speaker volume service (HTTP control for the console)
+After=network.target
+
+[Service]
+Type=simple
+User=pi5
+# aplay/amixer resolve ~/.asoundrc from HOME, and the softvol control lives there.
+WorkingDirectory=/home/pi5
+ExecStart=/usr/bin/python3 /home/pi5/volume_service.py
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
