@@ -1,0 +1,154 @@
+# AI-SHA - Isaac Sim demonstration route
+# Rev B - 2026-08-20 - approved page-2 Block A plan traced
+#
+# SCOPE CHANGE: the demonstration visits TWO offices only - Principal and
+# Vice-Principal. Front desk, Conference, Meeting Rooms, Secretary, Office
+# Manager and every other administration room are scene dressing and obstacles,
+# not goals. Do not add goals without a written scope change.
+#
+# Status language matches aisha_drive.yaml:
+#   documented  = supported by a drawing/plan/datasheet in the package
+#   design      = chosen value that still needs an as-built measurement
+#   hold_point  = must be measured from the plan or the walkthrough video
+#                 before the run is credible
+
+demo:
+  revision: "B"
+  date: "2026-08-20"
+  building: "Block A ground floor, administration"
+  stops_total: 2
+  navigation_stack: "Nav2"
+  demo_speed_mps: 0.50          # commissioning starts at 0.30, see aisha_drive.yaml
+  approach_speed_mps: 0.20      # within 1.5 m of any door or person
+  status: plan_derived_scripted_presentation
+
+# ---------------------------------------------------------------------------
+# Goals
+# ---------------------------------------------------------------------------
+# Both target offices are in the south-east cluster of the ground floor. Room
+# topology and orientation are derived from approved plan page 2; goal offsets
+# within rooms remain presentation placements because the source is a PDF, not a
+# survey-grade DWG or as-built navigation map.
+
+goals:
+  - id: home
+    label: "Atrium home / dock"
+    type: start_and_end
+    pose: {x: 0.00, y: 0.00, yaw_deg: 0.0}
+    pose_status: plan_derived_atrium_centre
+    notes: >
+      Open floor in the octagonal atrium (12.75 m across the diagonal). Must
+      allow a full 1.640 m turn-in-place circle with no wall inside 0.820 m of
+      the head end or 0.595 m behind the axle.
+
+  - id: vice_principal
+    label: "Vice-Principal office"
+    sequence: 1
+    type: delivery_stop
+    pose: {x: 17.10, y: -6.25, yaw_deg: -90.0}
+    pose_status: plan_derived_room_presentation_offset
+    door:
+      measured_clear_width_m: null
+      presentation_assumed_clear_width_m: 1.100
+      minimum_required_m: 0.920
+      swing: inward_open_90_deg_for_presentation
+      threshold_height_mm: null
+      presentation_assumed_threshold_height_mm: 3
+      approach: straight_aligned        # never pivot in the opening
+      approach_run_m: 1.500             # minimum straight, pre-aligned run before the leaf
+    dwell_s: 20
+    interaction: "stop, announce, present tray, wait for acknowledgement"
+
+  - id: principal
+    label: "Principal office"
+    sequence: 2
+    type: delivery_stop
+    pose: {x: 8.65, y: -9.10, yaw_deg: -45.0}
+    pose_status: plan_derived_room_presentation_offset
+    door:
+      measured_clear_width_m: null
+      presentation_assumed_clear_width_m: 1.050
+      minimum_required_m: 0.920
+      swing: inward_open_90_deg_for_presentation
+      threshold_height_mm: null
+      presentation_assumed_threshold_height_mm: 5
+      approach: straight_aligned
+      approach_run_m: 1.500
+    dwell_s: 20
+    interaction: "stop, announce, present tray, wait for acknowledgement"
+
+# ---------------------------------------------------------------------------
+# Leg order
+# ---------------------------------------------------------------------------
+# Vice-Principal first, Principal second: it puts the senior office at the end
+# of the run when the audience is watching the finished behaviour, and it lets
+# the first door act as the rehearsal for the second.
+
+legs:
+  - {from: home,           to: vice_principal, via: ["atrium", "east_hallway", "vice_principal_access"]}
+  - {from: vice_principal, to: principal,      via: ["vice_principal_access", "east_hallway", "south_east_atrium_edge", "secretary_passage"]}
+  - {from: principal,      to: home,           via: ["secretary_passage", "atrium"]}
+
+# ---------------------------------------------------------------------------
+# Route constraints - author these, do not hope the planner finds them
+# ---------------------------------------------------------------------------
+
+constraints:
+  rotation_zones: ["atrium", "hallway"]
+  rotation_forbidden: ["doorway", "within 0.5 m of any door leaf", "against any wall"]
+  pivot_clear_circle_m: 1.640
+  transit_width_m: 0.768
+  hallway_clear_width_m: 2.800        # documented, east/west internal hallways
+  reverse_policy: >
+    Reversing is disabled in occupied areas. If a leg needs to back out of an
+    office, either author a forward turn-around inside the room with a verified
+    1.640 m circle, or declare the room a doorway-threshold stop where the robot
+    never fully enters. State which one you chose in the results.
+  no_go: ["main stair", "all exterior entrances", "courtyards", "anything with a level change"]
+  people_in_scene: true               # for perception evaluation only, not a safety claim
+
+# ---------------------------------------------------------------------------
+# Failure cases the demo run must exercise
+# ---------------------------------------------------------------------------
+
+fault_injection:
+  - id: door_blocked
+    at: vice_principal
+    behaviour: "hold at the approach point, announce, do not nudge, do not reverse blindly"
+  - id: person_crosses
+    at: south_east_hallway
+    behaviour: "protective stop, resume only after the path clears"
+  - id: command_watchdog
+    at: any
+    behaviour: "stale cmd_vel -> zero output and latch until explicit reset"
+
+# ---------------------------------------------------------------------------
+# Evidence required per run
+# ---------------------------------------------------------------------------
+
+logging:
+  per_stop:
+    - final pose error vs goal (x, y, yaw)
+    - minimum left/right door clearance through the opening
+    - peak wheel torque and estimated phase current
+    - time to goal and total leg distance
+  per_run:
+    - full cmd/actual wheel speed and base twist trace
+    - costmap snapshots at each door approach
+    - screenshot or clip per stop
+    - Isaac version, timestep, solver, materials, seed, URDF hash, payload
+  repeats_required: 5                 # both doors, five runs, report the worst clearance
+
+# ---------------------------------------------------------------------------
+# Hold points that block a credible run
+# ---------------------------------------------------------------------------
+
+hold_points:
+  - "Principal and Vice-Principal door dimensions remain unmeasured. The 1.100 m
+     and 1.050 m widths and 3/5 mm thresholds are accepted only for the scripted
+     presentation proxy. If either measured width is below 0.920 m, report a
+     route/mechanical failure - never shrink the Nav2 footprint to force a pass."
+  - "Room location, adjacency and orientation come from approved plan page 2.
+     Furniture and finishes come from the walkthrough video and remain video-derived."
+  - "Turn-around space inside each office is unknown until the video is traced."
+  - "Threshold heights at both office doors are unmeasured."

@@ -1,50 +1,38 @@
 # The SABIS Educational System
 
-## Foundation and Global Network
-SABIS was founded in 1886 by Tanios Saad and Louisa Procter in Choueifat, Lebanon.
-It began in an abandoned silk factory as a pioneering educational effort.
-The first SABIS international campus was the International School of Choueifat in Sharjah (ISC-Sharjah), UAE, which opened in 1976.
-Today the SABIS Network operates in more than 20 countries across 5 continents and educates over 70,000 students.
+## What SABIS Is
+SABIS is the educational system and school network that ISC-Sharjah belongs to. SABIS was founded in 1886 by Tanios Saad and Louisa Procter in Choueifat, Lebanon, beginning in an abandoned silk factory. The SABIS Network today operates in more than 20 countries across 5 continents and educates over 70,000 students. SABIS is a multi-family organisation owned by the Saad and Bistany families, and the President and CEO of SABIS is Carl Bistany.
 
-## Leadership and Ownership
-SABIS is a multi-family organization owned by the Saad and Bistany families.
-The President and CEO of SABIS is Carl Bistany.
-The Vice President of SABIS is Victor Saad, who leads global growth and alumni relations.
-SABIS board members include Serge Bakhos, George Saad, and Ghassan Kansou.
+## SABIS and ISC-Sharjah
+The International School of Choueifat — Sharjah (ISC-Sharjah) opened in 1976 and was the first SABIS campus outside Lebanon and the first SABIS school in the UAE. ISC-Sharjah implements the SABIS Educational System, which draws on the American and British educational systems and also delivers the subjects required by the UAE Ministry of Education (Arabic, Islamic Studies / Religion, and Social Studies).
 
-## Academic Structure and Curriculum
-In the Foundation Years (Grades 1 to 7), science is taught as a single integrated subject to build logical reasoning and foundational skills.
-Grade 8 is a hybrid year: most students continue General Science, while high-achievers may begin IGCSE Biology early.
-Grade 9 is the track-split year. The Science Track studies Physics, Chemistry, and Biology as separate intensive subjects. The Arts Track focuses on Humanities, Social Sciences, and Literature. There is no Commerce or Accounting track, as preparation is aimed at high-level university entry.
-Core subjects across the curriculum include Mathematics (Advanced and Standard), English (Language and Literature), Arabic (mandatory in local regions), ICT and Computing, History, Geography, and Social Studies.
+## How Subjects Are Structured by Grade
+- In the SABIS Foundation Years, Grades 1 to 7, science is taught as a single integrated subject to build logical reasoning and foundational skills.
+- Grade 8 is a hybrid year at SABIS schools: most students continue with General Science, while high-achieving students may begin IGCSE Biology early.
+- Grade 9 is the track-split year at SABIS schools. Students choose either the Science Track or the Literary Track.
+- The SABIS Science Track studies Physics, Chemistry and Biology as separate intensive subjects.
+- The SABIS Literary Track focuses on Humanities, Social Sciences and Literature.
+- SABIS does not offer a separate Commerce or Accounting track, because preparation is aimed at high-level university entry. Economics and Business Studies are taught as individual subjects rather than as a track.
+- Core SABIS subjects across the curriculum include Mathematics at Advanced and Standard level, English Language and English Literature, Arabic, ICT and Computing, History, Geography and Social Studies.
 
-## Continuous Assessment System
-The SABIS Continuous Assessment system (CA, formerly called AMS) tests students throughout the week and is not restricted to Fridays.
-It provides real-time monitoring of each student's mastery of "Learning Points."
-Point-by-point delivery ensures a student masters each concept before progressing, which prevents knowledge gaps.
-The assessment hierarchy has four levels:
-- CAs (Continuous Assessments): daily and weekly assessments of specific learning points for real-time monitoring.
-- Periodics: weekly comprehensive tests covering recent material.
-- Prefinals: practice examinations taken before the finals.
-- Finals: end-of-term comprehensive examinations.
+## The SABIS Continuous Assessment System
+The SABIS Continuous Assessment system tests students throughout the week and is not restricted to any single day. It gives real-time monitoring of each student's mastery of "Learning Points", and point-by-point delivery ensures a student masters each concept before progressing, which prevents knowledge gaps. Continuous Assessment is abbreviated to CA. Its older name is AMS, and older ISC-Sharjah timetables still label these tests "AMS"; CA and AMS refer to the same thing.
 
-## Global Competitions and Extracurriculars
-The SABIS STEAM Competition is a large regional event featuring Robotics, 3D Printing, Drone Piloting, Electronics, and Electric Car design.
-SABIS STARS is a biennial global event with categories including Painting, Singing, Photography, Science Fair, Public Speaking, Debate, and Poetry Recital.
-The Global Sports Tournament (GST) is a biennial event featuring Football, Basketball, Swimming, and Track and Field.
-The Student Life Training Conference (SLTC) is a summer leadership summit for top-tier SLO members.
+## The Four Levels of SABIS Assessment
+- A CA, or Continuous Assessment, is a daily or weekly assessment of specific learning points, used for real-time monitoring. Its older name is AMS.
+- A Periodic is a weekly comprehensive test covering recent material.
+- A Prefinal is a practice examination taken before the final examinations.
+- A Final is an end-of-term comprehensive examination.
 
-## Student Life Organization Methodology
-The Student Life Organization (SLO) is the heart of the school and a defining feature of the SABIS Educational System.
-SLO departments include Academic, Discipline, Management, Sports, Wellness, Activities, Outreach, Lower School, and Social Responsibility.
-The Shadow Teaching Program lets students master subjects by teaching them to other students.
-The Prefect System is made up of student leaders who help run school operations.
+## The Student Life Organization in SABIS Schools
+The Student Life Organization, or SLO, is the heart of the school and a defining feature of the SABIS Educational System. It is a student-run organisation, made up of departments led by student prefects, that exists in every SABIS school. The departments at ISC-Sharjah specifically are listed in the ISC-Sharjah school facts. The SABIS Shadow Teaching Program lets students master subjects by teaching them to other students, and the SABIS Prefect System is made up of student leaders who help run school operations.
 
-## Discipline Code and Standards
-SABIS maintains a dress and grooming standard known as "The SABIS Look," applied with zero tolerance.
-For boys: clean-shaven with short classical haircuts (no fades or designs).
-For girls: hair tied back, with no makeup or nail polish, and only simple studs as jewelry.
-The official school uniform must be worn correctly at all times.
-Mobile phones and electronics are strictly prohibited on campus.
-Students must be in the playground before the first bell and National Anthem at around 7:55 AM.
-Late arrivals require a Late Slip from a Supervisor.
+## SABIS Competitions and Global Events
+- The SABIS STEAM Competition is a large regional event featuring Robotics, 3D Printing, Drone Piloting, Electronics and Electric Car design.
+- SABIS STARS is a biennial global event with categories including Painting, Singing, Photography, Science Fair, Public Speaking, Debate and Poetry Recital.
+- The SABIS Global Sports Tournament, or GST, is a biennial event featuring Football, Basketball, Swimming, and Track and Field.
+- The SABIS Student Life Training Conference, or SLTC, is a summer leadership summit for top-tier SLO members.
+- AI-SHA does not have the dates, venues or entry procedures for any SABIS competition. For those, contact the school office on +971 6 558 2211.
+
+## SABIS Dress and Conduct Standards
+SABIS maintains a dress and grooming standard known as "The SABIS Look", which is applied with zero tolerance. Boys are required to be clean-shaven with short classical haircuts, without fades or designs. Girls are required to tie their hair back and to wear no makeup or nail polish, with only simple studs as jewellery. The official school uniform must be worn correctly at all times, and mobile phones and electronic devices are prohibited on campus. Students must be in the playground before the first bell and the National Anthem, at around 7:55 AM, and a student arriving after that requires a Late Slip from a Supervisor. AI-SHA does not have the uniform price list, the uniform supplier, or the full written discipline policy; for those, contact the school office on +971 6 558 2211.

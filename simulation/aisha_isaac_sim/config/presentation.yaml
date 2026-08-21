@@ -1,0 +1,35 @@
+# Presentation controls and disclosure text. Route poses stay in demo_route.yaml.
+
+stage: scenes/administration.usd
+robot_asset: usd/aisha_loaded.usd
+payload_kg: 10.0
+offline_required: true
+prewarm_frames: 240
+geometry_status: plan_derived_route_scoped
+authoritative_plan_status: approved_page_2_reviewed
+
+controls:
+  "1": hero_orbit_atrium
+  "2": run_to_vice_principal
+  "3": sensor_role_view
+  "4": principal_door_clearance
+  "5": atrium_pivot_and_proxy_disclosure
+  "6": watchdog_protective_stop
+  "7": return_home
+  Space: pause_resume
+  R: reset
+  Esc: exit
+
+overlay:
+  fields: [speed_mps, payload_kg, battery_estimate_pct, operating_mode, stop_state]
+  forbidden_claims:
+    - safety validated
+    - ready for unsupervised school use
+
+disclosures:
+  - Castors use fixed low-friction sphere proxies in the deterministic baseline.
+  - The drive carrier is rigid in the baseline asset; contact-load claims require the articulated asset.
+  - Door widths and thresholds are presentation assumptions, not site measurements.
+  - Block A room topology and printed dimensions are derived from approved plan page 2; PDF trace offsets are not survey-grade geometry.
+  - Finishes and furniture are walkthrough-video appearance references, not measured dimensions.
+  - The LD19, RealSense D435 and BNO055 contracts come from AI-SHA-Production commit 8893535.

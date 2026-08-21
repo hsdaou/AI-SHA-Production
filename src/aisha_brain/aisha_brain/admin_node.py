@@ -184,6 +184,16 @@ class AdminNode(Node):
                 # (cudaMalloc OOM -> llama-server segfault -> "error processing
                 # your question"). Keep the two values equal.
                 context_window=ollama_num_ctx,
+                # temperature=0: this is a factual lookup assistant, not a
+                # writer.  llama_index's Ollama defaults to 0.75, which made the
+                # SAME question answer differently on consecutive runs — one run
+                # gave a clean "I am an administrative assistant. Please ask your
+                # teacher for academic help.", the next appended an explanation
+                # of photosynthesis to it.  Sampling was also the source of the
+                # padding around answers ("According to the information
+                # provided...").  Greedy decoding makes replies reproducible,
+                # which is what makes them testable.
+                temperature=0.0,
             )
             self._num_gpu_conversing = int(os.environ.get('OLLAMA_NUM_GPU', '999'))
             self._num_gpu_navigating = 0
@@ -267,6 +277,38 @@ class AdminNode(Node):
             self.llm = self._build_llm()
         self.get_logger().info(
             f'[gpu-mux] mode={mode} -> LLM num_gpu={self._current_num_gpu()}')
+        if mode == 'NAVIGATING':
+            # Switching num_gpu only affects the NEXT request.  The model
+            # loaded during CONVERSING stays resident in the Orin's SHARED
+            # memory until keep_alive expires (30m), so without this the
+            # arbiter would spawn yolov8 on top of a still-resident LLM and
+            # one of them would lose a cudaMalloc.  That is the exact
+            # collision the ADR 0001 mode contract exists to prevent, and
+            # num_gpu alone never actually prevented it.  Evict now, in a
+            # thread so the ROS executor is never blocked on HTTP.
+            threading.Thread(target=self._unload_llm, daemon=True).start()
+
+    def _unload_llm(self):
+        """Ask Ollama to evict the model immediately (keep_alive=0).
+
+        Frees the LLM's share of unified memory so the vision engine can
+        take the GPU.  Best-effort: a failure here is logged, not raised —
+        the node must keep serving even if the eviction call is refused.
+        """
+        import urllib.request
+        import urllib.error
+        url = self.get_parameter('ollama_url').get_parameter_value().string_value
+        model = self.get_parameter('llm_model').get_parameter_value().string_value
+        body = json.dumps({'model': model, 'keep_alive': 0}).encode()
+        req = urllib.request.Request(
+            f'{url}/api/generate', data=body,
+            headers={'Content-Type': 'application/json'})
+        try:
+            with urllib.request.urlopen(req, timeout=15):
+                pass
+            self.get_logger().info(f'[gpu-mux] evicted {model} from GPU memory')
+        except Exception as e:
+            self.get_logger().warning(f'[gpu-mux] LLM eviction failed: {e}')
 
     def handle_query(self, msg):
         """ROS2 subscription callback — returns immediately, work done in thread.

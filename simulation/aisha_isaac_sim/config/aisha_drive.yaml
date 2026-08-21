@@ -1,0 +1,418 @@
+# AI-SHA proof of concept - Rev D differential-drive baseline
+# Updated 2026-08-18 after the physical-architecture audit.
+#
+# Status language is deliberate:
+#   documented  = supported by a datasheet/drawing in the project or manufacturer manual
+#   supplier    = recorded supplier correspondence, but no matching drawing is in the package
+#   design      = chosen value that still needs an as-built measurement or test
+#   simulation  = a numerical model/tuning value, not a physical specification
+
+model:
+  revision: "D"
+  architecture: "differential_drive"
+  purpose: "controlled indoor administration proof of concept"
+  physical_build_released: false
+  reason_not_released: >
+    The V2.18 wheel drawing, as-delivered wheel dimensions, caster overall height,
+    Prestar underside/load path, narrowest door and protective-stop design remain
+    open hold points. The URDF is a coherent design baseline, not fabrication approval.
+
+robot:
+  convention: "+X forward, +Y left, +Z up"
+  mass_empty_design_kg: 59.25
+  payload_poc_limit_kg: 10.0
+  mass_loaded_design_kg: 69.25
+  payload_note: >
+    Ten kilograms is the PoC structural and operating limit. Motor torque alone
+    does not approve the former 30 kg payload claim. Corner-weigh the completed
+    robot and update the generator before sim-to-real work.
+
+geometry:
+  wheel_radius_nominal_m: 0.100             # supplier V2.18 value; drawing still required
+  wheel_track_design_m: 0.720               # conditional on doorway and wheel-clearance checks
+  wheel_tread_width_design_m: 0.048
+  caster_diameter_m: 0.130
+  caster_swivel_axis_x_m: [0.350, -0.350]
+  caster_swivel_axis_y_m: [0.255, -0.255]
+  caster_trail_allowance_m: 0.030
+  deck_size_m: [0.910, 0.610]
+  deck_top_z_m: 0.210
+  tray_x_range_m: [-0.455, 0.350]
+  tray_size_m: [0.805, 0.610, 0.003]
+  tray_surface_z_m: 0.530
+  mast_centre_x_m: 0.420
+  head_centre_xyz_m: [0.500, 0.000, 0.925]
+  head_diameter_m: 0.450
+  overall_width_design_m: 0.768              # 0.720 track + 0.048 tread
+  overall_length_design_m: 1.180             # rear deck -0.455 to head front +0.725
+  overall_height_design_m: 1.190             # crown LiDAR housing top
+
+navigation:
+  # Swept envelope includes the head overhang and outboard drive wheels.
+  raw_footprint_xy_m:
+    - [-0.455, -0.384]
+    - [0.725, -0.384]
+    - [0.725, 0.384]
+    - [-0.455, 0.384]
+  minimum_demo_door_clear_width_m: 0.920     # about 75 mm clearance per side
+  doorway_rule: >
+    Measure clear width at the narrowest point with the door hardware installed.
+    A nominal 900 mm leaf is not evidence of adequate clearance. If the route is
+    below 0.920 m, change the route or mechanically narrow the robot before release.
+  pivot_centre_x_m: 0.000                    # differential drive turns about the drive-axle midpoint
+  pivot_radius_front_m: 0.820                # hypot(0.725, 0.384), head-side corners
+  pivot_radius_rear_m: 0.595                 # hypot(0.455, 0.384), deck-side corners
+  pivot_clear_circle_diameter_m: 1.640
+  pivot_rule: >
+    Turn-in-place needs a 1.640 m clear circle against a 0.768 m transit width.
+    A doorway at the 0.920 m minimum cannot be pivoted in. Plan every rotation in
+    the hallway or atrium; traverse doorways on a straight approach with the robot
+    already aligned to the door axis. Allow 0.595 m behind the axle as well as
+    0.820 m ahead; do not pivot with the tail against a wall. This is a route-survey
+    constraint for humans - Nav2 derives the swept circle from the footprint itself.
+  initial_commissioning_speed_mps: 0.30
+  controlled_demo_speed_mps: 0.50
+  design_ceiling_after_safety_validation_mps: 0.80
+  acceleration_target_mps2: [0.25, 0.50]
+  reverse_policy: "disabled in occupied areas until rear/side protective coverage is validated"
+
+motor:
+  model: "ZLTECH ZLLG80ASM250-4096, single shaft, V2.18 tyre"
+  quantity: 2
+  rated_voltage_vdc: 24
+  rated_torque_nm: 6.0
+  peak_torque_nm: 18.0
+  peak_time_limit_s: 3.0                     # verify on exact ordered hardware/manual
+  urdf_effort_limit_nm: 6.0                  # continuous physics limit; peak is controller-timed
+  rated_wheel_speed_rad_s: 16.755            # 160 rpm
+  max_speed_from_rated_mps: 1.676
+  rated_phase_current_a_each: 6.0
+  peak_phase_current_a_each: 18.0
+  wheel_mass_kg_each: 3.75
+  axle_thread: "M16x1.5"
+  axle_nut_torque_status: "supplier confirmation required for V2.18 before assembly"
+  encoder_lines_per_rev: 4096
+  encoder_counts_per_rev_candidate: 16384
+  encoder_rule: >
+    Do not hard-code 16384 until one marked wheel revolution is compared with the
+    selected driver register. The motor drawing says 4096-wire; driver/API count
+    scaling may already include quadrature.
+  cable_length_m: 0.600
+  cable_tolerance_m: 0.050
+
+tyre:
+  variant: "V2.18"
+  source_status: "supplier values; matching V2.18 drawing absent from package"
+  outer_diameter_mm: [198, 202]
+  tread_width_mm: [47, 49]
+  shore_a: [65, 75]
+  non_marking_required: true
+  integrated_with_hub: true
+  effective_radius_rule: >
+    Start the simulation at 0.100 m, then replace it with the loaded rolling
+    radius/circumference measured on the finished robot. Do not use free radius
+    for final odometry.
+  package_reference_warning: >
+    renders/references/ZLLG80ASM250-4096-V2-single-shaft.pdf is explicitly a
+    V2.0 drawing (OD 206 mm, tread 48.8 mm). It must not release V2.18 brackets.
+
+driver:
+  model: "ZLAC8015D dual-channel"
+  exact_hardware_label_expected: "V4.2 - verify on received unit"
+  quantity: 1
+  input_voltage_vdc: [20, 48]
+  output_current_a: {typical: 15, maximum: 30}
+  current_scope: >
+    The manufacturer manual gives one driver-level 15 A typical / 30 A maximum
+    table and does not label it per-channel. Project supplier correspondence says
+    aggregate. Confirm the exact V4.2 unit and current-limit registers before load test.
+  suitability: >
+    One dual driver is provisionally suitable for two 6 A-rated motors, subject to
+    thermal/current logging. Simultaneous 18 A motor peaks are not an approved duty.
+  mount_location_design: "under deck near x=-0.120 m in a guarded service enclosure"
+  installation_requirements:
+    - "non-combustible mounting surface"
+    - "dust, splash and conductive-debris protection"
+    - "cooling path consistent with the exact driver manual"
+    - "strain relief and shield termination without extending encoder leads casually"
+  brake_resistor_status: >
+    CONFIRMED 2026-08-20. ZLAC8015D V4 Series Manual v1.03 section 3.6 states
+    "Recommended resistance parameter: 5 ohm 100W". The two purchased bleeder
+    resistors are the correct part. The manual advises a regen circuit when
+    exceeding 100 RPM OR when emergency/fast stop is required - the e-stop
+    requirement applies here, so the resistors are needed even though the
+    0.50 m/s demo speed is only 47.7 RPM. Terminal is port RES (manual 3.1.9).
+    Still verify regen behaviour with a full or BMS-disconnected pack.
+
+battery:
+  model: "Maxima SBM25.6LI50"
+  rated_voltage_v: 25.6
+  rated_capacity_ah: 50
+  rated_energy_wh: 1280
+  voltage_range_v: [18.4, 29.2]
+  max_discharge_current_a: 50
+  max_charge_current_a: 50
+  datasheet_mass_kg: 11.25
+  datasheet_mass_tolerance_kg: 0.10
+  dimensions_m: [0.331, 0.173, 0.220]
+  installation: >
+    Use a rigid, insulated cradle with fore/aft and lateral stops plus two
+    independent restraints. Cover terminals; install the correctly sized main
+    fuse close to the positive terminal, a service disconnect, contactor and
+    charging/drive interlock. Verify BMS regeneration behaviour.
+
+drive_contact:
+  physical_design: "guided compliant transverse drive carrier"
+  target_normal_load_kgf_each_loaded: [12, 13]
+  target_total_drive_load_fraction_loaded: [0.35, 0.38]
+  spring_rate_starting_range_n_per_mm_each_side: [20, 25]
+  loaded_static_compression_target_mm: [5, 6]
+  minimum_rebound_travel_mm: 3
+  minimum_bump_travel_mm: 4
+  requirements:
+    - "independent left/right vertical response or equivalent small beam roll"
+    - "positive fore/aft and yaw location; springs must not carry shear"
+    - "captured guides, rebound stops and bump stops"
+    - "accessible preload adjustment and witness marks"
+  measurement_method: >
+    Corner-weigh with two scales under both drive wheels and equal-thickness
+    dummy plates under all castors (or six matched scales). A single bathroom
+    scale under one wheel changes chassis height and is not an acceptable reading.
+  note: >
+    Battery placement helps the CG but does not determine drive-wheel load in a
+    six-contact chassis. Spring preload and geometry do.
+
+castors:
+  physical_quantity: 4
+  physical_type: "matched 360-degree swivel; no fixed-direction caster"
+  recommendation: "keep all four for the tall PoC, conditional on compliant drive mounting"
+  diameter_mm: 130
+  minimum_dynamic_rating_kg_each: 50
+  requirements:
+    - "manufacturer-stated non-marking tread"
+    - "same overall height, swivel offset/trail, wheel width and top-plate pattern"
+    - "sealed low-breakaway swivel bearing and speed rating at least 1 m/s"
+    - "no directional lock; any service brake must be interlocked or positively guarded"
+  order_rule: "replace all four as a matched set; do not mix original fixed and swivel units"
+  wheel_chocks_required_for_power-off_service: true
+  physical_risk: >
+    Castor reversal causes a real transient yaw/current spike. A sphere-proxy
+    simulation cannot prove pivot current, reversal behaviour or flutter.
+  simulation_model: "fixed_sphere_low_friction_proxy"
+  simulation_links: [castor_fl_link, castor_fr_link, castor_rl_link, castor_rr_link]
+  simulation_physics_material: "castor_low_friction"
+
+stability:
+  method: "URDF mass properties plus conservative 30 mm inward caster-trail allowance"
+  cg_empty_xyz_m: [0.0886, 0.0000, 0.3330]
+  cg_loaded_xyz_m: [0.0682, 0.0000, 0.3723]
+  loaded_support_margin_front_m: 0.252
+  loaded_support_margin_rear_m: 0.388
+  loaded_support_margin_lateral_m: 0.331
+  loaded_static_tip_angle_front_deg: 34.1
+  loaded_static_tip_angle_rear_deg: 46.2
+  loaded_static_tip_angle_lateral_deg: 41.7
+  warning: >
+    These are static geometric estimates from design masses, not a stability
+    certification. Repeat with measured corner weights and CG; test stops and
+    threshold crossings at the actual speed/payload.
+
+sensors:
+  crown_lidar_frame: lidar_link
+  crown_lidar_scan_z_m: 1.170
+  crown_lidar_housing_top_z_m: 1.190
+  crown_lidar_role: "localisation/mapping only"
+  front_lidar_frame: front_lidar_link
+  front_lidar_scan_z_m: 0.250
+  front_lidar_role: "low front perception and Nav2 obstacle layer"
+  camera_frame: front_camera_link
+  camera_optical_frame: front_camera_optical_frame
+  imu_frame: imu_link
+  payload_frame: cargo_payload_frame
+  safety_limit: >
+    No sensor model, field of view, diagnostic coverage or safety rating has been
+    supplied. These perception sensors are not credited as a protective safety
+    system. Front-only coverage does not protect reversing, side-swipe or pivot motion.
+
+physics_materials:
+  status: "simulation starting assumptions - calibrate on the real tile"
+  drive_wheel: {static_friction: 0.65, dynamic_friction: 0.55, restitution: 0.0}
+  castor_low_friction: {static_friction: 0.20, dynamic_friction: 0.15, restitution: 0.0}
+  polished_tile: {static_friction: 0.60, dynamic_friction: 0.50, restitution: 0.0}
+
+isaac_sim_import:
+  fix_base: false
+  merge_fixed_joints: true
+  import_inertia_tensor: true
+  collision_from_visuals: false
+  self_collision: false
+  replace_cylinders_with_capsules: false
+  joint_target_type: "velocity"
+  joint_drive_type: "force"
+  wheel_drive_stiffness: 0.0
+  initial_wheel_drive_damping: 120.0
+  limitations:
+    - "baseline URDF does not model the drive carrier's vertical/roll compliance"
+    - "castor spheres omit swivel trail, reversal torque and flutter"
+    - "rated 6 N.m effort is continuous; implement any 18 N.m peak with a timer/thermal model"
+
+structure:
+  base: "retained Prestar NF-301 deck; published trolley capacity is not dynamic-robot approval"
+  drive_beam_starting_section: "S355 RHS 60x40x3; fabricator/engineer verification required"
+  mast_spine: "fixed under-deck reinforcement to the mast backing node"
+  relationship: >
+    The mast spine is fixed to the deck reinforcement. The drive beam is a separate
+    guided compliant carrier; do not rigidly tie the moving beam to the mast spine.
+  tray: "805x610x3 mm aluminium sheet plus four posts; 5.0 kg design allowance"
+  head_overhang: "head front is x=+0.725 m and must be included in footprint/collision checks"
+
+safety:
+  operating_scope: "closed or access-controlled indoor test route with a trained spotter"
+  occupied_building_release: false
+  required_before_occupied_operation:
+    - "documented risk assessment and stopping-distance test at every permitted speed"
+    - "all-direction protective coverage or operating rules that prevent uncovered motion"
+    - "physical bumpers/contact edges around the base"
+    - "at least two reachable latching emergency-stop devices"
+    - "hardwired external stop circuit independent of ROS/Jetson/Pi software"
+    - "main fuse, contactor, service disconnect and charging interlock"
+    - "wheel guards, pinch-point guards and protected under-deck electronics"
+    - "watchdog, command timeout, speed limit and no-go zones"
+  note: >
+    The ZLAC8015D manual explicitly calls for an external emergency-stop circuit.
+    Removing drive power may still allow coasting, so stopping performance must be measured.
+
+fabrication_hold_points:
+  - "obtain the exact V2.18 single-shaft dimensioned drawing and exact driver V4.2 manual"
+  - "measure both received wheels: OD, loaded circumference, tread/body width and mounting-face stack"
+  - "measure caster mounting-face height, trail, plate pattern and actual swivel-axis coordinates"
+  - "inspect/photograph the NF-301 underside and have the dynamic load path/fasteners reviewed"
+  - "measure narrowest door clear width, threshold height, floor slope and cleaning-water exposure"
+  - "freeze the final sensor models/FOV and protective-stop architecture"
+  - "weigh every assembly and corner-weigh empty and 10 kg-loaded configurations"
+
+# ---------------------------------------------------------------------------
+# Supplier documentation received 2026-08-20 (WeTransfer + commercial invoice
+# ZLWM50935-01). Closes several long-standing hold points and opens new ones.
+# ---------------------------------------------------------------------------
+supplier_data_2026_08_20:
+  documents_received:
+    - "ZLLG80ASM250-4096 V2.18 dimensioned drawing (PDF/DWG/STEP), rev V1.00 dated 2024-11-16"
+    - "V2.18 dyno load-characteristic curves at 24 V, 36 V, 48 V"
+    - "ZLAC8015D V4 Series Manual v1.03 (2025-11-11) + RS485/CANopen guides + EDS"
+    - "Commercial invoice ZLWM50935-01: 2 motors, 2 drivers, 2 bleeder resistors, freight 140 USD, total 620 USD"
+
+  motor_confirmed_from_v218_drawing:      # status: CONFIRMED unless noted
+    rated_voltage_vdc: 24
+    rated_torque_nm: 6.0                  # matches prior assumption
+    peak_torque_nm: 18.0                  # matches prior assumption
+    rated_current_a: 6.0                  # matches prior assumption
+    peak_current_a: 18.0
+    rated_speed_rpm: 160                  # = 16.755 rad/s, matches rated_wheel_speed_rad_s
+    peak_speed_rpm: 205
+    pole_pairs: 15
+    encoder_lines: 4096                   # A/B only, NO index/Z channel
+    back_emf_constant_v_per_rpm: 0.133
+    phase_resistance_ohm: 0.64
+    phase_inductance_mh: 1.535
+    weight_kg: 3.75                       # +/-5%, confirms MASS_WHEEL
+    max_load_kg_per_2_sets: 150           # vs ~25 kg carried by the drive pair: 6x margin
+    protection_class: IP65
+    ambient_temperature_c: [-20, 40]
+    tyre_material: "rubber, 70 +/-5 Shore A"
+    shaft_thread: "M16x1.5"               # confirms axle_thread
+    shaft_across_flats_mm: 12             # tolerance 0 / -0.1
+    shaft_projection_mm: 43               # +/-0.5
+    overall_assembly_width_mm: 118.2      # +/-1
+    tread_width_mm: 48                    # +/-1.5  <-- WIDER than the +/-1 assumed in geometry
+    cable_length_mm: 600                  # +/-50, confirms cable_length_m exactly
+
+  derived_from_24v_dyno:
+    torque_constant_nm_per_a: 1.13
+    no_load_current_a: 0.73
+    current_at_worst_normal_case_a_each: 2.78    # at 2.41 N.m; supersedes the 2.41 A linear estimate
+    current_both_motors_a: 5.56                  # 37% of 15 A typical, 19% of 30 A max
+    peak_efficiency: "69.5% at 3.59 N.m / 179 rpm - the duty point sits near peak efficiency"
+    note: >
+      The earlier linear torque-to-current estimate omitted the 0.73 A no-load
+      current and under-read by about 15%. Use the dyno table, not a linear model.
+
+  driver_confirmed_from_v4_manual:
+    input_voltage_vdc: {min: 20, typical: 36, max: 48}
+    undervoltage_trip_vdc: 16
+    overvoltage_trip_vdc: 75
+    output_current_peak_a: {min: 0, typical: 15, max: 30}
+    current_scope_reading: >
+      The manual lists this under a table headed "Driver Parameter", alongside
+      input voltage and control-signal current, and never labels it per-channel.
+      This SUPPORTS the aggregate interpretation the project already adopted.
+      Not stated explicitly; keep the conservative aggregate assumption.
+    working_temperature_c: [0, 50]
+    mounting: "M3 screws; narrow-side mounting recommended for heat dissipation"
+    vibration_rating: "10-55 Hz / 0.15 mm"
+
+  NEW_OPEN_ITEMS:
+    - id: outer_diameter_conflict
+      severity: high
+      detail: >
+        The V2.18 drawing contradicts itself. The dimensioned view reads
+        "PHI 200 +/-2" but the Motor Parameters table in the same drawing reads
+        "Wheel Diameter (mm) 206" - the V2.0 value. 206 mm implies r=0.103 and a
+        3% odometry scale error, about 150 mm over 5 m against 76 mm of doorway
+        clearance per side. Resolve by measuring both delivered wheels and by
+        asking the supplier which value governs. Ride height is set empirically
+        so it is unaffected; the ODOMETRY RADIUS is what this threatens.
+    - id: non_marking_not_stated
+      severity: high
+      detail: >
+        The V2.18 drawing states only "rubber, 70 +/-5 Shore A". It does NOT say
+        non-marking anywhere. Non-marking was the entire reason V2.18 was chosen
+        over V2.0. The commercial invoice says "Rubber tires" only. Obtain a
+        written non-marking statement and sample-test on the actual tile before
+        driving in the administration block.
+    - id: driver_documentation_version_mismatch
+      severity: medium
+      detail: >
+        Commercial invoice states ZLAC8015D V4.2. All supplied documentation and
+        drawings are labelled V4.0, with a manual titled "V4 Series". No
+        V4.2-specific manual or drawing exists in the package. Verify the label on
+        the received units and request V4.2 errata if the hardware differs.
+    - id: battery_near_driver_minimum
+      severity: medium
+      detail: >
+        Driver minimum input is 20 VDC (typical 36 VDC, undervoltage trip 16 VDC).
+        The Maxima SBM25.6LI50 datasheet range in this file is 18.4-29.2 V, so the
+        pack's own lower limit sits 1.6 V BELOW the driver's minimum operating
+        voltage. Running the pack to its rated floor takes the driver out of spec
+        before the BMS ever protests. Set the usable cutoff at or above 21 V, treat
+        20 V as a hard floor, and log bus voltage under peak current where sag is
+        worst. The 25.6 V nominal pack also sits well under the 36 V typical, so
+        expect the driver to be operating at the low end of its design range.
+    - id: tread_tolerance_widened
+      severity: low
+      detail: >
+        Drawing gives tread 48 +/-1.5, not the +/-1 assumed. Worst case 49.5 mm
+        makes overall width 769.5 mm against the 768 mm design envelope, and
+        reduces deck-edge clearance from 31.0 to 30.25 mm. Neither is a problem
+        for the 920 mm doorway rule, but update the envelope figure.
+    - id: axle_nut_torque_still_unknown
+      severity: high
+      detail: >
+        The V2.18 drawing does NOT give an axle-nut tightening torque or locking
+        method for the M16x1.5 shaft. axle_nut_torque_status remains open. Do not
+        guess a value; request it before assembly.
+
+  connector_pinout_from_drawing:
+    power_3_pin: {1: "Yellow = U", 2: "Green = V", 3: "Blue = W"}
+    signal_12_pin:
+      1: "purple = Encoder A"
+      3: "white = Encoder B"
+      5: "brown = thermistor"
+      6: "grey = thermistor"
+      7: "green = HV"
+      8: "blue = HW"
+      9: "yellow = HU"
+      11: "red = +5V"
+      12: "black = GND"
+      other: "pins 2, 4, 10 = NC"
+    verify_rule: "Confirm against the physical connector before energising; do not trust a transcription."

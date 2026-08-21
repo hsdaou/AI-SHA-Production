@@ -1,0 +1,23 @@
+[Unit]
+Description=AI-SHA console (camera + ReSpeaker mic + LLM/RAG + web UI on :8088)
+After=network.target sound.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=hsdaou
+Group=hsdaou
+WorkingDirectory=/home/hsdaou
+Environment=HOME=/home/hsdaou
+ExecStart=/bin/bash /home/hsdaou/aisha_boot.sh
+Restart=on-failure
+RestartSec=25
+TimeoutStartSec=0
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=30
+StandardOutput=append:/tmp/aisha_boot.log
+StandardError=append:/tmp/aisha_boot.log
+
+[Install]
+WantedBy=multi-user.target

@@ -53,7 +53,7 @@ ros2 launch aisha_integration jetson_launch.py \
     enable_stt:=true audio_device:=ReSpeaker \
     whisper_model:=small whisper_device:=cpu \
     enable_vision:=false enable_gpu_arbiter:=false \
-    wake_word_enabled:=true wake_word_timeout:=6.0 llm_model:=aisha:1b >> "$LOG" 2>&1 &
+    wake_word_enabled:=true wake_word_timeout:=6.0 llm_model:=aisha:3b >> "$LOG" 2>&1 &
 STACK=$!
 
 say "waiting for camera frames..."

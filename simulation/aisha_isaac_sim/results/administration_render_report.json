@@ -1,0 +1,23 @@
+{
+  "duration_s": 10.0,
+  "encoded_duration_s": 10.0,
+  "encoded_fps": 24.0,
+  "encoded_frame_count": 240,
+  "fps": 24,
+  "frame_count": 240,
+  "frame_directory": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/route_frames",
+  "motion": "scripted plan-aligned presentation transform, not Nav2 or physical validation",
+  "resolution": [
+    1280,
+    720
+  ],
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+  "shots": [
+    "Block A - departing the central atrium",
+    "Stop 1 - Vice-Principal office (east cluster)",
+    "Plan-derived transfer to the angled Principal suite",
+    "Stop 2 - Principal office (south-east angled room)"
+  ],
+  "status": "route_video_encoded",
+  "video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/administration_route.mp4"
+}
