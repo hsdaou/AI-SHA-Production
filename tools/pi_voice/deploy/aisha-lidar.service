@@ -1,0 +1,20 @@
+[Unit]
+Description=AI-SHA LD06 LiDAR (ROS /scan + JSON feed for the console)
+After=network.target
+
+[Service]
+Type=simple
+User=pi5
+# The Pi power-cycles on its own often enough that this must come back unattended.
+ExecStart=/bin/bash -lc 'source /opt/ros/jazzy/setup.bash && exec python3 /home/pi5/lidar_node.py'
+Restart=always
+RestartSec=3
+# Domain 44, NOT the mesh's 42, on purpose. This node is Jazzy; putting a Jazzy
+# LaserScan on the domain the Jetson's Humble stack listens to makes Humble log
+# "sequence size exceeds remaining buffer" and take the console process down.
+# The console reads the LiDAR over HTTP, so it loses nothing by this isolation.
+Environment=ROS_DOMAIN_ID=44
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

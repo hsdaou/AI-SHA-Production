@@ -1,0 +1,26 @@
+# AI-SHA: static fallback link to the workstation over eth0.
+#
+# Overrides dhcp4 from 50-cloud-init.yaml -- netplan merges by filename order, so
+# a 99- file wins. Kept as a SEPARATE file so cloud-init can regenerate its own
+# 50-cloud-init.yaml without carrying this away with it.
+#
+# There is no DHCP server on this cable: it runs straight to the workstation's
+# eno1 (192.168.77.1). DHCP therefore retried for ever ("ip-config-unavailable")
+# and left eth0 with no IPv4 address at all, so there was no second way in when
+# wifi dropped -- which is exactly what happened on 2026-08-21.
+#
+# Deliberately NO gateway and NO nameservers: this link must never become the
+# default route, or the robot loses its internet path over wifi.
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    eth0:
+      match:
+        macaddress: "2c:cf:67:c6:d0:8e"
+      set-name: "eth0"
+      dhcp4: false
+      dhcp6: false
+      optional: true
+      addresses:
+        - "192.168.77.2/24"

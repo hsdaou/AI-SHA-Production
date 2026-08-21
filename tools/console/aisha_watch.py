@@ -9,10 +9,10 @@ on the machine with the browser, and NO new Python packages on the Jetson.
   Ask     : publishes your text on /speech/text  (same topic the mic would feed)
   Answer  : shows whatever the robot publishes on /robot_speech
 """
-import json, os, re, subprocess, threading, time
+import json, os, queue, re, subprocess, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 
 VOICE = os.environ.get("AISHA_VOICE") == "1"     # set by the voice-mode launcher
 
@@ -32,6 +32,19 @@ LIDAR_URL   = os.environ.get("AISHA_LIDAR_URL", "http://192.168.0.117:8090/scan.
 # slam_toolbox's occupancy map, bridged off the Pi the same way and for the same
 # reason. Base URL: /map.png is the picture, /map.json the metadata.
 MAP_URL     = os.environ.get("AISHA_MAP_URL", "http://192.168.0.117:8091")
+# Speaker volume also lives on the Pi, and for the same HTTP-not-ROS reason. The
+# control it drives is a softvol plugin, not a hardware mixer: the hifiberry-dac
+# driver the MAX98357A runs under exposes no hardware volume control at all.
+VOLUME_URL  = os.environ.get("AISHA_VOLUME_URL", "http://192.168.0.117:8092")
+# The robot's VOICE is on the Pi. Answers go there as an HTTP POST rather than on
+# a ROS topic for the usual reason: this board is Humble, the Pi is Jazzy, and
+# cross-distro DDS discovers endpoints but never delivers to a real subscription,
+# so a /tts_text publisher here would be silently ignored. speech_bridge.py on the
+# Pi receives the POST and republishes it on /tts_text locally.
+SPEECH_URL  = os.environ.get("AISHA_SPEECH_URL", "http://192.168.0.117:8093/say")
+# Same bridge, reporting whether the speaker is currently talking. Polled so the
+# mic can be held muted for exactly the length of an utterance.
+SPEAKING_URL = os.environ.get("AISHA_SPEAKING_URL", "http://192.168.0.117:8093/speaking")
 ANNOTATED   = "/detection/image_annotated"          # camera + detections
 RAW_COLOR   = "/camera/camera/color/image_raw"       # fallback if vision is off
 ASK_TOPIC   = "/speech/text"                          # question in
@@ -163,6 +176,7 @@ class Hub(Node):
         from std_msgs.msg import Bool
         self._Bool = Bool
         self.mic_muted = False
+        self._speaking = False        # held while the Pi's speaker is talking
         self.mic_pub = self.create_publisher(Bool, "/speaker/playing", 10)
         self.create_timer(20.0, self._reassert_mic)
 
@@ -178,8 +192,26 @@ class Hub(Node):
             self._push("AI-SHA", "Microphone muted — I am not listening."
                        if muted else "Microphone on — I am listening again.")
 
+    def speaker_gate(self, playing: bool):
+        """Mute stt_node for as long as the Pi's speaker is talking.
+
+        The Pi publishes /speaker/playing itself, but on Jazzy -- the Jetson's
+        Humble subscription never receives it, so the mute has to be asserted
+        here instead. Without this the robot hears its own answer and re-triggers.
+
+        Touches ONLY the topic, never mic_muted or the console's Mic button:
+        those belong to the operator. On release it republishes the operator's own
+        mute state rather than a flat False, so someone who muted by hand stays
+        muted once the robot stops talking.
+        """
+        self._speaking = bool(playing)
+        m = self._Bool()
+        m.data = self._speaking or self.mic_muted
+        self.mic_pub.publish(m)
+
     def _reassert_mic(self):
-        if self.mic_muted:                      # beat the 90 s stuck-mute watchdog
+        # Beat stt_node's 90 s stuck-mute watchdog, for a hand mute OR a long answer.
+        if self.mic_muted or self._speaking:
             m = self._Bool(); m.data = True
             self.mic_pub.publish(m)
 
@@ -456,7 +488,9 @@ class Hub(Node):
                 t = line.strip()
                 if re.search(r"^\[record\]\s+([321])\s*\.\.\.", t):
                     n = re.search(r"([321])", t).group(1)
-                    self._push("AI-SHA", f"{n}...")
+                    # Countdown ticks arrive ~1 s apart but each takes longer than
+                    # that to speak, so speaking them would run into the recording.
+                    self._push("AI-SHA", f"{n}...", speak=False)
                 elif "RECORDING" in t:
                     self._push("AI-SHA", f"● RECORDING NOW — speak your message "
                                          f"({VIDEO_SECS} seconds).")
@@ -503,10 +537,18 @@ class Hub(Node):
             with self.lock:
                 self._vm_busy = False
 
-    def _push(self, who, text):
+    def _push(self, who, text, speak=True):
         with self.lock:
             self.log.append({"t": time.strftime("%H:%M:%S"), "who": who, "text": text})
             self.log = self.log[-60:]
+        # Everything shown as AI-SHA's turn is also said out loud. The privacy
+        # filtering already happened upstream -- the HRMS skill emails its answer
+        # instead of returning one, and the timetable skill emails NAMED lists --
+        # so whatever reaches here was already cleared to appear on a screen in a
+        # public corridor, and speaking it exposes nothing more. speak=False is for
+        # UI echoes that are not the robot talking.
+        if speak and who == "AI-SHA":
+            SPEAKER.say(text)
 
     def jpeg(self):
         with self.lock:
@@ -652,7 +694,8 @@ class Hub(Node):
         if not pend:
             return
         kind, utt = pend
-        self._push("AI-SHA", f"Now answering: \"{utt}\"")
+        # A status echo of what is about to be answered, not speech.
+        self._push("AI-SHA", f"Now answering: \"{utt}\"", speak=False)
         if kind == "timetable":
             self._start_timetable_query(utt)
         elif kind == "hrms":
@@ -678,6 +721,10 @@ button{padding:11px 18px;border:0;border-radius:7px;background:#4136b8;color:#ff
 button:hover{background:#5346d8}
 .bar{display:flex;align-items:center;gap:10px;margin-top:8px}
 .mic{padding:9px 14px;border:0;border-radius:7px;font-size:14px;cursor:pointer;color:#fff}
+.vol{display:inline-flex;align-items:center;gap:7px;margin-left:10px;color:#cfe0d6;font-size:13px}
+.vol input{width:104px;accent-color:#2f6f4a;cursor:pointer;vertical-align:middle}
+.vol b{min-width:40px;display:inline-block;text-align:right}
+.vol.bad b{color:#e08a8a}
 .mic.on{background:#2f6f4a}.mic.off{background:#8a3030}
 .stat{font-size:12px;color:#9aa4b2}
 .stat b.ok{color:#57d98b}.stat b.bad{color:#e08a8a}
@@ -712,6 +759,12 @@ __VOICEBAR__
   <div class=cam><img id=cam src="/stream">
     <div class=bar>
       <button id=micbtn class="mic on" onclick="togglemic()">&#127908; Mic: ON</button>
+      <span class=vol title="Speaker volume on the Pi 5">
+        <span>&#128266;</span>
+        <input id=volslider type=range min=0 max=100 step=5 value=70
+               oninput="volPreview(this.value)" onchange="volSet(this.value)">
+        <b id=volval>&hellip;</b>
+      </span>
       <span class=stat id=src></span>
       <span class=stat>camera <b id=camstat class=ok>live</b></span>
     </div>
@@ -947,7 +1000,202 @@ async function pollMap(){
   }
 }
 setInterval(pollMap, 1500);
+
+// ── Speaker volume (lives on the Pi, proxied through /volume*) ──────────────
+var volBusy = false;
+var volTouched = 0;              // last time the user moved the slider themselves
+function volPreview(v){
+  volTouched = Date.now();
+  document.getElementById('volval').textContent = v + '%';
+}
+async function volSet(v){
+  if(volBusy) return;              // dragging fires change repeatedly; one write at a time
+  volBusy = true; volTouched = Date.now();
+  try{
+    volShow(await (await fetch('/volume/set?percent=' + encodeURIComponent(v),
+                               {cache:'no-store'})).json());
+  }catch(e){ volShow({ok:false}); }
+  finally{ volBusy = false; }
+}
+function volShow(d){
+  var box = document.querySelector('.vol'), val = document.getElementById('volval');
+  if(d && d.ok){
+    box.classList.remove('bad');
+    val.textContent = d.percent + '%';
+    document.getElementById('volslider').value = d.percent;
+  }else{
+    // Pi unreachable or aisha-volume down. Say so rather than leaving the slider
+    // sitting at a number that is not what the speaker is actually set to.
+    box.classList.add('bad');
+    val.textContent = 'n/a';
+  }
+}
+async function volLoad(){
+  // Skip while the user is working the slider, so a poll cannot yank it out from
+  // under their finger and fight them mid-drag.
+  if(volBusy || Date.now() - volTouched < 3000) return;
+  try{ volShow(await (await fetch('/volume.json', {cache:'no-store'})).json()); }
+  catch(e){ volShow({ok:false}); }
+}
+// Re-sync from the Pi, which is the source of truth. Without this the slider was
+// fetched ONCE at page load and then silently lied: a failed write (Pi briefly
+// unreachable) or a volume_service restart restoring a different level left the
+// console showing 100% while the speaker sat at 53% -- i.e. -23.8 dB down.
+setInterval(volLoad, 5000); volLoad();
 </script></body></html>"""
+
+
+class Speaker:
+    """Sends AI-SHA's spoken turns to the Pi so they come out of the speaker.
+
+    Owns a thread and a queue because _push() runs inside ROS callbacks: a
+    blocking HTTP POST there would stall the answer pipeline behind the network.
+    The queue also keeps utterances in order, and being bounded means a Pi that
+    has gone away cannot grow an unbounded backlog here.
+    """
+    MAXQ = 8
+    # brain_node streams an answer a LINE at a time, so a single reply arrives as
+    # several _push calls. Speaking each one separately sounded chopped up -- every
+    # fragment paid piper's synthesis time and the node's 1 s pre-roll. Gather lines
+    # that arrive close together and speak them as one utterance instead.
+    DEBOUNCE   = 0.6      # quiet gap that ends an answer. Every 0.1 s here is 0.1 s
+                          # of silence the visitor sits through, so it is kept just
+                          # long enough to catch the next streamed line of one answer.
+    MAX_BUFFER = 600      # ...but never hold a long answer back waiting for more
+
+    def __init__(self):
+        self.q = queue.Queue(maxsize=self.MAXQ)
+        self.error = None
+        self.sent = 0
+        self._pending = []
+        self._pending_at = 0.0
+        self._plock = threading.Lock()
+        threading.Thread(target=self._worker, daemon=True).start()
+        threading.Thread(target=self._flusher, daemon=True).start()
+
+    @staticmethod
+    def clean(text):
+        """Strip decoration that belongs to the transcript, not to speech."""
+        t = (text or "").strip()
+        # Markdown the LLM emits: a leading bullet, and ** emphasis **. Left in,
+        # piper reads "star" out loud.
+        t = re.sub(r"^\s*(?:[\*\-\u2022\u25cf]|\d+[.)])\s+", "", t)
+        t = t.replace("**", "").replace("__", "")
+        t = re.sub(r"[\u25cf\u2022\u2192\u2026]+", " ", t)   # bullets/arrows/ellipsis
+        t = re.sub(r"\s*[\u2014\u2013]\s*", ", ", t)          # em/en dash -> a pause.
+                                                              # ASCII "-" is left alone
+                                                              # so "AI-SHA" survives.
+        return re.sub(r"\s+", " ", t).strip()
+
+    def say(self, text):
+        text = self.clean(text)
+        if not text:
+            return
+        with self._plock:
+            self._pending.append(text)
+            self._pending_at = time.time()
+            total = sum(len(x) + 2 for x in self._pending)
+        if total >= self.MAX_BUFFER:
+            self._flush()
+
+    def _flush(self):
+        with self._plock:
+            if not self._pending:
+                return
+            parts, self._pending = self._pending, []
+        # Give every fragment terminal punctuation so piper puts a pause between
+        # what were separate lines instead of running them into one breath.
+        self._enqueue(" ".join(p if p[-1] in ".!?:;," else p + "." for p in parts))
+
+    def _flusher(self):
+        while True:
+            time.sleep(0.3)
+            with self._plock:
+                due = bool(self._pending) and (time.time() - self._pending_at) >= self.DEBOUNCE
+            if due:
+                self._flush()
+
+    def _enqueue(self, text):
+        try:
+            self.q.put_nowait(text)
+        except queue.Full:
+            # Speech is far slower than text. If we are behind, drop the OLDEST
+            # line: a robot that is current is better than one reciting history.
+            try:
+                self.q.get_nowait()
+                self.q.put_nowait(text)
+            except (queue.Empty, queue.Full):
+                pass
+
+    START_WAIT = 25.0     # give piper time to synthesise before deciding it never spoke
+    MAX_HOLD   = 150.0    # hard cap: never leave the microphone muted for ever
+
+    def _worker(self):
+        while True:
+            text = self.q.get()
+            hub = globals().get("HUB")
+            try:
+                if hub:
+                    hub.speaker_gate(True)
+                req = Request(SPEECH_URL,
+                              data=json.dumps({"text": text}).encode(),
+                              headers={"Content-Type": "application/json"})
+                with urlopen(req, timeout=5.0) as r:
+                    r.read()
+                self.error = None
+                self.sent += 1
+                self._wait_until_quiet()
+            except Exception as e:
+                # Never raise: the console must keep working with the Pi down.
+                self.error = f"{type(e).__name__}: {e}"
+            finally:
+                # Always release, including on error -- a failed POST must not
+                # leave the microphone muted.
+                if hub:
+                    hub.speaker_gate(False)
+
+    def _wait_until_quiet(self):
+        """Block until the Pi reports the speaker has finished.
+
+        Doing this in the worker also serialises the queue: one utterance is
+        fully spoken before the next is sent, so answers do not overlap. Every
+        exit path is bounded, because the cost of getting this wrong is a
+        microphone that stays muted.
+        """
+        deadline = time.time() + self.MAX_HOLD
+        start_by = time.time() + self.START_WAIT
+        started = False
+        while time.time() < deadline:
+            try:
+                with urlopen(SPEAKING_URL, timeout=3.0) as r:
+                    speaking = bool(json.loads(r.read().decode()).get("speaking"))
+            except Exception:
+                return                    # cannot tell; do not hold the mute blind
+            if speaking:
+                started = True
+            elif started:
+                return                    # spoke, and has now finished
+            elif time.time() > start_by:
+                return                    # never started; release rather than hang
+            time.sleep(0.4)
+
+    def status(self):
+        return {"ok": self.error is None, "sent": self.sent, "error": self.error}
+
+
+def volume_call(path):
+    """Proxy one call through to the Pi's volume service.
+
+    Deliberately NOT a background poller like Lidar: volume is read once when a
+    page loads and written only when someone moves the slider, so there is no
+    steady stream of polls to shield the console from. The short timeout is what
+    keeps an unreachable Pi from tying up a request thread.
+    """
+    try:
+        with urlopen(VOLUME_URL + path, timeout=2.0) as r:
+            return json.loads(r.read().decode())
+    except Exception as e:
+        return {"ok": False, "error": f"{type(e).__name__}: {e}"}
 
 
 class Lidar:
@@ -1059,6 +1307,7 @@ class MapView:
             return out
 
 
+SPEAKER = Speaker()
 LIDAR = Lidar()
 MAPVIEW = MapView()
 
@@ -1119,6 +1368,22 @@ class Handler(BaseHTTPRequestHandler):
                        json.dumps({"muted": HUB.mic_muted}).encode())
         elif p.path == "/lidar.json":
             self._send(200, "application/json", json.dumps(LIDAR.snapshot()).encode())
+        elif p.path == "/speech.json":
+            self._send(200, "application/json", json.dumps(SPEAKER.status()).encode())
+        elif p.path == "/volume.json":
+            self._send(200, "application/json",
+                       json.dumps(volume_call("/volume.json")).encode())
+        elif p.path == "/volume/set":
+            # Clamp here rather than trusting the query string: the value is
+            # interpolated into the URL sent on to the Pi.
+            try:
+                want = max(0, min(100, int(float(parse_qs(p.query).get("percent", [""])[0]))))
+            except ValueError:
+                self._send(400, "application/json",
+                           b'{"ok": false, "error": "percent must be a number"}')
+                return
+            self._send(200, "application/json",
+                       json.dumps(volume_call(f"/set?percent={want}")).encode())
         elif p.path == "/map.json":
             self._send(200, "application/json", json.dumps(MAPVIEW.info()).encode())
         elif p.path == "/map.png":
