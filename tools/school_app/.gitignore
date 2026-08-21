@@ -1,0 +1,7 @@
+# Personal data — NEVER commit. Student_Database_1.xlsx covers minors.
+data/*.xlsx
+data/*.db
+# Real secrets. Only the .example belongs in git.
+school_app.env
+.env
+__pycache__/
