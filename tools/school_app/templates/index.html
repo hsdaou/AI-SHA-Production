@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISC Sharjah - Timetable Search</title>
+    <style>
+        :root {
+            --green: #1a6b3c;
+            --green-light: #2a8f54;
+            --green-bg: #f0f8f3;
+            --red: #c0392b;
+            --red-bg: #fdf0ef;
+            --orange: #e67e22;
+            --orange-bg: #fef5ec;
+            --blue: #2980b9;
+            --gray: #7f8c8d;
+            --bg: #f5f7fa;
+            --card: #ffffff;
+            --border: #e0e4e8;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        /* -- Header -- */
+        .header {
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .header h1 { font-size: 1.4rem; font-weight: 600; }
+        .header .subtitle { font-size: 0.85rem; opacity: 0.85; }
+        .header .logo {
+            width: 45px; height: 45px;
+            background: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; font-weight: 700; color: var(--green);
+        }
+
+        /* -- Layout -- */
+        .container { max-width: 1400px; margin: 0 auto; padding: 1.5rem; }
+
+        /* -- Controls Panel -- */
+        .controls {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+        .controls h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--green);
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.3rem;
+        }
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: white;
+            color: var(--text);
+            transition: border-color 0.2s;
+        }
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: var(--green);
+        }
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: var(--green);
+            color: white;
+        }
+        .btn-primary:hover { background: var(--green-light); transform: translateY(-1px); }
+        .btn-secondary {
+            background: var(--blue);
+            color: white;
+        }
+        .btn-secondary:hover { opacity: 0.9; }
+        .btn-orange {
+            background: var(--orange);
+            color: white;
+        }
+        .btn-orange:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* -- Stats Cards -- */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        .stat-card .label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-card.green .number { color: var(--green); }
+        .stat-card.red .number { color: var(--red); }
+        .stat-card.orange .number { color: var(--orange); }
+        .stat-card.blue .number { color: var(--blue); }
+
+        /* -- Section Overview Grid -- */
+        .section-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
+        }
+        .section-card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--border);
+            transition: transform 0.15s;
+        }
+        .section-card:hover { transform: translateY(-2px); }
+        .section-card.free {
+            border-left-color: var(--green);
+            background: var(--green-bg);
+        }
+        .section-card.busy {
+            border-left-color: var(--red);
+            background: var(--red-bg);
+        }
+        .section-card .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+        .section-card .section-status {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .section-card .section-status.free { color: var(--green); }
+        .section-card .section-status.busy { color: var(--red); }
+        .section-card .section-count {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0.3rem 0;
+        }
+        .section-card .section-detail {
+            font-size: 0.78rem;
+            color: var(--text-light);
+        }
+
+        /* -- Results Table -- */
+        .results-panel {
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .results-header {
+            padding: 1rem 1.5rem;
+            background: var(--green-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .results-header h3 {
+            font-size: 1rem;
+            color: var(--green);
+        }
+        .results-header .badge {
+            padding: 0.25rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .badge-green { background: var(--green); color: white; }
+        .badge-red { background: var(--red); color: white; }
+        .badge-orange { background: var(--orange); color: white; }
+
+        .search-box {
+            padding: 0.8rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .search-box input {
+            width: 100%;
+            padding: 0.5rem 0.8rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .search-box input:focus { outline: none; border-color: var(--green); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            padding: 0.7rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            background: #fafbfc;
+            border-bottom: 2px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+        th:hover { color: var(--green); }
+        td {
+            padding: 0.6rem 1rem;
+            font-size: 0.88rem;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:hover td { background: #f8f9fa; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-badge.free { background: #d5f5e3; color: #1a6b3c; }
+        .status-badge.busy { background: #fadbd8; color: #c0392b; }
+        .status-badge.not-enrolled { background: #fdebd0; color: #e67e22; }
+
+        .period-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin: 0.1rem;
+            background: #d5f5e3;
+            color: #1a6b3c;
+        }
+
+        /* -- Tabs -- */
+        .tabs {
+            display: flex;
+            gap: 0.3rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .tab:hover { border-color: var(--green); }
+        .tab.active {
+            background: var(--green);
+            color: white;
+            border-color: var(--green);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* -- Loading -- */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+        .spinner {
+            display: inline-block;
+            width: 30px; height: 30px;
+            border: 3px solid var(--border);
+            border-top-color: var(--green);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+        .empty-state .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+
+        /* -- Legend -- */
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            padding: 0.8rem 1.2rem;
+            background: #fffbf0;
+            border: 1px solid #f0e0c0;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .legend-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+        .legend-dot.green { background: var(--green); }
+        .legend-dot.orange { background: var(--orange); }
+        .legend-dot.red { background: var(--red); }
+
+        /* -- Responsive -- */
+        @media (max-width: 768px) {
+            .controls-grid { grid-template-columns: 1fr 1fr; }
+            .section-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .tabs { gap: 0.2rem; }
+            .tab { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">ISC</div>
+    <div>
+        <h1>Timetable Search Interface</h1>
+        <div class="subtitle">The International School of Choueifat, Sharjah</div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Tabs -->
+    <div class="tabs" style="margin-top: 1.5rem;">
+        <div class="tab active" onclick="switchTab('students')">Free Students Search</div>
+        <div class="tab" onclick="switchTab('dayfree')">Available Students (Full Day)</div>
+        <div class="tab" onclick="switchTab('teachers')">Free Teachers Search</div>
+        <div class="tab" onclick="switchTab('timetable')">Class Timetable View</div>
+    </div>
+
+    <!-- TAB 1: FREE STUDENTS (single period) -->
+    <div id="tab-students" class="tab-content active">
+        <div class="controls">
+            <h2>Find Free Students</h2>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-dot green"></div> Free period</div>
+                <div class="legend-item"><div class="legend-dot" style="background:var(--orange);"></div> Not enrolled in subject</div>
+                <div class="legend-item"><div class="legend-dot red"></div> Busy (in class)</div>
+            </div>
+            <div class="controls-grid">
+                <div class="form-group">
+                    <label>Grade</label>
+                    <select id="grade" onchange="onGradeChange()">
+                        <option value="">Select grade...</option>
+                        {% for g in grades %}
+                        <option value="{{ g }}">Grade {{ g }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Day</label>
+                    <select id="day">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Period</label>
+                    <select id="period">
+                        <option value="">Select grade first...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary" onclick="searchFreeStudents()">Search</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="student-results">
+            <div class="empty-state">
+                <div class="icon">&#128269;</div>
+                <p>Select a grade, day, and period, then click <strong>Search</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: AVAILABLE STUDENTS (full day) -->
+    <div id="tab-dayfree" class="tab-content">
+        <div class="controls">
+            <h2>Available Students (Full Day)</h2>
+            <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:1rem;">
+                Find all students who have at least one free period on a given day.
+                Shows which periods each student is available.
+            </p>
+            <div class="controls-grid">
+                <div class="form-group">
+                    <label>Grade</label>
+                    <select id="day-grade" onchange="onDayGradeChange()">
+                        <option value="">Select grade...</option>
+                        {% for g in grades %}
+                        <option value="{{ g }}">Grade {{ g }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Day</label>
+                    <select id="day-day">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-orange" onclick="searchDayFree()">Search</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="dayfree-results">
+            <div class="empty-state">
+                <div class="icon">&#128197;</div>
+                <p>Select a grade and day, then click <strong>Search</strong> to find all students with free periods</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: FREE TEACHERS -->
+    <div id="tab-teachers" class="tab-content">
+        <div class="controls">
+            <h2>Find Free Teachers</h2>
+            <div class="controls-grid">
+                <div class="form-group">
+                    <label>Day</label>
+                    <select id="teacher-day">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Period Number</label>
+                    <select id="teacher-period">
+                        <option value="1">Period 1</option>
+                        <option value="2">Period 2</option>
+                        <option value="3">Period 3</option>
+                        <option value="4">Period 4</option>
+                        <option value="5">Period 5</option>
+                        <option value="6">Period 6 / SLO</option>
+                        <option value="7">Period 7</option>
+                        <option value="8">Period 8</option>
+                        <option value="9">Period 9</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-secondary" onclick="searchFreeTeachers()">Search</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="teacher-results">
+            <div class="empty-state">
+                <div class="icon">&#128100;</div>
+                <p>Select a day and period, then click <strong>Search</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: CLASS TIMETABLE -->
+    <div id="tab-timetable" class="tab-content">
+        <div class="controls">
+            <h2>View Class Timetable</h2>
+            <div class="controls-grid">
+                <div class="form-group">
+                    <label>Grade</label>
+                    <select id="tt-grade" onchange="onTTGradeChange()">
+                        <option value="">Select grade...</option>
+                        {% for g in grades %}
+                        <option value="{{ g }}">Grade {{ g }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Section</label>
+                    <select id="tt-section">
+                        <option value="">Select grade first...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Day</label>
+                    <select id="tt-day">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary" onclick="viewTimetable()">View</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="timetable-results">
+            <div class="empty-state">
+                <div class="icon">&#128197;</div>
+                <p>Select a class and day to view the timetable</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // -- Tab switching --
+    function switchTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // -- Grade change: load periods/sections --
+    async function onGradeChange() {
+        const grade = document.getElementById('grade').value;
+        if (!grade) return;
+
+        const periodSel = document.getElementById('period');
+        periodSel.innerHTML = '<option value="">Loading...</option>';
+
+        const res = await fetch('/api/periods/' + grade);
+        const periods = await res.json();
+
+        periodSel.innerHTML = '';
+        periods.forEach(p => {
+            periodSel.innerHTML += `<option value="${p}">${p}</option>`;
+        });
+    }
+
+    async function onTTGradeChange() {
+        const grade = document.getElementById('tt-grade').value;
+        if (!grade) return;
+
+        const secSel = document.getElementById('tt-section');
+        secSel.innerHTML = '<option value="">Loading...</option>';
+
+        const res = await fetch('/api/sections/' + grade);
+        const sections = await res.json();
+
+        secSel.innerHTML = '';
+        sections.forEach(s => {
+            secSel.innerHTML += `<option value="${s}">${s}</option>`;
+        });
+    }
+
+    // Placeholder for day-grade change (no dependent selects needed)
+    function onDayGradeChange() {}
+
+    // -- Search Free Students (single period) --
+    async function searchFreeStudents() {
+        const grade = document.getElementById('grade').value;
+        const day = document.getElementById('day').value;
+        const period = document.getElementById('period').value;
+
+        if (!grade || !period) {
+            alert('Please select grade and period');
+            return;
+        }
+
+        const container = document.getElementById('student-results');
+        container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching...</p></div>';
+
+        const [statusRes, studentsRes] = await Promise.all([
+            fetch(`/api/section-status?grade=${grade}&day=${day}&period=${encodeURIComponent(period)}`),
+            fetch(`/api/free-students?grade=${grade}&day=${day}&period=${encodeURIComponent(period)}`)
+        ]);
+
+        const statusData = await statusRes.json();
+        const studentsData = await studentsRes.json();
+
+        let html = '';
+
+        // Stats cards
+        html += '<div class="stats-row">';
+        html += `<div class="stat-card green"><div class="number">${studentsData.free_count}</div><div class="label">Free Students</div></div>`;
+        html += `<div class="stat-card red"><div class="number">${studentsData.busy_count}</div><div class="label">Busy Students</div></div>`;
+        html += `<div class="stat-card blue"><div class="number">${studentsData.total_count}</div><div class="label">Total Students</div></div>`;
+
+        const freeSections = statusData.sections.filter(s => s.status === 'free' && !s.is_level_section).length;
+        html += `<div class="stat-card orange"><div class="number">${freeSections}</div><div class="label">Free Sections</div></div>`;
+        html += '</div>';
+
+        // Section overview grid
+        html += '<div class="section-grid">';
+        statusData.sections.forEach(s => {
+            const isLevel = s.is_level_section;
+            const cardClass = s.status === 'free' ? 'free' : 'busy';
+            const statusText = s.status === 'free' ? 'FREE' : 'IN CLASS';
+            const levelBadge = isLevel ? ' <span style="font-size:0.65rem;background:#6c5ce7;color:white;padding:0.1rem 0.4rem;border-radius:4px;vertical-align:middle;">LEVEL</span>' : '';
+            const countLabel = isLevel ? 'Level section' : `${s.student_count} students`;
+            const teacherInfo = s.teacher ? `<br><span style="font-size:0.72rem;color:var(--text-light);">${s.teacher}</span>` : '';
+
+            html += `<div class="section-card ${cardClass}" style="${isLevel ? 'border-style:dashed;opacity:0.75;' : ''}">`;
+            html += `<div class="section-title">Grade ${grade}-${s.section}${levelBadge}</div>`;
+            html += `<div class="section-status ${cardClass}">${statusText}</div>`;
+            html += `<div class="section-count">${countLabel}</div>`;
+            html += `<div class="section-detail">${s.subject || s.reason || '\u2014'}${teacherInfo}</div>`;
+            html += `</div>`;
+        });
+        html += '</div>';
+
+        // Free students table
+        if (studentsData.free_students.length > 0) {
+            html += '<div class="results-panel">';
+            html += '<div class="results-header">';
+            html += `<h3>Free Students \u2014 Grade ${grade}, ${day}, ${period}</h3>`;
+            html += `<span class="badge badge-green">${studentsData.free_count} students</span>`;
+            html += '</div>';
+            html += '<div class="search-box"><input type="text" placeholder="Filter students by name or section..." onkeyup="filterTable(this, \'free-table\')"></div>';
+            html += '<table id="free-table">';
+            html += '<thead><tr><th onclick="sortTable(\'free-table\',0)">#</th><th onclick="sortTable(\'free-table\',1)">Computer #</th><th onclick="sortTable(\'free-table\',2)">Name</th><th onclick="sortTable(\'free-table\',3)">Section</th><th onclick="sortTable(\'free-table\',4)">Status</th><th onclick="sortTable(\'free-table\',5)">Reason</th></tr></thead>';
+            html += '<tbody>';
+            studentsData.free_students.forEach((s, i) => {
+                const isNotEnrolled = s.reason && s.reason.startsWith('Not enrolled');
+                const badgeClass = isNotEnrolled ? 'not-enrolled' : 'free';
+                const badgeText = isNotEnrolled ? 'NOT ENROLLED' : 'FREE';
+                html += `<tr>`;
+                html += `<td>${i+1}</td>`;
+                html += `<td>${s.computer_number}</td>`;
+                html += `<td>${s.first_name} ${s.last_name}</td>`;
+                html += `<td>${grade}-${s.section}</td>`;
+                html += `<td><span class="status-badge ${badgeClass}">${badgeText}</span></td>`;
+                html += `<td>${s.reason}</td>`;
+                html += `</tr>`;
+            });
+            html += '</tbody></table></div>';
+        }
+
+        container.innerHTML = html;
+    }
+
+    // -- Search Available Students (full day) --
+    async function searchDayFree() {
+        const grade = document.getElementById('day-grade').value;
+        const day = document.getElementById('day-day').value;
+
+        if (!grade) {
+            alert('Please select a grade');
+            return;
+        }
+
+        const container = document.getElementById('dayfree-results');
+        container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Scanning all periods...</p></div>';
+
+        const res = await fetch(`/api/free-students-day?grade=${grade}&day=${day}`);
+        const data = await res.json();
+
+        let html = '';
+
+        // Stats
+        html += '<div class="stats-row">';
+        html += `<div class="stat-card green"><div class="number">${data.students_with_free}</div><div class="label">Students with Free Periods</div></div>`;
+        html += `<div class="stat-card blue"><div class="number">${data.total_students}</div><div class="label">Total Students</div></div>`;
+        html += `<div class="stat-card orange"><div class="number">${data.periods.length}</div><div class="label">Total Periods</div></div>`;
+        html += '</div>';
+
+        if (data.students.length > 0) {
+            html += '<div class="results-panel">';
+            html += '<div class="results-header">';
+            html += `<h3>Available Students \u2014 Grade ${grade}, ${day}</h3>`;
+            html += `<span class="badge badge-orange">${data.students_with_free} students</span>`;
+            html += '</div>';
+            html += '<div class="search-box"><input type="text" placeholder="Filter by name, section, or period..." onkeyup="filterTable(this, \'dayfree-table\')"></div>';
+            html += '<table id="dayfree-table">';
+            html += '<thead><tr>';
+            html += '<th onclick="sortTable(\'dayfree-table\',0)">#</th>';
+            html += '<th onclick="sortTable(\'dayfree-table\',1)">Computer #</th>';
+            html += '<th onclick="sortTable(\'dayfree-table\',2)">Name</th>';
+            html += '<th onclick="sortTable(\'dayfree-table\',3)">Section</th>';
+            html += '<th onclick="sortTable(\'dayfree-table\',4)">Free Periods</th>';
+            html += '<th onclick="sortTable(\'dayfree-table\',5)">Count</th>';
+            html += '</tr></thead>';
+            html += '<tbody>';
+            data.students.forEach((s, i) => {
+                const badges = s.free_periods.map(p => `<span class="period-badge">${p}</span>`).join(' ');
+                html += `<tr>`;
+                html += `<td>${i+1}</td>`;
+                html += `<td>${s.computer_number}</td>`;
+                html += `<td>${s.first_name} ${s.last_name}</td>`;
+                html += `<td>${grade}-${s.section}</td>`;
+                html += `<td>${badges}</td>`;
+                html += `<td><strong>${s.free_count}</strong> / ${s.total_periods}</td>`;
+                html += `</tr>`;
+            });
+            html += '</tbody></table></div>';
+        } else {
+            html += '<div class="empty-state"><div class="icon">&#128566;</div><p>No students have free periods on this day.</p></div>';
+        }
+
+        container.innerHTML = html;
+    }
+
+    // -- Search Free Teachers --
+    async function searchFreeTeachers() {
+        const day = document.getElementById('teacher-day').value;
+        const period = document.getElementById('teacher-period').value;
+
+        const container = document.getElementById('teacher-results');
+        container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Searching...</p></div>';
+
+        const res = await fetch(`/api/free-teachers?day=${day}&period=${period}`);
+        const data = await res.json();
+
+        let html = '';
+
+        html += '<div class="stats-row">';
+        html += `<div class="stat-card green"><div class="number">${data.free_count}</div><div class="label">Free Teachers</div></div>`;
+        html += `<div class="stat-card red"><div class="number">${data.busy_count}</div><div class="label">Busy Teachers</div></div>`;
+        html += '</div>';
+
+        // Free teachers
+        if (data.free_teachers.length > 0) {
+            html += '<div class="results-panel">';
+            html += `<div class="results-header"><h3>Free Teachers \u2014 ${day}, Period ${period}</h3><span class="badge badge-green">${data.free_count}</span></div>`;
+            html += '<div class="search-box"><input type="text" placeholder="Filter by name..." onkeyup="filterTable(this, \'free-teachers-table\')"></div>';
+            html += '<table id="free-teachers-table"><thead><tr><th>#</th><th>Name</th><th>Subjects Taught</th><th>Total Periods/Week</th></tr></thead><tbody>';
+            data.free_teachers.forEach((t, i) => {
+                html += `<tr><td>${i+1}</td><td>${t.title} ${t.name}</td><td>${(t.subjects || '').substring(0, 100)}</td><td>${t.total_periods || ''}</td></tr>`;
+            });
+            html += '</tbody></table></div>';
+        }
+
+        // Busy teachers
+        if (data.busy_teachers.length > 0) {
+            html += '<div class="results-panel" style="margin-top:1rem;">';
+            html += `<div class="results-header" style="background:var(--red-bg);"><h3 style="color:var(--red);">Busy Teachers</h3><span class="badge badge-red">${data.busy_count}</span></div>`;
+            html += '<div class="search-box"><input type="text" placeholder="Filter..." onkeyup="filterTable(this, \'busy-teachers-table\')"></div>';
+            html += '<table id="busy-teachers-table"><thead><tr><th>#</th><th>Name</th><th>Teaching</th><th>Room</th></tr></thead><tbody>';
+            data.busy_teachers.forEach((t, i) => {
+                html += `<tr><td>${i+1}</td><td>${t.title} ${t.name}</td><td>${t.current_subject || ''}</td><td>${t.current_room || ''}</td></tr>`;
+            });
+            html += '</tbody></table></div>';
+        }
+
+        container.innerHTML = html;
+    }
+
+    // -- View Timetable --
+    async function viewTimetable() {
+        const grade = document.getElementById('tt-grade').value;
+        const section = document.getElementById('tt-section').value;
+        const day = document.getElementById('tt-day').value;
+
+        if (!grade || !section) {
+            alert('Please select grade and section');
+            return;
+        }
+
+        const container = document.getElementById('timetable-results');
+        container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading...</p></div>';
+
+        const res = await fetch(`/api/class-timetable?grade=${grade}&section=${section}&day=${day}`);
+        const data = await res.json();
+
+        let html = '';
+        html += `<div class="results-panel">`;
+        html += `<div class="results-header"><h3>Grade ${grade}-${section} \u2014 ${day}</h3></div>`;
+        html += '<table><thead><tr><th>Period</th><th>Time</th><th>Subject</th><th>Teacher</th><th>Group</th><th>Status</th></tr></thead><tbody>';
+
+        data.periods.forEach(p => {
+            const isFree = p.effectively_free;
+            const badgeClass = isFree ? 'free' : 'busy';
+            const badgeText = isFree ? 'FREE' : 'IN CLASS';
+
+            html += `<tr style="background: ${isFree ? '#f0fff4' : 'white'}">`;
+            html += `<td><strong>${p.period_name}</strong></td>`;
+            html += `<td>${p.period_time || ''}</td>`;
+            html += `<td>${p.subject || '\u2014'}</td>`;
+            html += `<td>${p.teacher_name || p.teacher_code || '\u2014'}</td>`;
+            html += `<td>${p.group_code || '\u2014'}</td>`;
+            html += `<td><span class="status-badge ${badgeClass}">${badgeText}</span></td>`;
+            html += `</tr>`;
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+    }
+
+    // -- Table filter --
+    function filterTable(input, tableId) {
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById(tableId);
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+    }
+
+    // -- Table sort --
+    let sortState = {};
+    function sortTable(tableId, colIdx) {
+        const table = document.getElementById(tableId);
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        const key = tableId + '-' + colIdx;
+        const asc = !sortState[key];
+        sortState[key] = asc;
+
+        rows.sort((a, b) => {
+            const aText = a.cells[colIdx].textContent.trim();
+            const bText = b.cells[colIdx].textContent.trim();
+            const aNum = parseFloat(aText);
+            const bNum = parseFloat(bText);
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return asc ? aNum - bNum : bNum - aNum;
+            }
+            return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+    }
+</script>
+
+</body>
+</html>

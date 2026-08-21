@@ -27,7 +27,19 @@
 ## What Time the School Day Starts at ISC-Sharjah
 - The ISC-Sharjah school day starts at around 7:55 AM, when the first bell rings and the National Anthem is played. Students are expected to be in the playground before that time.
 - A student who arrives at ISC-Sharjah after the first bell at around 7:55 AM requires a Late Slip from a Supervisor.
-- ISC-Sharjah bell times, period start and end times, break times and dismissal times, other than the 7:55 AM start, are not available from AI-SHA. For these, contact the ISC-Sharjah school office on +971 6 558 2211.
+- Period 1 at ISC-Sharjah runs from 8:00 AM to 8:50 AM.
+- Period 2 at ISC-Sharjah runs from 8:50 AM to 9:40 AM.
+- Period 3 at ISC-Sharjah runs from 10:00 AM to 10:50 AM.
+- Period 4 at ISC-Sharjah runs from 10:50 AM to 11:40 AM.
+- Period 5 at ISC-Sharjah runs from 11:40 AM to 12:30 PM.
+- Lunch at ISC-Sharjah runs from 12:30 PM to 1:05 PM.
+- Period 6, also called the SLO period, runs from 1:05 PM to 1:50 PM.
+- Period 7 at ISC-Sharjah runs from 1:50 PM to 2:35 PM.
+- Period 8 at ISC-Sharjah runs from 2:35 PM to 3:20 PM.
+- Period 9 at ISC-Sharjah runs from 3:20 PM to 4:10 PM.
+- After-school activities at ISC-Sharjah run from 3:20 PM to 4:10 PM, and a second after-school slot runs from 4:10 PM to 5:00 PM.
+- The ISC-Sharjah teaching day ends after Period 8 at 3:20 PM for most students. Students staying for Period 9 or after-school activities finish later.
+- ISC-Sharjah break times other than the 12:30 PM to 1:05 PM lunch, and exact dismissal arrangements by grade, are not available from AI-SHA. For these, contact the ISC-Sharjah school office on +971 6 558 2211.
 
 ## Admissions Summary
 - ISC-Sharjah has no application deadline and accepts applications throughout the year based on space availability.
