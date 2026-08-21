@@ -8,7 +8,7 @@
 export HOME=/home/hsdaou
 source /opt/ros/humble/setup.bash
 source "$HOME/robot_ws/install/setup.bash"
-export ROS_DOMAIN_ID=99
+export ROS_DOMAIN_ID=42
 export PATH=$HOME/.local/bin:$PATH
 export AISHA_VOICE=1
 
@@ -53,7 +53,7 @@ ros2 launch aisha_integration jetson_launch.py \
     enable_stt:=true audio_device:=ReSpeaker \
     whisper_model:=small whisper_device:=cpu \
     enable_vision:=false enable_gpu_arbiter:=false \
-    wake_word_enabled:=true wake_word_timeout:=6.0 llm_model:=aisha:1b >> "$LOG" 2>&1 &
+    wake_word_enabled:=true wake_word_timeout:=6.0 llm_model:=aisha:3b >> "$LOG" 2>&1 &
 STACK=$!
 
 say "waiting for camera frames..."
@@ -113,6 +113,11 @@ while true; do
   fi
   if ! kill -0 "$WATCH" 2>/dev/null; then
     say "web console died — restarting just the console"
+    # Clear any half-dead instance first. Without this a console whose ROS thread
+    # died but whose HTTP server still holds :8088 survives, the new one cannot
+    # bind, and the browser keeps being served a FROZEN camera frame by the old
+    # process. Three of them had accumulated that way.
+    pkill -9 -f "aisha_watc[h]" 2>/dev/null; sleep 1
     python3 "$HOME/aisha_watch.py" >> /tmp/aisha_watch.log 2>&1 &
     WATCH=$!
   fi
