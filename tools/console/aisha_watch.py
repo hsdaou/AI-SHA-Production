@@ -12,6 +12,7 @@ on the machine with the browser, and NO new Python packages on the Jetson.
 import json, os, re, subprocess, threading, time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
+from urllib.request import urlopen
 
 VOICE = os.environ.get("AISHA_VOICE") == "1"     # set by the voice-mode launcher
 
@@ -24,6 +25,13 @@ from cv_bridge import CvBridge
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 
 PORT        = 8088
+# The LiDAR is on the Pi 5, not here. It is read over plain HTTP rather than ROS
+# because Jazzy->Humble DDS does not deliver to real subscriptions (Iron+ type
+# hashes), so a /scan subscriber on this board would silently receive nothing.
+LIDAR_URL   = os.environ.get("AISHA_LIDAR_URL", "http://192.168.0.117:8090/scan.json")
+# slam_toolbox's occupancy map, bridged off the Pi the same way and for the same
+# reason. Base URL: /map.png is the picture, /map.json the metadata.
+MAP_URL     = os.environ.get("AISHA_MAP_URL", "http://192.168.0.117:8091")
 ANNOTATED   = "/detection/image_annotated"          # camera + detections
 RAW_COLOR   = "/camera/camera/color/image_raw"       # fallback if vision is off
 ASK_TOPIC   = "/speech/text"                          # question in
@@ -190,9 +198,15 @@ class Hub(Node):
         The Pi's SSH password lives ONLY in ~/robot_console/shutdown.json (0600,
         git-ignored), never in this source. The Jetson powers itself off through a
         NOPASSWD sudoers entry (see the deploy note), so no password is embedded
-        here either. In the current dev topology the Jetson cannot route to the
-        Pi, so the Pi step will report 'unreachable' - that is expected; it starts
-        working once the two boards share a network (deployment)."""
+        here either.
+
+        ⚠️ This DOES power off the Pi now. The note that used to sit here said the
+        Jetson could not route to the Pi so the Pi step would harmlessly report
+        'unreachable' — that stopped being true when CP4 put both boards on the
+        house WiFi. On 2026-08-13 a press took the Pi down at the same instant as
+        the Jetson, and the Pi's graceful poweroff was misread for days as the
+        board crashing on a weak power supply. Both boards go down, and neither
+        can be switched back on remotely."""
         import shlex
         cfg_path = os.path.expanduser("~/robot_console/shutdown.json")
         pi_msg = "Pi: not configured (skipped)"
@@ -672,6 +686,21 @@ button:hover{background:#5346d8}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#57d98b;margin-right:7px;
      animation:pulse 1.3s infinite}
 @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+.lidar{flex:1;min-width:360px}
+.lidar h3{margin:0 0 8px;font-size:15px;font-weight:bold}
+.lidar h3 small{font-weight:normal;font-size:11px;color:#9aa4b2;margin-left:8px}
+#radar{width:100%;max-width:460px;aspect-ratio:1;background:#0d1117;border-radius:8px;display:block}
+.lbar{display:flex;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap}
+.lbar select{background:#0d1117;color:#e6ecf3;border:1px solid #333;border-radius:6px;padding:6px 8px;
+     font-size:13px}
+.near{font-size:13px;color:#e6ecf3}
+.near b{color:#ffd479}
+.tabs{display:flex;gap:6px;margin-bottom:8px}
+.tabs button{padding:6px 14px;font-size:13px;background:#1a2029;color:#9aa4b2;border-radius:6px}
+.tabs button.sel{background:#4136b8;color:#fff}
+#mapwrap{display:none}
+#mapimg{width:100%;max-width:460px;aspect-ratio:1;object-fit:contain;background:#0d1117;
+        border-radius:8px;display:block;image-rendering:pixelated}
 </style></head><body>
 <header>AI-SHA console
   <button onclick="shutdownAll()" title="Power off the robot (Jetson, and the Pi if reachable)"
@@ -686,6 +715,29 @@ __VOICEBAR__
       <span class=stat id=src></span>
       <span class=stat>camera <b id=camstat class=ok>live</b></span>
     </div>
+  </div>
+  <div class=lidar>
+    <h3>LiDAR <small>360&deg; scan from the Pi 5 &middot; front of robot is up</small></h3>
+    <div class=tabs>
+      <button id=tabradar class=sel onclick="showLidarView('radar')">Live radar</button>
+      <button id=tabmap onclick="showLidarView('map')">SLAM map</button>
+    </div>
+    <canvas id=radar width=460 height=460></canvas>
+    <div id=mapwrap>
+      <img id=mapimg alt="SLAM map">
+      <div class=stat id=mapstat style="margin-top:8px">map: waiting&hellip;</div>
+    </div>
+    <div class=lbar>
+      <select id=lrange onchange="drawRadar()">
+        <option value=0>range: auto</option>
+        <option value=1>1 m</option><option value=2>2 m</option>
+        <option value=4 selected>4 m</option><option value=8>8 m</option>
+        <option value=12>12 m</option>
+      </select>
+      <span class=stat>lidar <b id=lstat class=bad>offline</b></span>
+      <span class=stat id=lrpm></span>
+    </div>
+    <div class=near id=lnear></div>
   </div>
   <div class=side>
     <div id=log></div>
@@ -771,7 +823,244 @@ async function poll(){try{var r=await fetch('/events');var d=await r.json();
   if(!micBusy){ var m=await (await fetch('/mic')).json(); setmic(m.muted); }
 }catch(e){}}
 setInterval(poll,1000);poll();
+
+// ── LiDAR radar ─────────────────────────────────────────────────────────────
+// Points arrive as [angle_deg, distance_mm, intensity], 0 deg = straight ahead,
+// angle increasing clockwise. Screen keeps that convention: front of the robot is
+// up, so what you see on the radar matches what the camera above is looking at.
+var lastScan = null;
+function drawRadar(){
+  var c = document.getElementById('radar'), g = c.getContext('2d');
+  var W = c.width, H = c.height, cx = W/2, cy = H/2, R = Math.min(cx,cy) - 26;
+  g.clearRect(0,0,W,H);
+
+  var pts = (lastScan && lastScan.points) ? lastScan.points : [];
+  var sel = parseFloat(document.getElementById('lrange').value);
+  var maxm = sel;
+  if(!maxm){                                  // auto: fit the farthest return
+    maxm = 0.5;
+    pts.forEach(function(p){ var m = p[1]/1000; if(m > maxm) maxm = m; });
+    maxm = Math.ceil(maxm*2)/2;
+  }
+
+  // range rings
+  g.strokeStyle = '#243044'; g.fillStyle = '#5c6b80'; g.font = '10px Arial';
+  g.lineWidth = 1;
+  for(var i=1;i<=4;i++){
+    var rr = R*i/4;
+    g.beginPath(); g.arc(cx,cy,rr,0,Math.PI*2); g.stroke();
+    g.fillText((maxm*i/4).toFixed(maxm<2?2:1)+' m', cx+4, cy-rr-3);
+  }
+  g.beginPath(); g.moveTo(cx-R,cy); g.lineTo(cx+R,cy);
+  g.moveTo(cx,cy-R); g.lineTo(cx,cy+R); g.stroke();
+  g.fillStyle = '#7b8aa0'; g.font = '11px Arial'; g.textAlign = 'center';
+  g.fillText('FRONT 0°', cx, cy-R-12);
+  g.fillText('180°', cx, cy+R+18);
+  g.fillText('90°', cx+R+16, cy+4);
+  g.fillText('270°', cx-R-16, cy+4);
+  g.textAlign = 'left';
+
+  // returns
+  var nearD = 1e9, nearA = 0;
+  pts.forEach(function(p){
+    var m = p[1]/1000;
+    if(m <= 0) return;
+    if(m < nearD){ nearD = m; nearA = p[0]; }
+    if(m > maxm) return;                      // outside the selected range
+    var a = p[0]*Math.PI/180, rr = R*m/maxm;
+    var x = cx + rr*Math.sin(a), y = cy - rr*Math.cos(a);
+    // colour by proximity: close things are the ones you care about
+    var f = m/maxm;
+    g.fillStyle = f < 0.25 ? '#ff6b6b' : (f < 0.5 ? '#ffd479' : '#57d98b');
+    g.fillRect(x-1.5, y-1.5, 3, 3);
+  });
+
+  // the robot
+  g.fillStyle = '#4136b8';
+  g.beginPath(); g.moveTo(cx,cy-9); g.lineTo(cx-7,cy+7); g.lineTo(cx+7,cy+7);
+  g.closePath(); g.fill();
+
+  var near = document.getElementById('lnear');
+  if(pts.length && nearD < 1e9){
+    near.innerHTML = 'nearest obstacle <b>' + nearD.toFixed(2) + ' m</b> at <b>'
+                   + nearA.toFixed(0) + '°</b> &middot; ' + pts.length + ' points';
+  } else {
+    near.textContent = lastScan ? 'no returns' : '';
+  }
+}
+
+async function pollLidar(){
+  try{
+    var d = await (await fetch('/lidar.json', {cache:'no-store'})).json();
+    var st = document.getElementById('lstat');
+    if(d.ok && d.points){
+      lastScan = d;
+      st.textContent = 'live'; st.className = 'ok';
+      document.getElementById('lrpm').textContent =
+        d.rpm + ' rpm · ' + (d.crc_errors||0) + ' crc err';
+    } else if(d.warming){
+      st.textContent = 'connecting'; st.className = '';
+    } else {
+      // d.age is the Pi's own scanner age; if THAT is stale the scanner stopped,
+      // which is a different fault from the link to the Pi being down.
+      st.textContent = (d.age > 3) ? 'scanner stopped' : (d.stale ? 'stale ' + d.stale + 's' : 'offline');
+      st.className = 'bad';
+      document.getElementById('lrpm').textContent = d.error ? String(d.error).slice(0,60) : '';
+    }
+  }catch(e){
+    document.getElementById('lstat').textContent = 'offline';
+    document.getElementById('lstat').className = 'bad';
+  }
+  drawRadar();
+}
+setInterval(pollLidar, 200); pollLidar();
+
+// ── SLAM map ────────────────────────────────────────────────────────────────
+// Only polled while its tab is showing: the radar is the default view and the
+// map costs a round trip to the Pi plus a PNG decode for a picture that changes
+// about once a second.
+var lidarView = 'radar';
+function showLidarView(v){
+  lidarView = v;
+  document.getElementById('radar').style.display   = (v=='radar') ? 'block' : 'none';
+  document.getElementById('lrange').style.display  = (v=='radar') ? '' : 'none';
+  document.getElementById('mapwrap').style.display = (v=='map')   ? 'block' : 'none';
+  document.getElementById('tabradar').className = (v=='radar') ? 'sel' : '';
+  document.getElementById('tabmap').className   = (v=='map')   ? 'sel' : '';
+  if(v=='map') pollMap();
+}
+async function pollMap(){
+  if(lidarView != 'map') return;
+  try{
+    var d = await (await fetch('/map.json', {cache:'no-store'})).json();
+    var el = document.getElementById('mapstat');
+    if(d.ok){
+      document.getElementById('mapimg').src = '/map.png?t=' + Date.now();
+      var m = (d.width*d.resolution).toFixed(1) + ' x ' + (d.height*d.resolution).toFixed(1) + ' m';
+      el.innerHTML = 'map ' + m + ' @ ' + d.resolution + ' m/cell &middot; '
+                   + d.occupied + ' occupied, ' + d.free + ' free cells';
+    } else {
+      el.textContent = 'map unavailable — is SLAM running on the Pi?';
+    }
+  }catch(e){
+    document.getElementById('mapstat').textContent = 'map unavailable';
+  }
+}
+setInterval(pollMap, 1500);
 </script></body></html>"""
+
+
+class Lidar:
+    """Mirrors the Pi's LiDAR feed so the browser never talks to the Pi directly.
+
+    A background thread owns the only connection to the Pi and the HTTP handler
+    serves whatever it last got. That matters because the Pi drops off regularly
+    (power) — if each browser poll did its own fetch, every one of them would block
+    on the dead socket and the whole console would stall, camera included. Polling
+    is lazy: it stops when nobody is looking at the LiDAR panel.
+    """
+    IDLE_AFTER = 10.0                 # stop polling this long after the last view
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.data = None
+        self.error = "starting"
+        self.fetched = 0.0
+        self.wanted = 0.0
+        threading.Thread(target=self._worker, daemon=True).start()
+
+    def _worker(self):
+        while True:
+            if time.time() - self.wanted > self.IDLE_AFTER:
+                time.sleep(0.5)
+                continue
+            try:
+                with urlopen(LIDAR_URL, timeout=2.0) as r:
+                    d = json.loads(r.read().decode())
+                with self.lock:
+                    self.data, self.error, self.fetched = d, None, time.time()
+            except Exception as e:
+                with self.lock:
+                    self.error = f"{type(e).__name__}: {e}"
+                time.sleep(1.0)       # back off; the Pi is down or rebooting
+            time.sleep(0.15)
+
+    def snapshot(self):
+        # Was the poller asleep? If so the cached sweep is old only because nobody
+        # was watching, which is not a fault -- report it as warming up rather than
+        # flashing "stale 15 s" at someone who just opened the page.
+        warming = (time.time() - self.wanted) > self.IDLE_AFTER
+        self.wanted = time.time()
+        with self.lock:
+            if self.data is None:
+                return {"ok": False, "error": self.error or "no data yet"}
+            if warming:
+                return {"ok": False, "warming": True}
+            # Staleness is reported rather than hidden: a frozen radar picture that
+            # looks live is the same trap as the frozen camera frame handled above.
+            stale = time.time() - self.fetched
+            out = dict(self.data)
+            # Two independent ways this can be stale, and BOTH must be clean:
+            # our fetch may be old, or the Pi may still be serving happily while its
+            # scanner has stopped (a yanked/re-enumerated USB port reads as silence,
+            # not as an error). Trusting only our own fetch time would paint a frozen
+            # sweep as "live" -- the exact trap the camera code warns about.
+            age = self.data.get("age")
+            out["ok"] = stale < 3.0 and (age is None or age < 3.0)
+            out["stale"] = round(stale, 2)
+            if self.error:
+                out["error"] = self.error
+            return out
+
+
+class MapView:
+    """Mirrors the SLAM map PNG off the Pi. Same lazy-poll shape as Lidar.
+
+    The map changes about once a second and is only a couple of kB, so this polls
+    far more slowly than the radar and holds the last good picture across the Pi's
+    frequent reboots instead of blanking the panel.
+    """
+    IDLE_AFTER = 15.0
+
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.png = None
+        self.meta = {}
+        self.fetched = 0.0
+        self.wanted = 0.0
+        threading.Thread(target=self._worker, daemon=True).start()
+
+    def _worker(self):
+        while True:
+            if time.time() - self.wanted > self.IDLE_AFTER:
+                time.sleep(1.0)
+                continue
+            try:
+                with urlopen(MAP_URL + "/map.png", timeout=3.0) as r:
+                    png = r.read()
+                with urlopen(MAP_URL + "/map.json", timeout=3.0) as r:
+                    meta = json.loads(r.read().decode())
+                with self.lock:
+                    self.png, self.meta, self.fetched = png, meta, time.time()
+            except Exception:
+                time.sleep(2.0)
+            time.sleep(1.0)
+
+    def image(self):
+        self.wanted = time.time()
+        with self.lock:
+            return self.png
+
+    def info(self):
+        self.wanted = time.time()
+        with self.lock:
+            out = dict(self.meta)
+            out["ok"] = self.png is not None and (time.time() - self.fetched) < 20
+            return out
+
+
+LIDAR = Lidar()
+MAPVIEW = MapView()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -828,6 +1117,21 @@ class Handler(BaseHTTPRequestHandler):
                 HUB.set_mic_mute(want == "1")
             self._send(200, "application/json",
                        json.dumps({"muted": HUB.mic_muted}).encode())
+        elif p.path == "/lidar.json":
+            self._send(200, "application/json", json.dumps(LIDAR.snapshot()).encode())
+        elif p.path == "/map.json":
+            self._send(200, "application/json", json.dumps(MAPVIEW.info()).encode())
+        elif p.path == "/map.png":
+            png = MAPVIEW.image()
+            if not png:
+                self._send(503, "text/plain", b"no map")
+            else:
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Length", str(len(png)))
+                self.end_headers()
+                self.wfile.write(png)
         elif p.path == "/src":
             self._send(200, "text/plain", HUB.jpeg()[1].encode())
         elif p.path == "/ask":
