@@ -1,33 +1,32 @@
 # ISC-Sharjah Admissions
 
 ## Application Deadlines
-There is no application deadline. ISC-Sharjah accepts applications based on space availability throughout the year.
+ISC-Sharjah has no application deadline. ISC-Sharjah accepts applications throughout the year, based on space availability.
 
 ## Joining Fee
-There is no joining fee.
+ISC-Sharjah charges no joining fee. Tuition and transportation fees are listed separately in the ISC-Sharjah fee schedule.
 
 ## How to Apply
-You can apply online through the Application Form on the school website, or apply in person at the school reception desk.
+You can apply to ISC-Sharjah online through the Application Form on the school website, or apply in person at the school reception desk.
 
-## Required Documents
-To apply, you need:
-- The SABIS Application Form
-- Medical Form
-- 4 passport photos
-- Copies of passports and residency/UAE ID for the student and parents
-- Birth certificate
-- Vaccination card
-- Most recent school report
-
-If transferring from outside the UAE, the transfer certificate must be attested by the Ministry of Education.
+## Required Documents for Admission
+To apply to ISC-Sharjah you need the following documents:
+- The SABIS Application Form.
+- The Medical Form.
+- 4 passport photographs.
+- Copies of passports and residency visa / UAE ID for the student and both parents.
+- The student's birth certificate.
+- The student's vaccination card.
+- The student's most recent school report.
+- A transfer certificate, if the student is transferring from a school outside the UAE. A transfer certificate from outside the UAE must be attested by the Ministry of Education.
 
 ## Booking a Campus Tour
-You can book a tour by contacting the school directly, or by filling in the Interest Form on the school website. The Admissions Office will get back to you.
-
-## Admissions Policy
-ISC-Sharjah is an excellent choice for parents who are looking to offer their children a top-quality, international education in a safe and nurturing environment that will prepare them for success in college and beyond.
+To book a tour of ISC-Sharjah, contact the school directly or complete the Interest Form on the school website. The Admissions Office will get back to you.
 
 ## Contact for Admissions
-Phone: +971 6 558 2211
-Email: info@iscsharjah.sabis.net
-Address: P.O. Box 2077, University City Road, Industrial Area 6, Sharjah, U.A.E.
+- The ISC-Sharjah admissions telephone number is +971 6 558 2211.
+- The ISC-Sharjah admissions email address is info@iscsharjah.sabis.net.
+- The ISC-Sharjah address is P.O. Box 2077, University City Road, Industrial Area 6, Sharjah, U.A.E.
+
+## Admissions Information AI-SHA Does Not Have
+AI-SHA does not have ISC-Sharjah entrance-test dates or content, class-size or availability figures for any specific grade, sibling or staff discount policies, scholarship information, or the status of any individual application. For any of these, contact the Admissions Office on +971 6 558 2211.
