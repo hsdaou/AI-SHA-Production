@@ -184,6 +184,16 @@ class AdminNode(Node):
                 # (cudaMalloc OOM -> llama-server segfault -> "error processing
                 # your question"). Keep the two values equal.
                 context_window=ollama_num_ctx,
+                # temperature=0: this is a factual lookup assistant, not a
+                # writer.  llama_index's Ollama defaults to 0.75, which made the
+                # SAME question answer differently on consecutive runs — one run
+                # gave a clean "I am an administrative assistant. Please ask your
+                # teacher for academic help.", the next appended an explanation
+                # of photosynthesis to it.  Sampling was also the source of the
+                # padding around answers ("According to the information
+                # provided...").  Greedy decoding makes replies reproducible,
+                # which is what makes them testable.
+                temperature=0.0,
             )
             self._num_gpu_conversing = int(os.environ.get('OLLAMA_NUM_GPU', '999'))
             self._num_gpu_navigating = 0
