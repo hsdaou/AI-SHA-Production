@@ -768,6 +768,30 @@ phase3_curriculum:
       checks_total: 22
       passed: true
       physical_safety_claim_allowed: false
+    final_presentation_reel:
+      status: "accepted_presentation_evidence"
+      purpose: "combine the complete clean office mission with the accepted Phase 4A dynamic-safety insert in one presentation-ready Omniverse film"
+      video: "media/videos/AI-SHA_Final_Omniverse_Administration_Presentation.mp4"
+      video_sha256: "c3218bb4e969c17b9d61be299be8b80e9558775514f0bd097be18c320d18e132"
+      resolution: [1280, 720]
+      fps: 30.0
+      frames: 2307
+      duration_s: 76.9
+      complete_office_mission_frames: 1643
+      dynamic_safety_encounter_frames: 394
+      title_card_frames: 270
+      all_source_frames_included_once_in_order: true
+      motion_changed_by_assembly: false
+      report: "results/final_omniverse_administration_presentation_report.json"
+      report_sha256: "bb26f7b92cfed6dda9aa66abc8dd379a477f3488fc83657ae0f970f79fb6429e"
+      acceptance_report: "results/final_omniverse_administration_presentation_acceptance.json"
+      acceptance_report_sha256: "fe36ae4f88aaee78a3463435659dddc6dec8a8bd214e9076e8abdf9eee0a8803"
+      contact_sheet: "media/final_omniverse_administration_presentation_contact_sheet.jpg"
+      contact_sheet_sha256: "c3034b7626a99bbed364ef1d3165e705be9b4810216be349c4e2099f60337f85"
+      checks_passed: 27
+      checks_total: 27
+      passed: true
+      physical_safety_claim_allowed: false
     combined_acceptance_report: "results/phase3n_dynamic_safety_acceptance.json"
     full_phase3_simulation_acceptance_passed: true
     physical_safety_claim_allowed: false
@@ -934,7 +958,9 @@ release:
   phase3n_final_omniverse_presentation_available: true
   phase4a_live_dynamic_showcase_passed: true
   phase4a_dynamic_showcase_presentation_available: true
+  final_omniverse_presentation_reel_available: true
+  final_omniverse_presentation_reel_validated: true
   phase3_geometry_rtx_refinement_available: true
   nav2_integrated: false
   physical_robot_release: false
-  required_next_gate: "assemble and rehearse the clean full-office mission plus the Phase 4A dynamic-safety insert; physical deployment still requires an as-built site survey, measured clearances, Nav2 integration, sim-to-real validation and hardware safety commissioning"
+  required_next_gate: "rehearse the accepted final Omniverse reel and optionally add presenter narration; physical deployment still requires an as-built site survey, measured clearances, Nav2 integration, sim-to-real validation and hardware safety commissioning"

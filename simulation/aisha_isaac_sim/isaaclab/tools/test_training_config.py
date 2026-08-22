@@ -183,6 +183,27 @@ PHASE4A_ACCEPTANCE_REPORT = (
     / "results"
     / "phase4a_dynamic_safety_showcase_acceptance.json"
 )
+FINAL_PRESENTATION_VIDEO = (
+    Path(__file__).resolve().parents[2]
+    / "media"
+    / "videos"
+    / "AI-SHA_Final_Omniverse_Administration_Presentation.mp4"
+)
+FINAL_PRESENTATION_CONTACT_SHEET = (
+    Path(__file__).resolve().parents[2]
+    / "media"
+    / "final_omniverse_administration_presentation_contact_sheet.jpg"
+)
+FINAL_PRESENTATION_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "final_omniverse_administration_presentation_report.json"
+)
+FINAL_PRESENTATION_ACCEPTANCE = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "final_omniverse_administration_presentation_acceptance.json"
+)
 
 
 class TrainingConfigTests(unittest.TestCase):
@@ -252,6 +273,8 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertTrue(release["phase3n_final_omniverse_presentation_available"])
         self.assertTrue(release["phase4a_live_dynamic_showcase_passed"])
         self.assertTrue(release["phase4a_dynamic_showcase_presentation_available"])
+        self.assertTrue(release["final_omniverse_presentation_reel_available"])
+        self.assertTrue(release["final_omniverse_presentation_reel_validated"])
         self.assertFalse(release["nav2_integrated"])
         self.assertFalse(release["physical_robot_release"])
 
@@ -870,6 +893,53 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertTrue(video["passed"])
         self.assertIn("does not attribute the entire stop", video["overlay_disclosure"])
         self.assertTrue(acceptance["passed"])
+        self.assertEqual(acceptance["checks_passed"], acceptance["checks_total"])
+
+    def test_final_presentation_reel_is_complete_hash_linked_and_accepted(self) -> None:
+        gate = self.data["phase3_curriculum"]["dynamic_safety_gate"][
+            "final_presentation_reel"
+        ]
+        self.assertTrue(gate["passed"])
+        self.assertFalse(gate["physical_safety_claim_allowed"])
+        self.assertFalse(gate["motion_changed_by_assembly"])
+        self.assertTrue(gate["all_source_frames_included_once_in_order"])
+        self.assertEqual(gate["frames"], 2307)
+        self.assertEqual(gate["checks_passed"], gate["checks_total"])
+
+        for path in (
+            FINAL_PRESENTATION_VIDEO,
+            FINAL_PRESENTATION_CONTACT_SHEET,
+            FINAL_PRESENTATION_REPORT,
+            FINAL_PRESENTATION_ACCEPTANCE,
+        ):
+            self.assertTrue(path.is_file(), path)
+        self.assertEqual(
+            hashlib.sha256(FINAL_PRESENTATION_VIDEO.read_bytes()).hexdigest(),
+            gate["video_sha256"],
+        )
+        self.assertEqual(
+            hashlib.sha256(FINAL_PRESENTATION_CONTACT_SHEET.read_bytes()).hexdigest(),
+            gate["contact_sheet_sha256"],
+        )
+        self.assertEqual(
+            hashlib.sha256(FINAL_PRESENTATION_REPORT.read_bytes()).hexdigest(),
+            gate["report_sha256"],
+        )
+        self.assertEqual(
+            hashlib.sha256(FINAL_PRESENTATION_ACCEPTANCE.read_bytes()).hexdigest(),
+            gate["acceptance_report_sha256"],
+        )
+
+        reel = json.loads(FINAL_PRESENTATION_REPORT.read_text(encoding="utf-8"))
+        acceptance = json.loads(
+            FINAL_PRESENTATION_ACCEPTANCE.read_text(encoding="utf-8")
+        )
+        self.assertTrue(reel["passed"])
+        self.assertEqual(reel["frames"], gate["frames"])
+        self.assertEqual(reel["duration_s"], gate["duration_s"])
+        self.assertFalse(reel["motion_changed_by_assembly"])
+        self.assertTrue(acceptance["passed"])
+        self.assertEqual(acceptance["checks_passed"], 27)
         self.assertEqual(acceptance["checks_passed"], acceptance["checks_total"])
 
 

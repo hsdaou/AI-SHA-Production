@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-22. Phase 3N freezes the successful Phase 3M pivot/clearance stack, adds a one-action recurrent 360-degree brake layer, and passes the declared randomized, static-regression and live-administration simulation gates. Phase 4A now packages a separate live dynamic-pedestrian presentation insert. This is not a physical safety or deployment release.**
+**Updated 2026-08-23. Phase 3N freezes the successful Phase 3M pivot/clearance stack, adds a one-action recurrent 360-degree brake layer, and passes the declared randomized, static-regression and live-administration simulation gates. Phase 4A packages a separate live dynamic-pedestrian insert, and the final 76.9-second Omniverse administration reel now passes 27/27 evidence checks. This is not a physical safety or deployment release.**
 
 ## Completed
 
@@ -328,6 +328,14 @@
   `phase4a_dynamic_safety_showcase_acceptance.json` passes 22/22 evidence-chain
   checks. This is a controlled simulation demonstration, not proof of physical
   human safety.
+- The final 76.9 s, 1280 x 720, 30 fps reel preserves all 1,643 accepted clean
+  mission frames and all 394 accepted dynamic-safety frames once and in order.
+  Three labeled cards add 270 frames without changing source motion. The reel's
+  SHA-256 is
+  `c3218bb4e969c17b9d61be299be8b80e9558775514f0bd097be18c320d18e132`;
+  `final_omniverse_administration_presentation_acceptance.json` passes 27/27.
+  The ending explicitly retains measured-site, Nav2/sim-to-real and hardware
+  safety as future gates.
 - Geometry refinement `GEOMETRY-RTX-PHASE3-A` locks the source PDF hash and uses
   printed page-2 Block A dimensions for the 12.75 m atrium, 2.80 m hall,
   7.80 x 6.30 m conference room and 4.73 m Principal frontage. Door widths,
@@ -499,6 +507,8 @@ claim. See `config/physics_materials.yaml`.
 - `phase4a_administration_dynamic_showcase_report.json`
 - `phase4a_dynamic_safety_presentation_video_report.json`
 - `phase4a_dynamic_safety_showcase_acceptance.json`
+- `final_omniverse_administration_presentation_report.json`
+- `final_omniverse_administration_presentation_acceptance.json`
 - `phase3_geometry_rtx_refinement_validation.json`
 - `phase3_launch_status.json`
 - `PRODUCTION_REPOSITORY_REVIEW.md`
@@ -533,3 +543,4 @@ claim. See `config/physics_materials.yaml`.
 - `../media/videos/AI-SHA_Phase3N_Administration_Final_Omniverse_3x.mp4`
 - `../media/videos/phase4a_administration_dynamic_showcase_final/aisha-phase4a-dynamic-showcase-step-0.mp4`
 - `../media/videos/AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4`
+- `../media/videos/AI-SHA_Final_Omniverse_Administration_Presentation.mp4`

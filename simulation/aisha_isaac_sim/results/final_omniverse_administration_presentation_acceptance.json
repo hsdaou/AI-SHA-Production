@@ -1,0 +1,63 @@
+{
+  "report_type": "final_omniverse_administration_presentation_acceptance",
+  "passed": true,
+  "checks_passed": 27,
+  "checks_total": 27,
+  "checks": {
+    "reel_report_type": true,
+    "reel_maker_passed": true,
+    "mission_report_type": true,
+    "mission_report_passed": true,
+    "mission_motion_unchanged": true,
+    "mission_uses_accepted_checkpoint": true,
+    "mission_completed_all_waypoints": true,
+    "mission_policy_only": true,
+    "mission_zero_collisions": true,
+    "safety_video_report_type": true,
+    "safety_video_report_passed": true,
+    "safety_run_report_type": true,
+    "safety_run_passed": true,
+    "safety_uses_same_accepted_checkpoint": true,
+    "learned_brake_observed": true,
+    "protective_stop_and_resume_observed": true,
+    "dynamic_encounter_zero_collisions": true,
+    "mission_video_hash_linked": true,
+    "mission_report_hash_linked": true,
+    "safety_video_hash_linked": true,
+    "safety_reports_hash_linked": true,
+    "reel_video_hash_linked": true,
+    "reel_resolution_and_rate": true,
+    "reel_duration_60_to_90_seconds": true,
+    "timeline_complete_and_contiguous": true,
+    "accepted_source_frames_preserved": true,
+    "claim_boundaries_explicit": true
+  },
+  "evidence": {
+    "reel": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Final_Omniverse_Administration_Presentation.mp4",
+    "reel_sha256": "c3218bb4e969c17b9d61be299be8b80e9558775514f0bd097be18c320d18e132",
+    "reel_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/final_omniverse_administration_presentation_report.json",
+    "reel_report_sha256": "bb26f7b92cfed6dda9aa66abc8dd379a477f3488fc83657ae0f970f79fb6429e",
+    "mission_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase3n_administration_final_omniverse_3x_report.json",
+    "mission_report_sha256": "85d39f531475012ac1a9f506539e7be8d58618a0c372d0e5d92473d931a16bd1",
+    "safety_video_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase4a_dynamic_safety_presentation_video_report.json",
+    "safety_video_report_sha256": "99280ecaeb3a27cad66e39eaf1c52e171a69031476f8111d1f0243ef1b00b120",
+    "safety_run_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase4a_administration_dynamic_showcase_report.json",
+    "safety_run_report_sha256": "8acb793d5877aa3a86e2122c9649fbb255738cb987f736b870af17020ba910e9"
+  },
+  "measured_result": {
+    "resolution": [
+      1280,
+      720
+    ],
+    "fps": 30.0,
+    "frames": 2307,
+    "duration_s": 76.9,
+    "mission_waypoints_completed": 12,
+    "mission_collisions": 0,
+    "dynamic_encounter_safety_authority_steps": 16,
+    "dynamic_encounter_protective_stop_duration_s": 2.2333333333333334,
+    "dynamic_encounter_maximum_resumed_velocity_mps": 0.46277,
+    "dynamic_encounter_collisions": 0
+  },
+  "decision": "Accept as the final presentation-grade Omniverse reel for the declared simulation scope. It combines the complete clean office mission with one accepted deterministic pedestrian encounter without changing source motion. It is not a physical safety or deployment release."
+}
