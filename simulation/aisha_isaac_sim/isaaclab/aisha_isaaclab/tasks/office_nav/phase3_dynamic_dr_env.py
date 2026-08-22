@@ -923,6 +923,39 @@ class AishaPhase3ClearancePlannerEnv(AishaPhase3SafetyResidualEnv):
         self._planner_candidate_clearance = torch.zeros(self.num_envs, device=self.device)
         self._planner_applied_clearance = torch.zeros(self.num_envs, device=self.device)
         self._applied_steering_request = torch.zeros(self.num_envs, device=self.device)
+        # Episode-level counters are evaluation telemetry only. They expose
+        # whether a failure is a stop-latch stall, a rejected steering request,
+        # or a clearance miss without changing the controller boundary.
+        self._episode_planner_steps = torch.zeros(
+            self.num_envs, dtype=torch.long, device=self.device
+        )
+        self._episode_protective_stop_steps = torch.zeros_like(
+            self._episode_planner_steps
+        )
+        self._episode_stop_intervention_steps = torch.zeros_like(
+            self._episode_planner_steps
+        )
+        self._episode_planner_request_steps = torch.zeros_like(
+            self._episode_planner_steps
+        )
+        self._episode_planner_accept_steps = torch.zeros_like(
+            self._episode_planner_steps
+        )
+        self._episode_abs_steering_request_sum = torch.zeros(
+            self.num_envs, device=self.device
+        )
+        self._episode_brake_fraction_sum = torch.zeros(
+            self.num_envs, device=self.device
+        )
+        self._episode_base_angular_command_sum = torch.zeros(
+            self.num_envs, device=self.device
+        )
+        self._episode_applied_angular_command_sum = torch.zeros(
+            self.num_envs, device=self.device
+        )
+        self._episode_minimum_applied_clearance = torch.full(
+            (self.num_envs,), self.cfg.lidar_max_range_m, device=self.device
+        )
         for name in (
             "clearance_improvement",
             "rejected_steering_request",
@@ -1156,6 +1189,23 @@ class AishaPhase3ClearancePlannerEnv(AishaPhase3SafetyResidualEnv):
             delayed_base, delayed_request, exact_lidar_ranges
         )
         protected = self._apply_protective_stop(projected, exact_lidar_ranges)
+        self._episode_planner_steps += 1
+        self._episode_protective_stop_steps += self._protective_stop_latched.long()
+        self._episode_stop_intervention_steps += self._protective_stop_intervened.long()
+        self._episode_planner_request_steps += self._planner_request_active.long()
+        self._episode_planner_accept_steps += self._planner_request_accepted.long()
+        self._episode_abs_steering_request_sum += torch.abs(
+            self._applied_steering_request
+        )
+        self._episode_brake_fraction_sum += self._applied_brake_fraction
+        self._episode_base_angular_command_sum += delayed_base[:, 1]
+        self._episode_applied_angular_command_sum += protected[:, 1]
+        self._episode_minimum_applied_clearance.copy_(
+            torch.minimum(
+                self._episode_minimum_applied_clearance,
+                self._planner_applied_clearance,
+            )
+        )
         self._previous_actions.copy_(self._actions)
         self._actions = protected.clamp(-1.0, 1.0)
 
@@ -1237,6 +1287,43 @@ class AishaPhase3ClearancePlannerEnv(AishaPhase3SafetyResidualEnv):
             + stop_intervention
         )
 
+    def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
+        terminated, time_out = super()._get_dones()
+        if hasattr(self, "_episode_planner_steps"):
+            outcomes = self.extras["episode_outcomes"]
+            outcomes.update(
+                {
+                    "planner_steps": self._episode_planner_steps.clone(),
+                    "protective_stop_steps": (
+                        self._episode_protective_stop_steps.clone()
+                    ),
+                    "protective_stop_intervention_steps": (
+                        self._episode_stop_intervention_steps.clone()
+                    ),
+                    "planner_request_steps": (
+                        self._episode_planner_request_steps.clone()
+                    ),
+                    "planner_accept_steps": self._episode_planner_accept_steps.clone(),
+                    "abs_steering_request_sum": (
+                        self._episode_abs_steering_request_sum.clone()
+                    ),
+                    "brake_fraction_sum": self._episode_brake_fraction_sum.clone(),
+                    "base_angular_command_sum": (
+                        self._episode_base_angular_command_sum.clone()
+                    ),
+                    "applied_angular_command_sum": (
+                        self._episode_applied_angular_command_sum.clone()
+                    ),
+                    "minimum_applied_clearance_m": (
+                        self._episode_minimum_applied_clearance.clone()
+                    ),
+                    "final_protective_stop_latched": (
+                        self._protective_stop_latched.clone()
+                    ),
+                }
+            )
+        return terminated, time_out
+
     def _reset_idx(self, env_ids: Sequence[int] | torch.Tensor | None) -> None:
         if env_ids is None:
             env_ids = self._robot._ALL_INDICES
@@ -1254,6 +1341,16 @@ class AishaPhase3ClearancePlannerEnv(AishaPhase3SafetyResidualEnv):
         self._planner_candidate_clearance[env_ids] = 0.0
         self._planner_applied_clearance[env_ids] = 0.0
         self._applied_steering_request[env_ids] = 0.0
+        self._episode_planner_steps[env_ids] = 0
+        self._episode_protective_stop_steps[env_ids] = 0
+        self._episode_stop_intervention_steps[env_ids] = 0
+        self._episode_planner_request_steps[env_ids] = 0
+        self._episode_planner_accept_steps[env_ids] = 0
+        self._episode_abs_steering_request_sum[env_ids] = 0.0
+        self._episode_brake_fraction_sum[env_ids] = 0.0
+        self._episode_base_angular_command_sum[env_ids] = 0.0
+        self._episode_applied_angular_command_sum[env_ids] = 0.0
+        self._episode_minimum_applied_clearance[env_ids] = self.cfg.lidar_max_range_m
         self.extras["clearance_planner"] = {
             "prediction_horizon_s": self.cfg.planner_prediction_horizon_s,
             "prediction_samples": self.cfg.planner_prediction_samples,
@@ -1266,6 +1363,768 @@ class AishaPhase3ClearancePlannerEnv(AishaPhase3SafetyResidualEnv):
                 self.cfg.protective_stop_release_clearance_m
             ),
         }
+
+
+@configclass
+class AishaPhase3TargetedRecoveryEnvCfg(AishaPhase3ClearancePlannerEnvCfg):
+    """Recover hard pivots while retaining the complete Phase 3L route skill."""
+
+    # Segments 4 and 9 are the two in-office 180-degree departures. Segment 6
+    # is the tight atrium-to-principal turn. Together they receive 60/96
+    # (62.5%) of resets while every other route leg retains 4/96 rehearsal.
+    targeted_recovery_segment_ids = (4, 6, 9)
+    office_departure_segment_ids = (4, 9)
+    # Phase 3M may overcome a wrong-way frozen U-turn request, but the resulting
+    # command remains bounded by the 1.0 rad/s task limit and must pass the
+    # exact same rectangular-footprint projection before reaching the wheels.
+    maximum_lateral_correction_rad_s = 0.70
+    segment_sampling_weights = (
+        4.0,
+        4.0,
+        4.0,
+        4.0,
+        18.0,
+        4.0,
+        24.0,
+        4.0,
+        4.0,
+        18.0,
+        4.0,
+        4.0,
+    )
+
+    # Recovery probes may intentionally crawl through a tight projected path;
+    # allow enough wall-clock policy steps for the 5 m principal-return leg.
+    episode_length_s = 100.0
+    recovery_supervisor_enabled = True
+
+    # Phase 3L model 200 requested only 0.004 rad/s of mean added steering on
+    # the failed office departures. These terms reward realized heading
+    # reduction and safe, correctly signed planner requests until the pivot is
+    # aligned. They do not bypass projection or the independent stop latch.
+    targeted_turn_alignment_rad = math.radians(25.0)
+    targeted_pivot_brake_threshold_rad = math.radians(60.0)
+    reward_targeted_heading_progress = 18.0
+    reward_targeted_aligned_steering_request = 0.006
+    penalty_targeted_wrong_steering_request = -0.08
+    penalty_targeted_turn_inactivity = -0.012
+    penalty_targeted_pivot_forward = -0.12
+    penalty_targeted_aligned_nonforward = -0.20
+
+    # The selected ZLTECH drive is rated for 6 Nm continuous and 18 Nm peak
+    # for at most 3 seconds. Keep the ordinary actuator contract at 6 Nm and
+    # expose the controller-timed peak only for a commanded stationary pivot
+    # on the targeted recovery legs. The gate is intentionally one-shot per
+    # episode; no unverified thermal cooldown/retrigger model is assumed.
+    rated_motor_effort_limit_nm = 6.0
+    peak_motor_effort_limit_nm = 18.0
+    peak_motor_time_limit_s = 3.0
+    peak_pivot_minimum_heading_error_rad = math.radians(60.0)
+    peak_pivot_minimum_angular_command_rad_s = 0.35
+
+    # A deterministic recovery supervisor closes the gap that PPO exploration
+    # exposed but did not retain in its mean action. It may command a stopped,
+    # goal-signed office pivot only after the same rectangular-footprint
+    # clearance projection used by the residual planner. Hysteresis prevents
+    # brake and steering chatter.
+    pivot_supervisor_engage_heading_error_rad = math.radians(60.0)
+    pivot_supervisor_release_heading_error_rad = math.radians(25.0)
+    pivot_supervisor_angular_command_rad_s = 0.55
+    office_departure_protective_release_clearance_m = 0.04
+    predictive_stop_segment_ids = (6, 10, 11)
+    predictive_stop_trigger_clearance_m = 0.10
+    predictive_stop_release_clearance_m = 0.22
+    predictive_creep_linear_velocity_mps = 0.10
+    dynamic_crossing_creep_segment_ids = (10,)
+    dynamic_crossing_predictive_creep_linear_velocity_mps = 0.08
+
+    # The imported robot deliberately uses four fixed-sphere proxies for its
+    # unmeasured swivel castors. Preserve their declared low-friction contact
+    # class instead of overwriting every robot collider with drive-wheel
+    # friction during domain randomization.
+    castor_static_friction_range = (0.15, 0.25)
+    castor_dynamic_friction_range = (0.10, 0.20)
+
+    # Segment 6 reached a negative projected baseline clearance in the
+    # diagnostic rollout. Give accepted clearance improvements a stronger
+    # signal and penalize low applied clearance before contact.
+    targeted_clearance_segment_id = 6
+    targeted_low_clearance_m = 0.12
+    reward_targeted_clearance_improvement = 0.75
+    penalty_targeted_low_clearance = -0.06
+
+
+@configclass
+class AishaPhase3TargetedRecoveryTrainingEnvCfg(AishaPhase3TargetedRecoveryEnvCfg):
+    """Corrected-physics PPO curriculum without deterministic recovery actions."""
+
+    recovery_supervisor_enabled = False
+    episode_length_s = 70.0
+
+
+class AishaPhase3TargetedRecoveryEnv(AishaPhase3ClearancePlannerEnv):
+    """Retention-safe Phase 3M curriculum for office departures and segment 6."""
+
+    cfg: AishaPhase3TargetedRecoveryEnvCfg
+
+    def __init__(
+        self,
+        cfg: AishaPhase3TargetedRecoveryEnvCfg,
+        render_mode: str | None = None,
+        **kwargs,
+    ):
+        super().__init__(cfg, render_mode, **kwargs)
+        recovery_ids = tuple(int(value) for value in self.cfg.targeted_recovery_segment_ids)
+        if len(set(recovery_ids)) != len(recovery_ids):
+            raise ValueError("targeted recovery segment ids must be unique")
+        if any(value < 0 or value >= len(ROUTE_SEGMENTS) for value in recovery_ids):
+            raise ValueError("targeted recovery segment id is outside ROUTE_SEGMENTS")
+        if self.cfg.targeted_clearance_segment_id not in recovery_ids:
+            raise ValueError("targeted clearance segment must be in the recovery set")
+        self._targeted_recovery_ids = torch.tensor(
+            recovery_ids, dtype=torch.long, device=self.device
+        )
+        if self.cfg.rated_motor_effort_limit_nm != 6.0:
+            raise ValueError("rated motor effort must retain the 6 Nm robot contract")
+        if self.cfg.peak_motor_effort_limit_nm != 18.0:
+            raise ValueError("peak motor effort must match the declared 18 Nm motor peak")
+        if not 0.0 < self.cfg.peak_motor_time_limit_s <= 3.0:
+            raise ValueError("peak motor time limit must be in (0, 3] seconds")
+        self._peak_torque_elapsed_s = torch.zeros(self.num_envs, device=self.device)
+        self._peak_torque_active = torch.zeros(
+            self.num_envs, dtype=torch.bool, device=self.device
+        )
+        self._pivot_supervisor_latched = torch.zeros(
+            self.num_envs, dtype=torch.bool, device=self.device
+        )
+        self._predictive_stop_latched = torch.zeros_like(
+            self._pivot_supervisor_latched
+        )
+        self._recovery_supervisor_brake_active = torch.zeros_like(
+            self._pivot_supervisor_latched
+        )
+        self._pivot_supervisor_steering_active = torch.zeros_like(
+            self._pivot_supervisor_latched
+        )
+        self._office_departure_protective_release_active = torch.zeros_like(
+            self._pivot_supervisor_latched
+        )
+        self._episode_peak_torque_steps = torch.zeros(
+            self.num_envs, dtype=torch.long, device=self.device
+        )
+        self._episode_pivot_supervisor_steps = torch.zeros_like(
+            self._episode_peak_torque_steps
+        )
+        self._episode_predictive_stop_steps = torch.zeros_like(
+            self._episode_peak_torque_steps
+        )
+        self._episode_pivot_supervisor_steering_steps = torch.zeros_like(
+            self._episode_peak_torque_steps
+        )
+        self._episode_office_departure_protective_release_steps = torch.zeros_like(
+            self._episode_peak_torque_steps
+        )
+        self._castor_material_shape_ids = self._resolve_material_shape_ids(
+            (
+                "castor_fl_link",
+                "castor_fr_link",
+                "castor_rl_link",
+                "castor_rr_link",
+            )
+        )
+        self._castor_static_friction = torch.full(
+            (self.num_envs,), 0.20, device=self.device
+        )
+        self._castor_dynamic_friction = torch.full(
+            (self.num_envs,), 0.15, device=self.device
+        )
+        for name in (
+            "targeted_heading_progress",
+            "targeted_aligned_steering_request",
+            "targeted_wrong_steering_request",
+            "targeted_turn_inactivity",
+            "targeted_pivot_forward",
+            "targeted_aligned_nonforward",
+            "targeted_clearance_improvement",
+            "targeted_low_clearance",
+        ):
+            self._episode_sums[name] = torch.zeros(
+                self.num_envs, dtype=torch.float32, device=self.device
+            )
+
+        if (
+            self.cfg.pivot_supervisor_release_heading_error_rad
+            >= self.cfg.pivot_supervisor_engage_heading_error_rad
+        ):
+            raise ValueError("pivot supervisor release must be below its engage angle")
+        if not (
+            self.cfg.peak_pivot_minimum_angular_command_rad_s
+            <= self.cfg.pivot_supervisor_angular_command_rad_s
+            <= self.cfg.angular_velocity_max_rad_s
+        ):
+            raise ValueError("pivot supervisor angular command is outside its motor/task limits")
+        if (
+            self.cfg.predictive_stop_release_clearance_m
+            <= self.cfg.predictive_stop_trigger_clearance_m
+        ):
+            raise ValueError("predictive stop release must exceed its trigger clearance")
+        if not (
+            self.cfg.linear_velocity_range_mps[0]
+            <= self.cfg.predictive_creep_linear_velocity_mps
+            < self.cfg.linear_velocity_range_mps[1]
+        ):
+            raise ValueError("predictive creep speed is outside the task linear range")
+        if not (
+            self.cfg.linear_velocity_range_mps[0]
+            <= self.cfg.dynamic_crossing_predictive_creep_linear_velocity_mps
+            <= self.cfg.predictive_creep_linear_velocity_mps
+        ):
+            raise ValueError("dynamic crossing creep must not exceed predictive creep")
+        if any(
+            value < 0 or value >= len(ROUTE_SEGMENTS)
+            for value in self.cfg.predictive_stop_segment_ids
+        ):
+            raise ValueError("predictive stop segment id is outside ROUTE_SEGMENTS")
+        self._office_departure_ids = torch.tensor(
+            self.cfg.office_departure_segment_ids,
+            dtype=torch.long,
+            device=self.device,
+        )
+        self._predictive_stop_segment_ids = torch.tensor(
+            self.cfg.predictive_stop_segment_ids,
+            dtype=torch.long,
+            device=self.device,
+        )
+        self._dynamic_crossing_creep_segment_ids = torch.tensor(
+            self.cfg.dynamic_crossing_creep_segment_ids,
+            dtype=torch.long,
+            device=self.device,
+        )
+
+    def _apply_protective_stop(
+        self, actions: torch.Tensor, exact_lidar_ranges: torch.Tensor
+    ) -> torch.Tensor:
+        """Release the front-ray latch after a clear, aligned office pivot.
+
+        The ordinary gate uses a generous 0.60 m forward buffer. That buffer
+        correctly stops transit but cannot release inside the plan-assumed
+        1.40 m presentation rooms. The exception requires both route alignment
+        and the full rectangular-footprint prediction to be clear.
+        """
+        protected = super()._apply_protective_stop(actions, exact_lidar_ranges)
+        if not self.cfg.recovery_supervisor_enabled:
+            return protected
+        _, _, _, heading_error = self._goal_geometry()
+        office_departure = torch.any(
+            self._segment_ids.unsqueeze(1) == self._office_departure_ids.unsqueeze(0),
+            dim=1,
+        )
+        self._office_departure_protective_release_active = (
+            office_departure
+            & (
+                torch.abs(heading_error)
+                <= self.cfg.pivot_supervisor_release_heading_error_rad
+            )
+            & (
+                self._planner_applied_clearance
+                >= self.cfg.office_departure_protective_release_clearance_m
+            )
+        )
+        self._protective_stop_latched &= ~(
+            self._office_departure_protective_release_active
+        )
+        self._protective_stop_intervened &= ~(
+            self._office_departure_protective_release_active
+        )
+        protected = torch.where(
+            self._office_departure_protective_release_active.unsqueeze(1),
+            actions,
+            protected,
+        )
+        self._episode_office_departure_protective_release_steps += (
+            self._office_departure_protective_release_active.long()
+        )
+        return protected
+
+    def _resolve_material_shape_ids(self, body_names: tuple[str, ...]) -> list[int]:
+        """Map articulation body names to the flattened PhysX shape buffer."""
+        shape_counts: list[int] = []
+        for link_path in self._robot.root_physx_view.link_paths[0]:
+            rigid_view = self._robot._physics_sim_view.create_rigid_body_view(link_path)
+            shape_counts.append(int(rigid_view.max_shapes))
+        if len(shape_counts) != len(self._robot.body_names):
+            raise RuntimeError("articulation body and material-shape tables disagree")
+        if sum(shape_counts) != self._robot.root_physx_view.max_shapes:
+            raise RuntimeError("flattened articulation material-shape count is inconsistent")
+
+        shape_ids: list[int] = []
+        for body_name in body_names:
+            body_ids, _ = self._robot.find_bodies(body_name)
+            if len(body_ids) != 1:
+                raise RuntimeError(
+                    f"expected one {body_name} for castor material routing, found {body_ids}"
+                )
+            body_id = int(body_ids[0])
+            start = sum(shape_counts[:body_id])
+            shape_ids.extend(range(start, start + shape_counts[body_id]))
+        if not shape_ids:
+            raise RuntimeError("castor material routing resolved no collision shapes")
+        return shape_ids
+
+    def _randomize_physics(self, env_ids: torch.Tensor) -> None:
+        super()._randomize_physics(env_ids)
+        # The parent samples the drive contact range across all shapes. Restore
+        # the four sphere-proxy castors to their own low-friction uncertainty
+        # band so a simulated pivot does not scrub four artificial fixed feet.
+        count = len(env_ids)
+        strength = self._curriculum_strength()
+        self._castor_static_friction[env_ids] = self._blended_uniform(
+            count, self.cfg.castor_static_friction_range, 0.20, strength
+        )
+        self._castor_dynamic_friction[env_ids] = torch.minimum(
+            self._blended_uniform(
+                count, self.cfg.castor_dynamic_friction_range, 0.15, strength
+            ),
+            self._castor_static_friction[env_ids],
+        )
+        cpu_ids = env_ids.cpu()
+        shape_ids = torch.as_tensor(self._castor_material_shape_ids, dtype=torch.long)
+        materials = self._robot.root_physx_view.get_material_properties()
+        materials[cpu_ids[:, None], shape_ids[None, :], 0] = (
+            self._castor_static_friction[env_ids].cpu().unsqueeze(1)
+        )
+        materials[cpu_ids[:, None], shape_ids[None, :], 1] = (
+            self._castor_dynamic_friction[env_ids].cpu().unsqueeze(1)
+        )
+        materials[cpu_ids[:, None], shape_ids[None, :], 2] = 0.0
+        self._robot.root_physx_view.set_material_properties(materials, cpu_ids)
+
+    def _update_pivot_torque_limits(
+        self,
+        applied_actions: torch.Tensor,
+        heading_error: torch.Tensor,
+    ) -> None:
+        """Schedule the specified motor peak for stopped, large-angle pivots."""
+        targeted = torch.any(
+            self._segment_ids.unsqueeze(1) == self._targeted_recovery_ids.unsqueeze(0),
+            dim=1,
+        )
+        zero_translation_command = applied_actions[:, 0] <= -1.0 + 1.0e-6
+        active_turn_command = (
+            torch.abs(applied_actions[:, 1]) * self.cfg.angular_velocity_max_rad_s
+            >= self.cfg.peak_pivot_minimum_angular_command_rad_s
+        )
+        large_heading_error = (
+            torch.abs(heading_error)
+            >= self.cfg.peak_pivot_minimum_heading_error_rad
+        )
+        time_available = (
+            self._peak_torque_elapsed_s + 0.5 * self.step_dt
+            <= self.cfg.peak_motor_time_limit_s
+        )
+        self._peak_torque_active = (
+            targeted
+            & zero_translation_command
+            & active_turn_command
+            & large_heading_error
+            & time_available
+        )
+        self._peak_torque_elapsed_s.add_(
+            self._peak_torque_active.float() * self.step_dt
+        ).clamp_max_(self.cfg.peak_motor_time_limit_s)
+        self._episode_peak_torque_steps += self._peak_torque_active.long()
+
+        effort_limits = torch.full(
+            (self.num_envs, len(self._wheel_ids)),
+            self.cfg.rated_motor_effort_limit_nm,
+            device=self.device,
+        )
+        effort_limits[self._peak_torque_active] = self.cfg.peak_motor_effort_limit_nm
+        self._robot.write_joint_effort_limit_to_sim(
+            effort_limits,
+            joint_ids=self._wheel_ids,
+        )
+
+    def _apply_recovery_supervisor(self, heading_error: torch.Tensor) -> None:
+        """Stop for bounded pivots and cap translation near predicted contact.
+
+        Normal transit remains under the route actor and learned residual. For
+        the two declared 180-degree departures, this layer supplies the
+        route-planner turn sign and a minimum pivot rate only when a projected
+        one-second footprint sweep is clear.
+        """
+        office_departure = torch.any(
+            self._segment_ids.unsqueeze(1) == self._office_departure_ids.unsqueeze(0),
+            dim=1,
+        )
+        absolute_heading_error = torch.abs(heading_error)
+        self._pivot_supervisor_latched |= office_departure & (
+            absolute_heading_error
+            >= self.cfg.pivot_supervisor_engage_heading_error_rad
+        )
+        self._pivot_supervisor_latched &= ~(
+            (~office_departure)
+            | (
+                absolute_heading_error
+                <= self.cfg.pivot_supervisor_release_heading_error_rad
+            )
+        )
+
+        predictive_scope = torch.any(
+            self._segment_ids.unsqueeze(1)
+            == self._predictive_stop_segment_ids.unsqueeze(0),
+            dim=1,
+        )
+        self._predictive_stop_latched |= predictive_scope & (
+            self._planner_applied_clearance
+            <= self.cfg.predictive_stop_trigger_clearance_m
+        )
+        self._predictive_stop_latched &= ~(
+            (~predictive_scope)
+            | (
+                self._planner_applied_clearance
+                >= self.cfg.predictive_stop_release_clearance_m
+            )
+        )
+
+        self._recovery_supervisor_brake_active = (
+            self._pivot_supervisor_latched | self._predictive_stop_latched
+        )
+
+        normalized_pivot_rate = (
+            self.cfg.pivot_supervisor_angular_command_rad_s
+            / self.cfg.angular_velocity_max_rad_s
+        )
+        pivot_candidate = self._actions.clone()
+        pivot_candidate[:, 0] = -1.0
+        pivot_candidate[:, 1] = torch.sign(heading_error) * torch.maximum(
+            torch.abs(self._actions[:, 1]),
+            torch.full_like(self._actions[:, 1], normalized_pivot_rate),
+        )
+        pivot_clearance, _ = self._predict_candidate_geometry(
+            pivot_candidate.unsqueeze(1),
+            self._lidar_ranges(),
+        )
+        self._pivot_supervisor_steering_active = (
+            self._pivot_supervisor_latched
+            & (
+                pivot_clearance[:, 0]
+                >= self.cfg.planner_minimum_predicted_clearance_m
+            )
+        )
+        minimum, maximum = self.cfg.linear_velocity_range_mps
+        dynamic_crossing_creep = torch.any(
+            self._segment_ids.unsqueeze(1)
+            == self._dynamic_crossing_creep_segment_ids.unsqueeze(0),
+            dim=1,
+        )
+        creep_velocity = torch.where(
+            dynamic_crossing_creep,
+            torch.full_like(
+                self._actions[:, 0],
+                self.cfg.dynamic_crossing_predictive_creep_linear_velocity_mps,
+            ),
+            torch.full_like(
+                self._actions[:, 0],
+                self.cfg.predictive_creep_linear_velocity_mps,
+            ),
+        )
+        normalized_creep = (
+            2.0
+            * (creep_velocity - minimum)
+            / (maximum - minimum)
+            - 1.0
+        )
+        self._actions[:, 0] = torch.where(
+            self._pivot_supervisor_latched,
+            torch.full_like(self._actions[:, 0], -1.0),
+            self._actions[:, 0],
+        )
+        self._actions[:, 0] = torch.where(
+            self._predictive_stop_latched,
+            torch.minimum(
+                self._actions[:, 0],
+                normalized_creep,
+            ),
+            self._actions[:, 0],
+        )
+        self._actions[:, 1] = torch.where(
+            self._pivot_supervisor_steering_active,
+            pivot_candidate[:, 1],
+            self._actions[:, 1],
+        )
+        predictive_brake_fraction = 1.0 - (
+            creep_velocity - minimum
+        ) / (maximum - minimum)
+        supervisor_brake_fraction = torch.where(
+            self._pivot_supervisor_latched,
+            torch.ones_like(self._applied_brake_fraction),
+            torch.where(
+                self._predictive_stop_latched,
+                predictive_brake_fraction,
+                torch.zeros_like(self._applied_brake_fraction),
+            ),
+        )
+        self._applied_brake_fraction = torch.maximum(
+            self._applied_brake_fraction,
+            supervisor_brake_fraction,
+        )
+        self._episode_pivot_supervisor_steps += self._pivot_supervisor_latched.long()
+        self._episode_predictive_stop_steps += self._predictive_stop_latched.long()
+        self._episode_pivot_supervisor_steering_steps += (
+            self._pivot_supervisor_steering_active.long()
+        )
+
+        linear = minimum + (self._actions[:, 0] + 1.0) * 0.5 * (maximum - minimum)
+        angular = self._actions[:, 1] * self.cfg.angular_velocity_max_rad_s
+        half_track = self.cfg.wheel_track_m * self._wheel_track_scale / 2.0
+        wheel_radius = self.cfg.wheel_radius_m * self._wheel_radius_scale
+        self._wheel_targets[:, 0] = (linear - angular * half_track) / wheel_radius
+        self._wheel_targets[:, 1] = (linear + angular * half_track) / wheel_radius
+        self._wheel_targets *= self._motor_strength
+        self._wheel_targets.clamp_(
+            -self.cfg.wheel_speed_limit_rad_s,
+            self.cfg.wheel_speed_limit_rad_s,
+        )
+
+    def _pre_physics_step(self, actions: torch.Tensor) -> None:
+        super()._pre_physics_step(actions)
+        _, _, _, heading_error = self._goal_geometry()
+        if self.cfg.recovery_supervisor_enabled:
+            self._apply_recovery_supervisor(heading_error)
+        self._update_pivot_torque_limits(self._actions, heading_error)
+
+    def _get_rewards(self) -> torch.Tensor:
+        previous_abs_heading_error = self._previous_abs_heading_error.clone()
+        rewards = super()._get_rewards()
+        _, _, _, heading_error = self._goal_geometry()
+        abs_heading_error = torch.abs(heading_error)
+        targeted = torch.any(
+            self._segment_ids.unsqueeze(1) == self._targeted_recovery_ids.unsqueeze(0),
+            dim=1,
+        ).float()
+        turning = targeted * (
+            abs_heading_error > self.cfg.targeted_turn_alignment_rad
+        ).float()
+        pivoting = targeted * (
+            abs_heading_error > self.cfg.targeted_pivot_brake_threshold_rad
+        ).float()
+        aligned = targeted * (
+            abs_heading_error <= self.cfg.targeted_turn_alignment_rad
+        ).float()
+        heading_progress = (
+            previous_abs_heading_error - abs_heading_error
+        ).clamp(-0.35, 0.35)
+        maximum_normalized_correction = (
+            self.cfg.maximum_lateral_correction_rad_s
+            / self.cfg.angular_velocity_max_rad_s
+        )
+        signed_alignment = (
+            self._applied_steering_request * torch.sign(heading_error)
+        )
+        normalized_aligned_request = (
+            torch.relu(signed_alignment) / maximum_normalized_correction
+        ).clamp(0.0, 1.0)
+        normalized_wrong_request = (
+            torch.relu(-signed_alignment) / maximum_normalized_correction
+        ).clamp(0.0, 1.0)
+        accepted = self._planner_request_accepted.float()
+
+        targeted_heading_progress = (
+            targeted
+            * heading_progress
+            * self.cfg.reward_targeted_heading_progress
+        )
+        targeted_aligned_steering = (
+            turning
+            * accepted
+            * normalized_aligned_request
+            * self.cfg.reward_targeted_aligned_steering_request
+        )
+        targeted_wrong_steering = (
+            turning
+            * normalized_wrong_request
+            * self.cfg.penalty_targeted_wrong_steering_request
+        )
+        targeted_turn_inactivity = (
+            turning
+            * (1.0 - normalized_aligned_request)
+            * self.cfg.penalty_targeted_turn_inactivity
+        )
+        normalized_forward_command = (
+            (self._actions[:, 0] + 1.0) * 0.5
+        ).clamp(0.0, 1.0)
+        targeted_pivot_forward = (
+            pivoting
+            * normalized_forward_command
+            * self.cfg.penalty_targeted_pivot_forward
+        )
+        targeted_aligned_nonforward = (
+            aligned
+            * (1.0 - normalized_forward_command)
+            * self.cfg.penalty_targeted_aligned_nonforward
+        )
+
+        clearance_target = (
+            self._segment_ids == self.cfg.targeted_clearance_segment_id
+        ).float()
+        clearance_improvement = torch.relu(
+            self._planner_candidate_clearance - self._planner_baseline_clearance
+        ).clamp_max(0.50)
+        targeted_clearance_improvement = (
+            clearance_target
+            * accepted
+            * clearance_improvement
+            * self.cfg.reward_targeted_clearance_improvement
+        )
+        clearance_deficit = (
+            torch.relu(
+                self.cfg.targeted_low_clearance_m
+                - self._planner_applied_clearance
+            )
+            / self.cfg.targeted_low_clearance_m
+        ).clamp(0.0, 2.0)
+        targeted_low_clearance = (
+            clearance_target
+            * clearance_deficit
+            * self.cfg.penalty_targeted_low_clearance
+        )
+
+        shaped_rewards = (
+            ("targeted_heading_progress", targeted_heading_progress),
+            ("targeted_aligned_steering_request", targeted_aligned_steering),
+            ("targeted_wrong_steering_request", targeted_wrong_steering),
+            ("targeted_turn_inactivity", targeted_turn_inactivity),
+            ("targeted_pivot_forward", targeted_pivot_forward),
+            ("targeted_aligned_nonforward", targeted_aligned_nonforward),
+            ("targeted_clearance_improvement", targeted_clearance_improvement),
+            ("targeted_low_clearance", targeted_low_clearance),
+        )
+        for name, value in shaped_rewards:
+            self._episode_sums[name] += value
+            rewards += value
+        return rewards
+
+    def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
+        terminated, time_out = super()._get_dones()
+        if hasattr(self, "_episode_peak_torque_steps"):
+            self.extras["episode_outcomes"].update(
+                {
+                    "peak_torque_steps": self._episode_peak_torque_steps.clone(),
+                    "peak_torque_elapsed_s": self._peak_torque_elapsed_s.clone(),
+                    "final_peak_torque_active": self._peak_torque_active.clone(),
+                    "pivot_supervisor_steps": (
+                        self._episode_pivot_supervisor_steps.clone()
+                    ),
+                    "predictive_stop_steps": (
+                        self._episode_predictive_stop_steps.clone()
+                    ),
+                    "pivot_supervisor_steering_steps": (
+                        self._episode_pivot_supervisor_steering_steps.clone()
+                    ),
+                    "office_departure_protective_release_steps": (
+                        self._episode_office_departure_protective_release_steps.clone()
+                    ),
+                    "final_recovery_supervisor_brake_active": (
+                        self._recovery_supervisor_brake_active.clone()
+                    ),
+                }
+            )
+        return terminated, time_out
+
+    def _reset_idx(self, env_ids: Sequence[int] | torch.Tensor | None) -> None:
+        if env_ids is None:
+            env_ids = self._robot._ALL_INDICES
+        if not isinstance(env_ids, torch.Tensor):
+            env_ids = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
+        super()._reset_idx(env_ids)
+        if hasattr(self, "_targeted_recovery_ids"):
+            self._peak_torque_elapsed_s[env_ids] = 0.0
+            self._peak_torque_active[env_ids] = False
+            self._pivot_supervisor_latched[env_ids] = False
+            self._predictive_stop_latched[env_ids] = False
+            self._recovery_supervisor_brake_active[env_ids] = False
+            self._pivot_supervisor_steering_active[env_ids] = False
+            self._office_departure_protective_release_active[env_ids] = False
+            self._episode_peak_torque_steps[env_ids] = 0
+            self._episode_pivot_supervisor_steps[env_ids] = 0
+            self._episode_predictive_stop_steps[env_ids] = 0
+            self._episode_pivot_supervisor_steering_steps[env_ids] = 0
+            self._episode_office_departure_protective_release_steps[env_ids] = 0
+            rated_limits = torch.full(
+                (len(env_ids), len(self._wheel_ids)),
+                self.cfg.rated_motor_effort_limit_nm,
+                device=self.device,
+            )
+            self._robot.write_joint_effort_limit_to_sim(
+                rated_limits,
+                joint_ids=self._wheel_ids,
+                env_ids=env_ids,
+            )
+            self.extras["targeted_recovery"] = {
+                "segment_ids": tuple(self.cfg.targeted_recovery_segment_ids),
+                "sampling_weights": tuple(self.cfg.segment_sampling_weights),
+                "recovery_supervisor_enabled": self.cfg.recovery_supervisor_enabled,
+                "retention_segments_all_nonzero": all(
+                    weight > 0.0 for weight in self.cfg.segment_sampling_weights
+                ),
+                "motor_effort_contract": {
+                    "rated_nm": self.cfg.rated_motor_effort_limit_nm,
+                    "peak_nm": self.cfg.peak_motor_effort_limit_nm,
+                    "peak_time_limit_s": self.cfg.peak_motor_time_limit_s,
+                    "peak_scope": "targeted stationary large-heading pivots only",
+                },
+                "recovery_supervisor_contract": {
+                    "authority": (
+                        "remove translation; goal-signed steering only during "
+                        "clearance-projected office pivots"
+                    ),
+                    "pivot_segment_ids": tuple(self.cfg.office_departure_segment_ids),
+                    "pivot_engage_heading_error_rad": (
+                        self.cfg.pivot_supervisor_engage_heading_error_rad
+                    ),
+                    "pivot_release_heading_error_rad": (
+                        self.cfg.pivot_supervisor_release_heading_error_rad
+                    ),
+                    "pivot_angular_command_rad_s": (
+                        self.cfg.pivot_supervisor_angular_command_rad_s
+                    ),
+                    "office_departure_front_latch_release_clearance_m": (
+                        self.cfg.office_departure_protective_release_clearance_m
+                    ),
+                    "predictive_stop_segment_ids": tuple(
+                        self.cfg.predictive_stop_segment_ids
+                    ),
+                    "predictive_stop_trigger_clearance_m": (
+                        self.cfg.predictive_stop_trigger_clearance_m
+                    ),
+                    "predictive_stop_release_clearance_m": (
+                        self.cfg.predictive_stop_release_clearance_m
+                    ),
+                    "predictive_creep_linear_velocity_mps": (
+                        self.cfg.predictive_creep_linear_velocity_mps
+                    ),
+                    "dynamic_crossing_creep_segment_ids": tuple(
+                        self.cfg.dynamic_crossing_creep_segment_ids
+                    ),
+                    "dynamic_crossing_predictive_creep_linear_velocity_mps": (
+                        self.cfg.dynamic_crossing_predictive_creep_linear_velocity_mps
+                    ),
+                },
+                "castor_contact_contract": {
+                    "model": "fixed_sphere_low_friction_proxy",
+                    "static_friction_range": self.cfg.castor_static_friction_range,
+                    "dynamic_friction_range": self.cfg.castor_dynamic_friction_range,
+                    "shape_count": len(self._castor_material_shape_ids),
+                },
+            }
+            if "domain_randomization" in self.extras:
+                self.extras["domain_randomization"].update(
+                    {
+                        "castor_static_friction": self._castor_static_friction.clone(),
+                        "castor_dynamic_friction": self._castor_dynamic_friction.clone(),
+                    }
+                )
 
 
 @configclass

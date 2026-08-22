@@ -1,0 +1,536 @@
+{
+  "report_type": "held_out_phase3_dynamic_randomized_evaluation",
+  "generated_at_utc": "2026-08-22T14:43:25.674194+00:00",
+  "task": "Isaac-AISHA-BlockA-Phase3-TargetedRecovery-SensorNav-Direct-v0",
+  "training_contract_revision": "TRAINING-ENDTOEND-L",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase3l_clearance_planner_model_200.pt",
+    "sha256": "f58951c6e0f3bc7129ff479d925dc75472eca88f0dfec75c5436df12259d53e7"
+  },
+  "protocol": {
+    "policy": "deterministic_inference",
+    "seed": 9907,
+    "training_seed": 9806,
+    "episodes": 12,
+    "episodes_per_segment": 1,
+    "parallel_environments": 12,
+    "physics_rate_hz": 120,
+    "policy_rate_hz": 30,
+    "randomization": "full-strength Phase 3 domain randomization and dynamic-obstacle distribution; unseen sequence",
+    "phase3_curriculum_strength": 1.0,
+    "fixed_segment_id": null
+  },
+  "results": {
+    "success_count": 7,
+    "success_rate": 0.5833333333333334,
+    "collision_count": 3,
+    "collision_rate": 0.25,
+    "dynamic_obstacle_collision_count": 1,
+    "static_collision_count": 2,
+    "time_out_count": 2,
+    "time_out_rate": 0.16666666666666666,
+    "mean_episode_return": 45.36379750569662,
+    "mean_episode_steps": 643.5833333333334,
+    "mean_episode_duration_s": 21.45277777777778,
+    "mean_final_goal_distance_m": 1.8171868100762367,
+    "mean_abs_final_heading_error_deg": 33.030301060422914,
+    "mean_minimum_lidar_range_m": 1.1339419757326443,
+    "wall_clock_evaluation_s": 31.565258973998425,
+    "per_segment": [
+      {
+        "segment_id": 0,
+        "label": "home -> east_atrium_exit",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 1,
+        "label": "east_atrium_exit -> vice_principal_turn",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 2,
+        "label": "vice_principal_turn -> vice_principal_approach",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 3,
+        "label": "vice_principal_approach -> vice_principal",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 4,
+        "label": "vice_principal -> vice_principal_depart",
+        "episodes": 1,
+        "success": 0,
+        "collision": 0,
+        "time_out": 1,
+        "success_rate": 0.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 1.0
+      },
+      {
+        "segment_id": 5,
+        "label": "vice_principal_depart -> hallway_return",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 6,
+        "label": "hallway_return -> principal_turn",
+        "episodes": 1,
+        "success": 0,
+        "collision": 1,
+        "time_out": 0,
+        "success_rate": 0.0,
+        "collision_rate": 1.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 7,
+        "label": "principal_turn -> principal_approach",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 8,
+        "label": "principal_approach -> principal",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 9,
+        "label": "principal -> principal_depart",
+        "episodes": 1,
+        "success": 0,
+        "collision": 0,
+        "time_out": 1,
+        "success_rate": 0.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 1.0
+      },
+      {
+        "segment_id": 10,
+        "label": "principal_depart -> atrium_return",
+        "episodes": 1,
+        "success": 0,
+        "collision": 1,
+        "time_out": 0,
+        "success_rate": 0.0,
+        "collision_rate": 1.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 11,
+        "label": "atrium_return -> home_return",
+        "episodes": 1,
+        "success": 0,
+        "collision": 1,
+        "time_out": 0,
+        "success_rate": 0.0,
+        "collision_rate": 1.0,
+        "time_out_rate": 0.0
+      }
+    ]
+  },
+  "action_diagnostics": {
+    "dimensions": [
+      "brake_request",
+      "signed_clearance_projected_steering_request"
+    ],
+    "mapping": "action 0 negative requests braking and positive is a no-op; action 1 requests up to \u00b10.7 rad/s around the frozen route actor, subject to clearance projection and the independent protective stop",
+    "first_step_mean": [
+      0.0492074191570282,
+      0.019875705242156982
+    ],
+    "first_step_min": [
+      0.04158073663711548,
+      0.013059176504611969
+    ],
+    "first_step_max": [
+      0.055600568652153015,
+      0.026995474472641945
+    ],
+    "first_30_step_mean": [
+      0.053636983036994934,
+      0.024095740169286728
+    ],
+    "timeline": [
+      {
+        "step": 0,
+        "mean_action": [
+          0.0492074191570282,
+          0.019875705242156982
+        ]
+      },
+      {
+        "step": 15,
+        "mean_action": [
+          0.05284322425723076,
+          0.02431594394147396
+        ]
+      },
+      {
+        "step": 30,
+        "mean_action": [
+          0.05768444389104843,
+          0.0224405936896801
+        ]
+      },
+      {
+        "step": 60,
+        "mean_action": [
+          0.060775190591812134,
+          0.01795189455151558
+        ]
+      },
+      {
+        "step": 90,
+        "mean_action": [
+          0.06529109179973602,
+          0.02068442292511463
+        ]
+      },
+      {
+        "step": 120,
+        "mean_action": [
+          0.0672168880701065,
+          0.020018750801682472
+        ]
+      },
+      {
+        "step": 180,
+        "mean_action": [
+          0.06351746618747711,
+          0.022062858566641808
+        ]
+      },
+      {
+        "step": 300,
+        "mean_action": [
+          0.06677548587322235,
+          0.015000050887465477
+        ]
+      },
+      {
+        "step": 600,
+        "mean_action": [
+          0.06923568993806839,
+          0.012664674781262875
+        ]
+      },
+      {
+        "step": 1200,
+        "mean_action": [
+          0.06545208394527435,
+          0.021419838070869446
+        ]
+      },
+      {
+        "step": 2000,
+        "mean_action": [
+          0.05470132827758789,
+          0.023903613910079002
+        ]
+      }
+    ]
+  },
+  "planner_diagnostics": {
+    "episodes": 12,
+    "planner_steps": 7723,
+    "protective_stop_step_fraction": 0.022271138158746602,
+    "protective_stop_intervention_step_fraction": 0.022271138158746602,
+    "planner_request_step_fraction": 0.9396607535931633,
+    "planner_request_acceptance_rate": 0.930549813972716,
+    "mean_abs_normalized_steering_request": 0.015877048740512916,
+    "mean_brake_fraction": 0.0,
+    "mean_normalized_base_angular_command": -0.022597473889886446,
+    "mean_normalized_applied_angular_command": -0.01040048295470172,
+    "minimum_applied_projected_clearance_m": -0.2945992350578308,
+    "episodes_ending_with_protective_stop_latched": 0,
+    "peak_torque_step_fraction": 0.013207302861582287,
+    "mean_peak_torque_elapsed_s": 0.28333329161008197,
+    "per_segment": [
+      {
+        "segment_id": 0,
+        "episodes": 1,
+        "planner_steps": 309,
+        "protective_stop_step_fraction": 0.0,
+        "protective_stop_intervention_step_fraction": 0.0,
+        "planner_request_step_fraction": 0.13268608414239483,
+        "planner_request_acceptance_rate": 0.9512195121951219,
+        "mean_abs_normalized_steering_request": 0.02070434193780893,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": -0.145017827598794,
+        "mean_normalized_applied_angular_command": -0.1412882388216778,
+        "minimum_applied_projected_clearance_m": 0.8809523582458496,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.0,
+        "mean_peak_torque_elapsed_s": 0.0
+      },
+      {
+        "segment_id": 1,
+        "episodes": 1,
+        "planner_steps": 822,
+        "protective_stop_step_fraction": 0.0,
+        "protective_stop_intervention_step_fraction": 0.0,
+        "planner_request_step_fraction": 0.9963503649635036,
+        "planner_request_acceptance_rate": 0.8937728937728938,
+        "mean_abs_normalized_steering_request": 0.010850600082508838,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": -0.005474784948529988,
+        "mean_normalized_applied_angular_command": 0.001170788948263275,
+        "minimum_applied_projected_clearance_m": -0.04613828659057617,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.0,
+        "mean_peak_torque_elapsed_s": 0.0
+      },
+      {
+        "segment_id": 2,
+        "episodes": 1,
+        "planner_steps": 336,
+        "protective_stop_step_fraction": 0.07142857142857142,
+        "protective_stop_intervention_step_fraction": 0.07142857142857142,
+        "planner_request_step_fraction": 0.9910714285714286,
+        "planner_request_acceptance_rate": 0.975975975975976,
+        "mean_abs_normalized_steering_request": 0.018762521800540742,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": -0.23902216411772229,
+        "mean_normalized_applied_angular_command": -0.22105446315947033,
+        "minimum_applied_projected_clearance_m": 0.0632290244102478,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.0,
+        "mean_peak_torque_elapsed_s": 0.0
+      },
+      {
+        "segment_id": 3,
+        "episodes": 1,
+        "planner_steps": 181,
+        "protective_stop_step_fraction": 0.0,
+        "protective_stop_intervention_step_fraction": 0.0,
+        "planner_request_step_fraction": 0.9834254143646409,
+        "planner_request_acceptance_rate": 0.9887640449438202,
+        "mean_abs_normalized_steering_request": 0.011286574832642275,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": -0.06599119618452715,
+        "mean_normalized_applied_angular_command": -0.05599937649721599,
+        "minimum_applied_projected_clearance_m": 0.02661275863647461,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.0,
+        "mean_peak_torque_elapsed_s": 0.0
+      },
+      {
+        "segment_id": 4,
+        "episodes": 1,
+        "planner_steps": 2099,
+        "protective_stop_step_fraction": 0.0,
+        "protective_stop_intervention_step_fraction": 0.0,
+        "planner_request_step_fraction": 0.9866603144354454,
+        "planner_request_acceptance_rate": 1.0,
+        "mean_abs_normalized_steering_request": 0.022923201024390334,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": -0.03083574096039967,
+        "mean_normalized_applied_angular_command": -0.007912537209927439,
+        "minimum_applied_projected_clearance_m": 0.42009010910987854,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.014768937589328252,
+        "mean_peak_torque_elapsed_s": 1.033333659172058
+      },
+      {
+        "segment_id": 5,
+        "episodes": 1,
+        "planner_steps": 886,
+        "protective_stop_step_fraction": 0.04966139954853273,
+        "protective_stop_intervention_step_fraction": 0.04966139954853273,
+        "planner_request_step_fraction": 0.9153498871331829,
+        "planner_request_acceptance_rate": 0.8002466091245376,
+        "mean_abs_normalized_steering_request": 0.010837774513537405,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": 0.1149471877121764,
+        "mean_normalized_applied_angular_command": 0.1113500401344041,
+        "minimum_applied_projected_clearance_m": -0.2945992350578308,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.0,
+        "mean_peak_torque_elapsed_s": 0.0
+      },
+      {
+        "segment_id": 6,
+        "episodes": 1,
+        "planner_steps": 188,
+        "protective_stop_step_fraction": 0.0,
+        "protective_stop_intervention_step_fraction": 0.0,
+        "planner_request_step_fraction": 0.8404255319148937,
+        "planner_request_acceptance_rate": 0.6962025316455697,
+        "mean_abs_normalized_steering_request": 0.011649531252840732,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": 0.42314841899466005,
+        "mean_normalized_applied_angular_command": 0.43006527677495426,
+        "minimum_applied_projected_clearance_m": -0.1592937707901001,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.0,
+        "mean_peak_torque_elapsed_s": 0.0
+      },
+      {
+        "segment_id": 7,
+        "episodes": 1,
+        "planner_steps": 450,
+        "protective_stop_step_fraction": 0.2311111111111111,
+        "protective_stop_intervention_step_fraction": 0.2311111111111111,
+        "planner_request_step_fraction": 0.9066666666666666,
+        "planner_request_acceptance_rate": 0.6666666666666666,
+        "mean_abs_normalized_steering_request": 0.01771389431423611,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": 0.12912991841634114,
+        "mean_normalized_applied_angular_command": 0.13896327548556858,
+        "minimum_applied_projected_clearance_m": -0.2750166058540344,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.0,
+        "mean_peak_torque_elapsed_s": 0.0
+      },
+      {
+        "segment_id": 8,
+        "episodes": 1,
+        "planner_steps": 182,
+        "protective_stop_step_fraction": 0.0,
+        "protective_stop_intervention_step_fraction": 0.0,
+        "planner_request_step_fraction": 0.9835164835164835,
+        "planner_request_acceptance_rate": 0.8938547486033519,
+        "mean_abs_normalized_steering_request": 0.008838529115194803,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": 0.10885697668725318,
+        "mean_normalized_applied_angular_command": 0.1145882344507909,
+        "minimum_applied_projected_clearance_m": -0.05374723672866821,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.0,
+        "mean_peak_torque_elapsed_s": 0.0
+      },
+      {
+        "segment_id": 9,
+        "episodes": 1,
+        "planner_steps": 2099,
+        "protective_stop_step_fraction": 0.0,
+        "protective_stop_intervention_step_fraction": 0.0,
+        "planner_request_step_fraction": 0.9985707479752263,
+        "planner_request_acceptance_rate": 1.0,
+        "mean_abs_normalized_steering_request": 0.013410818128145098,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": -0.1279103214142151,
+        "mean_normalized_applied_angular_command": -0.11450996417099661,
+        "minimum_applied_projected_clearance_m": 0.5689924359321594,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.033825631252977606,
+        "mean_peak_torque_elapsed_s": 2.366665840148926
+      },
+      {
+        "segment_id": 10,
+        "episodes": 1,
+        "planner_steps": 75,
+        "protective_stop_step_fraction": 0.0,
+        "protective_stop_intervention_step_fraction": 0.0,
+        "planner_request_step_fraction": 0.96,
+        "planner_request_acceptance_rate": 0.6527777777777778,
+        "mean_abs_normalized_steering_request": 0.006035305658976237,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": 0.28777127583821616,
+        "mean_normalized_applied_angular_command": 0.29036226908365886,
+        "minimum_applied_projected_clearance_m": -0.07232660055160522,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.0,
+        "mean_peak_torque_elapsed_s": 0.0
+      },
+      {
+        "segment_id": 11,
+        "episodes": 1,
+        "planner_steps": 96,
+        "protective_stop_step_fraction": 0.0,
+        "protective_stop_intervention_step_fraction": 0.0,
+        "planner_request_step_fraction": 0.9479166666666666,
+        "planner_request_acceptance_rate": 0.8351648351648352,
+        "mean_abs_normalized_steering_request": 0.009005585064490637,
+        "mean_brake_fraction": 0.0,
+        "mean_normalized_base_angular_command": 0.20162437359491983,
+        "mean_normalized_applied_angular_command": 0.19868389765421549,
+        "minimum_applied_projected_clearance_m": -0.24055498838424683,
+        "episodes_ending_with_protective_stop_latched": 0,
+        "peak_torque_step_fraction": 0.0,
+        "mean_peak_torque_elapsed_s": 0.0
+      }
+    ]
+  },
+  "acceptance_gate": {
+    "scope": "phase3_randomized_segment_subgate_only",
+    "protocol_satisfied": false,
+    "passed": false,
+    "full_phase3_acceptance": false,
+    "pending_separate_gates": [
+      "Phase 2 static-route regression",
+      "12 live-administration dynamic scenarios"
+    ],
+    "requirements": {
+      "randomized_episodes_per_segment": 64,
+      "overall_success_rate_min": 0.9,
+      "dynamic_obstacle_collision_rate_max": 0.02,
+      "static_collision_rate_max": 0.05,
+      "every_enabled_segment_success_rate_min": 0.8,
+      "phase2_static_route_regression_success_rate_min": 0.9,
+      "live_administration_dynamic_scenarios": 12,
+      "live_administration_collisions_allowed": 0,
+      "physical_safety_claim_allowed": false
+    },
+    "observed": {
+      "overall_success_rate": 0.5833333333333334,
+      "dynamic_obstacle_collision_rate": 0.08333333333333333,
+      "static_collision_rate": 0.16666666666666666,
+      "minimum_enabled_segment_success_rate": 0.0
+    }
+  },
+  "claim_boundary": {
+    "supported": "Phase 3 randomized Block A segments with moving ray-visible person proxies",
+    "not_supported": [
+      "RTX-rendered LiDAR or depth-camera policy input",
+      "Nav2 integration",
+      "photoreal administration-office fidelity",
+      "sim-to-real transfer",
+      "physical robot release"
+    ],
+    "doorway_width": "presentation_assumption_not_measured"
+  }
+}

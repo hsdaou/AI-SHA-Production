@@ -1,0 +1,19 @@
+{
+  "brake_bias_shift": 0.0,
+  "brake_std": 0.1,
+  "changed_model_keys": [],
+  "checksum_file": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/phase3m_corrected_physics_bootstrap_model200/checkpoint.sha256",
+  "claim_boundary": "Checkpoint initialization evidence only. Optional final actor-head bias shifts are an auditable exploration warm start; they do not establish trained-policy performance or safety acceptance.",
+  "generated_at_utc": "2026-08-22T14:44:01.778934+00:00",
+  "hidden_actor_critic_recurrent_and_normalizers_changed": false,
+  "iteration_reset": true,
+  "learning_rate": 1e-05,
+  "optimizer_moments_reset": true,
+  "output_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/phase3m_corrected_physics_bootstrap_model200/model_0.pt",
+  "output_sha256": "0836adfcf0c18cb23a243d3317972b54e1ecb9de6bd6adaca6ff2550a2889b63",
+  "report_type": "phase3m_targeted_recovery_ppo_bootstrap",
+  "source_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase3l_clearance_planner_model_200.pt",
+  "source_sha256": "f58951c6e0f3bc7129ff479d925dc75472eca88f0dfec75c5436df12259d53e7",
+  "steering_bias_shift": 0.0,
+  "steering_std": 0.2
+}

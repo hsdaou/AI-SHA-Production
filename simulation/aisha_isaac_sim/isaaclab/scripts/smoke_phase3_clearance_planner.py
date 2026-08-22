@@ -16,6 +16,10 @@ from isaaclab.app import AppLauncher
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--num-envs", type=int, default=4)
 parser.add_argument("--steps", type=int, default=120)
+parser.add_argument(
+    "--task",
+    default="Isaac-AISHA-BlockA-Phase3-ClearancePlanner-SensorNav-Direct-v0",
+)
 parser.add_argument("--output-report", type=Path)
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
@@ -34,14 +38,18 @@ sys.path.insert(0, str(PROJECT_ROOT))
 import aisha_isaaclab.tasks  # noqa: E402,F401
 
 
-TASK_ID = "Isaac-AISHA-BlockA-Phase3-ClearancePlanner-SensorNav-Direct-v0"
+TASK_ID = args.task
 
 
 def main() -> int:
-    output = (
-        args.output_report
-        or PACKAGE_ROOT / "results" / "phase3l_clearance_planner_smoke_report.json"
+    is_targeted_recovery = "Phase3-TargetedRecovery" in TASK_ID
+    is_targeted_recovery_training = "Phase3-TargetedRecoveryTraining" in TASK_ID
+    default_report_name = (
+        "phase3m_targeted_recovery_smoke_report.json"
+        if is_targeted_recovery
+        else "phase3l_clearance_planner_smoke_report.json"
     )
+    output = args.output_report or PACKAGE_ROOT / "results" / default_report_name
     output.parent.mkdir(parents=True, exist_ok=True)
     cfg = parse_env_cfg(TASK_ID, device=args.device, num_envs=args.num_envs, use_fabric=True)
     env = gym.make(TASK_ID, cfg=cfg)
@@ -193,8 +201,144 @@ def main() -> int:
             ),
             "full_domain_randomization_strength": unwrapped._curriculum_strength() == 1.0,
         }
+        if is_targeted_recovery:
+            target_ids = tuple(cfg.targeted_recovery_segment_ids)
+            target_weight = sum(cfg.segment_sampling_weights[index] for index in target_ids)
+            original_segment_ids = unwrapped._segment_ids.clone()
+            original_peak_elapsed = unwrapped._peak_torque_elapsed_s.clone()
+            stationary_pivot = torch.zeros_like(base)
+            stationary_pivot[:, 0] = -1.0
+            stationary_pivot[:, 1] = 1.0
+            large_heading_error = torch.full(
+                (args.num_envs,), 3.141592653589793, device=unwrapped.device
+            )
+            unwrapped._segment_ids.fill_(target_ids[0])
+            unwrapped._peak_torque_elapsed_s.zero_()
+            unwrapped._update_pivot_torque_limits(
+                stationary_pivot, large_heading_error
+            )
+            peak_limits = unwrapped._robot.data.joint_effort_limits[
+                :, unwrapped._wheel_ids
+            ].clone()
+            translating = stationary_pivot.clone()
+            translating[:, 0] = 0.0
+            unwrapped._update_pivot_torque_limits(translating, large_heading_error)
+            translating_limits = unwrapped._robot.data.joint_effort_limits[
+                :, unwrapped._wheel_ids
+            ].clone()
+            unwrapped._peak_torque_elapsed_s.fill_(cfg.peak_motor_time_limit_s)
+            unwrapped._update_pivot_torque_limits(
+                stationary_pivot, large_heading_error
+            )
+            exhausted_limits = unwrapped._robot.data.joint_effort_limits[
+                :, unwrapped._wheel_ids
+            ].clone()
+            unwrapped._segment_ids.zero_()
+            unwrapped._peak_torque_elapsed_s.zero_()
+            unwrapped._update_pivot_torque_limits(
+                stationary_pivot, large_heading_error
+            )
+            non_target_limits = unwrapped._robot.data.joint_effort_limits[
+                :, unwrapped._wheel_ids
+            ].clone()
+            material_properties = (
+                unwrapped._robot.root_physx_view.get_material_properties()
+            )
+            castor_shape_ids = unwrapped._castor_material_shape_ids
+            castor_materials = material_properties[:, castor_shape_ids]
+            unwrapped._segment_ids.copy_(original_segment_ids)
+            unwrapped._peak_torque_elapsed_s.copy_(original_peak_elapsed)
+            checks.update(
+                {
+                    "recovery_supervisor_mode_matches_task": bool(
+                        cfg.recovery_supervisor_enabled
+                        == (not is_targeted_recovery_training)
+                    ),
+                    "target_segments_are_4_6_9": target_ids == (4, 6, 9),
+                    "all_route_segments_rehearsed": all(
+                        weight > 0.0 for weight in cfg.segment_sampling_weights
+                    ),
+                    "target_segments_receive_majority_of_resets": (
+                        target_weight / sum(cfg.segment_sampling_weights) > 0.50
+                    ),
+                    "targeted_shaping_does_not_bypass_planner": bool(
+                        torch.all(
+                            unwrapped._planner_applied_clearance
+                            >= torch.where(
+                                unwrapped._planner_request_accepted,
+                                unwrapped._planner_candidate_clearance,
+                                unwrapped._planner_baseline_clearance,
+                            )
+                            - 1.0e-7
+                        ).item()
+                    ),
+                    "stationary_targeted_pivot_uses_declared_peak_torque": bool(
+                        torch.all(peak_limits == cfg.peak_motor_effort_limit_nm).item()
+                    ),
+                    "translation_command_retains_rated_torque": bool(
+                        torch.all(
+                            translating_limits == cfg.rated_motor_effort_limit_nm
+                        ).item()
+                    ),
+                    "peak_time_limit_is_enforced": bool(
+                        torch.all(
+                            exhausted_limits == cfg.rated_motor_effort_limit_nm
+                        ).item()
+                    ),
+                    "non_target_segment_retains_rated_torque": bool(
+                        torch.all(
+                            non_target_limits == cfg.rated_motor_effort_limit_nm
+                        ).item()
+                    ),
+                    "castor_proxy_static_friction_stays_in_low_band": bool(
+                        torch.all(
+                            (castor_materials[..., 0]
+                             >= cfg.castor_static_friction_range[0] - 1.0e-7)
+                            & (castor_materials[..., 0]
+                               <= cfg.castor_static_friction_range[1] + 1.0e-7)
+                        ).item()
+                    ),
+                    "castor_proxy_dynamic_friction_stays_in_low_band": bool(
+                        torch.all(
+                            (castor_materials[..., 1]
+                             >= cfg.castor_dynamic_friction_range[0] - 1.0e-7)
+                            & (castor_materials[..., 1]
+                               <= cfg.castor_dynamic_friction_range[1] + 1.0e-7)
+                        ).item()
+                    ),
+                    "office_pivot_supervisor_is_limited_to_segments_4_and_9": (
+                        tuple(cfg.office_departure_segment_ids) == (4, 9)
+                    ),
+                    "office_pivot_supervisor_has_heading_hysteresis": (
+                        cfg.pivot_supervisor_release_heading_error_rad
+                        < cfg.pivot_supervisor_engage_heading_error_rad
+                    ),
+                    "office_pivot_rate_is_within_peak_and_task_limits": (
+                        cfg.peak_pivot_minimum_angular_command_rad_s
+                        <= cfg.pivot_supervisor_angular_command_rad_s
+                        <= cfg.angular_velocity_max_rad_s
+                    ),
+                    "predictive_clearance_guard_is_scoped": (
+                        tuple(cfg.predictive_stop_segment_ids) == (6, 10, 11)
+                    ),
+                    "predictive_clearance_guard_has_hysteresis": (
+                        cfg.predictive_stop_trigger_clearance_m
+                        < cfg.predictive_stop_release_clearance_m
+                    ),
+                    "dynamic_crossing_creep_is_bounded": (
+                        cfg.linear_velocity_range_mps[0]
+                        <= cfg.dynamic_crossing_predictive_creep_linear_velocity_mps
+                        <= cfg.predictive_creep_linear_velocity_mps
+                        < cfg.linear_velocity_range_mps[1]
+                    ),
+                }
+            )
         report = {
-            "report_type": "phase3l_clearance_planner_runtime_smoke",
+            "report_type": (
+                "phase3m_targeted_recovery_runtime_smoke"
+                if is_targeted_recovery
+                else "phase3l_clearance_planner_runtime_smoke"
+            ),
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
             "task": TASK_ID,
             "num_envs": args.num_envs,
@@ -225,6 +369,49 @@ def main() -> int:
                 ),
                 "observed_during_environment_rollout": protective_stop_observed,
             },
+            "targeted_peak_torque": (
+                {
+                    "rated_effort_limit_nm": cfg.rated_motor_effort_limit_nm,
+                    "peak_effort_limit_nm": cfg.peak_motor_effort_limit_nm,
+                    "peak_time_limit_s": cfg.peak_motor_time_limit_s,
+                    "scope": "targeted stationary large-heading pivots only",
+                }
+                if is_targeted_recovery
+                else None
+            ),
+            "targeted_castor_contact": (
+                {
+                    "model": "fixed_sphere_low_friction_proxy",
+                    "static_friction_range": cfg.castor_static_friction_range,
+                    "dynamic_friction_range": cfg.castor_dynamic_friction_range,
+                    "material_shape_count": len(unwrapped._castor_material_shape_ids),
+                }
+                if is_targeted_recovery
+                else None
+            ),
+            "targeted_recovery_supervisor": (
+                {
+                    "office_departure_segment_ids": cfg.office_departure_segment_ids,
+                    "pivot_engage_heading_error_rad": (
+                        cfg.pivot_supervisor_engage_heading_error_rad
+                    ),
+                    "pivot_release_heading_error_rad": (
+                        cfg.pivot_supervisor_release_heading_error_rad
+                    ),
+                    "pivot_angular_command_rad_s": (
+                        cfg.pivot_supervisor_angular_command_rad_s
+                    ),
+                    "predictive_guard_segment_ids": cfg.predictive_stop_segment_ids,
+                    "predictive_creep_linear_velocity_mps": (
+                        cfg.predictive_creep_linear_velocity_mps
+                    ),
+                    "dynamic_crossing_creep_linear_velocity_mps": (
+                        cfg.dynamic_crossing_predictive_creep_linear_velocity_mps
+                    ),
+                }
+                if is_targeted_recovery
+                else None
+            ),
             "checks": checks,
             "passed": all(checks.values()),
             "claim_boundary": (

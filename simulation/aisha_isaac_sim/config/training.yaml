@@ -564,6 +564,67 @@ phase3_curriculum:
       presentation_policy_replaced: false
       decision: "model 200 dominates both controls, adding 10 successes while reducing original-route collisions by 8 and hard-stop-only collisions by 1; retain as the leading protected-navigation candidate, but do not claim or deploy it because it does not pass the declared Phase 3 success/collision rates or 64-episode-per-segment protocol"
     next_architecture_gate: "retain model 200 and the independent protective stop; focus training and stop-field tuning on office-departure pivots (segments 4 and 9) and segment-6 static clearance, then rerun matched screens before the declared Phase 3, static-regression and live-scene gates"
+  targeted_recovery_gate:
+    status: "completed_candidate_packaged_full_phase3_not_accepted"
+    runtime_gym_id: "Isaac-AISHA-BlockA-Phase3-TargetedRecovery-SensorNav-Direct-v0"
+    training_gym_id: "Isaac-AISHA-BlockA-Phase3-TargetedRecoveryTraining-SensorNav-Direct-v0"
+    architecture: "trained recurrent brake/steering residual plus hash-locked route actor, rectangular-footprint clearance projection, independent front-LiDAR stop, bounded office-pivot primitive, predictive creep and timed peak torque"
+    policy_observation_count: 46
+    privileged_obstacle_state_used_by_policy: false
+    targeted_segment_ids: [4, 6, 9]
+    office_departure_segment_ids: [4, 9]
+    corrected_contact_model:
+      issue: "domain randomization had overwritten the four declared fixed-sphere caster proxies with drive-wheel friction"
+      caster_model: "fixed_sphere_low_friction_proxy"
+      caster_static_friction: [0.15, 0.25]
+      caster_dynamic_friction: [0.10, 0.20]
+      manufacturer_caster_validation_available: false
+    recovery_supervisor:
+      pivot_engage_heading_error_deg: 60.0
+      pivot_release_heading_error_deg: 25.0
+      pivot_angular_command_rad_s: 0.55
+      pivot_steering_requires_projected_clearance_m: 0.04
+      normal_transit_uses_learned_policy: true
+      predictive_guard_segment_ids: [6, 10, 11]
+      predictive_guard_trigger_clearance_m: 0.10
+      predictive_guard_release_clearance_m: 0.22
+      static_creep_linear_velocity_mps: 0.10
+      dynamic_crossing_creep_linear_velocity_mps: 0.08
+    motor_effort_contract:
+      rated_nm: 6.0
+      peak_nm: 18.0
+      peak_time_limit_s: 3.0
+      scope: "stationary large-heading pivots on targeted recovery legs only"
+      source_status: "repository hardware specification; verify against the purchased motor/controller manual before physical commissioning"
+    runtime_smoke:
+      report: "results/phase3m_targeted_recovery_smoke_report.json"
+      checks_passed: 38
+      checks_total: 38
+      passed: true
+    ppo_training:
+      run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_18-44-15_phase3m_corrected_physics_recovery_seed9807"
+      seed: 9807
+      iterations: 150
+      selected_iteration: 125
+      parallel_environments: 32
+      steps_per_environment_per_iteration: 64
+      policy_transitions: 307200
+      deterministic_recovery_supervisor_enabled: false
+      report: "results/phase3m_targeted_recovery_training_report.json"
+      progress_plot: "results/phase3m_targeted_recovery_training_progress.png"
+    selected_candidate:
+      checkpoint: "isaaclab/checkpoints/aisha_phase3m_hybrid_recovery_model_125.pt"
+      checkpoint_sha256: "bc8727e3ea42c8b29ca74fa5a535fd37b1600633ffd8bf606b02220a557c1a0d"
+      comparison_report: "results/phase3m_targeted_recovery_comparison.json"
+      seed_9701: {successes: 46, dynamic_collisions: 2, static_collisions: 0, time_outs: 0}
+      seed_9702: {successes: 43, dynamic_collisions: 4, static_collisions: 1, time_outs: 0}
+      target_segment_seed_9701_successes: {segment_4: "4/4", segment_6: "4/4", segment_9: "4/4"}
+      candidate_packaged: true
+      full_phase3_accepted: false
+      presentation_policy_replaced: false
+      physical_release: false
+      decision: "package as a Phase 3M architecture candidate because it repairs all targeted legs and strongly improves completion; do not call it fully trained or safe because dynamic contacts remain seed-sensitive and the 64-episode-per-segment, static-regression and live-scene gates remain pending"
+    next_architecture_gate: "freeze the successful pivot/clearance stack and train a 360-degree dynamic-obstacle safety layer; then execute 64 episodes per segment, Phase 2 static regression and 12 collision-free live-administration dynamic scenarios"
   runtime_smoke:
     report: "results/phase3_dynamic_yielding_smoke_report.json"
     environments: 4
@@ -710,8 +771,12 @@ release:
   phase3_clearance_planner_training_completed: true
   phase3_clearance_planner_architecture_candidate_promoted: true
   phase3_clearance_planner_full_acceptance_passed: false
+  phase3_targeted_recovery_training_completed: true
+  phase3_targeted_recovery_candidate_packaged: true
+  phase3_targeted_recovery_target_segments_passed: true
+  phase3_targeted_recovery_full_acceptance_passed: false
   phase3_dynamic_obstacle_checkpoint_accepted: false
   phase3_geometry_rtx_refinement_available: true
   nav2_integrated: false
   physical_robot_release: false
-  required_next_gate: "retain the promoted Phase 3L model 200 and independent protective stop; recover office-departure pivots and segment-6 static clearance, then pass 64 randomized episodes per segment and the Phase 2 static regression before 12 live-scene dynamic scenarios; site survey, Nav2 and sim-to-real commissioning remain separate"
+  required_next_gate: "freeze the Phase 3M pivot/clearance recovery candidate and train a 360-degree dynamic-obstacle safety layer; then pass 64 randomized episodes per segment, the Phase 2 static regression and 12 collision-free live-scene dynamic scenarios; site survey, Nav2 and sim-to-real commissioning remain separate"

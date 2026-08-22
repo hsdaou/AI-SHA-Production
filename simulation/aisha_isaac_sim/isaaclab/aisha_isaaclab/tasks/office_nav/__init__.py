@@ -271,6 +271,46 @@ gym.register(
 
 
 gym.register(
+    id="Isaac-AISHA-BlockA-Phase3-TargetedRecovery-SensorNav-Direct-v0",
+    entry_point=(
+        "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+        "AishaPhase3TargetedRecoveryEnv"
+    ),
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+            "AishaPhase3TargetedRecoveryEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+            "AishaPhase3TargetedRecoveryPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Isaac-AISHA-BlockA-Phase3-TargetedRecoveryTraining-SensorNav-Direct-v0",
+    entry_point=(
+        "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+        "AishaPhase3TargetedRecoveryEnv"
+    ),
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+            "AishaPhase3TargetedRecoveryTrainingEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+            "AishaPhase3TargetedRecoveryPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
     id="Isaac-AISHA-BlockA-Phase3-Segment6Rehearsal-SensorNav-Direct-v0",
     entry_point=(
         "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"

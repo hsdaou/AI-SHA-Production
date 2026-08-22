@@ -1,0 +1,76 @@
+{
+  "report_type": "phase3m_targeted_recovery_architecture_comparison",
+  "generated_at_utc": "2026-08-22T15:18:48Z",
+  "protocol": {
+    "policy": "deterministic_inference",
+    "route_segments": 12,
+    "episodes_per_segment": 4,
+    "episodes_per_seed": 48,
+    "randomization": "full-strength Phase 3 domain randomization and moving-person distribution",
+    "note": "The Phase 3L reference and Phase 3M hybrid are an architecture progression, not a single-variable ablation: Phase 3M also restores the declared low-friction caster contact class and adds bounded recovery supervision."
+  },
+  "selected_candidate": {
+    "checkpoint": "isaaclab/checkpoints/aisha_phase3m_hybrid_recovery_model_125.pt",
+    "checkpoint_sha256": "bc8727e3ea42c8b29ca74fa5a535fd37b1600633ffd8bf606b02220a557c1a0d",
+    "training_run": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_18-44-15_phase3m_corrected_physics_recovery_seed9807",
+    "training_iterations": 150,
+    "training_task": "Isaac-AISHA-BlockA-Phase3-TargetedRecoveryTraining-SensorNav-Direct-v0",
+    "deterministic_recovery_supervisor_enabled_during_training": false,
+    "selected_iteration": 125,
+    "policy_transitions": 307200,
+    "runtime_architecture": "trained recurrent brake/steering residual plus hash-locked route actor, clearance projection, front-LiDAR stop, bounded office-pivot primitive, predictive creep and a timed 6/18 Nm actuator gate"
+  },
+  "seed_9701": {
+    "phase3l_reference": {
+      "report": "results/phase3l_model200_balanced_seed9701_screen4.json",
+      "successes": 29,
+      "dynamic_collisions": 1,
+      "static_collisions": 4,
+      "time_outs": 14,
+      "target_segments": {
+        "4": {"successes": 0, "episodes": 4},
+        "6": {"successes": 2, "episodes": 4},
+        "9": {"successes": 0, "episodes": 4}
+      }
+    },
+    "phase3m_selected": {
+      "report": "results/phase3m_hybrid_model125_balanced_seed9701.json",
+      "report_sha256": "c372ca3daf7470a7d231954e2221812caf8e82da01705e09da06933cf1ae2524",
+      "successes": 46,
+      "success_rate": 0.9583333333333334,
+      "dynamic_collisions": 2,
+      "static_collisions": 0,
+      "time_outs": 0,
+      "target_segments": {
+        "4": {"successes": 4, "episodes": 4},
+        "6": {"successes": 4, "episodes": 4},
+        "9": {"successes": 4, "episodes": 4}
+      }
+    },
+    "delta": {
+      "successes": 17,
+      "dynamic_collisions": 1,
+      "static_collisions": -4,
+      "time_outs": -14
+    }
+  },
+  "independent_seed_9702": {
+    "report": "results/phase3m_hybrid_model125_balanced_seed9702.json",
+    "report_sha256": "6fdb29f42a495a964369a6d1ee0c34d403210f0bc0b6e61ed0f10703bef0328a",
+    "successes": 43,
+    "success_rate": 0.8958333333333334,
+    "dynamic_collisions": 4,
+    "static_collisions": 1,
+    "time_outs": 0
+  },
+  "decision": {
+    "targeted_recovery_candidate_packaged": true,
+    "office_departure_and_segment6_gate_passed_on_seed_9701": true,
+    "full_phase3_acceptance_passed": false,
+    "presentation_policy_replaced": false,
+    "physical_release": false,
+    "reason": "The candidate fixes the targeted office departures and segment-6 turn and strongly improves route completion. Dynamic-obstacle results remain seed-sensitive, the independent seed falls below the 90 percent success threshold, and neither run satisfies the declared 64-episodes-per-segment protocol."
+  },
+  "next_gate": "train and validate a 360-degree dynamic-obstacle safety layer without changing the successful office-pivot geometry; then run 64 episodes per segment, the Phase 2 static regression, and 12 live-administration dynamic scenarios",
+  "claim_boundary": "Simulation architecture-selection evidence only. This is not human-safety certification, full Phase 3 acceptance, sim-to-real validation, or permission for physical deployment."
+}

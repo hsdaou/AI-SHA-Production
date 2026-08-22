@@ -251,6 +251,33 @@
   the declared thresholds, and the screen used 4 rather than 64 episodes per
   segment. The next target is office-departure pivot recovery on segments 4
   and 9 plus segment-6 static-clearance recovery.
+- Phase 3M executed that targeted gate. Runtime diagnosis found that the Phase
+  3 material randomizer had overwritten all four fixed-sphere caster proxies
+  with drive-wheel friction. The targeted task restores their disclosed low
+  0.15-0.25 static / 0.10-0.20 dynamic friction bands and gates the declared
+  6 Nm continuous / 18 Nm peak motor effort to at most three seconds of a
+  stationary, large-heading recovery pivot.
+- The Phase 3M runtime combines the trained recurrent residual with a narrowly
+  scoped hierarchical supervisor: only office departures 4 and 9 receive a
+  goal-signed 0.55 rad/s pivot after a one-second rectangular-footprint
+  clearance check. Tight return segments 6, 10 and 11 may be capped at
+  0.10 m/s, or 0.08 m/s on the dynamic segment-10 crossing. Normal route
+  transit remains under learned policy inference. The Isaac runtime contract
+  passes 38/38 checks.
+- Corrected-physics PPO ran without deterministic recovery actions for 150
+  iterations / 307,200 transitions. The runtime task is registered separately
+  from that reproducible training curriculum. Model 125 is
+  packaged as `aisha_phase3m_hybrid_recovery_model_125.pt` with SHA-256
+  `bc8727e3ea42c8b29ca74fa5a535fd37b1600633ffd8bf606b02220a557c1a0d`.
+  On seed 9701 it reached 46/48 successes, 2 dynamic collisions, no static
+  collisions and no timeouts. Segments 4, 6 and 9 each passed 4/4, versus
+  Phase 3L's 0/4, 2/4 and 0/4 on the same seed.
+- The independent seed-9702 screen reached 43/48 with 4 dynamic and 1 static
+  collision. The candidate therefore fixes the targeted route transitions but
+  is not full Phase 3 acceptance, not a replacement presentation policy and
+  not a physical release. The next gate freezes this pivot/clearance stack and
+  trains a 360-degree dynamic-obstacle safety layer before the declared 64
+  episodes per segment, Phase 2 regression and 12 live-scene scenarios.
 - Geometry refinement `GEOMETRY-RTX-PHASE3-A` locks the source PDF hash and uses
   printed page-2 Block A dimensions for the 12.75 m atrium, 2.80 m hall,
   7.80 x 6.30 m conference room and 4.73 m Principal frontage. Door widths,
@@ -397,6 +424,13 @@ claim. See `config/physics_materials.yaml`.
 - `phase3l_zero_policy_balanced_seed9701.json`
 - `phase3l_model200_balanced_seed9701_screen4.json`
 - `phase3l_clearance_planner_comparison.json`
+- `phase3m_corrected_physics_bootstrap_report.json`
+- `phase3m_targeted_recovery_smoke_report.json`
+- `phase3m_targeted_recovery_training_report.json`
+- `phase3m_targeted_recovery_training_progress.png`
+- `phase3m_hybrid_model125_balanced_seed9701.json`
+- `phase3m_hybrid_model125_balanced_seed9702.json`
+- `phase3m_targeted_recovery_comparison.json`
 - `phase3_geometry_rtx_refinement_validation.json`
 - `phase3_launch_status.json`
 - `PRODUCTION_REPOSITORY_REVIEW.md`
