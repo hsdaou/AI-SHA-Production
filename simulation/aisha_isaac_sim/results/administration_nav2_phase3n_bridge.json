@@ -1,0 +1,76 @@
+{
+  "report_type": "administration_nav2_bridge",
+  "generated_at_utc": "2026-08-22T23:39:36.776444+00:00",
+  "status": "bridge_smoke_completed",
+  "task": "Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Presentation-Direct-v0",
+  "steps_completed": 12101,
+  "control_period_s": 0.03333333333333333,
+  "topics": {
+    "subscribed": [
+      "/cmd_vel"
+    ],
+    "published": [
+      "/clock",
+      "/odom",
+      "/tf",
+      "/tf_static",
+      "/scan",
+      "/front_scan"
+    ],
+    "message_counts": {
+      "clock": 12101,
+      "odom": 12101,
+      "tf": 12101,
+      "tf_static": 3,
+      "scan": 4034,
+      "front_scan": 6051
+    }
+  },
+  "command_constraints": {
+    "maximum_forward_mps": 0.3,
+    "reverse_allowed": false,
+    "lateral_motion_allowed": false,
+    "maximum_angular_rad_s": 0.55,
+    "minimum_in_place_angular_rad_s": 0.3,
+    "command_watchdog_s": 0.3,
+    "front_stop_trigger_m": 0.6,
+    "front_stop_release_m": 0.75,
+    "minimum_rotation_clearance_m": 0.08
+  },
+  "events": {
+    "rejected_reverse_commands": 0,
+    "rejected_lateral_commands": 0,
+    "watchdog_stops": 0,
+    "obstacle_stops": 0,
+    "in_place_deadband_compensations": 0,
+    "front_latch_rotation_escape_steps": 0,
+    "rotation_guard_stops": 0,
+    "mission_complete_signal_received": true,
+    "episode_reset_gate_detected": false
+  },
+  "learned_safety": {
+    "enabled": true,
+    "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt",
+    "checkpoint_sha256": "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b",
+    "checkpoint_is_accepted_phase3n": true,
+    "base_command_source": "nav2_cmd_vel",
+    "authority_steps": 440,
+    "brake_steps": 57,
+    "mean_brake_fraction_while_active": 0.0028463265011933717,
+    "maximum_brake_fraction": 0.04112858697772026,
+    "minimum_360_clearance_m": 0.14,
+    "deterministic_static_integration_gate": true
+  },
+  "final_position_xy_m": [
+    0.28012,
+    -0.26113
+  ],
+  "minimum_front_range_m": 0.6173,
+  "minimum_ring_clearance_m": 0.14,
+  "learned_policy_coupled": true,
+  "learned_360_safety_coupled": true,
+  "frozen_phase3m_local_navigation_coupled": false,
+  "physical_release": false,
+  "claim_boundary": "With a Phase 3N checkpoint this run proves live Nav2-to-learned-safety arbitration in the provisional Isaac scene. It does not couple the frozen Phase 3M local navigator, replace the formal dynamic-obstacle evaluation, prove stopping distance or sim-to-real performance, or authorize physical deployment. Without a checkpoint it proves Isaac physics/ROS exchange only.",
+  "passed": true
+}

@@ -1,6 +1,6 @@
 {
   "report_type": "measured_site_nav2_preparation",
-  "generated_at_utc": "2026-08-22T21:58:04.532835+00:00",
+  "generated_at_utc": "2026-08-22T23:41:18.148319+00:00",
   "status": "preparation_ready_runtime_gated",
   "passed": true,
   "runtime_ready": false,
@@ -51,21 +51,21 @@
   "preparation_checks_passed": 34,
   "preparation_checks_total": 34,
   "runtime_gates": {
-    "nav2_packages_installed": false,
+    "nav2_packages_installed": true,
     "isaac_ros2_bridge_extension_present": true,
     "measured_capture_complete": false,
     "measured_occupancy_map_configured": false
   },
+  "nav2_runtime_root": "/home/robot-wst/.local/share/ai_sha_ros_jazzy_overlay/root/opt/ros/jazzy",
   "nav2_package_presence": {
-    "nav2_bringup": false,
-    "nav2_amcl": false,
-    "nav2_controller": false,
-    "nav2_costmap_2d": false,
-    "nav2_dwb_controller": false,
-    "nav2_navfn_planner": false
+    "nav2_bringup": true,
+    "nav2_amcl": true,
+    "nav2_controller": true,
+    "nav2_costmap_2d": true,
+    "nav2_dwb_controller": true,
+    "nav2_navfn_planner": true
   },
   "blockers": [
-    "Nav2 Jazzy packages are not installed in /opt/ros/jazzy.",
     "The measured iPhone LiDAR/RoomPlan capture has not been supplied yet.",
     "A measured-site occupancy-map YAML has not been generated or configured yet."
   ],

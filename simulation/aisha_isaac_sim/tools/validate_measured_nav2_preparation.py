@@ -100,7 +100,11 @@ def main() -> int:
         type=Path,
         default=SIM_ROOT / "results" / "measured_site_nav2_preparation_report.json",
     )
-    parser.add_argument("--ros-root", type=Path, default=Path("/opt/ros/jazzy"))
+    parser.add_argument(
+        "--ros-root",
+        type=Path,
+        help="explicit ROS prefix; otherwise check system Jazzy and the AI-SHA user overlay",
+    )
     parser.add_argument("--strict-runtime", action="store_true")
     args = parser.parse_args()
 
@@ -218,7 +222,28 @@ def main() -> int:
     preparation_checks = {**contract_checks, **nav2_checks, **asset_checks}
     preparation_passed = all(preparation_checks.values())
 
-    packages = package_presence(args.ros_root)
+    overlay_root = Path(
+        os.environ.get(
+            "AI_SHA_ROS_OVERLAY_ROOT",
+            str(Path.home() / ".local/share/ai_sha_ros_jazzy_overlay/root"),
+        )
+    ) / "opt/ros/jazzy"
+    candidate_roots = (
+        [args.ros_root]
+        if args.ros_root is not None
+        else [Path("/opt/ros/jazzy"), overlay_root]
+    )
+    package_candidates = [
+        (root, package_presence(root)) for root in candidate_roots
+    ]
+    selected_ros_root, packages = next(
+        (
+            (root, presence)
+            for root, presence in package_candidates
+            if all(presence.values())
+        ),
+        package_candidates[0],
+    )
     measured_capture_complete = manifest.get("status") not in {None, "awaiting_capture"}
     measured_map_configured = bool(nav2["map_server"]["ros__parameters"].get("yaml_filename"))
     bridge_extension = Path(
@@ -233,7 +258,10 @@ def main() -> int:
     runtime_ready = preparation_passed and all(runtime_gates.values())
     blockers = []
     if not all(packages.values()):
-        blockers.append("Nav2 Jazzy packages are not installed in /opt/ros/jazzy.")
+        blockers.append(
+            "Nav2 Jazzy packages were not found in any checked ROS prefix: "
+            + ", ".join(str(root) for root in candidate_roots)
+        )
     if not measured_capture_complete:
         blockers.append("The measured iPhone LiDAR/RoomPlan capture has not been supplied yet.")
     if not measured_map_configured:
@@ -259,6 +287,7 @@ def main() -> int:
         "preparation_checks_passed": sum(preparation_checks.values()),
         "preparation_checks_total": len(preparation_checks),
         "runtime_gates": runtime_gates,
+        "nav2_runtime_root": str(selected_ros_root.resolve()),
         "nav2_package_presence": packages,
         "blockers": blockers,
         "claim_boundary": (

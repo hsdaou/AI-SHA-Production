@@ -117,6 +117,16 @@ PHASE3_DYNAMIC_SAFETY_LIVE_ENVIRONMENT = (
     / "office_nav"
     / "administration_dynamic_safety_env.py"
 )
+NAV2_PHASE3N_BRIDGE = (
+    Path(__file__).resolve().parents[1]
+    / "scripts"
+    / "run_administration_nav2_bridge.py"
+)
+NAV2_PHASE3N_VALIDATOR = (
+    Path(__file__).resolve().parents[2]
+    / "tools"
+    / "validate_administration_nav2_phase3n_integration.py"
+)
 PACKAGED_PHASE3N_CHECKPOINT = (
     Path(__file__).resolve().parents[1]
     / "checkpoints"
@@ -754,6 +764,8 @@ class TrainingConfigTests(unittest.TestCase):
         launcher = PHASE3_DYNAMIC_SAFETY_LAUNCHER.read_text(encoding="utf-8")
         smoke = PHASE3_DYNAMIC_SAFETY_SMOKE.read_text(encoding="utf-8")
         player = ROUTE_PLAYER.read_text(encoding="utf-8")
+        nav2_bridge = NAV2_PHASE3N_BRIDGE.read_text(encoding="utf-8")
+        nav2_validator = NAV2_PHASE3N_VALIDATOR.read_text(encoding="utf-8")
 
         self.assertIn("AishaPhase3DynamicSafetyEnvCfg", source)
         self.assertIn("action_space = 1", source)
@@ -773,6 +785,15 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertIn("FROZEN_RECOVERY_SHA256", launcher)
         self.assertIn("brake_only_action_contract_1", smoke)
         self.assertIn("continuous recurrent state preserved", player)
+        self.assertIn("set_external_navigation_actions", source)
+        self.assertIn("_external_navigation_actions is None", source)
+        self.assertIn("--phase3n-safety-checkpoint", nav2_bridge)
+        self.assertIn("ACCEPTED_PHASE3N_SHA256", nav2_bridge)
+        self.assertIn("base_command_source", nav2_bridge)
+        self.assertIn("frozen_phase3m_local_navigation_coupled", nav2_bridge)
+        self.assertIn("all_12_nav2_legs_succeeded", nav2_validator)
+        self.assertIn("frozen_phase3m_stack_completed_administration_route", nav2_validator)
+        self.assertIn("physical_release_remains_false", nav2_validator)
 
         gate = self.data["phase3_curriculum"]["dynamic_safety_gate"]
         self.assertEqual(gate["action_count"], 1)

@@ -1,0 +1,444 @@
+{
+  "report_type": "administration_nav2_provisional_mission",
+  "generated_at_utc": "2026-08-22T23:39:36.688677+00:00",
+  "status": "completed",
+  "route_status": "plan_derived_topology_with_presentation_goal_offsets",
+  "simulation_route_support": {
+    "office_staging_offsets_xy_m": {
+      "vice_principal": [
+        0.0,
+        -0.25
+      ],
+      "principal": [
+        0.17,
+        -0.19
+      ]
+    },
+    "post_visit_pivots": [
+      "principal",
+      "vice_principal"
+    ],
+    "pivot_direction": "counterclockwise",
+    "reverse_motion_used": false
+  },
+  "legs": [
+    {
+      "index": 1,
+      "waypoint_id": "east_atrium_exit",
+      "goal_xy_yaw": [
+        4.7,
+        0.0,
+        0.0
+      ],
+      "navigation_goal_xy_yaw": [
+        4.7,
+        0.0,
+        0.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.0,
+        0.0
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 186,
+      "path_length_m": 4.7,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 9.408
+    },
+    {
+      "index": 2,
+      "waypoint_id": "vice_principal_turn",
+      "goal_xy_yaw": [
+        17.1,
+        0.5,
+        -90.0
+      ],
+      "navigation_goal_xy_yaw": [
+        17.1,
+        0.5,
+        -90.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.0,
+        0.0
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 512,
+      "path_length_m": 12.8331,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 25.31
+    },
+    {
+      "index": 3,
+      "waypoint_id": "vice_principal_approach",
+      "goal_xy_yaw": [
+        17.1,
+        -3.8,
+        -90.0
+      ],
+      "navigation_goal_xy_yaw": [
+        17.1,
+        -3.8,
+        -90.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.0,
+        0.0
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 170,
+      "path_length_m": 4.288,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 11.607
+    },
+    {
+      "index": 4,
+      "waypoint_id": "vice_principal",
+      "goal_xy_yaw": [
+        17.1,
+        -6.4,
+        -90.0
+      ],
+      "navigation_goal_xy_yaw": [
+        17.1,
+        -6.65,
+        -90.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.0,
+        -0.25
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 130,
+      "path_length_m": 3.2721,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 7.006,
+      "post_visit_pivot": {
+        "passed": true,
+        "status": "succeeded",
+        "direction": "counterclockwise",
+        "requested_angular_rad_s": 0.42,
+        "target_rad": 3.141592653589793,
+        "accumulated_rad": 3.025444802364139,
+        "elapsed_wall_s": 11.727
+      }
+    },
+    {
+      "index": 5,
+      "waypoint_id": "vice_principal_depart",
+      "goal_xy_yaw": [
+        17.1,
+        0.0,
+        90.0
+      ],
+      "navigation_goal_xy_yaw": [
+        17.1,
+        0.0,
+        90.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.0,
+        0.0
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 249,
+      "path_length_m": 6.2707,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 14.157
+    },
+    {
+      "index": 6,
+      "waypoint_id": "hallway_return",
+      "goal_xy_yaw": [
+        4.7,
+        0.0,
+        180.0
+      ],
+      "navigation_goal_xy_yaw": [
+        4.7,
+        0.0,
+        180.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.0,
+        0.0
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 494,
+      "path_length_m": 12.3804,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 26.559
+    },
+    {
+      "index": 7,
+      "waypoint_id": "principal_turn",
+      "goal_xy_yaw": [
+        3.45,
+        -3.45,
+        -45.0
+      ],
+      "navigation_goal_xy_yaw": [
+        3.45,
+        -3.45,
+        -45.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.0,
+        0.0
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 152,
+      "path_length_m": 3.8229,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 7.857
+    },
+    {
+      "index": 8,
+      "waypoint_id": "principal_approach",
+      "goal_xy_yaw": [
+        6.45,
+        -6.95,
+        -45.0
+      ],
+      "navigation_goal_xy_yaw": [
+        6.45,
+        -6.95,
+        -45.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.0,
+        0.0
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 194,
+      "path_length_m": 4.8747,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 10.307
+    },
+    {
+      "index": 9,
+      "waypoint_id": "principal",
+      "goal_xy_yaw": [
+        8.01,
+        -8.66,
+        -45.0
+      ],
+      "navigation_goal_xy_yaw": [
+        8.18,
+        -8.85,
+        -45.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.17,
+        -0.19
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 120,
+      "path_length_m": 3.0112,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 6.056,
+      "post_visit_pivot": {
+        "passed": true,
+        "status": "succeeded",
+        "direction": "counterclockwise",
+        "requested_angular_rad_s": 0.42,
+        "target_rad": 3.141592653589793,
+        "accumulated_rad": 3.023032396719236,
+        "elapsed_wall_s": 11.011
+      }
+    },
+    {
+      "index": 10,
+      "waypoint_id": "principal_depart",
+      "goal_xy_yaw": [
+        6.53,
+        -6.9,
+        135.0
+      ],
+      "navigation_goal_xy_yaw": [
+        6.53,
+        -6.9,
+        135.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.0,
+        0.0
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 88,
+      "path_length_m": 2.2382,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 4.355
+    },
+    {
+      "index": 11,
+      "waypoint_id": "atrium_return",
+      "goal_xy_yaw": [
+        3.45,
+        -3.45,
+        135.0
+      ],
+      "navigation_goal_xy_yaw": [
+        3.45,
+        -3.45,
+        135.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.0,
+        0.0
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 200,
+      "path_length_m": 5.0335,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 10.607
+    },
+    {
+      "index": 12,
+      "waypoint_id": "home_return",
+      "goal_xy_yaw": [
+        0.0,
+        0.0,
+        180.0
+      ],
+      "navigation_goal_xy_yaw": [
+        0.0,
+        0.0,
+        180.0
+      ],
+      "simulation_staging_offset_xy_m": [
+        0.0,
+        0.0
+      ],
+      "planning_status": "succeeded",
+      "path_pose_count": 209,
+      "path_length_m": 5.2682,
+      "goal_checker_id": "position_goal_checker",
+      "execution_status": "succeeded",
+      "elapsed_wall_s": 10.907
+    }
+  ],
+  "expected_legs": 12,
+  "completed_legs": 12,
+  "failure": null,
+  "elapsed_wall_s": 169.488,
+  "odometry_samples": 10179,
+  "start_xy_m": [
+    0.026160484179854393,
+    -1.8911188817583025e-05
+  ],
+  "end_xy_m": [
+    0.2957899570465088,
+    -0.2782111167907715
+  ],
+  "net_displacement_m": 0.38741574038238263,
+  "follow_feedback_count": 2893,
+  "final_odometry_yaw_deg": 132.52221416219209,
+  "final_odometry_angular_rad_s": 0.0017897674115374684,
+  "commands": {
+    "samples": 246373,
+    "maximum_linear_mps": 0.30000000000000004,
+    "maximum_absolute_angular_rad_s": 0.55,
+    "last_20": [
+      [
+        0.30000000000000004,
+        0.023913043478260787
+      ],
+      [
+        0.30000000000000004,
+        -0.023913043478260954
+      ],
+      [
+        0.30000000000000004,
+        -0.023913043478260954
+      ],
+      [
+        0.30000000000000004,
+        -0.023913043478260954
+      ],
+      [
+        0.30000000000000004,
+        -0.023913043478260954
+      ],
+      [
+        0.30000000000000004,
+        0.0
+      ],
+      [
+        0.30000000000000004,
+        0.0
+      ],
+      [
+        0.30000000000000004,
+        -0.023913043478260954
+      ],
+      [
+        0.30000000000000004,
+        -0.023913043478260954
+      ],
+      [
+        0.24545454545454548,
+        -0.023913043478260954
+      ],
+      [
+        0.27272727272727276,
+        -0.023913043478260954
+      ],
+      [
+        0.24545454545454548,
+        0.023913043478260787
+      ],
+      [
+        0.24545454545454548,
+        -0.023913043478260954
+      ],
+      [
+        0.24545454545454548,
+        -0.023913043478260954
+      ],
+      [
+        0.2181818181818182,
+        0.023913043478260787
+      ],
+      [
+        0.2181818181818182,
+        0.023913043478260787
+      ],
+      [
+        0.2181818181818182,
+        -0.023913043478260954
+      ],
+      [
+        0.2181818181818182,
+        0.0
+      ],
+      [
+        0.19090909090909092,
+        0.0
+      ],
+      [
+        0.19090909090909092,
+        0.0
+      ]
+    ]
+  },
+  "map_status": "provisional_plan_derived_not_measured",
+  "control_stack": "nav2_phase3n_safety",
+  "learned_policy_coupled": true,
+  "learned_360_safety_coupled": true,
+  "frozen_phase3m_local_navigation_coupled": false,
+  "physical_release": false,
+  "claim_boundary": "This is a live Nav2/Isaac physics mission on provisional geometry. The control-stack declaration is verified against the paired bridge report by validate_administration_nav2_phase3n_integration.py. It does not prove measured-site clearance, stopping distance, sim-to-real performance, or physical safety.",
+  "passed": true
+}

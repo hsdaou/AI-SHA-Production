@@ -1,0 +1,227 @@
+{
+  "report_type": "administration_provisional_occupancy_map",
+  "generated_at_utc": "2026-08-22T23:41:39.755577+00:00",
+  "status": "provisional_plan_derived_map_generated",
+  "source": {
+    "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/administration_live_environment.usda",
+    "scene_sha256": "83e36be8e3f27baffb65752103e637f4eef61b5218a5fc13eb80d24a79d328ca",
+    "configuration": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
+    "configuration_sha256": "f7ca8bfb79850640334715665fe329c70e0ddb45816c38da7f6a9dd4c538ad06",
+    "geometry_status": "plan_derived_route_scoped"
+  },
+  "map": {
+    "yaml": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/maps/administration_provisional/administration_provisional.yaml",
+    "image": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/maps/administration_provisional/administration_provisional.pgm",
+    "preview": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/maps/administration_provisional/administration_provisional_preview.png",
+    "resolution_m_per_pixel": 0.05,
+    "origin_xy_m": [
+      -6.9,
+      -13.25
+    ],
+    "bounds_xy_m": [
+      -6.9,
+      -13.25,
+      23.05,
+      6.9
+    ],
+    "dimensions_pixels": [
+      600,
+      404
+    ],
+    "walkable_floor_primitives": [
+      "/Administration/Architecture/Floors/Atrium",
+      "/Administration/Architecture/Floors/EastHallway",
+      "/Administration/Architecture/Floors/ViceAccess",
+      "/Administration/Architecture/Floors/VicePrincipal",
+      "/Administration/Architecture/Floors/PrincipalAccess",
+      "/Administration/Architecture/Floors/Principal"
+    ],
+    "obstacle_primitives": 115,
+    "collision_primitives_inspected": 139,
+    "collision_primitives_ignored": 18
+  },
+  "route": {
+    "waypoints": [
+      {
+        "id": "home",
+        "xy_m": [
+          0.0,
+          0.0
+        ],
+        "pixel": [
+          138,
+          138
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "east_atrium_exit",
+        "xy_m": [
+          4.7,
+          0.0
+        ],
+        "pixel": [
+          232,
+          138
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "vice_principal_turn",
+        "xy_m": [
+          17.1,
+          0.5
+        ],
+        "pixel": [
+          480,
+          128
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "vice_principal_approach",
+        "xy_m": [
+          17.1,
+          -3.8
+        ],
+        "pixel": [
+          480,
+          214
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "vice_principal",
+        "xy_m": [
+          17.1,
+          -6.4
+        ],
+        "pixel": [
+          480,
+          266
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "vice_principal_depart",
+        "xy_m": [
+          17.1,
+          0.0
+        ],
+        "pixel": [
+          480,
+          138
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "hallway_return",
+        "xy_m": [
+          4.7,
+          0.0
+        ],
+        "pixel": [
+          232,
+          138
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "principal_turn",
+        "xy_m": [
+          3.45,
+          -3.45
+        ],
+        "pixel": [
+          207,
+          207
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "principal_approach",
+        "xy_m": [
+          6.45,
+          -6.95
+        ],
+        "pixel": [
+          267,
+          277
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "principal",
+        "xy_m": [
+          8.01,
+          -8.66
+        ],
+        "pixel": [
+          298,
+          311
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "principal_depart",
+        "xy_m": [
+          6.53,
+          -6.9
+        ],
+        "pixel": [
+          269,
+          276
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "atrium_return",
+        "xy_m": [
+          3.45,
+          -3.45
+        ],
+        "pixel": [
+          207,
+          207
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "home_return",
+        "xy_m": [
+          0.0,
+          0.0
+        ],
+        "pixel": [
+          138,
+          138
+        ],
+        "occupancy_value": 254,
+        "free": true
+      }
+    ],
+    "all_waypoint_centres_free": true
+  },
+  "checks": {
+    "all_expected_walkable_floors_present": true,
+    "obstacles_rasterized": true,
+    "all_route_waypoint_centres_free": true,
+    "map_is_explicitly_provisional": true,
+    "physical_release_disabled": true
+  },
+  "physical_release": false,
+  "replacement_gate": "Replace this map with a LiDAR/site-measured occupancy map and rerun the full mission, clearance, contact, and stopping validation before any physical-release claim.",
+  "passed": true
+}

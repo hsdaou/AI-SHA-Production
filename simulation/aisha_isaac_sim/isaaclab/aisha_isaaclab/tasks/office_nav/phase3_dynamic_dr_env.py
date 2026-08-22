@@ -2380,6 +2380,14 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
         self._frozen_stack_actions = torch.zeros_like(
             self._frozen_recovery_actions
         )
+        # Optional integration seam for a conventional global/local planner.
+        # ``None`` preserves the accepted Phase 3N training/runtime contract:
+        # frozen route actor -> frozen Phase 3M recovery stack -> Phase 3N.
+        # A bridge may supply normalized differential-drive commands here so
+        # the same learned 360-degree safety actor is the final authority over
+        # live Nav2 output.  This mode is deliberately explicit; it must never
+        # be enabled by a training configuration accidentally.
+        self._external_navigation_actions: torch.Tensor | None = None
         self._safety_brake_fraction = torch.zeros(self.num_envs, device=self.device)
         self._safety_angular_attenuation = torch.zeros(
             self.num_envs, device=self.device
@@ -2429,6 +2437,22 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
             self._episode_sums[name] = torch.zeros(
                 self.num_envs, dtype=torch.float32, device=self.device
             )
+
+    def set_external_navigation_actions(
+        self, actions: torch.Tensor | None
+    ) -> None:
+        """Select or clear externally supplied base commands for safety arbitration."""
+        if actions is None:
+            self._external_navigation_actions = None
+            return
+        if actions.shape != (self.num_envs, 2):
+            raise ValueError(
+                "external navigation actions must have shape "
+                f"({self.num_envs}, 2), got {tuple(actions.shape)}"
+            )
+        self._external_navigation_actions = actions.detach().to(
+            device=self.device, dtype=torch.float32
+        ).clamp(-1.0, 1.0)
 
     def _frozen_phase3m_actions(self) -> torch.Tensor:
         if not hasattr(self, "_last_policy_observation"):
@@ -2482,11 +2506,21 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
 
     def _pre_physics_step(self, actions: torch.Tensor) -> None:
         self._safety_actions = actions.clone().clamp(-1.0, 1.0)
-        self._frozen_recovery_actions = self._frozen_phase3m_actions()
-        # This call executes the hash-locked route actor, Phase 3M residual,
-        # rectangular projection, stop latch, office-pivot supervisor, and
-        # torque schedule without exposing any of them to the new optimizer.
-        super()._pre_physics_step(self._frozen_recovery_actions)
+        if self._external_navigation_actions is None:
+            self._frozen_recovery_actions = self._frozen_phase3m_actions()
+            # This call executes the hash-locked route actor, Phase 3M residual,
+            # rectangular projection, stop latch, office-pivot supervisor, and
+            # torque schedule without exposing any of them to the new optimizer.
+            super()._pre_physics_step(self._frozen_recovery_actions)
+        else:
+            # Nav2 has already selected the requested translation and heading
+            # rate. Keep the learned actor outside that command exactly as it is
+            # outside the frozen Phase 3M stack. Dynamic obstacle motion remains
+            # part of the environment and wheel targets are written below only
+            # after safety arbitration.
+            self._update_dynamic_obstacles()
+            self._frozen_recovery_actions.zero_()
+            self._actions = self._external_navigation_actions.clone()
         self._frozen_stack_actions.copy_(self._actions)
 
         self._safety_action_history[:, 2] = self._safety_action_history[:, 1]

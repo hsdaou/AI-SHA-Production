@@ -1,0 +1,99 @@
+{
+  "report_type": "administration_nav2_phase3n_integration_gate",
+  "generated_at_utc": "2026-08-22T23:41:39.832661+00:00",
+  "passed": true,
+  "checks": {
+    "nav2_mission_passed": true,
+    "all_12_nav2_legs_succeeded": true,
+    "both_office_pivots_succeeded": true,
+    "paired_bridge_passed": true,
+    "mission_completion_reached_bridge": true,
+    "bridge_episode_never_reset": true,
+    "all_ros_channels_exercised": true,
+    "accepted_phase3n_checkpoint_loaded": true,
+    "learned_safety_received_nav2_base_commands": true,
+    "formal_phase3n_dynamic_acceptance_passed": true,
+    "formal_phase3n_checkpoint_matches": true,
+    "frozen_phase3m_stack_completed_administration_route": true,
+    "no_root_transform_animation_in_frozen_route": true,
+    "physical_release_remains_false": true
+  },
+  "live_nav2_phase3n_run": {
+    "mission_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase3n_mission.json",
+    "bridge_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase3n_bridge.json",
+    "legs_completed": 12,
+    "elapsed_wall_s": 169.488,
+    "bridge_steps": 12101,
+    "safety_authority_steps": 440,
+    "safety_brake_steps": 57,
+    "maximum_brake_fraction": 0.04112858697772026,
+    "minimum_360_clearance_m": 0.14
+  },
+  "frozen_learned_navigation_evidence": {
+    "report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase3n_administration_final_omniverse_report.json",
+    "architecture": "frozen_phase3m_recovery_stack_plus_outer_recurrent_360_degree_brake_layer",
+    "waypoints_completed": 12,
+    "control_disclosure": "The outer recurrent policy may only reduce translation while full-ring LiDAR clearance is closing; the hash-locked Phase 3M route, clearance, protective-stop, pivot and torque stack supplies every steering command. There is no turn or dwell action override and no root-transform animation."
+  },
+  "dynamic_training_evidence": {
+    "report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase3n_dynamic_safety_acceptance.json",
+    "training_transitions": 409600,
+    "randomized_segment_gate": {
+      "seed": 10101,
+      "episodes_per_segment": 64,
+      "episodes": 768,
+      "successes": 744,
+      "success_rate": 0.96875,
+      "dynamic_collisions": 8,
+      "dynamic_collision_rate": 0.010416666666666666,
+      "static_collisions": 12,
+      "static_collision_rate": 0.015625,
+      "time_outs": 4,
+      "minimum_pedestrian_enabled_segment_success_rate": 0.921875,
+      "requirements": {
+        "success_rate_min": 0.9,
+        "dynamic_collision_rate_max": 0.02,
+        "static_collision_rate_max": 0.05,
+        "minimum_pedestrian_enabled_segment_success_rate": 0.8
+      },
+      "report": "phase3n_model50_full_acceptance_seed10101.json",
+      "passed": true
+    },
+    "static_regression_gate": {
+      "seed": 10201,
+      "episodes": 48,
+      "successes": 48,
+      "collisions": 0,
+      "time_outs": 0,
+      "success_rate": 1.0,
+      "success_rate_min": 0.9,
+      "dynamic_obstacle_activation_probability": 0.0,
+      "full_domain_randomization": true,
+      "report": "phase3n_model50_static_regression_seed10201.json",
+      "passed": true
+    },
+    "live_administration_dynamic_gate": {
+      "seed": 10301,
+      "scenarios": 12,
+      "successes": 12,
+      "dynamic_collisions": 0,
+      "static_collisions": 0,
+      "time_outs": 0,
+      "report": "phase3n_model50_live_administration_dynamic12_seed10301.json",
+      "passed": true
+    }
+  },
+  "architecture_boundary": {
+    "verified_live_path": "Nav2 global/local planning -> Phase 3N learned 360-degree brake arbitration -> articulated wheel physics",
+    "verified_frozen_policy_path": "frozen learned route actor -> frozen Phase 3M recovery, clearance, protective-stop and pivot stack -> Phase 3N -> articulated wheel physics",
+    "not_claimed": "Nav2 global paths and the frozen Phase 3M local navigator have not been combined into one controller path; running two independent local planners in series is intentionally avoided until an explicit arbitration design is selected."
+  },
+  "map_status": "provisional_plan_and_walkthrough_derived_not_measured",
+  "physical_release": false,
+  "remaining_gates": [
+    "as-built iPhone LiDAR/RoomPlan capture and critical manual measurements",
+    "measured geometry and occupancy-map rebuild",
+    "measured-scene regression of this exact integration gate",
+    "hardware emergency-stop and supervised sim-to-real commissioning"
+  ]
+}
