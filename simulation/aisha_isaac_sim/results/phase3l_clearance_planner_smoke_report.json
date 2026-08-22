@@ -1,0 +1,48 @@
+{
+  "checks": {
+    "clear_scan_does_not_stop": true,
+    "frozen_route_actor_has_no_trainable_parameters": true,
+    "frozen_route_checkpoint_hash_matches": true,
+    "full_brake_fraction_is_one": true,
+    "full_brake_maps_to_zero_forward_speed": true,
+    "full_domain_randomization_strength": true,
+    "observation_contract_46": true,
+    "observation_values_finite": true,
+    "planner_never_accepts_below_clearance_floor": true,
+    "positive_brake_action_is_no_op": true,
+    "protective_stop_hysteresis_holds": true,
+    "protective_stop_preserves_steering": true,
+    "protective_stop_releases_on_clear_scan": true,
+    "runtime_steering_request_stays_bounded": true,
+    "signed_steering_request_is_bounded": true,
+    "steering_request_never_changes_forward_component": true,
+    "task_registered": true,
+    "trigger_scan_removes_forward_motion": true,
+    "zero_policy_output_has_no_brake": true,
+    "zero_policy_output_has_no_steering_request": true,
+    "zero_policy_output_preserves_route_request": true
+  },
+  "claim_boundary": "Simulation runtime and command-boundary evidence only; not a trained-policy acceptance result, human-safety certification, or physical release.",
+  "frozen_route_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase3_frozen_route_model_2225.pt",
+  "frozen_route_checkpoint_sha256": "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8",
+  "generated_at_utc": "2026-08-22T13:27:58.838433+00:00",
+  "num_envs": 4,
+  "passed": true,
+  "planner": {
+    "footprint_margin_m": 0.08,
+    "maximum_lateral_correction_rad_s": 0.35,
+    "maximum_observed_normalized_correction": 0.3500000238418579,
+    "minimum_predicted_clearance_m": 0.04,
+    "prediction_horizon_s": 1.0,
+    "prediction_samples": 5
+  },
+  "policy_rate_hz": 30,
+  "protective_stop": {
+    "observed_during_environment_rollout": false,
+    "release_clearance_beyond_envelope_m": 0.75,
+    "trigger_clearance_beyond_envelope_m": 0.6
+  },
+  "report_type": "phase3l_clearance_planner_runtime_smoke",
+  "steps": 120,
+  "task": "Isaac-AISHA-BlockA-Phase3-ClearancePlanner-SensorNav-Direct-v0"
+}

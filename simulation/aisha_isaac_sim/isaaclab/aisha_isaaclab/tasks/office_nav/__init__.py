@@ -251,6 +251,26 @@ gym.register(
 
 
 gym.register(
+    id="Isaac-AISHA-BlockA-Phase3-ClearancePlanner-SensorNav-Direct-v0",
+    entry_point=(
+        "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+        "AishaPhase3ClearancePlannerEnv"
+    ),
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+            "AishaPhase3ClearancePlannerEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+            "AishaPhase3ClearancePlannerPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
     id="Isaac-AISHA-BlockA-Phase3-Segment6Rehearsal-SensorNav-Direct-v0",
     entry_point=(
         "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"

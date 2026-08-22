@@ -198,3 +198,40 @@ class AishaPhase3SafetyResidualPPORunnerCfg(AishaPhase3DynamicPPORunnerCfg):
         desired_kl=0.006,
         max_grad_norm=0.7,
     )
+
+
+@configclass
+class AishaPhase3ClearancePlannerPPORunnerCfg(AishaPhase3SafetyResidualPPORunnerCfg):
+    """Recurrent PPO for brake and clearance-projected steering requests."""
+
+    seed = 9601
+    num_steps_per_env = 64
+    max_iterations = 600
+    save_interval = 25
+    run_name = "phase3l_clearance_planner_seed9601"
+    policy = RslRlPpoActorCriticRecurrentCfg(
+        init_noise_std=0.18,
+        noise_std_type="scalar",
+        actor_obs_normalization=True,
+        critic_obs_normalization=True,
+        actor_hidden_dims=[128, 64],
+        critic_hidden_dims=[256, 128, 64],
+        activation="elu",
+        rnn_type="gru",
+        rnn_hidden_dim=64,
+        rnn_num_layers=1,
+    )
+    algorithm = RslRlPpoAlgorithmCfg(
+        value_loss_coef=1.0,
+        use_clipped_value_loss=True,
+        clip_param=0.08,
+        entropy_coef=0.0003,
+        num_learning_epochs=5,
+        num_mini_batches=4,
+        learning_rate=5.0e-5,
+        schedule="adaptive",
+        gamma=0.995,
+        lam=0.95,
+        desired_kl=0.006,
+        max_grad_norm=0.7,
+    )

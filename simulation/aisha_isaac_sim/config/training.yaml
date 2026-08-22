@@ -2,7 +2,7 @@
 # This file describes a real physics-driven learning task. It is not a claim of
 # physical release or successful sim-to-real transfer.
 
-revision: "TRAINING-ENDTOEND-K"
+revision: "TRAINING-ENDTOEND-L"
 date: "2026-08-22"
 
 software_baseline:
@@ -381,7 +381,7 @@ phase3_curriculum:
     seed: 8701
     runtime_smoke_report: "results/phase3_dynamic_yielding_smoke_report.json"
     screening_candidate:
-      checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-00-21_phase3h_reciprocal_yield_seed8701/model_2225.pt"
+      checkpoint: "isaaclab/checkpoints/aisha_phase3_frozen_route_model_2225.pt"
       checkpoint_sha256: "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8"
       report: "results/phase3h_model2225_balanced_full_strength_screen4.json"
       protocol: "four deterministic full-strength randomized episodes per route segment; screening only"
@@ -452,7 +452,7 @@ phase3_curriculum:
       may_increase_steering_magnitude: false
       may_flip_steering_sign: false
     frozen_route_actor:
-      checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-00-21_phase3h_reciprocal_yield_seed8701/model_2225.pt"
+      checkpoint: "isaaclab/checkpoints/aisha_phase3_frozen_route_model_2225.pt"
       checkpoint_sha256: "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8"
       trainable: false
     zero_output_bootstrap:
@@ -490,6 +490,80 @@ phase3_curriculum:
       accepted: false
       decision: "dynamic collisions fell by two, but successes fell by four and total collisions increased from 7 to 11; do not promote"
     next_architecture_gate: "retain the hard speed boundary; add only clearance-verified bounded lateral correction or a map-aware local planner plus an independent protective-stop layer"
+  clearance_planner_gate:
+    status: "completed_architecture_candidate_promoted_full_phase3_not_accepted"
+    gym_id: "Isaac-AISHA-BlockA-Phase3-ClearancePlanner-SensorNav-Direct-v0"
+    architecture: "hash-locked frozen route actor plus recurrent brake/steering requests, rectangular-footprint trajectory projection and a policy-independent LiDAR protective stop"
+    policy_observation_count: 46
+    privileged_obstacle_state_used: false
+    action_boundary:
+      may_reduce_forward_speed_to_zero: true
+      may_increase_forward_speed: false
+      may_reverse: false
+      maximum_lateral_correction_rad_s: 0.35
+      steering_request_sent_directly_to_wheels: false
+      protective_stop_can_remove_forward_motion: true
+      protective_stop_preserves_steering: true
+    planner_contract:
+      lidar_truth: "uncorrupted 10 Hz MultiMeshRayCaster ranges"
+      footprint: "measured 1.180 m x 0.768 m rectangular transit envelope plus 0.08 m planning margin"
+      prediction_horizon_s: 1.0
+      prediction_samples: 5
+      minimum_predicted_clearance_m: 0.04
+      activation_range_m: 2.20
+      goal_alignment_tolerance_deg: 20.0
+      doorway_note: "rectangular swept-footprint checks preserve the reasonable 1.40 m presentation-door assumption; no circular pivot envelope is used for straight transit"
+    protective_stop_contract:
+      front_lidar_sector_deg: [-30, 30]
+      trigger_clearance_beyond_robot_envelope_m: 0.60
+      release_clearance_beyond_robot_envelope_m: 0.75
+      applied_after_randomized_latency: true
+      physical_safety_certification: false
+    frozen_route_actor:
+      checkpoint: "isaaclab/checkpoints/aisha_phase3_frozen_route_model_2225.pt"
+      checkpoint_sha256: "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8"
+      trainable: false
+    zero_output_bootstrap:
+      checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/phase3l_clearance_planner_bootstrap_seed9601/model_0.pt"
+      checkpoint_sha256: "4c8c55521b0ae14af866bf4e6a2167ee7eb7f09d7eb88eb1de79e09c823bbd32"
+      report: "results/phase3l_clearance_planner_bootstrap_report.json"
+      deterministic_initial_action: [0.0, 0.0]
+    runtime_smoke:
+      report: "results/phase3l_clearance_planner_smoke_report.json"
+      checks_passed: 21
+      checks_total: 21
+      full_domain_randomization_strength: true
+    ppo_training:
+      run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_16-59-19_phase3l_clearance_planner_seed9601"
+      iterations: 600
+      parallel_environments: 32
+      steps_per_environment_per_iteration: 64
+      policy_transitions: 1228800
+      seed: 9601
+      report: "results/phase3l_clearance_planner_training_report.json"
+      progress_plot: "results/phase3l_clearance_planner_training_progress.png"
+    selection_screen:
+      first_seed: 9702
+      first_episodes_per_segment: 1
+      screened_iterations: [100, 200, 300, 400, 500, 599]
+      tie_break_seed: 9703
+      tie_break_episodes_per_segment: 2
+      tie_break_iterations: [200, 300, 599]
+      selected_iteration: 200
+    full_same_seed_comparison:
+      seed: 9701
+      episodes_per_segment: 4
+      comparison_report: "results/phase3l_clearance_planner_comparison.json"
+      original_frozen_route: {successes: 19, dynamic_collisions: 3, static_collisions: 10, time_outs: 16}
+      protective_stop_zero_policy: {successes: 19, dynamic_collisions: 3, static_collisions: 3, time_outs: 23}
+      trained_model_200: {successes: 29, dynamic_collisions: 1, static_collisions: 4, time_outs: 14}
+      selected_checkpoint: "isaaclab/checkpoints/aisha_phase3l_clearance_planner_model_200.pt"
+      selected_checkpoint_sha256: "f58951c6e0f3bc7129ff479d925dc75472eca88f0dfec75c5436df12259d53e7"
+      architecture_candidate_promoted: true
+      full_phase3_accepted: false
+      presentation_policy_replaced: false
+      decision: "model 200 dominates both controls, adding 10 successes while reducing original-route collisions by 8 and hard-stop-only collisions by 1; retain as the leading protected-navigation candidate, but do not claim or deploy it because it does not pass the declared Phase 3 success/collision rates or 64-episode-per-segment protocol"
+    next_architecture_gate: "retain model 200 and the independent protective stop; focus training and stop-field tuning on office-departure pivots (segments 4 and 9) and segment-6 static clearance, then rerun matched screens before the declared Phase 3, static-regression and live-scene gates"
   runtime_smoke:
     report: "results/phase3_dynamic_yielding_smoke_report.json"
     environments: 4
@@ -633,8 +707,11 @@ release:
   phase3_recurrent_ppo_training_completed: true
   phase3_bounded_safety_residual_training_completed: true
   phase3_bounded_safety_residual_checkpoint_accepted: false
+  phase3_clearance_planner_training_completed: true
+  phase3_clearance_planner_architecture_candidate_promoted: true
+  phase3_clearance_planner_full_acceptance_passed: false
   phase3_dynamic_obstacle_checkpoint_accepted: false
   phase3_geometry_rtx_refinement_available: true
   nav2_integrated: false
   physical_robot_release: false
-  required_next_gate: "preserve the hard speed boundary while adding clearance-verified bounded lateral correction or a map-aware local planner with an independent protective-stop layer; then pass 64 randomized episodes per segment and the Phase 2 static regression before 12 live-scene dynamic scenarios; site survey, Nav2 and sim-to-real commissioning remain separate"
+  required_next_gate: "retain the promoted Phase 3L model 200 and independent protective stop; recover office-departure pivots and segment-6 static clearance, then pass 64 randomized episodes per segment and the Phase 2 static regression before 12 live-scene dynamic scenarios; site survey, Nav2 and sim-to-real commissioning remain separate"

@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-22. The bounded recurrent safety-residual gate completed 1,228,800 transitions and was rejected after same-seed comparison. Measured-plan geometry anchors and RTX PBR v2 pass their validation gate; the accepted presentation policy is unchanged.**
+**Updated 2026-08-22. The clearance-projected recurrent planner completed 1,228,800 transitions and model 200 was promoted as the leading protected-navigation architecture candidate after dominating two same-seed controls. Full Phase 3 acceptance and the presentation policy remain unchanged.**
 
 ## Completed
 
@@ -231,6 +231,26 @@
   hard speed boundary while adding only clearance-verified bounded lateral
   correction, or combine a map-aware local planner with an independent
   protective-stop layer.
+- Phase 3L implements that gate. The recurrent layer may brake and request at
+  most ±0.35 rad/s around the hash-locked route actor. A one-second,
+  five-sample projector checks the robot's rectangular footprint plus 80 mm
+  planning margin against uncorrupted LiDAR hit geometry and rejects unsafe or
+  route-divergent steering. A separate hysteretic front-sector stop runs after
+  latency and can remove forward motion without removing steering.
+- `phase3l_clearance_planner_smoke_report.json` passes 21/21 Isaac runtime and
+  command-boundary checks. Phase 3L then trained for 600 iterations / 1,228,800
+  transitions from an exact zero-output recurrent checkpoint.
+- `model_200.pt` won the seed-9702 and seed-9703 selection screens. On the
+  decisive seed-9701 48-episode comparison it reached 29 successes, 1 dynamic
+  collision, 4 static collisions and 14 timeouts. The original frozen route
+  recorded 19/3/10/16; the hard-stop-only controller recorded 19/3/3/23.
+  Model 200 is promoted as the leading architecture candidate because it adds
+  10 successes while lowering total collisions relative to both controls.
+- Phase 3L is not fully accepted and does not replace the presentation policy:
+  60.4% success, 2.1% dynamic collision and 8.3% static collision do not pass
+  the declared thresholds, and the screen used 4 rather than 64 episodes per
+  segment. The next target is office-departure pivot recovery on segments 4
+  and 9 plus segment-6 static-clearance recovery.
 - Geometry refinement `GEOMETRY-RTX-PHASE3-A` locks the source PDF hash and uses
   printed page-2 Block A dimensions for the 12.75 m atrium, 2.80 m hall,
   7.80 x 6.30 m conference room and 4.73 m Principal frontage. Door widths,
@@ -369,6 +389,14 @@ claim. See `config/physics_materials.yaml`.
 - `phase3k_zero_residual_base_seed9501_screen4.json`
 - `phase3k_model175_balanced_seed9501_screen4.json`
 - `phase3k_safety_residual_comparison.json`
+- `phase3l_clearance_planner_bootstrap_report.json`
+- `phase3l_clearance_planner_smoke_report.json`
+- `phase3l_clearance_planner_training_report.json`
+- `phase3l_clearance_planner_training_progress.png`
+- `phase3l_original_route_control_balanced_seed9701_screen4.json`
+- `phase3l_zero_policy_balanced_seed9701.json`
+- `phase3l_model200_balanced_seed9701_screen4.json`
+- `phase3l_clearance_planner_comparison.json`
 - `phase3_geometry_rtx_refinement_validation.json`
 - `phase3_launch_status.json`
 - `PRODUCTION_REPOSITORY_REVIEW.md`

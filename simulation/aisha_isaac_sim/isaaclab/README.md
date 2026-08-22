@@ -295,6 +295,15 @@ unaccepted until 64 randomized episodes per segment, a static Phase 2 route
 regression, and the declared live-administration dynamic scenarios pass.
 Dynamic capsules do not establish human-safety behaviour.
 
+The later Phase 3L task adds a bounded recurrent brake/steering-request layer,
+a one-second rectangular-footprint clearance projector, and a policy-independent
+hysteretic LiDAR stop around the frozen route actor. Its runtime gate passes
+21/21 checks. After 600 PPO iterations / 1,228,800 transitions, model 200
+achieved 29/48 successes with 5 collisions and 14 timeouts on seed 9701,
+compared with 19/48 and 13 collisions for the original route control. This is a
+promoted architecture candidate, not full Phase 3 acceptance or physical safety
+evidence; see `../results/phase3l_clearance_planner_comparison.json`.
+
 The current screening candidate is `model_2525.pt`: 43/48 deterministic
 unseen-seed episodes passed with zero collisions. This is not acceptance: the
 screen used only four episodes per segment, and segment 6 timed out 4/4. The

@@ -30,11 +30,8 @@ from aisha_isaaclab.tasks.office_nav.phase2_end_to_end_env import (
 
 PHASE3_FROZEN_ROUTE_CHECKPOINT = (
     Path(__file__).resolve().parents[3]
-    / "logs"
-    / "rsl_rl"
-    / "aisha_block_a_sensor_nav"
-    / "2026-08-22_15-00-21_phase3h_reciprocal_yield_seed8701"
-    / "model_2225.pt"
+    / "checkpoints"
+    / "aisha_phase3_frozen_route_model_2225.pt"
 )
 PHASE3_FROZEN_ROUTE_CHECKPOINT_SHA256 = (
     "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8"
@@ -834,6 +831,440 @@ class AishaPhase3SafetyResidualEnv(AishaPhase3DynamicDREnv):
             "frozen_route_checkpoint": str(self._frozen_route_checkpoint_path),
             "frozen_route_checkpoint_sha256": self._frozen_route_checkpoint_actual_sha256,
             "maximum_angular_attenuation": self.cfg.maximum_angular_attenuation,
+        }
+
+
+@configclass
+class AishaPhase3ClearancePlannerEnvCfg(AishaPhase3SafetyResidualEnvCfg):
+    """Clearance-projected local steering with an independent protective stop."""
+
+    # Action 0 retains the proven residual brake boundary. Action 1 requests a
+    # small signed correction around the frozen route actor; it is never sent
+    # directly to the wheels and may be rejected by the local planner.
+    maximum_lateral_correction_rad_s = 0.35
+
+    # The projector tests the measured rectangular footprint against the
+    # uncorrupted 10 Hz LiDAR hit cloud. A rectangle, rather than the robot's
+    # much larger pivot-sweep circle, preserves valid transit through the
+    # plan-assumed 1.40 m presentation doors.
+    planner_activation_range_m = 2.20
+    planner_prediction_horizon_s = 1.00
+    planner_prediction_samples = 5
+    planner_footprint_margin_m = 0.08
+    planner_minimum_predicted_clearance_m = 0.04
+    planner_minimum_clearance_improvement_m = 0.03
+    planner_allowed_safe_clearance_degradation_m = 0.02
+    planner_goal_alignment_tolerance_rad = math.radians(20.0)
+
+    # These are clearances beyond the exact per-ray rectangular envelope. The
+    # release threshold is larger to prevent one-scan stop/start chatter.
+    protective_stop_front_ray_start = 15
+    protective_stop_front_ray_end = 22
+    protective_stop_trigger_clearance_m = 0.60
+    protective_stop_release_clearance_m = 0.75
+
+    reward_clearance_improvement = 0.25
+    penalty_rejected_steering_request = -0.01
+    penalty_clear_path_steering_request = -0.01
+    penalty_protective_stop_intervention = -0.03
+
+
+class AishaPhase3ClearancePlannerEnv(AishaPhase3SafetyResidualEnv):
+    """Train a bounded local avoidance request behind hard runtime gates.
+
+    The frozen network remains the map/route authority. The recurrent policy
+    may brake and request a small signed angular correction. The request is
+    accepted only if a short-horizon rectangular-footprint projection remains
+    clear and route aligned. An independent LiDAR latch can always remove
+    forward motion after domain-randomization latency has been applied.
+    """
+
+    cfg: AishaPhase3ClearancePlannerEnvCfg
+
+    def __init__(
+        self,
+        cfg: AishaPhase3ClearancePlannerEnvCfg,
+        render_mode: str | None = None,
+        **kwargs,
+    ):
+        super().__init__(cfg, render_mode, **kwargs)
+        if self.cfg.planner_prediction_samples < 1:
+            raise ValueError("planner_prediction_samples must be positive")
+        if not 0.0 < self.cfg.planner_prediction_horizon_s <= 2.0:
+            raise ValueError("planner_prediction_horizon_s must be in (0, 2]")
+        if (
+            self.cfg.protective_stop_release_clearance_m
+            <= self.cfg.protective_stop_trigger_clearance_m
+        ):
+            raise ValueError("protective stop release clearance must exceed trigger clearance")
+        if (
+            self.cfg.maximum_lateral_correction_rad_s
+            > self.cfg.angular_velocity_max_rad_s
+        ):
+            raise ValueError("lateral correction cannot exceed the task angular limit")
+
+        self._planner_ray_angles = torch.deg2rad(
+            torch.arange(-180.0, 180.0, 10.0, device=self.device)
+        )
+        self._planner_prediction_times = torch.linspace(
+            self.cfg.planner_prediction_horizon_s / self.cfg.planner_prediction_samples,
+            self.cfg.planner_prediction_horizon_s,
+            self.cfg.planner_prediction_samples,
+            device=self.device,
+        )
+        self._base_action_history = torch.zeros((self.num_envs, 3, 2), device=self.device)
+        self._protective_stop_latched = torch.zeros(
+            self.num_envs, dtype=torch.bool, device=self.device
+        )
+        self._protective_stop_intervened = torch.zeros_like(self._protective_stop_latched)
+        self._planner_request_accepted = torch.zeros_like(self._protective_stop_latched)
+        self._planner_request_active = torch.zeros_like(self._protective_stop_latched)
+        self._planner_baseline_clearance = torch.zeros(self.num_envs, device=self.device)
+        self._planner_candidate_clearance = torch.zeros(self.num_envs, device=self.device)
+        self._planner_applied_clearance = torch.zeros(self.num_envs, device=self.device)
+        self._applied_steering_request = torch.zeros(self.num_envs, device=self.device)
+        for name in (
+            "clearance_improvement",
+            "rejected_steering_request",
+            "clear_path_steering_request",
+            "protective_stop_intervention",
+        ):
+            self._episode_sums[name] = torch.zeros(
+                self.num_envs, dtype=torch.float32, device=self.device
+            )
+
+    def _compose_planner_request(
+        self, base_actions: torch.Tensor, residual_actions: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Map policy output to brake plus a bounded steering proposal."""
+        residual_actions = residual_actions.clamp(-1.0, 1.0)
+        brake_fraction = torch.relu(-residual_actions[:, 0])
+        base_forward_fraction = ((base_actions[:, 0] + 1.0) * 0.5).clamp(0.0, 1.0)
+        combined_forward_fraction = base_forward_fraction * (1.0 - brake_fraction)
+        maximum_normalized_correction = (
+            self.cfg.maximum_lateral_correction_rad_s
+            / self.cfg.angular_velocity_max_rad_s
+        )
+        requested_angular = (
+            base_actions[:, 1] + maximum_normalized_correction * residual_actions[:, 1]
+        ).clamp(-1.0, 1.0)
+        applied_request = requested_angular - base_actions[:, 1]
+        combined = torch.stack(
+            (combined_forward_fraction * 2.0 - 1.0, requested_angular), dim=1
+        )
+        return combined, brake_fraction, applied_request
+
+    def _predict_candidate_geometry(
+        self,
+        candidate_actions: torch.Tensor,
+        exact_lidar_ranges: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        """Return minimum swept clearance and terminal goal-heading error.
+
+        ``candidate_actions`` has shape ``(num_envs, candidates, 2)``. LiDAR
+        hits are converted from the sensor origin to the current base frame,
+        then tested against the oriented rectangular footprint at every
+        predicted unicycle pose.
+        """
+        minimum, maximum = self.cfg.linear_velocity_range_mps
+        linear = minimum + (candidate_actions[..., 0] + 1.0) * 0.5 * (maximum - minimum)
+        angular = candidate_actions[..., 1] * self.cfg.angular_velocity_max_rad_s
+        times = self._planner_prediction_times.view(1, 1, -1)
+        yaw = angular.unsqueeze(-1) * times
+        near_straight = torch.abs(angular) < 1.0e-4
+        safe_angular = torch.where(near_straight, torch.ones_like(angular), angular)
+        pose_x = torch.where(
+            near_straight.unsqueeze(-1),
+            linear.unsqueeze(-1) * times,
+            linear.unsqueeze(-1) / safe_angular.unsqueeze(-1) * torch.sin(yaw),
+        )
+        pose_y = torch.where(
+            near_straight.unsqueeze(-1),
+            torch.zeros_like(yaw),
+            linear.unsqueeze(-1) / safe_angular.unsqueeze(-1) * (1.0 - torch.cos(yaw)),
+        )
+
+        point_x = (
+            self.cfg.lidar_x_m
+            + exact_lidar_ranges * torch.cos(self._planner_ray_angles).unsqueeze(0)
+        )
+        point_y = exact_lidar_ranges * torch.sin(self._planner_ray_angles).unsqueeze(0)
+        delta_x = point_x[:, None, None, :] - pose_x[..., None]
+        delta_y = point_y[:, None, None, :] - pose_y[..., None]
+        cos_yaw = torch.cos(yaw)[..., None]
+        sin_yaw = torch.sin(yaw)[..., None]
+        local_x = cos_yaw * delta_x + sin_yaw * delta_y
+        local_y = -sin_yaw * delta_x + cos_yaw * delta_y
+
+        rear = self.cfg.robot_rear_x_m - self.cfg.planner_footprint_margin_m
+        front = self.cfg.robot_front_x_m + self.cfg.planner_footprint_margin_m
+        half_width = self.cfg.robot_half_width_m + self.cfg.planner_footprint_margin_m
+        outside_x = torch.maximum(
+            torch.maximum(rear - local_x, local_x - front),
+            torch.zeros_like(local_x),
+        )
+        outside_y = torch.relu(torch.abs(local_y) - half_width)
+        outside_distance = torch.sqrt(outside_x.square() + outside_y.square())
+        inside = (
+            (local_x >= rear)
+            & (local_x <= front)
+            & (torch.abs(local_y) <= half_width)
+        )
+        penetration = torch.minimum(
+            torch.minimum(local_x - rear, front - local_x),
+            half_width - torch.abs(local_y),
+        )
+        signed_clearance = torch.where(inside, -penetration, outside_distance)
+        minimum_clearance = torch.amin(signed_clearance, dim=(2, 3))
+
+        goal_x, goal_y, _, _ = self._goal_geometry()
+        final_x = pose_x[..., -1]
+        final_y = pose_y[..., -1]
+        final_yaw = yaw[..., -1]
+        goal_delta_x = goal_x.unsqueeze(1) - final_x
+        goal_delta_y = goal_y.unsqueeze(1) - final_y
+        goal_x_at_horizon = (
+            torch.cos(final_yaw) * goal_delta_x + torch.sin(final_yaw) * goal_delta_y
+        )
+        goal_y_at_horizon = (
+            -torch.sin(final_yaw) * goal_delta_x + torch.cos(final_yaw) * goal_delta_y
+        )
+        goal_heading_error = torch.abs(torch.atan2(goal_y_at_horizon, goal_x_at_horizon))
+        return minimum_clearance, goal_heading_error
+
+    def _clearance_project_actions(
+        self,
+        delayed_base_actions: torch.Tensor,
+        delayed_requested_actions: torch.Tensor,
+        exact_lidar_ranges: torch.Tensor,
+    ) -> torch.Tensor:
+        """Accept only safe, useful, route-consistent lateral corrections."""
+        route_aligned = torch.stack(
+            (delayed_requested_actions[:, 0], delayed_base_actions[:, 1]), dim=1
+        )
+        candidates = torch.stack((route_aligned, delayed_requested_actions), dim=1)
+        clearances, heading_errors = self._predict_candidate_geometry(
+            candidates, exact_lidar_ranges
+        )
+        baseline_clearance = clearances[:, 0]
+        candidate_clearance = clearances[:, 1]
+        baseline_safe = (
+            baseline_clearance >= self.cfg.planner_minimum_predicted_clearance_m
+        )
+        candidate_safe = (
+            candidate_clearance >= self.cfg.planner_minimum_predicted_clearance_m
+        )
+        clearance_preserved = torch.where(
+            baseline_safe,
+            candidate_clearance
+            >= baseline_clearance - self.cfg.planner_allowed_safe_clearance_degradation_m,
+            candidate_clearance
+            >= baseline_clearance + self.cfg.planner_minimum_clearance_improvement_m,
+        )
+        goal_alignment_preserved = (
+            heading_errors[:, 1]
+            <= heading_errors[:, 0] + self.cfg.planner_goal_alignment_tolerance_rad
+        )
+        correction_requested = (
+            torch.abs(delayed_requested_actions[:, 1] - delayed_base_actions[:, 1])
+            > 1.0e-5
+        )
+        near_obstacle = (
+            torch.amin(exact_lidar_ranges, dim=1) < self.cfg.planner_activation_range_m
+        )
+        accepted = (
+            correction_requested
+            & near_obstacle
+            & candidate_safe
+            & clearance_preserved
+            & goal_alignment_preserved
+        )
+        projected = torch.where(accepted.unsqueeze(1), delayed_requested_actions, route_aligned)
+        self._planner_request_active = correction_requested & near_obstacle
+        self._planner_request_accepted = accepted
+        self._planner_baseline_clearance.copy_(baseline_clearance)
+        self._planner_candidate_clearance.copy_(candidate_clearance)
+        self._planner_applied_clearance.copy_(
+            torch.where(accepted, candidate_clearance, baseline_clearance)
+        )
+        return projected
+
+    def _apply_protective_stop(
+        self, actions: torch.Tensor, exact_lidar_ranges: torch.Tensor
+    ) -> torch.Tensor:
+        """Remove forward motion using an independent hysteretic LiDAR gate."""
+        ray_slice = slice(
+            self.cfg.protective_stop_front_ray_start,
+            self.cfg.protective_stop_front_ray_end,
+        )
+        envelope = self._lidar_envelope_ranges[ray_slice].unsqueeze(0)
+        front_ranges = exact_lidar_ranges[:, ray_slice]
+        trigger = torch.any(
+            front_ranges
+            <= envelope + self.cfg.protective_stop_trigger_clearance_m,
+            dim=1,
+        )
+        release = torch.all(
+            front_ranges
+            >= envelope + self.cfg.protective_stop_release_clearance_m,
+            dim=1,
+        )
+        self._protective_stop_latched |= trigger
+        self._protective_stop_latched &= ~release
+        moving_forward = actions[:, 0] > -1.0 + 1.0e-6
+        self._protective_stop_intervened = self._protective_stop_latched & moving_forward
+        protected = actions.clone()
+        protected[:, 0] = torch.where(
+            self._protective_stop_latched,
+            torch.full_like(protected[:, 0], -1.0),
+            protected[:, 0],
+        )
+        return protected
+
+    def _pre_physics_step(self, actions: torch.Tensor) -> None:
+        # Delay models the nominal command path. Both safety gates run after
+        # that delay, so neither can be bypassed by the randomized latency.
+        self._update_dynamic_obstacles()
+        self._residual_actions = actions.clone().clamp(-1.0, 1.0)
+        self._base_actions = self._route_actions()
+        requested, _, _ = self._compose_planner_request(
+            self._base_actions, self._residual_actions
+        )
+        self._requested_combined_actions = requested
+
+        for history, current in (
+            (self._action_history, requested),
+            (self._base_action_history, self._base_actions),
+            (self._residual_action_history, self._residual_actions),
+        ):
+            history[:, 2] = history[:, 1]
+            history[:, 1] = history[:, 0]
+            history[:, 0] = current
+        gather_index = self._action_latency_steps.view(-1, 1, 1).expand(-1, 1, 2)
+        delayed_request = torch.gather(self._action_history, 1, gather_index).squeeze(1)
+        delayed_base = torch.gather(self._base_action_history, 1, gather_index).squeeze(1)
+        self._applied_residual_actions = torch.gather(
+            self._residual_action_history, 1, gather_index
+        ).squeeze(1)
+        self._applied_brake_fraction = torch.relu(-self._applied_residual_actions[:, 0])
+        _, _, self._applied_steering_request = self._compose_planner_request(
+            delayed_base, self._applied_residual_actions
+        )
+
+        exact_lidar_ranges = self._lidar_ranges()
+        projected = self._clearance_project_actions(
+            delayed_base, delayed_request, exact_lidar_ranges
+        )
+        protected = self._apply_protective_stop(projected, exact_lidar_ranges)
+        self._previous_actions.copy_(self._actions)
+        self._actions = protected.clamp(-1.0, 1.0)
+
+        minimum, maximum = self.cfg.linear_velocity_range_mps
+        linear = minimum + (self._actions[:, 0] + 1.0) * 0.5 * (maximum - minimum)
+        angular = self._actions[:, 1] * self.cfg.angular_velocity_max_rad_s
+        half_track = self.cfg.wheel_track_m * self._wheel_track_scale / 2.0
+        wheel_radius = self.cfg.wheel_radius_m * self._wheel_radius_scale
+        self._wheel_targets[:, 0] = (linear - angular * half_track) / wheel_radius
+        self._wheel_targets[:, 1] = (linear + angular * half_track) / wheel_radius
+        self._wheel_targets *= self._motor_strength
+        self._wheel_targets.clamp_(
+            -self.cfg.wheel_speed_limit_rad_s,
+            self.cfg.wheel_speed_limit_rad_s,
+        )
+
+    def _get_rewards(self) -> torch.Tensor:
+        rewards = AishaPhase3DynamicDREnv._get_rewards(self)
+        front_minimum = torch.amin(self._lidar_ranges()[:, 16:21], dim=1)
+        closing_delta = (self._previous_front_minimum - front_minimum).clamp_min(0.0)
+        closing = (
+            (front_minimum < self.cfg.safety_closing_distance_m)
+            & (closing_delta > self.cfg.safety_closing_delta_m)
+        ).float()
+        clear = (front_minimum > self.cfg.safety_clear_distance_m).float()
+        normalized_forward = ((self._actions[:, 0] + 1.0) * 0.5).clamp(0.0, 1.0)
+        brake_while_closing = (
+            closing * self._applied_brake_fraction * self.cfg.reward_brake_while_closing
+        )
+        unmitigated_closing = (
+            closing
+            * (1.0 - self._applied_brake_fraction)
+            * normalized_forward
+            * self.cfg.penalty_unmitigated_closing
+        )
+        unnecessary_brake = (
+            clear * self._applied_brake_fraction * self.cfg.penalty_unnecessary_brake
+        )
+        clearance_improvement = (
+            self._planner_request_accepted.float()
+            * torch.relu(
+                self._planner_candidate_clearance - self._planner_baseline_clearance
+            ).clamp_max(0.50)
+            * self.cfg.reward_clearance_improvement
+        )
+        rejected_request = (
+            (self._planner_request_active & ~self._planner_request_accepted).float()
+            * torch.abs(self._applied_steering_request)
+            * self.cfg.penalty_rejected_steering_request
+        )
+        clear_path_request = (
+            clear
+            * torch.abs(self._applied_steering_request)
+            * self.cfg.penalty_clear_path_steering_request
+        )
+        stop_intervention = (
+            self._protective_stop_intervened.float()
+            * self.cfg.penalty_protective_stop_intervention
+        )
+        for name, value in (
+            ("brake_while_closing", brake_while_closing),
+            ("unmitigated_closing", unmitigated_closing),
+            ("unnecessary_brake", unnecessary_brake),
+            ("clearance_improvement", clearance_improvement),
+            ("rejected_steering_request", rejected_request),
+            ("clear_path_steering_request", clear_path_request),
+            ("protective_stop_intervention", stop_intervention),
+        ):
+            self._episode_sums[name] += value
+        self._previous_front_minimum.copy_(front_minimum)
+        return (
+            rewards
+            + brake_while_closing
+            + unmitigated_closing
+            + unnecessary_brake
+            + clearance_improvement
+            + rejected_request
+            + clear_path_request
+            + stop_intervention
+        )
+
+    def _reset_idx(self, env_ids: Sequence[int] | torch.Tensor | None) -> None:
+        if env_ids is None:
+            env_ids = self._robot._ALL_INDICES
+        if not isinstance(env_ids, torch.Tensor):
+            env_ids = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
+        super()._reset_idx(env_ids)
+        if not hasattr(self, "_base_action_history"):
+            return
+        self._base_action_history[env_ids] = 0.0
+        self._protective_stop_latched[env_ids] = False
+        self._protective_stop_intervened[env_ids] = False
+        self._planner_request_accepted[env_ids] = False
+        self._planner_request_active[env_ids] = False
+        self._planner_baseline_clearance[env_ids] = 0.0
+        self._planner_candidate_clearance[env_ids] = 0.0
+        self._planner_applied_clearance[env_ids] = 0.0
+        self._applied_steering_request[env_ids] = 0.0
+        self.extras["clearance_planner"] = {
+            "prediction_horizon_s": self.cfg.planner_prediction_horizon_s,
+            "prediction_samples": self.cfg.planner_prediction_samples,
+            "rectangular_footprint_margin_m": self.cfg.planner_footprint_margin_m,
+            "maximum_lateral_correction_rad_s": self.cfg.maximum_lateral_correction_rad_s,
+            "protective_stop_trigger_clearance_m": (
+                self.cfg.protective_stop_trigger_clearance_m
+            ),
+            "protective_stop_release_clearance_m": (
+                self.cfg.protective_stop_release_clearance_m
+            ),
         }
 
 

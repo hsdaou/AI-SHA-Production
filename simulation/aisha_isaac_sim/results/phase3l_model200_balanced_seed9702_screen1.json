@@ -1,0 +1,314 @@
+{
+  "report_type": "held_out_phase3_dynamic_randomized_evaluation",
+  "generated_at_utc": "2026-08-22T13:11:34.759302+00:00",
+  "task": "Isaac-AISHA-BlockA-Phase3-ClearancePlanner-SensorNav-Direct-v0",
+  "training_contract_revision": "TRAINING-ENDTOEND-K",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_16-59-19_phase3l_clearance_planner_seed9601/model_200.pt",
+    "sha256": "f58951c6e0f3bc7129ff479d925dc75472eca88f0dfec75c5436df12259d53e7"
+  },
+  "protocol": {
+    "policy": "deterministic_inference",
+    "seed": 9702,
+    "training_seed": 9601,
+    "episodes": 12,
+    "episodes_per_segment": 1,
+    "parallel_environments": 12,
+    "physics_rate_hz": 120,
+    "policy_rate_hz": 30,
+    "randomization": "full-strength Phase 3 domain randomization and dynamic-obstacle distribution; unseen sequence",
+    "phase3_curriculum_strength": 1.0,
+    "fixed_segment_id": null
+  },
+  "results": {
+    "success_count": 7,
+    "success_rate": 0.5833333333333334,
+    "collision_count": 1,
+    "collision_rate": 0.08333333333333333,
+    "dynamic_obstacle_collision_count": 0,
+    "static_collision_count": 1,
+    "time_out_count": 4,
+    "time_out_rate": 0.3333333333333333,
+    "mean_episode_return": 3.2906929651896157,
+    "mean_episode_steps": 1165.6666666666667,
+    "mean_episode_duration_s": 38.85555555555556,
+    "mean_final_goal_distance_m": 2.0189115616182485,
+    "mean_abs_final_heading_error_deg": 40.12948928902301,
+    "mean_minimum_lidar_range_m": 1.2152336264650028,
+    "wall_clock_evaluation_s": 28.768026195000857,
+    "per_segment": [
+      {
+        "segment_id": 0,
+        "label": "home -> east_atrium_exit",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 1,
+        "label": "east_atrium_exit -> vice_principal_turn",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 2,
+        "label": "vice_principal_turn -> vice_principal_approach",
+        "episodes": 1,
+        "success": 0,
+        "collision": 0,
+        "time_out": 1,
+        "success_rate": 0.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 1.0
+      },
+      {
+        "segment_id": 3,
+        "label": "vice_principal_approach -> vice_principal",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 4,
+        "label": "vice_principal -> vice_principal_depart",
+        "episodes": 1,
+        "success": 0,
+        "collision": 0,
+        "time_out": 1,
+        "success_rate": 0.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 1.0
+      },
+      {
+        "segment_id": 5,
+        "label": "vice_principal_depart -> hallway_return",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 6,
+        "label": "hallway_return -> principal_turn",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 7,
+        "label": "principal_turn -> principal_approach",
+        "episodes": 1,
+        "success": 0,
+        "collision": 0,
+        "time_out": 1,
+        "success_rate": 0.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 1.0
+      },
+      {
+        "segment_id": 8,
+        "label": "principal_approach -> principal",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 9,
+        "label": "principal -> principal_depart",
+        "episodes": 1,
+        "success": 0,
+        "collision": 0,
+        "time_out": 1,
+        "success_rate": 0.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 1.0
+      },
+      {
+        "segment_id": 10,
+        "label": "principal_depart -> atrium_return",
+        "episodes": 1,
+        "success": 1,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 11,
+        "label": "atrium_return -> home_return",
+        "episodes": 1,
+        "success": 0,
+        "collision": 1,
+        "time_out": 0,
+        "success_rate": 0.0,
+        "collision_rate": 1.0,
+        "time_out_rate": 0.0
+      }
+    ]
+  },
+  "action_diagnostics": {
+    "dimensions": [
+      "brake_request",
+      "signed_clearance_projected_steering_request"
+    ],
+    "mapping": "action 0 negative requests braking and positive is a no-op; action 1 requests up to \u00b10.35 rad/s around the frozen route actor, subject to clearance projection and the independent protective stop",
+    "first_step_mean": [
+      0.04738098010420799,
+      0.020522229373455048
+    ],
+    "first_step_min": [
+      0.04183049127459526,
+      0.013866755180060863
+    ],
+    "first_step_max": [
+      0.051811229437589645,
+      0.027066988870501518
+    ],
+    "first_30_step_mean": [
+      0.052638087421655655,
+      0.02137443982064724
+    ],
+    "timeline": [
+      {
+        "step": 0,
+        "mean_action": [
+          0.04738098010420799,
+          0.020522229373455048
+        ]
+      },
+      {
+        "step": 15,
+        "mean_action": [
+          0.05452766641974449,
+          0.020703719928860664
+        ]
+      },
+      {
+        "step": 30,
+        "mean_action": [
+          0.05472755432128906,
+          0.020257920026779175
+        ]
+      },
+      {
+        "step": 60,
+        "mean_action": [
+          0.05574530363082886,
+          0.017754143103957176
+        ]
+      },
+      {
+        "step": 90,
+        "mean_action": [
+          0.0559658519923687,
+          0.014882753603160381
+        ]
+      },
+      {
+        "step": 120,
+        "mean_action": [
+          0.0530976802110672,
+          0.013906295411288738
+        ]
+      },
+      {
+        "step": 180,
+        "mean_action": [
+          0.04863569140434265,
+          0.016331713646650314
+        ]
+      },
+      {
+        "step": 300,
+        "mean_action": [
+          0.05508581921458244,
+          0.016627784818410873
+        ]
+      },
+      {
+        "step": 600,
+        "mean_action": [
+          0.05634867399930954,
+          0.01961737498641014
+        ]
+      },
+      {
+        "step": 1200,
+        "mean_action": [
+          0.05650069937109947,
+          0.019970770925283432
+        ]
+      },
+      {
+        "step": 2000,
+        "mean_action": [
+          0.059357963502407074,
+          0.021125316619873047
+        ]
+      }
+    ]
+  },
+  "acceptance_gate": {
+    "scope": "phase3_randomized_segment_subgate_only",
+    "protocol_satisfied": false,
+    "passed": false,
+    "full_phase3_acceptance": false,
+    "pending_separate_gates": [
+      "Phase 2 static-route regression",
+      "12 live-administration dynamic scenarios"
+    ],
+    "requirements": {
+      "randomized_episodes_per_segment": 64,
+      "overall_success_rate_min": 0.9,
+      "dynamic_obstacle_collision_rate_max": 0.02,
+      "static_collision_rate_max": 0.05,
+      "every_enabled_segment_success_rate_min": 0.8,
+      "phase2_static_route_regression_success_rate_min": 0.9,
+      "live_administration_dynamic_scenarios": 12,
+      "live_administration_collisions_allowed": 0,
+      "physical_safety_claim_allowed": false
+    },
+    "observed": {
+      "overall_success_rate": 0.5833333333333334,
+      "dynamic_obstacle_collision_rate": 0.0,
+      "static_collision_rate": 0.08333333333333333,
+      "minimum_enabled_segment_success_rate": 0.0
+    }
+  },
+  "claim_boundary": {
+    "supported": "Phase 3 randomized Block A segments with moving ray-visible person proxies",
+    "not_supported": [
+      "RTX-rendered LiDAR or depth-camera policy input",
+      "Nav2 integration",
+      "photoreal administration-office fidelity",
+      "sim-to-real transfer",
+      "physical robot release"
+    ],
+    "doorway_width": "presentation_assumption_not_measured"
+  }
+}
