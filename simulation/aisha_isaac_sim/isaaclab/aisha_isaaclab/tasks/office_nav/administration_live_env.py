@@ -82,6 +82,25 @@ class AishaAdministrationLiveSceneCfg(InteractiveSceneCfg):
         reference_meshes=False,
         debug_vis=False,
     )
+    # Separate low forward scan for Nav2 obstacle marking. It is deliberately
+    # absent from the learned policy observation, preserving the frozen policy
+    # contract while exposing the real robot's intended low-front sensor role.
+    front_lidar = MultiMeshRayCasterCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/base_link/front_lidar_link",
+        update_period=0.05,
+        offset=MultiMeshRayCasterCfg.OffsetCfg(),
+        ray_alignment="base",
+        pattern_cfg=patterns.LidarPatternCfg(
+            channels=1,
+            vertical_fov_range=(0.0, 0.0),
+            horizontal_fov_range=(-60.0, 60.0),
+            horizontal_res=5.0,
+        ),
+        max_distance=10.0,
+        mesh_prim_paths=administration_collision_raycast_targets(),
+        reference_meshes=False,
+        debug_vis=False,
+    )
 
 
 @configclass

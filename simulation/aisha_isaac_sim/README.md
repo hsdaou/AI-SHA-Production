@@ -758,6 +758,11 @@ python3 isaaclab/tools/validate_final_omniverse_presentation_reel.py \
 
 ## Navigation and doorway fit
 
+The measured-site capture and simulation-only ROS 2/Nav2 procedure is documented
+in [MEASURED_SITE_NAV2_WORKFLOW.md](MEASURED_SITE_NAV2_WORKFLOW.md). It keeps the
+Rev D differential-drive parameters isolated from the older production-repository
+mecanum profile and records the remaining runtime gates without overclaiming them.
+
 Use a footprint that contains the outboard wheels and forward head:
 
 ```yaml

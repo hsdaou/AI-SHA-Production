@@ -1,0 +1,83 @@
+# Simulation-only ROS 2 / Nav2 boundary for the Rev D AI-SHA model.
+#
+# This deliberately does not reuse src/robot_bringup/config/nav2_params.yaml:
+# that file describes the repository's older 0.60 x 0.50 m mecanum chassis.
+
+contract_version: 1
+status: prepared_not_runtime_validated
+scope: isaac_sim_administration_only
+use_sim_time: true
+
+frames:
+  map: map
+  odom: odom
+  base: base_link
+  crown_lidar: lidar_link
+  front_lidar: front_lidar_link
+  imu: imu_link
+
+topics:
+  clock: /clock
+  transforms: /tf
+  static_transforms: /tf_static
+  velocity_command: /cmd_vel
+  odometry: /odom
+  crown_scan: /scan
+  front_scan: /front_scan
+  initial_pose: /initialpose
+  goal_pose: /goal_pose
+
+drive:
+  architecture: differential_drive
+  wheel_radius_m: 0.100
+  wheel_track_m: 0.720
+  maximum_forward_velocity_mps: 0.30
+  maximum_reverse_velocity_mps: 0.0
+  maximum_lateral_velocity_mps: 0.0
+  maximum_angular_velocity_rad_s: 0.55
+  maximum_forward_acceleration_mps2: 0.25
+  maximum_angular_acceleration_rad_s2: 0.50
+  command_watchdog_s: 0.30
+
+footprint:
+  # +X forward, +Y left; includes wheel width and forward head overhang.
+  physical_xy_m:
+    - [0.725, 0.384]
+    - [0.725, -0.384]
+    - [-0.455, -0.384]
+    - [-0.455, 0.384]
+  costmap_padding_m: 0.080
+  padded_transit_width_m: 0.928
+  pivot_clear_diameter_m: 1.640
+
+perception:
+  crown_scan:
+    role: mapping_and_localisation
+    horizontal_field_of_view_deg: 360.0
+    angular_resolution_deg: 10.0
+    minimum_range_m: 0.12
+    maximum_range_m: 10.0
+    publish_rate_hz: 10.0
+  front_scan:
+    role: low_front_obstacle_layer
+    horizontal_field_of_view_deg: 120.0
+    angular_resolution_deg: 5.0
+    minimum_range_m: 0.12
+    maximum_range_m: 10.0
+    publish_rate_hz: 20.0
+
+command_safety_layer:
+  source: front_scan
+  stop_trigger_m: 0.60
+  release_m: 0.75
+  reverse_allowed: false
+  lateral_motion_allowed: false
+  protective_safety_credit: false
+
+integration_boundary:
+  nav2_role: global_route_and_local_velocity_command
+  isaac_sim_role: physics_odometry_tf_clock_and_scan_source
+  accepted_learned_policy_role: separately_verified_local_policy_and_360_degree_safety_layer
+  learned_policy_coupled_to_nav2: false
+  next_gate: compare_and_arbitrate_nav2_cmd_vel_with_the_frozen_phase3n_policy
+  physical_release: false

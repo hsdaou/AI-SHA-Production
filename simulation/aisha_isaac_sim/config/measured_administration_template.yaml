@@ -1,0 +1,135 @@
+# Intake contract for the forthcoming iPhone LiDAR / RoomPlan capture.
+#
+# Keep the original exports immutable. Put them below a separate scan root and
+# reference them here. The preparation tool hashes every supplied artifact and
+# writes a generated geometry overlay only after all critical manual
+# measurements are present.
+
+schema_version: 1
+status: awaiting_capture
+site: "Block A ground-floor administration"
+capture:
+  date: null
+  operator: null
+  device_model: null
+  application: null
+  application_version: null
+  privacy_reviewed: false
+  people_and_sensitive_documents_excluded: false
+
+coordinate_contract:
+  source_units: metre
+  source_up_axis: Y
+  source_forward_axis: "-Z"
+  source_metadata_verified_in_export: false
+  target_units: metre
+  target_up_axis: Z
+  target_forward_axis: X
+  target_origin: "centre of Block A atrium at finished-floor level"
+
+# Supply either one complete structure export or every required section. USDZ
+# is preferred; GLB/GLTF, OBJ, PLY and USD family files are also accepted.
+scans:
+  complete_structure:
+    file: null
+    required: false
+    transform:
+      scale_xyz: [1.0, 1.0, 1.0]
+      rotate_xyz_deg: [90.0, 0.0, 90.0]
+      translate_xyz_m: [0.0, 0.0, 0.0]
+  sections:
+    - id: atrium
+      file: null
+      required: true
+      overlap_anchor: "east-hall opening"
+      transform:
+        scale_xyz: [1.0, 1.0, 1.0]
+        rotate_xyz_deg: [90.0, 0.0, 90.0]
+        translate_xyz_m: [null, null, null]
+    - id: east_hallway
+      file: null
+      required: true
+      overlap_anchor: "atrium and Vice-Principal approach"
+      transform:
+        scale_xyz: [1.0, 1.0, 1.0]
+        rotate_xyz_deg: [90.0, 0.0, 90.0]
+        translate_xyz_m: [null, null, null]
+    - id: vice_principal_office
+      file: null
+      required: true
+      overlap_anchor: "Vice-Principal doorway and hallway"
+      transform:
+        scale_xyz: [1.0, 1.0, 1.0]
+        rotate_xyz_deg: [90.0, 0.0, 90.0]
+        translate_xyz_m: [null, null, null]
+    - id: principal_passage
+      file: null
+      required: true
+      overlap_anchor: "atrium and Principal doorway"
+      transform:
+        scale_xyz: [1.0, 1.0, 1.0]
+        rotate_xyz_deg: [90.0, 0.0, 90.0]
+        translate_xyz_m: [null, null, null]
+    - id: principal_office
+      file: null
+      required: true
+      overlap_anchor: "Principal doorway and passage"
+      transform:
+        scale_xyz: [1.0, 1.0, 1.0]
+        rotate_xyz_deg: [90.0, 0.0, 90.0]
+        translate_xyz_m: [null, null, null]
+
+manual_measurements:
+  units: "metres except threshold millimetres"
+  east_hallway_clear_width_m: null
+  principal_passage_clear_width_m: null
+  ceiling_height_m: null
+  vice_principal_turn_zone_size_m: [null, null]
+  principal_turn_zone_size_m: [null, null]
+  vice_principal_door:
+    clear_width_m: null
+    clear_height_m: null
+    frame_depth_m: null
+    threshold_hallway_mm: null
+    threshold_office_mm: null
+    threshold_profile: null
+    hinge_side_from_hallway: null
+    swing_from_hallway: null
+    centre_xy_m: [null, null]
+    wall_rotation_deg: null
+  principal_door:
+    clear_width_m: null
+    clear_height_m: null
+    frame_depth_m: null
+    threshold_hallway_mm: null
+    threshold_office_mm: null
+    threshold_profile: null
+    hinge_side_from_hallway: null
+    swing_from_hallway: null
+    centre_xy_m: [null, null]
+    wall_rotation_deg: null
+  atrium_columns:
+    radius_m: null
+    positions_xy_m: []
+
+optional_measured_geometry:
+  vice_principal_room:
+    centre_xy_m: [null, null]
+    size_xy_m: [null, null]
+    rotation_deg: 0.0
+  principal_room:
+    centre_xy_m: [null, null]
+    size_xy_m: [null, null]
+    rotation_deg: null
+  route_waypoints: []
+
+evidence:
+  conventional_walkthrough_video: null
+  measured_floorplan_pdf: null
+  measured_floorplan_dxf: null
+  measurement_notes: null
+
+safety_boundary:
+  lidar_scan_is_survey_input_not_safety_certification: true
+  manual_door_and_threshold_confirmation_required: true
+  generated_overlay_never_releases_physical_operation: true

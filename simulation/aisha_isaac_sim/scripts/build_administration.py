@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import math
 import os
 from datetime import datetime, timezone
@@ -19,11 +20,40 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--plan", type=Path, help="approved ground-floor plan PDF containing page 2 Block A")
     parser.add_argument("--door-survey", type=Path, help="YAML/JSON with both clear widths and threshold heights")
     parser.add_argument(
+        "--measured-geometry",
+        type=Path,
+        help="validated YAML overlay written by tools/prepare_measured_administration.py",
+    )
+    parser.add_argument(
         "--presentation-assumptions",
         action="store_true",
         help="accept disclosed presentation-only door/threshold and height assumptions",
     )
     return parser.parse_args()
+
+
+def deep_merge(base: dict, overlay: dict) -> dict:
+    """Return a recursive merge without mutating either input mapping."""
+    merged = copy.deepcopy(base)
+    for key, value in overlay.items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = deep_merge(merged[key], value)
+        else:
+            merged[key] = copy.deepcopy(value)
+    return merged
+
+
+def load_measured_overlay(path: Path) -> dict:
+    overlay = load_yaml(path)
+    if overlay.get("overlay_type") != "measured_administration_geometry":
+        raise ValueError("measured geometry file has the wrong overlay_type")
+    if overlay.get("status") != "measured_site_candidate":
+        raise ValueError("measured geometry file is not a measured-site candidate")
+    if overlay.get("candidate_route_geometry_valid") is not True:
+        raise ValueError("measured geometry failed one or more route-clearance gates")
+    if overlay.get("physical_release") is not False:
+        raise ValueError("measured geometry must preserve physical_release: false")
+    return overlay
 
 
 def strict_gate(args: argparse.Namespace) -> int:
@@ -65,6 +95,14 @@ def build_presentation(args: argparse.Namespace) -> int:
         ensure_output_dirs()
         config_path = CONFIG_DIR / "administration_assumptions.yaml"
         config = load_yaml(config_path)
+        measured_overlay = None
+        measured_overlay_hash = None
+        if args.measured_geometry is not None:
+            if not args.measured_geometry.is_file():
+                raise FileNotFoundError(f"missing measured geometry overlay {args.measured_geometry}")
+            measured_overlay = load_measured_overlay(args.measured_geometry)
+            measured_overlay_hash = sha256_file(args.measured_geometry)
+            config = deep_merge(config, measured_overlay)
         refinement_path = CONFIG_DIR / "geometry_rtx_refinement.yaml"
         refinement = load_yaml(refinement_path)
         physics = load_yaml(CONFIG_DIR / "physics_materials.yaml")
@@ -558,20 +596,21 @@ def build_presentation(args: argparse.Namespace) -> int:
             tangent = (math.cos(angle), math.sin(angle))
             normal = (-math.sin(angle), math.cos(angle))
             width = float(values["clear_width_m"])
-            height = 2.25
+            height = float(values.get("clear_height_m", 2.25))
+            frame_depth = float(values.get("frame_depth_m", 0.19))
             post = 0.075
             for side_name, side_sign in (("Left", -1.0), ("Right", 1.0)):
                 offset = side_sign * (width / 2.0 + post / 2.0)
                 box(
                     f"/World/Architecture/Doors/{name}/Frame{side_name}",
-                    (post, 0.19, height),
+                    (post, frame_depth, height),
                     (centre_x + tangent[0] * offset, centre_y + tangent[1] * offset, height / 2.0),
                     metal,
                     rotate_z_deg=angle_deg,
                 )
             box(
                 f"/World/Architecture/Doors/{name}/Lintel",
-                (width + 2.0 * post, 0.19, 0.18),
+                (width + 2.0 * post, frame_depth, 0.18),
                 (centre_x, centre_y, height + 0.09),
                 metal,
                 rotate_z_deg=angle_deg,
@@ -588,8 +627,8 @@ def build_presentation(args: argparse.Namespace) -> int:
             )
             box(
                 f"/World/Architecture/Doors/{name}/OpenLeaf",
-                (width, 0.045, 2.18),
-                (leaf_centre[0], leaf_centre[1], 1.09),
+                (width, 0.045, max(0.10, height - 0.07)),
+                (leaf_centre[0], leaf_centre[1], max(0.10, height - 0.07) / 2.0),
                 light_grey,
                 rotate_z_deg=angle_deg + 90.0,
             )
@@ -609,7 +648,7 @@ def build_presentation(args: argparse.Namespace) -> int:
                 leaf_end,
                 mottled_grey_finish,
                 normal_offset=0.024,
-                height=2.18,
+                height=max(0.10, height - 0.07),
                 metres_per_tile=1.2,
             )
             free_edge = (
@@ -634,11 +673,11 @@ def build_presentation(args: argparse.Namespace) -> int:
                     physics_binding=tile_physics,
                     rotate_z_deg=angle_deg,
                 )
-                threshold.SetCustomDataByKey("aisha:status", "presentation_assumption_not_measured")
+                threshold.SetCustomDataByKey("aisha:status", str(values["threshold_status"]))
                 threshold.SetCustomDataByKey("aisha:heightMm", int(values["threshold_height_mm"]))
             else:
                 door_prim = stage.GetPrimAtPath(f"/World/Architecture/Doors/{name}")
-                door_prim.SetCustomDataByKey("aisha:thresholdStatus", "assumed_flush_no_threshold_geometry")
+                door_prim.SetCustomDataByKey("aisha:thresholdStatus", str(values["threshold_status"]))
                 door_prim.SetCustomDataByKey("aisha:thresholdHeightMm", 0)
             sign_normal = (normal[0] * 0.10, normal[1] * 0.10)
             box(
@@ -653,13 +692,20 @@ def build_presentation(args: argparse.Namespace) -> int:
             )
             return {
                 "clear_width_m": width,
+                "clear_height_m": height,
+                "frame_depth_m": frame_depth,
                 "threshold_height_mm": int(values["threshold_height_mm"]),
                 "width_status": values["width_status"],
                 "threshold_status": values["threshold_status"],
                 "centre_xy_m": [centre_x, centre_y],
                 "wall_rotation_deg": angle_deg,
-                "swing_assumption": "outward_for_camera_and_route_clearance" if opens_outward else "inward",
-                "hinge_assumption": "left_jamb" if hinge_left else "right_jamb",
+                "swing": values.get(
+                    "swing_from_hallway",
+                    "outward_for_camera_and_route_clearance" if opens_outward else "inward",
+                ),
+                "hinge": values.get(
+                    "hinge_side_from_hallway", "left" if hinge_left else "right"
+                ),
             }
 
         def slatted_wall(name: str, start_xy: tuple[float, float], end_xy: tuple[float, float]) -> None:
@@ -827,7 +873,7 @@ def build_presentation(args: argparse.Namespace) -> int:
                 box(
                     f"/World/Architecture/Ceilings/Grid/{name}_X_{index:02d}",
                     (0.014, sy - 0.06, 0.010),
-                    (*point, 2.986),
+                    (*point, wall_height - 0.014),
                     light_grey,
                     collision=False,
                     rotate_z_deg=rotate_z_deg,
@@ -838,17 +884,17 @@ def build_presentation(args: argparse.Namespace) -> int:
                 box(
                     f"/World/Architecture/Ceilings/Grid/{name}_Y_{index:02d}",
                     (sx - 0.06, 0.014, 0.010),
-                    (*point, 2.986),
+                    (*point, wall_height - 0.014),
                     light_grey,
                     collision=False,
                     rotate_z_deg=rotate_z_deg,
                 )
 
         def ceiling_sensor(name: str, centre_xy: tuple[float, float]) -> None:
-            cylinder(f"/World/Architecture/Ceilings/Devices/{name}/Mount", 0.11, 0.035, (*centre_xy, 2.970), warm_white, collision=False)
-            ellipsoid(f"/World/Architecture/Ceilings/Devices/{name}/Dome", (0.16, 0.16, 0.10), (*centre_xy, 2.925), warm_white)
+            cylinder(f"/World/Architecture/Ceilings/Devices/{name}/Mount", 0.11, 0.035, (*centre_xy, wall_height - 0.030), warm_white, collision=False)
+            ellipsoid(f"/World/Architecture/Ceilings/Devices/{name}/Dome", (0.16, 0.16, 0.10), (*centre_xy, wall_height - 0.075), warm_white)
             lens_xy = (centre_xy[0] + 0.045, centre_xy[1])
-            sphere(f"/World/Architecture/Ceilings/Devices/{name}/Lens", 0.030, (*lens_xy, 2.900), black, collision=False)
+            sphere(f"/World/Architecture/Ceilings/Devices/{name}/Lens", 0.030, (*lens_xy, wall_height - 0.100), black, collision=False)
 
         def ceiling_vent(
             name: str,
@@ -856,11 +902,11 @@ def build_presentation(args: argparse.Namespace) -> int:
             *,
             rotate_z_deg: float = 0.0,
         ) -> None:
-            box(f"/World/Architecture/Ceilings/Vents/{name}/Recess", (0.72, 0.50, 0.015), (*centre_xy, 2.973), dark_grey, collision=False, rotate_z_deg=rotate_z_deg)
+            box(f"/World/Architecture/Ceilings/Vents/{name}/Recess", (0.72, 0.50, 0.015), (*centre_xy, wall_height - 0.027), dark_grey, collision=False, rotate_z_deg=rotate_z_deg)
             for index in range(8):
                 local_y = -0.205 + index * 0.0585
                 point = local_to_world(centre_xy, (0.0, local_y), rotate_z_deg)
-                box(f"/World/Architecture/Ceilings/Vents/{name}/Louver_{index:02d}", (0.62, 0.014, 0.018), (*point, 2.962), metal, collision=False, rotate_z_deg=rotate_z_deg)
+                box(f"/World/Architecture/Ceilings/Vents/{name}/Louver_{index:02d}", (0.62, 0.014, 0.018), (*point, wall_height - 0.038), metal, collision=False, rotate_z_deg=rotate_z_deg)
 
         # Floors and support slab.
         box("/World/Architecture/SupportSlab", (48.0, 32.0, 0.12), (7.0, -4.0, -0.065), dark_grey, physics_binding=tile_physics)
@@ -870,28 +916,46 @@ def build_presentation(args: argparse.Namespace) -> int:
             for index in range(8)
         ]
         polygon_floor("Atrium", vertices, terrazzo)
-        box("/World/Architecture/Floors/EastHallway", (16.11, 2.80, 0.055), (13.945, 0.0, -0.027), terrazzo, physics_binding=tile_physics)
-        box("/World/Architecture/Floors/ViceAccess", (2.40, 3.65, 0.055), (17.10, -3.225, -0.027), terrazzo, physics_binding=tile_physics)
+        hallway = config["plan_geometry"]["east_hallway"]
+        hall_x_min, hall_x_max = (float(value) for value in hallway["x_range_m"])
+        hall_y_min, hall_y_max = (float(value) for value in hallway["y_range_m"])
+        hall_size = (hall_x_max - hall_x_min, hall_y_max - hall_y_min)
+        hall_centre = (
+            (hall_x_min + hall_x_max) / 2.0,
+            (hall_y_min + hall_y_max) / 2.0,
+        )
+        vp_values = config["doors"]["vice_principal"]
+        vp_door_x, vp_door_y = (float(value) for value in vp_values["centre_xy_m"])
+        vice_access_size = (2.40, abs(vp_door_y - hall_y_min))
+        vice_access_centre = (vp_door_x, (vp_door_y + hall_y_min) / 2.0)
+        box("/World/Architecture/Floors/EastHallway", (*hall_size, 0.055), (*hall_centre, -0.027), terrazzo, physics_binding=tile_physics)
+        box("/World/Architecture/Floors/ViceAccess", (*vice_access_size, 0.055), (*vice_access_centre, -0.027), terrazzo, physics_binding=tile_physics)
         cluster = config["plan_geometry"]["south_east_cluster"]
         vice_room = cluster["vice_principal"]
         principal_room = cluster["principal"]
         vice_size = tuple(float(value) for value in vice_room["size_xy_m"])
         vice_centre = tuple(float(value) for value in vice_room["centre_xy_m"])
+        vice_rotation = float(vice_room["rotation_deg"])
         principal_size = tuple(float(value) for value in principal_room["size_xy_m"])
         principal_centre = tuple(float(value) for value in principal_room["centre_xy_m"])
         principal_rotation = float(principal_room["rotation_deg"])
-        box("/World/Architecture/Floors/VicePrincipal", (*vice_size, 0.055), (*vice_centre, -0.027), oak, physics_binding=tile_physics)
-        box("/World/Architecture/Floors/PrincipalAccess", (5.80, 2.60, 0.055), (5.45, -5.45, -0.027), terrazzo, physics_binding=tile_physics, rotate_z_deg=-45.0)
+        box("/World/Architecture/Floors/VicePrincipal", (*vice_size, 0.055), (*vice_centre, -0.027), oak, physics_binding=tile_physics, rotate_z_deg=vice_rotation)
+        principal_passage_width = float(
+            config["known_dimensions"].get(
+                "principal_passage_clear_width_m", {"value": 2.60}
+            )["value"]
+        )
+        box("/World/Architecture/Floors/PrincipalAccess", (5.80, principal_passage_width, 0.055), (5.45, -5.45, -0.027), terrazzo, physics_binding=tile_physics, rotate_z_deg=-45.0)
         box("/World/Architecture/Floors/Principal", (*principal_size, 0.055), (*principal_centre, -0.027), oak, physics_binding=tile_physics, rotate_z_deg=principal_rotation)
 
         # Render-only PBR finish meshes sit just above the already validated
         # collision floors. They add the dense terrazzo and light timber visible
         # in the walkthrough without changing wheel contact or route clearance.
         textured_polygon_surface("AtriumTerrazzo", vertices, terrazzo_finish, metres_per_tile=2.2)
-        textured_rect_surface("EastHallTerrazzo", (16.11, 2.80), (13.945, 0.0), terrazzo_finish, metres_per_tile=2.2)
-        textured_rect_surface("ViceAccessTerrazzo", (2.40, 3.65), (17.10, -3.225), terrazzo_finish, metres_per_tile=2.2)
-        textured_rect_surface("PrincipalAccessTerrazzo", (5.80, 2.60), (5.45, -5.45), terrazzo_finish, rotate_z_deg=-45.0, metres_per_tile=2.2)
-        textured_rect_surface("ViceOfficeOak", vice_size, vice_centre, oak_finish, metres_per_tile=2.6)
+        textured_rect_surface("EastHallTerrazzo", hall_size, hall_centre, terrazzo_finish, metres_per_tile=2.2)
+        textured_rect_surface("ViceAccessTerrazzo", vice_access_size, vice_access_centre, terrazzo_finish, metres_per_tile=2.2)
+        textured_rect_surface("PrincipalAccessTerrazzo", (5.80, principal_passage_width), (5.45, -5.45), terrazzo_finish, rotate_z_deg=-45.0, metres_per_tile=2.2)
+        textured_rect_surface("ViceOfficeOak", vice_size, vice_centre, oak_finish, rotate_z_deg=vice_rotation, metres_per_tile=2.6)
         textured_rect_surface("PrincipalOfficeOak", principal_size, principal_centre, oak_finish, rotate_z_deg=principal_rotation, metres_per_tile=2.6)
 
         for room_name in ("office_manager", "meeting_room_1", "meeting_room_2"):
@@ -912,37 +976,56 @@ def build_presentation(args: argparse.Namespace) -> int:
             if index == 6:  # south-east diagonal opening toward Principal cluster
                 continue
             if index == 7:  # east face split around the 2.80 m hallway
-                wall_segment("Atrium_East_South", start, (start[0], -1.40), warm_white)
-                wall_segment("Atrium_East_North", (start[0], 1.40), end, warm_white)
+                wall_segment("Atrium_East_South", start, (start[0], hall_y_min), warm_white)
+                wall_segment("Atrium_East_North", (start[0], hall_y_max), end, warm_white)
                 continue
             material = timber if index in (0, 1) else warm_white
             wall_segment(f"Atrium_{index:02d}", start, end, material)
 
-        wall_segment("EastHall_North", (vertices[0][0], 1.40), (22.00, 1.40), warm_white)
-        slatted_wall("EastHall_South_West", (vertices[7][0], -1.40), (15.90, -1.40))
-        slatted_wall("EastHall_South_East", (18.30, -1.40), (22.00, -1.40))
-        split_wall("EastHall_End", (22.00, -1.40), (22.00, 1.40), (22.00, 0.0), 1.80, light_grey)
+        access_half_width = vice_access_size[0] / 2.0
+        wall_segment("EastHall_North", (vertices[0][0], hall_y_max), (hall_x_max, hall_y_max), warm_white)
+        slatted_wall("EastHall_South_West", (vertices[7][0], hall_y_min), (vp_door_x - access_half_width, hall_y_min))
+        slatted_wall("EastHall_South_East", (vp_door_x + access_half_width, hall_y_min), (hall_x_max, hall_y_min))
+        split_wall("EastHall_End", (hall_x_max, hall_y_min), (hall_x_max, hall_y_max), (hall_x_max, hall_centre[1]), 1.80, light_grey)
 
         # Frosted-glass double doors at the east side entrance.
         for y in (-0.48, 0.48):
-            box("/World/Architecture/Glass/EastDoor_" + ("S" if y < 0 else "N"), (0.055, 0.88, 2.30), (22.00, y, 1.15), glass, rotate_z_deg=90.0)
-            box("/World/Architecture/Glass/EastDoorBand_" + ("S" if y < 0 else "N"), (0.060, 0.88, 0.12), (21.97, y, 1.20), warm_white, collision=False, rotate_z_deg=90.0)
+            box("/World/Architecture/Glass/EastDoor_" + ("S" if y < 0 else "N"), (0.055, 0.88, 2.30), (hall_x_max, y, 1.15), glass, rotate_z_deg=90.0)
+            box("/World/Architecture/Glass/EastDoorBand_" + ("S" if y < 0 else "N"), (0.060, 0.88, 0.12), (hall_x_max - 0.03, y, 1.20), warm_white, collision=False, rotate_z_deg=90.0)
 
         # Vice-Principal access and room, east of the angled Principal office as
         # shown on page 2.
-        wall_segment("ViceAccess_West", (15.90, -5.05), (15.90, -1.40), timber)
-        wall_segment("ViceAccess_East", (18.30, -5.05), (18.30, -1.40), warm_white)
-        vp_values = config["doors"]["vice_principal"]
+        wall_segment("ViceAccess_West", (vp_door_x - access_half_width, vp_door_y), (vp_door_x - access_half_width, hall_y_min), timber)
+        wall_segment("ViceAccess_East", (vp_door_x + access_half_width, vp_door_y), (vp_door_x + access_half_width, hall_y_min), warm_white)
         vp_half = float(vp_values["clear_width_m"]) / 2.0
-        wall_segment("Vice_North_West", (13.95, -5.05), (17.10 - vp_half, -5.05), warm_white)
-        wall_segment("Vice_North_East", (17.10 + vp_half, -5.05), (20.25, -5.05), warm_white)
-        slatted_wall("Vice_South_West", (13.95, -8.05), (16.10, -8.05))
-        box("/World/Architecture/Walls/ViceWindowSill", (4.15, wall_thickness, 0.66), (18.175, -8.05, 0.33), warm_white)
-        box("/World/Architecture/Walls/ViceWindowHead", (4.15, wall_thickness, 0.64), (18.175, -8.05, 2.68), warm_white)
-        wall_segment("Vice_West", (13.95, -8.05), (13.95, -5.05), warm_white)
-        wall_segment("Vice_East_Lower", (20.25, -8.05), (20.25, -6.30), warm_white)
-        wall_segment("Vice_East_Upper", (20.25, -5.80), (20.25, -5.05), warm_white)
-        box("/World/Architecture/Glass/ViceWindow", (0.055, 0.50, 1.55), (20.25, -6.05, 1.48), glass, rotate_z_deg=90.0)
+        if vice_room.get("status") == "site_scan_plus_manual_measurement_candidate":
+            vice_corners = [
+                local_to_world(vice_centre, (-vice_size[0] / 2.0, -vice_size[1] / 2.0), vice_rotation),
+                local_to_world(vice_centre, (vice_size[0] / 2.0, -vice_size[1] / 2.0), vice_rotation),
+                local_to_world(vice_centre, (vice_size[0] / 2.0, vice_size[1] / 2.0), vice_rotation),
+                local_to_world(vice_centre, (-vice_size[0] / 2.0, vice_size[1] / 2.0), vice_rotation),
+            ]
+            split_wall(
+                "Vice_North",
+                vice_corners[3],
+                vice_corners[2],
+                (vp_door_x, vp_door_y),
+                2.0 * vp_half,
+                warm_white,
+            )
+            slatted_wall("Vice_South", vice_corners[0], vice_corners[1])
+            wall_segment("Vice_West", vice_corners[0], vice_corners[3], warm_white)
+            wall_segment("Vice_East", vice_corners[1], vice_corners[2], warm_white)
+        else:
+            wall_segment("Vice_North_West", (13.95, vp_door_y), (vp_door_x - vp_half, vp_door_y), warm_white)
+            wall_segment("Vice_North_East", (vp_door_x + vp_half, vp_door_y), (20.25, vp_door_y), warm_white)
+            slatted_wall("Vice_South_West", (13.95, -8.05), (16.10, -8.05))
+            box("/World/Architecture/Walls/ViceWindowSill", (4.15, wall_thickness, 0.66), (18.175, -8.05, 0.33), warm_white)
+            box("/World/Architecture/Walls/ViceWindowHead", (4.15, wall_thickness, 0.64), (18.175, -8.05, 2.68), warm_white)
+            wall_segment("Vice_West", (13.95, -8.05), (13.95, -5.05), warm_white)
+            wall_segment("Vice_East_Lower", (20.25, -8.05), (20.25, -6.30), warm_white)
+            wall_segment("Vice_East_Upper", (20.25, -5.80), (20.25, -5.05), warm_white)
+            box("/World/Architecture/Glass/ViceWindow", (0.055, 0.50, 1.55), (20.25, -6.05, 1.48), glass, rotate_z_deg=90.0)
 
         # Diagonal reception/secretary passage leading to the Principal office.
         corridor_start = (3.45, -3.45)
@@ -950,7 +1033,10 @@ def build_presentation(args: argparse.Namespace) -> int:
         tangent = (math.sqrt(0.5), -math.sqrt(0.5))
         normal = (math.sqrt(0.5), math.sqrt(0.5))
         for side_name, side_sign, material in (("North", 1.0, warm_white), ("South", -1.0, timber)):
-            offset = (normal[0] * 1.30 * side_sign, normal[1] * 1.30 * side_sign)
+            offset = (
+                normal[0] * principal_passage_width / 2.0 * side_sign,
+                normal[1] * principal_passage_width / 2.0 * side_sign,
+            )
             wall_segment(
                 f"PrincipalAccess_{side_name}",
                 (corridor_start[0] + offset[0], corridor_start[1] + offset[1]),
@@ -964,9 +1050,21 @@ def build_presentation(args: argparse.Namespace) -> int:
             local_to_world(principal_centre, (principal_size[0] / 2.0, principal_size[1] / 2.0), principal_rotation),
             local_to_world(principal_centre, (-principal_size[0] / 2.0, principal_size[1] / 2.0), principal_rotation),
         ]
-        principal_door_centre = local_to_world(principal_centre, (-principal_size[0] / 2.0, 0.0), principal_rotation)
-        config["doors"]["principal"]["centre_xy_m"] = [round(principal_door_centre[0], 3), round(principal_door_centre[1], 3)]
-        config["doors"]["principal"]["wall_rotation_deg"] = 45.0
+        derived_principal_door_centre = local_to_world(
+            principal_centre, (-principal_size[0] / 2.0, 0.0), principal_rotation
+        )
+        principal_values = config["doors"]["principal"]
+        if principal_values.get("width_status") == "manual_site_measurement":
+            principal_door_centre = tuple(
+                float(value) for value in principal_values["centre_xy_m"]
+            )
+        else:
+            principal_door_centre = derived_principal_door_centre
+            principal_values["centre_xy_m"] = [
+                round(principal_door_centre[0], 3),
+                round(principal_door_centre[1], 3),
+            ]
+            principal_values["wall_rotation_deg"] = principal_rotation + 90.0
         split_wall(
             "Principal_West",
             principal_corners[0],
@@ -980,12 +1078,17 @@ def build_presentation(args: argparse.Namespace) -> int:
         wall_segment("Principal_North", principal_corners[2], principal_corners[3], warm_white)
 
         doors = {
-            "vice_principal": doorway("VicePrincipal", vp_values, hinge_left=True, opens_outward=True),
+            "vice_principal": doorway(
+                "VicePrincipal",
+                vp_values,
+                hinge_left=vp_values.get("hinge_side_from_hallway", "left") == "left",
+                opens_outward=vp_values.get("swing_from_hallway", "outward") == "outward",
+            ),
             "principal": doorway(
                 "Principal",
-                config["doors"]["principal"],
-                hinge_left=True,
-                opens_outward=True,
+                principal_values,
+                hinge_left=principal_values.get("hinge_side_from_hallway", "left") == "left",
+                opens_outward=principal_values.get("swing_from_hallway", "outward") == "outward",
             ),
         }
 
@@ -1093,12 +1196,13 @@ def build_presentation(args: argparse.Namespace) -> int:
 
         # Suspended ceilings and LED panels. The renderers hide ceilings only for
         # the architectural overview; all cinematic shots retain them.
-        box("/World/Architecture/Ceilings/Atrium", (11.20, 11.20, 0.08), (0.0, 0.0, 3.04), warm_white, collision=False)
-        box("/World/Architecture/Ceilings/EastHall", (16.11, 2.80, 0.08), (13.945, 0.0, 3.04), warm_white, collision=False)
-        box("/World/Architecture/Ceilings/ViceAccess", (2.40, 3.65, 0.08), (17.10, -3.225, 3.04), warm_white, collision=False)
-        box("/World/Architecture/Ceilings/Vice", (6.30, 3.00, 0.08), (17.10, -6.55, 3.04), warm_white, collision=False)
-        box("/World/Architecture/Ceilings/PrincipalAccess", (5.80, 2.60, 0.08), (5.45, -5.45, 3.04), warm_white, collision=False, rotate_z_deg=-45.0)
-        box("/World/Architecture/Ceilings/Principal", (4.75, 3.60, 0.08), (8.65, -9.30, 3.04), warm_white, collision=False, rotate_z_deg=-45.0)
+        ceiling_z = wall_height + 0.04
+        box("/World/Architecture/Ceilings/Atrium", (11.20, 11.20, 0.08), (0.0, 0.0, ceiling_z), warm_white, collision=False)
+        box("/World/Architecture/Ceilings/EastHall", (*hall_size, 0.08), (*hall_centre, ceiling_z), warm_white, collision=False)
+        box("/World/Architecture/Ceilings/ViceAccess", (*vice_access_size, 0.08), (*vice_access_centre, ceiling_z), warm_white, collision=False)
+        box("/World/Architecture/Ceilings/Vice", (*vice_size, 0.08), (*vice_centre, ceiling_z), warm_white, collision=False, rotate_z_deg=vice_rotation)
+        box("/World/Architecture/Ceilings/PrincipalAccess", (5.80, principal_passage_width, 0.08), (5.45, -5.45, ceiling_z), warm_white, collision=False, rotate_z_deg=-45.0)
+        box("/World/Architecture/Ceilings/Principal", (*principal_size, 0.08), (*principal_centre, ceiling_z), warm_white, collision=False, rotate_z_deg=principal_rotation)
 
         light_positions = [
             (-3.0, -2.5), (-3.0, 0.0), (-3.0, 2.5),
@@ -1109,24 +1213,24 @@ def build_presentation(args: argparse.Namespace) -> int:
             (5.4, -5.4), (8.0, -8.6), (9.7, -9.9),
         ]
         for index, (x, y) in enumerate(light_positions):
-            box(f"/World/Lighting/Panels/Frame_{index:02d}", (0.92, 0.62, 0.018), (x, y, 2.987), metal, collision=False)
-            box(f"/World/Lighting/Panels/Panel_{index:02d}", (0.84, 0.54, 0.018), (x, y, 2.974), light_panel, collision=False)
+            box(f"/World/Lighting/Panels/Frame_{index:02d}", (0.92, 0.62, 0.018), (x, y, wall_height - 0.013), metal, collision=False)
+            box(f"/World/Lighting/Panels/Panel_{index:02d}", (0.84, 0.54, 0.018), (x, y, wall_height - 0.026), light_panel, collision=False)
             light = UsdLux.RectLight.Define(stage, f"/World/Lighting/Fixtures/Light_{index:02d}")
             light.CreateIntensityAttr(11000.0)
             light.CreateColorAttr(Gf.Vec3f(0.96, 0.98, 1.0))
             light.CreateWidthAttr(0.84)
             light.CreateHeightAttr(0.54)
             light_xform = UsdGeom.Xformable(light.GetPrim())
-            light_xform.AddTranslateOp().Set(Gf.Vec3d(x, y, 2.955))
+            light_xform.AddTranslateOp().Set(Gf.Vec3d(x, y, wall_height - 0.045))
 
         # Dropped-ceiling grid and vents reproduce the office scale cues visible
         # in the walkthrough without claiming surveyed dimensions.
         ceiling_grid("Atrium", (0.0, 0.0), (10.80, 10.80))
-        ceiling_grid("EastHall", (13.945, 0.0), (16.00, 2.72))
-        ceiling_grid("ViceAccess", (17.10, -3.225), (2.32, 3.57))
-        ceiling_grid("Vice", (17.10, -6.55), (6.22, 2.92))
-        ceiling_grid("PrincipalAccess", (5.45, -5.45), (5.72, 2.52), rotate_z_deg=-45.0)
-        ceiling_grid("Principal", principal_centre, (4.67, 3.52), rotate_z_deg=-45.0)
+        ceiling_grid("EastHall", hall_centre, (hall_size[0] - 0.11, hall_size[1] - 0.08))
+        ceiling_grid("ViceAccess", vice_access_centre, (vice_access_size[0] - 0.08, vice_access_size[1] - 0.08))
+        ceiling_grid("Vice", vice_centre, (vice_size[0] - 0.08, vice_size[1] - 0.08), rotate_z_deg=vice_rotation)
+        ceiling_grid("PrincipalAccess", (5.45, -5.45), (5.72, principal_passage_width - 0.08), rotate_z_deg=-45.0)
+        ceiling_grid("Principal", principal_centre, (principal_size[0] - 0.08, principal_size[1] - 0.08), rotate_z_deg=principal_rotation)
         ceiling_vent("Vice", (18.05, -6.02))
         principal_vent = local_to_world(principal_centre, (-0.65, 0.70), principal_rotation)
         ceiling_vent("Principal", principal_vent, rotate_z_deg=principal_rotation)
@@ -1134,8 +1238,8 @@ def build_presentation(args: argparse.Namespace) -> int:
         for index, location in enumerate(((3.7, 1.2), (10.1, -0.6), (17.1, -3.7), (18.6, -6.5), (8.55, -9.25))):
             ceiling_sensor(f"Camera_{index:02d}", location)
         for index, location in enumerate(((-1.8, 0.8), (7.9, 0.65), (16.2, -6.0), (7.6, -8.7))):
-            cylinder(f"/World/Architecture/Ceilings/Devices/Smoke_{index:02d}", 0.095, 0.035, (*location, 2.965), warm_white, collision=False)
-            cylinder(f"/World/Architecture/Ceilings/Devices/SmokeRing_{index:02d}", 0.057, 0.010, (*location, 2.942), dark_grey, collision=False)
+            cylinder(f"/World/Architecture/Ceilings/Devices/Smoke_{index:02d}", 0.095, 0.035, (*location, wall_height - 0.035), warm_white, collision=False)
+            cylinder(f"/World/Architecture/Ceilings/Devices/SmokeRing_{index:02d}", 0.057, 0.010, (*location, wall_height - 0.058), dark_grey, collision=False)
 
         dome = UsdLux.DomeLight.Define(stage, "/World/Lighting/Ambient")
         dome.CreateIntensityAttr(280.0)
@@ -1178,7 +1282,10 @@ def build_presentation(args: argparse.Namespace) -> int:
         robot_xform.AddTranslateOp(opSuffix="route").Set(Gf.Vec3d(0.0, 0.0, 0.0))
         robot_xform.AddRotateZOp(opSuffix="route").Set(0.0)
         robot.GetPrim().SetCustomDataByKey("aisha:payloadVariant", args.payload)
-        robot.GetPrim().SetCustomDataByKey("aisha:routeGeometryStatus", "plan_derived_route_scoped")
+        geometry_status = (
+            "measured_site_candidate" if measured_overlay is not None else "plan_derived_route_scoped"
+        )
+        robot.GetPrim().SetCustomDataByKey("aisha:routeGeometryStatus", geometry_status)
 
         # A presentation shell gives the imported engineering URDF the intended
         # finished-product read while keeping the Rev D collision and sensor
@@ -1234,7 +1341,7 @@ def build_presentation(args: argparse.Namespace) -> int:
             "aisha:scenePurpose": "walkthrough_matched_environment_for_verified_learned_trajectory_replay",
             "aisha:a1Page2Status": "approved_page_2_reviewed",
             "aisha:planSha256": expected_plan_hash,
-            "aisha:geometryStatus": "plan_derived_route_scoped",
+            "aisha:geometryStatus": geometry_status,
             "aisha:appearanceStatus": "walkthrough_video_derived_procedural_pbr_not_dimensioned",
             "aisha:visualUpgrade": "administration_walkthrough_procedural_pbr_v1",
             "aisha:geometryRefinement": refinement["revision"],
@@ -1247,7 +1354,11 @@ def build_presentation(args: argparse.Namespace) -> int:
 
         report = {
             "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-            "status": "walkthrough_matched_plan_derived_presentation_scene_built",
+            "status": (
+                "measured_site_candidate_scene_built"
+                if measured_overlay is not None
+                else "walkthrough_matched_plan_derived_presentation_scene_built"
+            ),
             "scene": str(path),
             "payload": args.payload,
             "robot_asset": str(asset),
@@ -1261,8 +1372,23 @@ def build_presentation(args: argparse.Namespace) -> int:
                 "supplied_plan_sha256": supplied_plan_hash,
             },
             "door_survey": {
-                "status": "not_supplied_assumptions_used",
+                "status": (
+                    "measured_overlay_manual_measurements_used"
+                    if measured_overlay is not None
+                    else "not_supplied_assumptions_used"
+                ),
                 "survey_argument": str(args.door_survey.resolve()) if args.door_survey and args.door_survey.exists() else None,
+            },
+            "measured_geometry": {
+                "status": geometry_status,
+                "overlay": str(args.measured_geometry.resolve()) if measured_overlay is not None else None,
+                "overlay_sha256": measured_overlay_hash,
+                "source_capture_hashes": (
+                    measured_overlay.get("source_capture_hashes", [])
+                    if measured_overlay is not None
+                    else []
+                ),
+                "physical_release": False,
             },
             "config_file": str(config_path),
             "config_sha256": sha256_file(config_path),
@@ -1312,8 +1438,12 @@ def build_presentation(args: argparse.Namespace) -> int:
             "presentation_ready": True,
             "physical_route_released": False,
             "blocked_for_physical_release": [
-                "both door clear widths and thresholds remain unmeasured",
-                "ceiling, wall thickness, office furniture offsets and some traced PDF offsets are presentation assumptions",
+                (
+                    "measured-site candidate has not completed threshold contact and stopping-distance validation"
+                    if measured_overlay is not None
+                    else "both door clear widths and thresholds remain unmeasured"
+                ),
+                "wall thickness, office furniture offsets and some traced PDF offsets remain presentation assumptions",
                 "threshold contact requires the articulated compliant carrier and measured caster/spring properties",
                 "sensors are not a protective safety system",
             ],
@@ -1342,7 +1472,7 @@ def build_presentation(args: argparse.Namespace) -> int:
 
 def main() -> int:
     args = parse_args()
-    if not args.presentation_assumptions:
+    if not args.presentation_assumptions and args.measured_geometry is None:
         return strict_gate(args)
     return build_presentation(args)
 

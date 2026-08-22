@@ -1,0 +1,54 @@
+{
+  "report_type": "administration_nav2_bridge",
+  "generated_at_utc": "2026-08-22T21:56:36.215048+00:00",
+  "status": "bridge_smoke_completed",
+  "task": "Isaac-AISHA-Administration-Live-Direct-v0",
+  "steps_completed": 90,
+  "control_period_s": 0.03333333333333333,
+  "topics": {
+    "subscribed": [
+      "/cmd_vel"
+    ],
+    "published": [
+      "/clock",
+      "/odom",
+      "/tf",
+      "/tf_static",
+      "/scan",
+      "/front_scan"
+    ],
+    "message_counts": {
+      "clock": 90,
+      "odom": 90,
+      "tf": 90,
+      "tf_static": 3,
+      "scan": 30,
+      "front_scan": 45
+    }
+  },
+  "command_constraints": {
+    "maximum_forward_mps": 0.3,
+    "reverse_allowed": false,
+    "lateral_motion_allowed": false,
+    "maximum_angular_rad_s": 0.55,
+    "command_watchdog_s": 0.3,
+    "front_stop_trigger_m": 0.6,
+    "front_stop_release_m": 0.75
+  },
+  "events": {
+    "rejected_reverse_commands": 0,
+    "rejected_lateral_commands": 0,
+    "watchdog_stops": 0,
+    "obstacle_stops": 0,
+    "episode_reset_gate_detected": false
+  },
+  "final_position_xy_m": [
+    0.00049,
+    -0.02318
+  ],
+  "minimum_front_range_m": 3.41547,
+  "learned_policy_coupled": false,
+  "physical_release": false,
+  "claim_boundary": "This bridge run proves Isaac physics/ROS topic exchange only. It does not prove a live Nav2 mission, frozen-policy arbitration, protective safety coverage, stopping distance, sim-to-real performance, or physical deployment readiness.",
+  "passed": true
+}

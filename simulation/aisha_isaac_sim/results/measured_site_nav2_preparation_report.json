@@ -1,0 +1,73 @@
+{
+  "report_type": "measured_site_nav2_preparation",
+  "generated_at_utc": "2026-08-22T21:58:04.532835+00:00",
+  "status": "preparation_ready_runtime_gated",
+  "passed": true,
+  "runtime_ready": false,
+  "contract": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/ros2_nav2_sim.yaml",
+  "nav2_params": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/nav2_sim_params.yaml",
+  "measured_manifest": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_template.yaml",
+  "legacy_nav2_profile": {
+    "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/src/robot_bringup/config/nav2_params.yaml",
+    "architecture": "mecanum",
+    "applicable_to_rev_d_isaac_sim": false
+  },
+  "preparation_checks": {
+    "simulation_scope_explicit": true,
+    "simulation_time_enabled": true,
+    "differential_drive": true,
+    "wheel_radius_matches_rev_d": true,
+    "wheel_track_matches_rev_d": true,
+    "reverse_disabled": true,
+    "lateral_motion_disabled": true,
+    "physical_footprint_matches_rev_d": true,
+    "footprint_padding_is_80_mm": true,
+    "padded_width_is_0_928_m": true,
+    "physical_release_false": true,
+    "learned_policy_coupling_not_overclaimed": true,
+    "all_nodes_use_sim_time": true,
+    "amcl_uses_differential_model": true,
+    "controller_disables_reverse": true,
+    "controller_disables_lateral_motion": true,
+    "controller_limits_forward_speed": true,
+    "controller_limits_angular_speed": true,
+    "velocity_smoother_disables_reverse": true,
+    "velocity_smoother_disables_lateral_motion": true,
+    "backup_behavior_not_loaded": true,
+    "local_footprint_matches": true,
+    "global_footprint_matches": true,
+    "costmap_padding_matches_contract": true,
+    "local_costmap_consumes_both_scans": true,
+    "global_costmap_consumes_both_scans": true,
+    "drive_source_is_rev_d_differential": true,
+    "crown_topic_matches_sensor_contract": true,
+    "front_topic_matches_sensor_contract": true,
+    "sensor_static_transform_positions_declared": true,
+    "required_sensor_links_in_urdf": true,
+    "front_lidar_exists_in_live_isaac_scene": true,
+    "front_lidar_does_not_change_policy_observation": true,
+    "legacy_mecanum_profile_detected_and_separated": true
+  },
+  "preparation_checks_passed": 34,
+  "preparation_checks_total": 34,
+  "runtime_gates": {
+    "nav2_packages_installed": false,
+    "isaac_ros2_bridge_extension_present": true,
+    "measured_capture_complete": false,
+    "measured_occupancy_map_configured": false
+  },
+  "nav2_package_presence": {
+    "nav2_bringup": false,
+    "nav2_amcl": false,
+    "nav2_controller": false,
+    "nav2_costmap_2d": false,
+    "nav2_dwb_controller": false,
+    "nav2_navfn_planner": false
+  },
+  "blockers": [
+    "Nav2 Jazzy packages are not installed in /opt/ros/jazzy.",
+    "The measured iPhone LiDAR/RoomPlan capture has not been supplied yet.",
+    "A measured-site occupancy-map YAML has not been generated or configured yet."
+  ],
+  "claim_boundary": "Passing this report proves only that the measured-site intake and differential-drive Nav2 configuration contracts are internally consistent. It does not prove a live Nav2 run, policy/Nav2 arbitration, physical stopping distance, protective coverage, sim-to-real transfer, or safe deployment."
+}

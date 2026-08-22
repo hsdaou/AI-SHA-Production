@@ -17,6 +17,7 @@ source:
 frames:
   crown_lidar:
     prim_name: lidar_link
+    position_m: [0.500, 0.0, 1.170]
     scan_height_m: 1.170
     role: mapping_and_localisation
     model: "LDLiDAR LD19"
@@ -42,9 +43,17 @@ frames:
     prim_name: front_lidar_link
     position_m: [0.455, 0.0, 0.250]
     role: low_front_obstacle_layer
+    ros_topic: /front_scan
     model: null
     model_status: not_identified_in_production_repository
     presentation_visualisation: geometric_role_only
+    simulation_profile:
+      horizontal_field_of_view_deg: 120.0
+      angular_resolution_deg: 5.0
+      near_range_m: 0.12
+      far_range_m: 10.0
+      publish_rate_hz: 20.0
+      status: simulation_assumption_not_hardware_specification
   front_camera:
     body_prim_name: front_camera_link
     optical_prim_name: front_camera_optical_frame
@@ -64,8 +73,8 @@ frames:
       status: presentation_assumption_not_repository_specification
   imu:
     prim_name: imu_link
-    position_m: null
-    position_status: hold_point
+    position_m: [-0.120, 0.120, 0.230]
+    position_status: simulation_asset_contract_not_as_built_measurement
     role: inertial_odometry_fusion
     model: "Bosch BNO055"
     model_status: repository_contract
