@@ -1,0 +1,30 @@
+{
+  "report_type": "phase4a_dynamic_safety_presentation_video",
+  "passed": true,
+  "source_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/phase4a_administration_dynamic_showcase_final/aisha-phase4a-dynamic-showcase-step-0.mp4",
+  "source_video_sha256": "25309cb1f2faca3afb575554f9b1039834b6af2eb40a8d1b889058c2f75c6258",
+  "source_run_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase4a_administration_dynamic_showcase_report.json",
+  "source_run_report_sha256": "8acb793d5877aa3a86e2122c9649fbb255738cb987f736b870af17020ba910e9",
+  "output_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4",
+  "output_video_sha256": "556468502d6f5a86a6e13cf5809bd9fd6dba5d3ae76db6d82d3eea64afa77886",
+  "resolution": [
+    1280,
+    720
+  ],
+  "fps": 30.0,
+  "frames": 394,
+  "duration_s": 13.133333333333333,
+  "encounter_learned_authority_overlay_frames": 71,
+  "protective_stop_overlay_frames": 77,
+  "checks": {
+    "source_run_passed": true,
+    "source_run_success": true,
+    "source_checks_all_passed": true,
+    "checkpoint_policy_only_robot_motion": true,
+    "learned_authority_visible_in_overlay": true,
+    "protective_stop_visible_in_overlay": true,
+    "all_source_frames_encoded": true,
+    "presentation_video_created": true
+  },
+  "overlay_disclosure": "The learned Phase 3N actor may reduce translation only when the 360-degree clearance gate grants authority. The separate frozen Phase 3M protective-stop state is labeled independently; the video does not attribute the entire stop to the outer actor."
+}

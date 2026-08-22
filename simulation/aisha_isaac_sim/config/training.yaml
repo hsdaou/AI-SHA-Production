@@ -730,6 +730,44 @@ phase3_curriculum:
       presentation_duration_s: 54.766666666666666
       motion_changed_by_edit: false
       passed: true
+    phase4a_dynamic_showcase:
+      task: "Isaac-AISHA-Administration-Live-Phase4A-DynamicSafety-Showcase-Direct-v0"
+      status: "accepted_presentation_scenario"
+      purpose: "show the accepted Phase 3N checkpoint reacting to one repeatable pedestrian crossing on the Principal-office approach"
+      formal_phase3n_evaluation_contract_changed: false
+      route_segment_id: 7
+      seed: 10401
+      checkpoint: "isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt"
+      checkpoint_sha256: "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b"
+      pedestrian_asset: "usd/aisha_pedestrian_showcase.usda"
+      pedestrian_asset_sha256: "9a2200a47aacaceffbfdfb35b9629148dbdfa579361ac9601f33e56e9e78c04a"
+      pedestrian_disclosure: "stylized kinematic presentation proxy with a torso collision envelope; not a human-behaviour or biomechanics model"
+      scenario_parameters: {route_fraction: 0.52, crossing_half_span_m: 1.15, crossing_speed_mps: 0.48, trigger_distance_m: 2.15}
+      run_report: "results/phase4a_administration_dynamic_showcase_report.json"
+      run_report_sha256: "8acb793d5877aa3a86e2122c9649fbb255738cb987f736b870af17020ba910e9"
+      completed_steps: 395
+      simulated_duration_s: 13.166666666666666
+      encounter_safety_authority_steps: 16
+      maximum_learned_brake_fraction: 0.1432
+      protective_full_stop_duration_s: 2.2333333333333334
+      maximum_resumed_velocity_mps: 0.46277
+      minimum_robot_pedestrian_centre_distance_m: 1.01483
+      minimum_360_ring_clearance_m: 0.28614
+      dynamic_collisions: 0
+      static_collisions: 0
+      physics_supervisor: false
+      root_transform_animation: false
+      raw_video: "media/videos/phase4a_administration_dynamic_showcase_final/aisha-phase4a-dynamic-showcase-step-0.mp4"
+      raw_video_sha256: "25309cb1f2faca3afb575554f9b1039834b6af2eb40a8d1b889058c2f75c6258"
+      presentation_video: "media/videos/AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4"
+      presentation_video_sha256: "556468502d6f5a86a6e13cf5809bd9fd6dba5d3ae76db6d82d3eea64afa77886"
+      presentation_video_report: "results/phase4a_dynamic_safety_presentation_video_report.json"
+      presentation_duration_s: 13.133333333333333
+      acceptance_report: "results/phase4a_dynamic_safety_showcase_acceptance.json"
+      checks_passed: 22
+      checks_total: 22
+      passed: true
+      physical_safety_claim_allowed: false
     combined_acceptance_report: "results/phase3n_dynamic_safety_acceptance.json"
     full_phase3_simulation_acceptance_passed: true
     physical_safety_claim_allowed: false
@@ -894,7 +932,9 @@ release:
   phase3_full_simulation_acceptance_passed: true
   phase3n_final_omniverse_policy_only_route_passed: true
   phase3n_final_omniverse_presentation_available: true
+  phase4a_live_dynamic_showcase_passed: true
+  phase4a_dynamic_showcase_presentation_available: true
   phase3_geometry_rtx_refinement_available: true
   nav2_integrated: false
   physical_robot_release: false
-  required_next_gate: "capture and validate the final policy-only Omniverse presentation run; physical deployment still requires an as-built site survey, measured clearances, Nav2 integration, sim-to-real validation and hardware safety commissioning"
+  required_next_gate: "assemble and rehearse the clean full-office mission plus the Phase 4A dynamic-safety insert; physical deployment still requires an as-built site survey, measured clearances, Nav2 integration, sim-to-real validation and hardware safety commissioning"

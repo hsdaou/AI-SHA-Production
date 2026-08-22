@@ -590,6 +590,26 @@ segment-10 predictive-creep guard. The 54.77 s 3x cut changes temporal sampling
 and labels only; it is available at
 `media/videos/AI-SHA_Phase3N_Administration_Final_Omniverse_3x.mp4`.
 
+Phase 4A adds the short dynamic-safety insert that the clean mission film
+deliberately omitted. A separate presentation-only task fixes the accepted
+Phase 3N checkpoint on segment 7, from the Principal turn to the Principal
+office approach, and triggers one deterministic 0.48 m/s pedestrian crossing.
+The pedestrian is a stylized kinematic proxy with a torso collision envelope;
+its position is evaluation truth and is never added to the checkpoint's
+observation. The formal randomized and live Phase 3N gates are unchanged.
+
+Seed 10401 completed the route leg in 395 policy steps with zero pedestrian or
+static contacts. During the encounter, the 360-degree closing-clearance gate
+granted the learned actor authority on 16 samples, the learned brake output
+peaked at 14.32%, the frozen protective-stop stack held the robot for 2.23 s,
+and forward speed recovered to 0.463 m/s before the goal. The presentation
+overlay labels learned brake authority and the separate protective-stop state
+independently; it does not attribute the entire physical stop to the outer
+actor. The 13.13 s film is
+`media/videos/AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4`.
+This is live Isaac Sim/Isaac Lab checkpoint evidence for a controlled
+presentation scenario, not a human-behaviour model or physical safety release.
+
 The administration USD was rebuilt with page-2 Block A printed-dimension anchors
 (12.75 m atrium, 2.80 m hall, 7.80 x 6.30 m conference room and 4.73 m
 Principal frontage) and tagged `GEOMETRY-RTX-PHASE3-A`. Four procedural finish
@@ -691,6 +711,22 @@ aisha-block-a-learned-route-step-0.mp4 \
   --run-report results/phase3n_administration_final_omniverse_report.json \
   --output media/videos/AI-SHA_Phase3N_Administration_Final_Omniverse_3x.mp4 \
   --report results/phase3n_administration_final_omniverse_3x_report.json --speed 3
+TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p \
+  isaaclab/scripts/play_phase4a_dynamic_showcase.py \
+  --checkpoint isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt \
+  --output-report results/phase4a_administration_dynamic_showcase_report.json \
+  --video-folder media/videos/phase4a_administration_dynamic_showcase_final \
+  --max-steps 600 --seed 10401 --headless
+python3 isaaclab/tools/make_phase4a_dynamic_showcase_video.py \
+  --input media/videos/phase4a_administration_dynamic_showcase_final/\
+aisha-phase4a-dynamic-showcase-step-0.mp4 \
+  --run-report results/phase4a_administration_dynamic_showcase_report.json \
+  --output media/videos/AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4 \
+  --report results/phase4a_dynamic_safety_presentation_video_report.json
+python3 isaaclab/tools/validate_phase4a_dynamic_showcase.py \
+  --run-report results/phase4a_administration_dynamic_showcase_report.json \
+  --video-report results/phase4a_dynamic_safety_presentation_video_report.json \
+  --output results/phase4a_dynamic_safety_showcase_acceptance.json
 ```
 
 ## Navigation and doorway fit

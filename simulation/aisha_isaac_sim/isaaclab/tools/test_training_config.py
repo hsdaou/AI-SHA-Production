@@ -145,6 +145,44 @@ PHASE3N_PRESENTATION_REPORT = (
     / "results"
     / "phase3n_administration_final_omniverse_3x_report.json"
 )
+PHASE4A_PLAYER = (
+    Path(__file__).resolve().parents[1]
+    / "scripts"
+    / "play_phase4a_dynamic_showcase.py"
+)
+PHASE4A_PEDESTRIAN = (
+    Path(__file__).resolve().parents[2]
+    / "usd"
+    / "aisha_pedestrian_showcase.usda"
+)
+PHASE4A_RUN_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "phase4a_administration_dynamic_showcase_report.json"
+)
+PHASE4A_RAW_VIDEO = (
+    Path(__file__).resolve().parents[2]
+    / "media"
+    / "videos"
+    / "phase4a_administration_dynamic_showcase_final"
+    / "aisha-phase4a-dynamic-showcase-step-0.mp4"
+)
+PHASE4A_PRESENTATION_VIDEO = (
+    Path(__file__).resolve().parents[2]
+    / "media"
+    / "videos"
+    / "AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4"
+)
+PHASE4A_PRESENTATION_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "phase4a_dynamic_safety_presentation_video_report.json"
+)
+PHASE4A_ACCEPTANCE_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "phase4a_dynamic_safety_showcase_acceptance.json"
+)
 
 
 class TrainingConfigTests(unittest.TestCase):
@@ -212,6 +250,8 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertTrue(release["phase3_full_simulation_acceptance_passed"])
         self.assertTrue(release["phase3n_final_omniverse_policy_only_route_passed"])
         self.assertTrue(release["phase3n_final_omniverse_presentation_available"])
+        self.assertTrue(release["phase4a_live_dynamic_showcase_passed"])
+        self.assertTrue(release["phase4a_dynamic_showcase_presentation_available"])
         self.assertFalse(release["nav2_integrated"])
         self.assertFalse(release["physical_robot_release"])
 
@@ -765,6 +805,72 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertTrue(acceptance["randomized_segment_gate"]["passed"])
         self.assertTrue(acceptance["static_regression_gate"]["passed"])
         self.assertTrue(acceptance["live_administration_dynamic_gate"]["passed"])
+
+    def test_phase4a_dynamic_showcase_is_hash_linked_and_truthfully_labeled(self) -> None:
+        live_source = PHASE3_DYNAMIC_SAFETY_LIVE_ENVIRONMENT.read_text(
+            encoding="utf-8"
+        )
+        registry = TASK_REGISTRY.read_text(encoding="utf-8")
+        player = PHASE4A_PLAYER.read_text(encoding="utf-8")
+        pedestrian = PHASE4A_PEDESTRIAN.read_text(encoding="utf-8")
+        self.assertIn("AishaAdministrationDynamicSafetyShowcaseEnvCfg", live_source)
+        self.assertIn("showcase_state", live_source)
+        self.assertIn("Phase4A-DynamicSafety-Showcase", registry)
+        self.assertIn('"physics_supervisor": False', player)
+        self.assertIn('"root_transform_animation": False', player)
+        self.assertIn('double height = 0.42', pedestrian)
+
+        gate = self.data["phase3_curriculum"]["dynamic_safety_gate"][
+            "phase4a_dynamic_showcase"
+        ]
+        self.assertTrue(gate["passed"])
+        self.assertFalse(gate["formal_phase3n_evaluation_contract_changed"])
+        self.assertFalse(gate["physics_supervisor"])
+        self.assertFalse(gate["root_transform_animation"])
+        self.assertFalse(gate["physical_safety_claim_allowed"])
+        self.assertEqual(gate["route_segment_id"], 7)
+        self.assertEqual(gate["dynamic_collisions"], 0)
+        self.assertEqual(gate["static_collisions"], 0)
+        self.assertGreater(gate["encounter_safety_authority_steps"], 0)
+        self.assertGreater(gate["protective_full_stop_duration_s"], 0.5)
+        self.assertGreater(gate["maximum_resumed_velocity_mps"], 0.25)
+
+        for path in (
+            PHASE4A_PEDESTRIAN,
+            PHASE4A_RUN_REPORT,
+            PHASE4A_RAW_VIDEO,
+            PHASE4A_PRESENTATION_VIDEO,
+            PHASE4A_PRESENTATION_REPORT,
+            PHASE4A_ACCEPTANCE_REPORT,
+        ):
+            self.assertTrue(path.is_file(), path)
+        self.assertEqual(
+            hashlib.sha256(PHASE4A_PEDESTRIAN.read_bytes()).hexdigest(),
+            gate["pedestrian_asset_sha256"],
+        )
+        self.assertEqual(
+            hashlib.sha256(PHASE4A_RUN_REPORT.read_bytes()).hexdigest(),
+            gate["run_report_sha256"],
+        )
+        self.assertEqual(
+            hashlib.sha256(PHASE4A_RAW_VIDEO.read_bytes()).hexdigest(),
+            gate["raw_video_sha256"],
+        )
+        self.assertEqual(
+            hashlib.sha256(PHASE4A_PRESENTATION_VIDEO.read_bytes()).hexdigest(),
+            gate["presentation_video_sha256"],
+        )
+
+        run = json.loads(PHASE4A_RUN_REPORT.read_text(encoding="utf-8"))
+        video = json.loads(PHASE4A_PRESENTATION_REPORT.read_text(encoding="utf-8"))
+        acceptance = json.loads(PHASE4A_ACCEPTANCE_REPORT.read_text(encoding="utf-8"))
+        self.assertTrue(run["passed"])
+        self.assertTrue(all(run["checks"].values()))
+        self.assertFalse(run["policy_contract"]["pedestrian_state_exposed_to_policy"])
+        self.assertTrue(video["passed"])
+        self.assertIn("does not attribute the entire stop", video["overlay_disclosure"])
+        self.assertTrue(acceptance["passed"])
+        self.assertEqual(acceptance["checks_passed"], acceptance["checks_total"])
 
 
 if __name__ == "__main__":
