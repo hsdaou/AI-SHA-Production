@@ -39,17 +39,29 @@ controller_server:
     min_theta_velocity_threshold: 0.001
     failure_tolerance: 0.0
     progress_checker_plugin: progress_checker
-    goal_checker_plugins: [general_goal_checker]
+    goal_checker_plugins: [general_goal_checker, position_goal_checker]
     controller_plugins: [FollowPath]
     progress_checker:
-      plugin: nav2_controller::SimpleProgressChecker
-      required_movement_radius: 0.20
-      movement_time_allowance: 15.0
+      # Office waypoints intentionally include in-place 90/180 degree turns.
+      # PoseProgressChecker counts that angular progress; SimpleProgressChecker
+      # watches translation only and falsely aborts a valid pivot.
+      plugin: nav2_controller::PoseProgressChecker
+      required_movement_radius: 0.05
+      required_movement_angle: 0.05
+      movement_time_allowance: 90.0
     general_goal_checker:
       plugin: nav2_controller::SimpleGoalChecker
       stateful: true
+      # DWB's terminal rotation phase begins roughly one chassis-quarter from
+      # the waypoint. Keep the action goal tolerance aligned so it cannot stop
+      # in a zero-command terminal deadlock just outside a stricter checker.
       xy_goal_tolerance: 0.15
-      yaw_goal_tolerance: 0.15
+      yaw_goal_tolerance: 0.20
+    position_goal_checker:
+      plugin: nav2_controller::SimpleGoalChecker
+      stateful: false
+      xy_goal_tolerance: 0.40
+      yaw_goal_tolerance: 3.15
     FollowPath:
       plugin: dwb_core::DWBLocalPlanner
       debug_trajectory_details: true
@@ -60,7 +72,10 @@ controller_server:
       max_vel_theta: 0.55
       min_speed_xy: 0.0
       max_speed_xy: 0.30
-      min_speed_theta: 0.0
+      # The Rev D wheel drives have a measurable in-place static-friction
+      # deadband in the furnished USD scene. Commands below 0.30 rad/s can
+      # start a pivot and then stall; keep terminal pivots above that floor.
+      min_speed_theta: 0.30
       acc_lim_x: 0.25
       acc_lim_y: 0.0
       acc_lim_theta: 0.50
@@ -85,7 +100,9 @@ controller_server:
       PathDist.scale: 32.0
       GoalDist.scale: 24.0
       RotateToGoal.scale: 32.0
-      RotateToGoal.slowing_factor: 5.0
+      # A factor of five attenuates the final pivot command into the measured
+      # static-friction deadband before the yaw checker can succeed.
+      RotateToGoal.slowing_factor: 1.0
       RotateToGoal.lookahead_time: -1.0
 
 planner_server:
@@ -118,8 +135,8 @@ local_costmap:
       global_frame: odom
       robot_base_frame: base_link
       rolling_window: true
-      width: 5.0
-      height: 5.0
+      width: 5
+      height: 5
       resolution: 0.025
       footprint: "[[0.725,0.384],[0.725,-0.384],[-0.455,-0.384],[-0.455,0.384]]"
       footprint_padding: 0.08
@@ -148,7 +165,7 @@ local_costmap:
           raytrace_max_range: 10.0
       inflation_layer:
         plugin: nav2_costmap_2d::InflationLayer
-        inflation_radius: 0.35
+        inflation_radius: 0.50
         cost_scaling_factor: 4.0
       always_send_full_costmap: true
 
@@ -192,7 +209,7 @@ global_costmap:
           raytrace_max_range: 10.0
       inflation_layer:
         plugin: nav2_costmap_2d::InflationLayer
-        inflation_radius: 0.35
+        inflation_radius: 0.50
         cost_scaling_factor: 4.0
       always_send_full_costmap: true
 

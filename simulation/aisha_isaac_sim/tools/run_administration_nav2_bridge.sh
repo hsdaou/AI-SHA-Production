@@ -14,6 +14,9 @@ ISAAC_LAB_INSTALL=${ISAAC_LAB_INSTALL:-/home/robot-wst/IsaacLab}
 
 unset ROS_DISTRO ROS_VERSION ROS_PYTHON_VERSION PYTHONPATH AMENT_PREFIX_PATH
 unset COLCON_PREFIX_PATH LD_LIBRARY_PATH RMW_IMPLEMENTATION
+if [[ ${TERM:-dumb} == "dumb" ]]; then
+  export TERM=xterm
+fi
 set +u
 source "$ISAAC_SIM_INSTALL/setup_ros_env.sh"
 set -u

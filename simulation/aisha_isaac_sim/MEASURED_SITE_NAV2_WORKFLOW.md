@@ -105,31 +105,83 @@ python3 tools/probe_administration_nav2_bridge.py \
   --output results/administration_nav2_bridge_external_probe.json
 ```
 
-## 4. Start Nav2 after its remaining gates are complete
+## 4. Reproduce the provisional Nav2 + Phase 3N integration
 
-Nav2 packages are not currently installed on this workstation, and a measured
-occupancy map cannot be generated until the capture arrives. After those two
-gates are resolved, start Nav2 in a separate system-ROS terminal:
+Official ROS 2 Jazzy Nav2 binaries are available in a user-local overlay at
+`~/.local/share/ai_sha_ros_jazzy_overlay/root`. This avoids modifying the
+workstation while `sudo` requires an interactive password. The overlay is
+sourced automatically by the launch wrappers.
+
+The current occupancy map is generated from the same provisional
+walkthrough/plan-derived USD used by Isaac Sim:
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-ros2 launch nav2_bringup bringup_launch.py \
-  use_sim_time:=True \
-  params_file:=$(pwd)/config/nav2_sim_params.yaml \
-  map:=/absolute/path/to/measured_administration_map.yaml
+tools/generate_administration_occupancy_map.sh
+python3 tools/test_administration_occupancy_map.py
+```
+
+Run the complete headless integration gate with one command:
+
+```bash
+tools/run_administration_nav2_phase3n_integration.sh
+```
+
+That command starts the Isaac/ROS bridge, map server, AMCL, Nav2 planner and DWB
+controller; executes the 12-leg atrium → Vice-Principal → Principal → atrium
+mission; routes each `/cmd_vel` command through the accepted recurrent Phase 3N
+360-degree safety actor; and validates the paired reports. The accepted
+checkpoint is hash locked to
+`11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b`.
+
+The verified run completed all 12 legs and both counterclockwise office pivots
+with no episode reset. Its bridge ran 12,101 physics/control steps; the learned
+safety authority was eligible for 440 steps and applied nonzero braking on 57.
+See `results/administration_nav2_phase3n_integration_gate.json` for the 14/14
+combined gate.
+
+To watch it live, use three terminals from `simulation/aisha_isaac_sim`:
+
+```bash
+# Terminal 1: omit --headless to open Isaac Sim / Omniverse
+tools/run_administration_nav2_phase3n_bridge.sh
+
+# Terminal 2
+tools/run_administration_nav2_servers.sh
+
+# Terminal 3, after Nav2 becomes active
+tools/run_administration_nav2_mission.sh \
+  --control-stack nav2_phase3n_safety \
+  --output results/administration_nav2_phase3n_mission.json
 ```
 
 `config/nav2_sim_params.yaml` is simulation-only and intentionally separate
 from `src/robot_bringup/config/nav2_params.yaml`. That older file is for a 0.60
 x 0.50 m holonomic mecanum chassis and is unsafe for the Rev D model.
 
-Check preparation at any time with:
+## 5. Architecture and claim boundary
+
+Two authentic controller paths are now verified:
+
+1. live Nav2 global/local planning → accepted Phase 3N safety actor → articulated
+   wheel physics; and
+2. frozen learned route actor → frozen Phase 3M recovery/clearance/pivot stack →
+   accepted Phase 3N safety actor → articulated wheel physics in the
+   administration scene.
+
+The second path's policy-only administration run completed all 12 waypoints and
+is recorded in `results/phase3n_administration_final_omniverse_report.json`.
+Nav2 and the frozen learned local navigator are not placed in series because
+they are both local motion authorities; doing that without a deliberate
+arbitration design would obscure which controller caused a command.
+
+This closes the provisional Nav2 integration gate, not the physical-release
+gate. Geometry and the occupancy map remain presentation assumptions. After the
+iPhone capture arrives, rebuild the measured scene/map and rerun the exact same
+integration command. Physical work still requires measured clearance review,
+sim-to-real validation, a hardware emergency stop and supervised commissioning.
+
+Check measured-site preparation at any time with:
 
 ```bash
 python3 tools/validate_measured_nav2_preparation.py
 ```
-
-The next integration gate after a live Nav2 mission is explicit arbitration
-between Nav2's velocity command and the frozen Phase 3N learned route/360-degree
-safety stack. Until that test passes, neither configuration is represented as a
-fully integrated learned-navigation system.

@@ -3,13 +3,15 @@
 
 This is the simulation motion boundary: Nav2 may command the articulated Rev D
 differential drive through /cmd_vel while Isaac Sim publishes /clock, /odom,
-/tf, /scan and /front_scan. The frozen learned policy is intentionally not
-coupled here; that arbitration remains a separately reported gate.
+/tf, /scan and /front_scan. With ``--phase3n-safety-checkpoint``, the accepted
+learned 360-degree safety actor becomes the final authority over Nav2's base
+command before wheel targets are written.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import sys
@@ -29,6 +31,11 @@ parser.add_argument(
     help="inject a short 0.05 m/s command without requiring Nav2",
 )
 parser.add_argument("--output-report", type=Path)
+parser.add_argument(
+    "--phase3n-safety-checkpoint",
+    type=Path,
+    help="load a Phase 3N checkpoint and arbitrate every Nav2 command through it",
+)
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 
@@ -38,13 +45,32 @@ simulation_app = app_launcher.app
 import gymnasium as gym  # noqa: E402
 import torch  # noqa: E402
 from isaacsim.core.utils.extensions import enable_extension  # noqa: E402
-from isaaclab_tasks.utils import parse_env_cfg  # noqa: E402
+from isaaclab_tasks.utils import load_cfg_from_registry, parse_env_cfg  # noqa: E402
+from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper  # noqa: E402
+from rsl_rl.runners import OnPolicyRunner  # noqa: E402
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_ROOT = PROJECT_ROOT.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 import aisha_isaaclab.tasks  # noqa: E402,F401
+
+
+PHASE3N_PRESENTATION_TASK = (
+    "Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Presentation-Direct-v0"
+)
+ACCEPTED_PHASE3N_CHECKPOINT = "aisha_phase3n_dynamic_safety_model_50.pt"
+ACCEPTED_PHASE3N_SHA256 = (
+    "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b"
+)
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def ros_stamp(simulation_time_s: float):
@@ -69,6 +95,7 @@ class AishaSimulationBridge:
         from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
         from rosgraph_msgs.msg import Clock
         from sensor_msgs.msg import LaserScan
+        from std_msgs.msg import Bool
         from tf2_ros import StaticTransformBroadcaster, TransformBroadcaster
 
         self.rclpy = rclpy
@@ -95,6 +122,9 @@ class AishaSimulationBridge:
         self.subscription = self.node.create_subscription(
             Twist, "/cmd_vel", self._command_callback, 10
         )
+        self.mission_complete_subscription = self.node.create_subscription(
+            Bool, "/aisha/mission_complete", self._mission_complete_callback, 10
+        )
         self.command_linear_mps = 0.0
         self.command_angular_rad_s = 0.0
         self.command_received_at_s = -math.inf
@@ -105,10 +135,16 @@ class AishaSimulationBridge:
         self.command_watchdog_s = 0.30
         self.maximum_forward_mps = 0.30
         self.maximum_angular_rad_s = 0.55
+        self.minimum_in_place_angular_rad_s = 0.30
+        self.minimum_rotation_clearance_m = 0.08
         self.rejected_reverse_commands = 0
         self.rejected_lateral_commands = 0
         self.watchdog_stops = 0
         self.obstacle_stops = 0
+        self.in_place_deadband_compensations = 0
+        self.front_latch_rotation_escape_steps = 0
+        self.rotation_guard_stops = 0
+        self.exit_requested = False
         self.messages = {
             "clock": 0,
             "odom": 0,
@@ -118,7 +154,12 @@ class AishaSimulationBridge:
             "front_scan": 0,
         }
         self.minimum_front_range_m = math.inf
+        self.minimum_ring_clearance_m = math.inf
         self.publish_static_transforms(sensor_positions)
+
+    def _mission_complete_callback(self, message) -> None:
+        if bool(message.data):
+            self.exit_requested = True
 
     def publish_static_transforms(self, sensor_positions: dict[str, list[float]]) -> None:
         from geometry_msgs.msg import TransformStamped
@@ -169,7 +210,16 @@ class AishaSimulationBridge:
 
     def command_action(self) -> torch.Tensor:
         front_min = float(torch.amin(self.front_ranges()[0]).item())
+        ring_clearance = float(
+            torch.amin(
+                self.raw_env._lidar_ranges()[0]
+                - self.raw_env._lidar_envelope_ranges
+            ).item()
+        )
         self.minimum_front_range_m = min(self.minimum_front_range_m, front_min)
+        self.minimum_ring_clearance_m = min(
+            self.minimum_ring_clearance_m, ring_clearance
+        )
         if self.stop_latched:
             self.stop_latched = front_min < self.front_stop_release_m
         elif front_min <= self.front_stop_trigger_m:
@@ -180,7 +230,28 @@ class AishaSimulationBridge:
         if stale and (self.command_linear_mps != 0.0 or self.command_angular_rad_s != 0.0):
             self.watchdog_stops += 1
         linear = 0.0 if stale or self.stop_latched else self.command_linear_mps
-        angular = 0.0 if stale or self.stop_latched else self.command_angular_rad_s
+        angular = 0.0 if stale else self.command_angular_rad_s
+        if self.stop_latched and abs(angular) > 1.0e-3:
+            # A front-only latch that also suppresses yaw can deadlock at a
+            # doorway edge: DWB needs to rotate away before the front beam can
+            # reach its release distance. Permit zero-translation escape yaw
+            # only while the exact 360-degree footprint clearance remains above
+            # the conservative rotation guard.
+            if ring_clearance > self.minimum_rotation_clearance_m:
+                self.front_latch_rotation_escape_steps += 1
+            else:
+                angular = 0.0
+                self.rotation_guard_stops += 1
+        if (
+            linear < 1.0e-3
+            and 1.0e-3 < abs(angular) < self.minimum_in_place_angular_rad_s
+        ):
+            # The raw Isaac velocity drives do not include the low-level
+            # friction compensation present on a physical motor controller.
+            # Preserve direction but lift a requested pivot out of the USD
+            # furnishing/floor static-friction deadband.
+            angular = math.copysign(self.minimum_in_place_angular_rad_s, angular)
+            self.in_place_deadband_compensations += 1
 
         action = torch.zeros((1, 2), device=self.raw_env.device)
         # The frozen environment maps [-1,+1] to [0,0.50] m/s and angular
@@ -300,11 +371,91 @@ def main() -> int:
 
     if not rclpy.ok():
         rclpy.init()
-    cfg = parse_env_cfg(args.task, device=args.device, num_envs=1, use_fabric=True)
+    learned_safety_enabled = args.phase3n_safety_checkpoint is not None
+    task = args.task
+    checkpoint = None
+    checkpoint_sha256 = None
+    if learned_safety_enabled:
+        checkpoint = args.phase3n_safety_checkpoint.expanduser().resolve()
+        if not checkpoint.is_file():
+            raise FileNotFoundError(checkpoint)
+        checkpoint_sha256 = sha256_file(checkpoint)
+        if task == parser.get_default("task"):
+            task = PHASE3N_PRESENTATION_TASK
+        if task != PHASE3N_PRESENTATION_TASK:
+            raise ValueError(
+                "--phase3n-safety-checkpoint requires the deterministic Phase 3N "
+                f"presentation task: {PHASE3N_PRESENTATION_TASK}"
+            )
+
+    cfg = parse_env_cfg(task, device=args.device, num_envs=1, use_fabric=True)
     cfg.episode_length_s = 3600.0
     cfg.route_chain_mode = True
-    env = gym.make(args.task, cfg=cfg)
-    raw_env = env.unwrapped
+    # Nav2 and AMCL are initialized at the disclosed map origin.  Disable the
+    # training-only reset jitter so odom, map, and the mission start agree.
+    cfg.start_lateral_jitter_m = 0.0
+    cfg.start_yaw_jitter_rad = 0.0
+    cfg.goal_jitter_m = 0.0
+    # Nav2 owns mission completion in bridge mode. Keep the DirectRLEnv's
+    # training success threshold effectively unreachable so it cannot auto-
+    # reset the robot between Nav2 action success and the completion signal.
+    cfg.goal_tolerance_m = 0.001
+    cfg.goal_tolerance_m_by_segment = tuple(
+        0.001 for _ in cfg.goal_tolerance_m_by_segment
+    )
+    if learned_safety_enabled:
+        # Isolate command/safety behavior from training-time domain randomization
+        # for this reproducible integration gate. The checkpoint itself remains
+        # unchanged and hash-verified; its formal randomized evaluations remain
+        # separate evidence.
+        deterministic_overrides = {
+            "dynamic_obstacle_activation_probability": 0.0,
+            "action_latency_steps_range": (0, 0),
+            "motor_strength_scale_range": (1.0, 1.0),
+            "wheel_radius_scale_range": (1.0, 1.0),
+            "wheel_track_scale_range": (1.0, 1.0),
+            "drive_joint_damping_range": (120.0, 120.0),
+            "base_mass_scale_range": (1.0, 1.0),
+            "robot_static_friction_range": (0.60, 0.60),
+            "robot_dynamic_friction_range": (0.50, 0.50),
+            "observation_lidar_noise_std_m": 0.0,
+            "observation_lidar_dropout_probability": 0.0,
+            "lidar_episode_bias_range_m": (0.0, 0.0),
+            "lidar_episode_scale_range": (1.0, 1.0),
+        }
+        for name, value in deterministic_overrides.items():
+            if hasattr(cfg, name):
+                setattr(cfg, name, value)
+
+    # Isaac Sim 5.1's Replicator global seeding path conflicts with the ROS
+    # bridge's headless stage initialization. Seed Torch directly instead; all
+    # remaining task randomization is pinned to deterministic ranges above.
+    torch.manual_seed(6084)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(6084)
+    raw_gym_env = gym.make(task, cfg=cfg)
+    raw_env = raw_gym_env.unwrapped
+    env = raw_gym_env
+    observations = None
+    policy = None
+    policy_network = None
+    if learned_safety_enabled:
+        if not hasattr(raw_env, "set_external_navigation_actions"):
+            raise TypeError(f"task {task} does not expose learned safety arbitration")
+        agent_cfg = load_cfg_from_registry(task, "rsl_rl_cfg_entry_point")
+        device = args.device or "cuda:0"
+        agent_cfg.seed = 6084
+        agent_cfg.device = device
+        env = RslRlVecEnvWrapper(raw_gym_env, clip_actions=agent_cfg.clip_actions)
+        runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=None, device=device)
+        runner.load(str(checkpoint))
+        policy = runner.get_inference_policy(device=raw_env.device)
+        try:
+            policy_network = runner.alg.policy
+        except AttributeError:
+            policy_network = runner.alg.actor_critic
+        observations = env.get_observations()
+
     control_period_s = float(cfg.sim.dt * cfg.decimation)
     sensor_config = yaml.safe_load(
         (PACKAGE_ROOT / "config" / "sensors.yaml").read_text(encoding="utf-8")
@@ -318,21 +469,56 @@ def main() -> int:
     bridge = AishaSimulationBridge(raw_env, control_period_s, sensor_positions)
     steps_completed = 0
     reset_detected = False
+    safety_authority_steps = 0
+    safety_brake_steps = 0
+    safety_brake_sum = 0.0
+    maximum_safety_brake_fraction = 0.0
+    minimum_ring_clearance_m = math.inf
     try:
-        env.reset()
-        while simulation_app.is_running() and (args.max_steps <= 0 or steps_completed < args.max_steps):
+        if not learned_safety_enabled:
+            env.reset()
+        while (
+            simulation_app.is_running()
+            and not bridge.exit_requested
+            and (args.max_steps <= 0 or steps_completed < args.max_steps)
+        ):
             bridge.spin()
             if args.self_test:
                 if 15 <= steps_completed < 75:
                     bridge.set_self_test_command(0.05)
                 elif steps_completed == 75:
                     bridge.set_self_test_command(0.0)
-            action = bridge.command_action()
-            _, _, terminated, truncated, _ = env.step(action)
+            navigation_action = bridge.command_action()
+            if learned_safety_enabled:
+                raw_env.set_external_navigation_actions(navigation_action)
+                with torch.inference_mode():
+                    safety_action = policy(observations)
+                    observations, _, dones, _ = env.step(safety_action)
+                    policy_network.reset(dones)
+                terminated_or_truncated = dones
+                authority = bool(raw_env._safety_authority_active[0].item())
+                brake_fraction = float(raw_env._safety_brake_fraction[0].item())
+                ring_clearance = float(
+                    torch.amin(
+                        raw_env._lidar_ranges()[0] - raw_env._lidar_envelope_ranges
+                    ).item()
+                )
+                safety_authority_steps += int(authority)
+                safety_brake_steps += int(brake_fraction > 1.0e-6)
+                safety_brake_sum += brake_fraction
+                maximum_safety_brake_fraction = max(
+                    maximum_safety_brake_fraction, brake_fraction
+                )
+                minimum_ring_clearance_m = min(
+                    minimum_ring_clearance_m, ring_clearance
+                )
+            else:
+                _, _, terminated, truncated, _ = env.step(navigation_action)
+                terminated_or_truncated = terminated | truncated
             bridge.simulation_time_s += control_period_s
             bridge.publish(steps_completed)
             steps_completed += 1
-            if bool(torch.any(terminated | truncated).item()):
+            if bool(torch.any(terminated_or_truncated).item()):
                 reset_detected = True
                 break
     finally:
@@ -341,7 +527,7 @@ def main() -> int:
             "report_type": "administration_nav2_bridge",
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
             "status": "bridge_smoke_completed" if steps_completed > 0 else "bridge_not_exercised",
-            "task": args.task,
+            "task": task,
             "steps_completed": steps_completed,
             "control_period_s": control_period_s,
             "topics": {
@@ -361,16 +547,47 @@ def main() -> int:
                 "reverse_allowed": False,
                 "lateral_motion_allowed": False,
                 "maximum_angular_rad_s": bridge.maximum_angular_rad_s,
+                "minimum_in_place_angular_rad_s": bridge.minimum_in_place_angular_rad_s,
                 "command_watchdog_s": bridge.command_watchdog_s,
                 "front_stop_trigger_m": bridge.front_stop_trigger_m,
                 "front_stop_release_m": bridge.front_stop_release_m,
+                "minimum_rotation_clearance_m": bridge.minimum_rotation_clearance_m,
             },
             "events": {
                 "rejected_reverse_commands": bridge.rejected_reverse_commands,
                 "rejected_lateral_commands": bridge.rejected_lateral_commands,
                 "watchdog_stops": bridge.watchdog_stops,
                 "obstacle_stops": bridge.obstacle_stops,
+                "in_place_deadband_compensations": bridge.in_place_deadband_compensations,
+                "front_latch_rotation_escape_steps": bridge.front_latch_rotation_escape_steps,
+                "rotation_guard_stops": bridge.rotation_guard_stops,
+                "mission_complete_signal_received": bridge.exit_requested,
                 "episode_reset_gate_detected": reset_detected,
+            },
+            "learned_safety": {
+                "enabled": learned_safety_enabled,
+                "checkpoint": str(checkpoint) if checkpoint is not None else None,
+                "checkpoint_sha256": checkpoint_sha256,
+                "checkpoint_is_accepted_phase3n": bool(
+                    checkpoint is not None
+                    and checkpoint.name == ACCEPTED_PHASE3N_CHECKPOINT
+                    and checkpoint_sha256 == ACCEPTED_PHASE3N_SHA256
+                ),
+                "base_command_source": "nav2_cmd_vel" if learned_safety_enabled else None,
+                "authority_steps": safety_authority_steps,
+                "brake_steps": safety_brake_steps,
+                "mean_brake_fraction_while_active": (
+                    safety_brake_sum / safety_authority_steps
+                    if safety_authority_steps > 0
+                    else 0.0
+                ),
+                "maximum_brake_fraction": maximum_safety_brake_fraction,
+                "minimum_360_clearance_m": (
+                    round(minimum_ring_clearance_m, 5)
+                    if math.isfinite(minimum_ring_clearance_m)
+                    else None
+                ),
+                "deterministic_static_integration_gate": learned_safety_enabled,
             },
             "final_position_xy_m": [round(float(value), 5) for value in position],
             "minimum_front_range_m": (
@@ -378,18 +595,31 @@ def main() -> int:
                 if math.isfinite(bridge.minimum_front_range_m)
                 else None
             ),
-            "learned_policy_coupled": False,
+            "minimum_ring_clearance_m": (
+                round(bridge.minimum_ring_clearance_m, 5)
+                if math.isfinite(bridge.minimum_ring_clearance_m)
+                else None
+            ),
+            "learned_policy_coupled": learned_safety_enabled,
+            "learned_360_safety_coupled": learned_safety_enabled,
+            "frozen_phase3m_local_navigation_coupled": False,
             "physical_release": False,
             "claim_boundary": (
-                "This bridge run proves Isaac physics/ROS topic exchange only. It does not prove "
-                "a live Nav2 mission, frozen-policy arbitration, protective safety coverage, "
-                "stopping distance, sim-to-real performance, or physical deployment readiness."
+                "With a Phase 3N checkpoint this run proves live Nav2-to-learned-safety "
+                "arbitration in the provisional Isaac scene. It does not couple the frozen "
+                "Phase 3M local navigator, replace the formal dynamic-obstacle evaluation, "
+                "prove stopping distance or sim-to-real performance, or authorize physical "
+                "deployment. Without a checkpoint it proves Isaac physics/ROS exchange only."
             ),
         }
         report["passed"] = (
             steps_completed > 0
             and all(count > 0 for count in bridge.messages.values())
             and not reset_detected
+            and (
+                not learned_safety_enabled
+                or report["learned_safety"]["checkpoint_is_accepted_phase3n"]
+            )
         )
         output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
         print(
