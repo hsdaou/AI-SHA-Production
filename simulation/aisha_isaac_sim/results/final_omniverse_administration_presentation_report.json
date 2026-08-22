@@ -1,0 +1,84 @@
+{
+  "report_type": "final_omniverse_administration_presentation_reel",
+  "generated_at_utc": "2026-08-22T20:12:36.488089+00:00",
+  "passed": true,
+  "output_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Final_Omniverse_Administration_Presentation.mp4",
+  "output_video_sha256": "c3218bb4e969c17b9d61be299be8b80e9558775514f0bd097be18c320d18e132",
+  "resolution": [
+    1280,
+    720
+  ],
+  "fps": 30.0,
+  "frames": 2307,
+  "duration_s": 76.9,
+  "audio_track": false,
+  "timeline": [
+    {
+      "section": "intro_card",
+      "start_frame": 0,
+      "end_frame": 89,
+      "frames": 90
+    },
+    {
+      "section": "complete_office_mission",
+      "start_frame": 90,
+      "end_frame": 1732,
+      "frames": 1643
+    },
+    {
+      "section": "dynamic_safety_transition_card",
+      "start_frame": 1733,
+      "end_frame": 1792,
+      "frames": 60
+    },
+    {
+      "section": "dynamic_safety_encounter",
+      "start_frame": 1793,
+      "end_frame": 2186,
+      "frames": 394
+    },
+    {
+      "section": "evidence_and_next_gates_card",
+      "start_frame": 2187,
+      "end_frame": 2306,
+      "frames": 120
+    }
+  ],
+  "sources": {
+    "complete_office_mission": {
+      "video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase3N_Administration_Final_Omniverse_3x.mp4",
+      "video_sha256": "44cd1e975b6b13a98f3013cdb1f3dc90db52e9d240f763a6f03d843f877e2f13",
+      "report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase3n_administration_final_omniverse_3x_report.json",
+      "report_sha256": "85d39f531475012ac1a9f506539e7be8d58618a0c372d0e5d92473d931a16bd1",
+      "frames_included": 1643,
+      "motion_changed_by_assembly": false
+    },
+    "dynamic_safety_encounter": {
+      "video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4",
+      "video_sha256": "556468502d6f5a86a6e13cf5809bd9fd6dba5d3ae76db6d82d3eea64afa77886",
+      "video_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase4a_dynamic_safety_presentation_video_report.json",
+      "video_report_sha256": "99280ecaeb3a27cad66e39eaf1c52e171a69031476f8111d1f0243ef1b00b120",
+      "run_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase4a_administration_dynamic_showcase_report.json",
+      "run_report_sha256": "8acb793d5877aa3a86e2122c9649fbb255738cb987f736b870af17020ba910e9",
+      "frames_included": 394,
+      "motion_changed_by_assembly": false
+    }
+  },
+  "motion_changed_by_assembly": false,
+  "assembly_disclosure": "Every decoded frame from both accepted presentation sources is included once and in order. Title cards were added between sources. Final H.264 encoding changes pixel compression but does not retime or alter motion inside either accepted source clip.",
+  "claim_boundary": "Presentation-grade Isaac Sim and Isaac Lab evidence in a plan- and walkthrough-derived administration scene. Door dimensions and scene geometry remain disclosed presentation assumptions. This is not an as-built survey, physical human-safety claim, Nav2 release, sim-to-real validation, or permission to deploy on hardware.",
+  "checks": {
+    "mission_report_passed": true,
+    "mission_motion_unchanged": true,
+    "safety_video_report_passed": true,
+    "safety_run_report_passed": true,
+    "same_accepted_checkpoint": true,
+    "mission_source_hash_linked": true,
+    "safety_source_hash_linked": true,
+    "all_mission_frames_included": true,
+    "all_safety_frames_included": true,
+    "output_frame_count_exact": true,
+    "presentation_duration_60_to_90_seconds": true,
+    "presentation_video_created": true
+  }
+}

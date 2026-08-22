@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev L - 2026-08-22 - bounded recurrent safety-residual gate completed and rejected**
+**Rev M - 2026-08-23 - final Omniverse administration presentation reel accepted**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -46,6 +46,8 @@ isaaclab/                    physics-driven RSL-RL training and evaluation task
 isaaclab/tools/build_administration_live_assets.py  live scene/robot composer
 isaaclab/scripts/play_block_a_route.py  checkpoint-driven live administration runner
 isaaclab/tools/validate_administration_live_policy.py  live evidence validator
+isaaclab/tools/make_final_omniverse_presentation_reel.py  final evidence-reel assembler
+isaaclab/tools/validate_final_omniverse_presentation_reel.py  final reel validator
 tools/encode_route_video.py             verified MP4 encoder for rendered frames
 tools/validate_administration_replay.py evidence-chain validation before rendering
 tools/generate_aisha_urdf.py  canonical source for both URDFs
@@ -610,6 +612,17 @@ actor. The 13.13 s film is
 This is live Isaac Sim/Isaac Lab checkpoint evidence for a controlled
 presentation scenario, not a human-behaviour model or physical safety release.
 
+The final presentation reel combines those two accepted films without changing
+their motion. It includes every frame of the 54.77 s clean mission and every
+frame of the 13.13 s pedestrian encounter once and in order, separated by
+clearly labeled title cards. The result is 76.9 s, 1280 x 720 at 30 fps, passes
+27/27 evidence-chain checks, and is available at
+`media/videos/AI-SHA_Final_Omniverse_Administration_Presentation.mp4`. It shows
+the complete Vice-Principal and Principal office mission followed by the
+stop-wait-resume safety insert. Geometry and door clearances remain disclosed
+presentation assumptions; this film is not a physical safety or deployment
+release.
+
 The administration USD was rebuilt with page-2 Block A printed-dimension anchors
 (12.75 m atrium, 2.80 m hall, 7.80 x 6.30 m conference room and 4.73 m
 Principal frontage) and tagged `GEOMETRY-RTX-PHASE3-A`. Four procedural finish
@@ -727,6 +740,20 @@ python3 isaaclab/tools/validate_phase4a_dynamic_showcase.py \
   --run-report results/phase4a_administration_dynamic_showcase_report.json \
   --video-report results/phase4a_dynamic_safety_presentation_video_report.json \
   --output results/phase4a_dynamic_safety_showcase_acceptance.json
+python3 isaaclab/tools/make_final_omniverse_presentation_reel.py \
+  --mission-video media/videos/AI-SHA_Phase3N_Administration_Final_Omniverse_3x.mp4 \
+  --mission-report results/phase3n_administration_final_omniverse_3x_report.json \
+  --safety-video media/videos/AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4 \
+  --safety-video-report results/phase4a_dynamic_safety_presentation_video_report.json \
+  --safety-run-report results/phase4a_administration_dynamic_showcase_report.json \
+  --output media/videos/AI-SHA_Final_Omniverse_Administration_Presentation.mp4 \
+  --report results/final_omniverse_administration_presentation_report.json
+python3 isaaclab/tools/validate_final_omniverse_presentation_reel.py \
+  --mission-report results/phase3n_administration_final_omniverse_3x_report.json \
+  --safety-video-report results/phase4a_dynamic_safety_presentation_video_report.json \
+  --safety-run-report results/phase4a_administration_dynamic_showcase_report.json \
+  --reel-report results/final_omniverse_administration_presentation_report.json \
+  --output results/final_omniverse_administration_presentation_acceptance.json
 ```
 
 ## Navigation and doorway fit
