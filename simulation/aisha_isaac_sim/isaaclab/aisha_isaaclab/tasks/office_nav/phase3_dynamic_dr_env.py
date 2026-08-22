@@ -1,0 +1,891 @@
+"""Phase 3 dynamic-obstacle and sim-to-real domain-randomization curriculum."""
+
+from __future__ import annotations
+
+import math
+import hashlib
+from collections.abc import Sequence
+from pathlib import Path
+
+import torch
+from torch import nn
+
+import isaaclab.sim as sim_utils
+from isaaclab.assets import RigidObjectCfg
+from isaaclab.sensors.ray_caster import MultiMeshRayCasterCfg, patterns
+from isaaclab.utils import configclass
+
+from aisha_isaaclab.tasks.office_nav.block_a_sensor_env import (
+    AishaBlockASensorEnv,
+    AishaBlockASensorEnvCfg,
+    AishaBlockASensorSceneCfg,
+    COURSE_USD,
+    ROUTE_SEGMENTS,
+)
+from aisha_isaaclab.tasks.office_nav.phase2_end_to_end_env import (
+    PHASE2_GOAL_TOLERANCES,
+    TURN_DIRECTION_HINTS,
+)
+
+
+PHASE3_FROZEN_ROUTE_CHECKPOINT = (
+    Path(__file__).resolve().parents[3]
+    / "logs"
+    / "rsl_rl"
+    / "aisha_block_a_sensor_nav"
+    / "2026-08-22_15-00-21_phase3h_reciprocal_yield_seed8701"
+    / "model_2225.pt"
+)
+PHASE3_FROZEN_ROUTE_CHECKPOINT_SHA256 = (
+    "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8"
+)
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _person_proxy(index: int) -> RigidObjectCfg:
+    """Create a conservative, kinematic person proxy visible to physics and rays."""
+    palette = (
+        (0.10, 0.34, 0.62),
+        (0.62, 0.20, 0.16),
+        (0.17, 0.48, 0.28),
+    )
+    return RigidObjectCfg(
+        prim_path=f"{{ENV_REGEX_NS}}/DynamicObstacle_{index}",
+        spawn=sim_utils.CapsuleCfg(
+            radius=0.24,
+            height=1.70,
+            axis="Z",
+            rigid_props=sim_utils.RigidBodyPropertiesCfg(
+                disable_gravity=True,
+                kinematic_enabled=True,
+                solver_position_iteration_count=4,
+                solver_velocity_iteration_count=1,
+            ),
+            collision_props=sim_utils.CollisionPropertiesCfg(
+                contact_offset=0.02,
+                rest_offset=0.0,
+            ),
+            mass_props=sim_utils.MassPropertiesCfg(mass=70.0),
+            physics_material=sim_utils.RigidBodyMaterialCfg(
+                static_friction=0.60,
+                dynamic_friction=0.50,
+                restitution=0.0,
+                friction_combine_mode="min",
+                restitution_combine_mode="min",
+            ),
+            visual_material=sim_utils.PreviewSurfaceCfg(
+                diffuse_color=palette[index],
+                roughness=0.62,
+                metallic=0.0,
+            ),
+        ),
+        # Inactive proxies stay below every navigable floor and outside the
+        # horizontal LD19 scan plane.
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.0, 0.0, -5.0)),
+    )
+
+
+@configclass
+class AishaPhase3DynamicSceneCfg(AishaBlockASensorSceneCfg):
+    """Replicated route course with three independently moving person proxies."""
+
+    dynamic_obstacle_0 = _person_proxy(0)
+    dynamic_obstacle_1 = _person_proxy(1)
+    dynamic_obstacle_2 = _person_proxy(2)
+    crown_lidar = MultiMeshRayCasterCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/base_link/lidar_link",
+        update_period=0.10,
+        offset=MultiMeshRayCasterCfg.OffsetCfg(),
+        ray_alignment="base",
+        pattern_cfg=patterns.LidarPatternCfg(
+            channels=1,
+            vertical_fov_range=(0.0, 0.0),
+            horizontal_fov_range=(-180.0, 180.0),
+            horizontal_res=10.0,
+        ),
+        max_distance=10.0,
+        mesh_prim_paths=[
+            MultiMeshRayCasterCfg.RaycastTargetCfg(
+                prim_expr="{ENV_REGEX_NS}/Course",
+                is_shared=False,
+                merge_prim_meshes=True,
+                track_mesh_transforms=False,
+            ),
+            MultiMeshRayCasterCfg.RaycastTargetCfg(
+                prim_expr="{ENV_REGEX_NS}/DynamicObstacle_.*",
+                is_shared=False,
+                merge_prim_meshes=True,
+                track_mesh_transforms=True,
+            ),
+        ],
+        reference_meshes=True,
+        # Isaac Lab 2.3.2 allocates mesh-id results as (N, B, 1) but the
+        # multi-mesh Warp query currently returns (N, B).  The policy and
+        # collision truth need hit ranges, not mesh labels, so leave labels
+        # disabled while retaining transform tracking for moving obstacles.
+        update_mesh_ids=False,
+        debug_vis=False,
+    )
+
+
+@configclass
+class AishaPhase3DynamicDREnvCfg(AishaBlockASensorEnvCfg):
+    """Checkpoint-compatible PPO curriculum for people and dynamics variation."""
+
+    scene: AishaPhase3DynamicSceneCfg = AishaPhase3DynamicSceneCfg(
+        num_envs=32,
+        env_spacing=50.0,
+        replicate_physics=True,
+        clone_in_fabric=False,
+    )
+    episode_length_s = 70.0
+    linear_velocity_range_mps = (0.0, 0.50)
+    start_lateral_jitter_m = 0.08
+    start_yaw_jitter_rad = math.radians(18.0)
+    start_heading_mode = "incoming"
+    start_transition_backoff_m_by_segment = (
+        0.00,
+        0.45,
+        0.45,
+        0.45,
+        0.20,
+        0.45,
+        0.45,
+        0.45,
+        0.45,
+        0.20,
+        0.45,
+        0.45,
+    )
+    start_linear_velocity_range_mps = (0.0, 0.35)
+    goal_jitter_m = 0.06
+    goal_tolerance_m_by_segment = PHASE2_GOAL_TOLERANCES
+    turn_direction_hint_rad_by_segment = TURN_DIRECTION_HINTS
+    segment_sampling_weights = (
+        10.0,
+        16.0,
+        12.0,
+        3.0,
+        3.0,
+        16.0,
+        12.0,
+        12.0,
+        3.0,
+        3.0,
+        12.0,
+        10.0,
+    )
+
+    # LD19 observation randomization. These perturb only policy observations;
+    # termination always uses the uncorrupted geometric ray ranges.
+    observation_lidar_noise_std_m = 0.03
+    observation_lidar_dropout_probability = 0.01
+    lidar_episode_bias_range_m = (-0.025, 0.025)
+    lidar_episode_scale_range = (0.985, 1.015)
+
+    # Actuation and rigid-body randomization. Ranges are deliberately modest
+    # because hardware-specific calibration has not yet been measured.
+    action_latency_steps_range = (0, 2)
+    motor_strength_scale_range = (0.90, 1.10)
+    wheel_radius_scale_range = (0.97, 1.03)
+    wheel_track_scale_range = (0.98, 1.02)
+    drive_joint_damping_range = (96.0, 144.0)
+    base_mass_scale_range = (0.88, 1.12)
+    robot_static_friction_range = (0.45, 0.75)
+    robot_dynamic_friction_range = (0.35, 0.65)
+
+    # Preserve the accepted static-route skill before progressively exposing
+    # the policy to the full perturbation distribution. At 32 steps/iteration,
+    # this gives 100 PPO iterations of rehearsal and a 350-iteration ramp.
+    curriculum_warmup_policy_steps = 3_200
+    curriculum_ramp_policy_steps = 11_200
+    curriculum_minimum_strength = 0.0
+
+    # Dynamic-person curriculum. People cross only open hall/atrium route legs
+    # with enough lateral space. Door, in-office, and the exact segment-6
+    # principal U-turn retain furniture/static obstacles but no non-yielding
+    # kinematic pedestrian crossing.
+    dynamic_obstacle_count = 3
+    maximum_active_obstacles = 2
+    dynamic_obstacle_segment_ids = (0, 1, 2, 5, 7, 10, 11)
+    dynamic_obstacle_activation_probability = 0.60
+    dynamic_obstacle_crossing_speed_range_mps = (0.25, 0.65)
+    dynamic_obstacle_path_half_span_range_m = (0.85, 1.25)
+    dynamic_obstacle_route_fractions = (0.32, 0.56, 0.76)
+    dynamic_obstacle_yield_radius_m = 1.10
+
+    reward_progress = 14.0
+    reward_heading_alignment = 0.02
+    reward_heading_progress = 8.0
+    penalty_wrong_uturn_direction = -0.05
+    penalty_misaligned_forward = -0.05
+    penalty_near_obstacle = -0.01
+    penalty_forward_near_obstacle = -0.12
+    forward_near_obstacle_distance_m = 1.20
+    penalty_collision = -100.0
+
+
+class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
+    """Learn stopping/avoidance under moving people and plausible sim variation."""
+
+    cfg: AishaPhase3DynamicDREnvCfg
+
+    def _setup_scene(self) -> None:
+        super()._setup_scene()
+        self._dynamic_obstacles = [
+            self.scene.rigid_objects[f"dynamic_obstacle_{index}"]
+            for index in range(self.cfg.dynamic_obstacle_count)
+        ]
+
+    def __init__(self, cfg: AishaPhase3DynamicDREnvCfg, render_mode: str | None = None, **kwargs):
+        if not COURSE_USD.is_file():
+            raise FileNotFoundError(
+                f"missing {COURSE_USD}; run isaaclab/tools/build_block_a_training_course.py"
+            )
+        super().__init__(cfg, render_mode, **kwargs)
+        if len(self._dynamic_obstacles) != self.cfg.dynamic_obstacle_count:
+            raise RuntimeError("dynamic obstacle scene/config count mismatch")
+        if len(self.cfg.dynamic_obstacle_route_fractions) != self.cfg.dynamic_obstacle_count:
+            raise ValueError("dynamic_obstacle_route_fractions must match dynamic_obstacle_count")
+
+        self._action_history = torch.zeros((self.num_envs, 3, 2), device=self.device)
+        self._action_latency_steps = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self._motor_strength = torch.ones((self.num_envs, 2), device=self.device)
+        self._wheel_radius_scale = torch.ones(self.num_envs, device=self.device)
+        self._wheel_track_scale = torch.ones(self.num_envs, device=self.device)
+        self._lidar_episode_bias = torch.zeros(self.num_envs, device=self.device)
+        self._lidar_episode_scale = torch.ones(self.num_envs, device=self.device)
+        self._mass_scale = torch.ones(self.num_envs, device=self.device)
+        self._static_friction = torch.ones(self.num_envs, device=self.device)
+        self._dynamic_friction = torch.ones(self.num_envs, device=self.device)
+        self._drive_damping = torch.full((self.num_envs, 2), 120.0, device=self.device)
+
+        obstacle_shape = (self.cfg.dynamic_obstacle_count, self.num_envs)
+        self._obstacle_active = torch.zeros(obstacle_shape, dtype=torch.bool, device=self.device)
+        self._obstacle_centres = torch.zeros((*obstacle_shape, 2), device=self.device)
+        self._obstacle_axes = torch.zeros((*obstacle_shape, 2), device=self.device)
+        self._obstacle_half_spans = torch.ones(obstacle_shape, device=self.device)
+        self._obstacle_angular_speeds = torch.zeros(obstacle_shape, device=self.device)
+        self._obstacle_phases = torch.zeros(obstacle_shape, device=self.device)
+        self._obstacle_pause_phase = torch.zeros(obstacle_shape, device=self.device)
+
+        base_ids, _ = self._robot.find_bodies("base_link")
+        if len(base_ids) != 1:
+            raise RuntimeError(f"expected one base_link for mass randomization, found {base_ids}")
+        self._base_body_id = int(base_ids[0])
+        self._episode_sums["forward_near_obstacle"] = torch.zeros(
+            self.num_envs, dtype=torch.float32, device=self.device
+        )
+
+    @staticmethod
+    def _uniform(
+        count: int, value_range: tuple[float, float], device: str | torch.device
+    ) -> torch.Tensor:
+        return torch.empty(count, device=device).uniform_(*value_range)
+
+    def _curriculum_strength(self) -> float:
+        elapsed = max(0, int(self.common_step_counter) - self.cfg.curriculum_warmup_policy_steps)
+        ramp = max(1, self.cfg.curriculum_ramp_policy_steps)
+        return max(
+            float(self.cfg.curriculum_minimum_strength),
+            min(1.0, elapsed / ramp),
+        )
+
+    def _blended_uniform(
+        self,
+        count: int,
+        value_range: tuple[float, float],
+        nominal: float,
+        strength: float,
+    ) -> torch.Tensor:
+        sampled = self._uniform(count, value_range, self.device)
+        return nominal + strength * (sampled - nominal)
+
+    def _randomize_physics(self, env_ids: torch.Tensor) -> None:
+        count = len(env_ids)
+        strength = self._curriculum_strength()
+        latency_min, latency_max = self.cfg.action_latency_steps_range
+        latency_max = max(latency_min, int(round(latency_max * strength)))
+        self._action_latency_steps[env_ids] = torch.randint(
+            latency_min,
+            latency_max + 1,
+            (count,),
+            device=self.device,
+        )
+        sampled_motor_strength = torch.empty((count, 2), device=self.device).uniform_(
+            *self.cfg.motor_strength_scale_range
+        )
+        self._motor_strength[env_ids] = 1.0 + strength * (sampled_motor_strength - 1.0)
+        self._wheel_radius_scale[env_ids] = self._blended_uniform(
+            count, self.cfg.wheel_radius_scale_range, 1.0, strength
+        )
+        self._wheel_track_scale[env_ids] = self._blended_uniform(
+            count, self.cfg.wheel_track_scale_range, 1.0, strength
+        )
+        self._lidar_episode_bias[env_ids] = strength * self._uniform(
+            count, self.cfg.lidar_episode_bias_range_m, self.device
+        )
+        self._lidar_episode_scale[env_ids] = self._blended_uniform(
+            count, self.cfg.lidar_episode_scale_range, 1.0, strength
+        )
+        self._mass_scale[env_ids] = self._blended_uniform(
+            count, self.cfg.base_mass_scale_range, 1.0, strength
+        )
+        self._static_friction[env_ids] = self._blended_uniform(
+            count, self.cfg.robot_static_friction_range, 0.60, strength
+        )
+        self._dynamic_friction[env_ids] = torch.minimum(
+            self._blended_uniform(
+                count, self.cfg.robot_dynamic_friction_range, 0.50, strength
+            ),
+            self._static_friction[env_ids],
+        )
+        sampled_damping = torch.empty((count, 2), device=self.device).uniform_(
+            *self.cfg.drive_joint_damping_range
+        )
+        damping = 120.0 + strength * (sampled_damping - 120.0)
+        self._drive_damping[env_ids] = damping
+        self._robot.write_joint_damping_to_sim(
+            damping,
+            joint_ids=self._wheel_ids,
+            env_ids=env_ids,
+        )
+
+        cpu_ids = env_ids.cpu()
+        masses = self._robot.root_physx_view.get_masses()
+        default_mass = self._robot.data.default_mass.cpu()
+        masses[cpu_ids, self._base_body_id] = (
+            default_mass[cpu_ids, self._base_body_id] * self._mass_scale[env_ids].cpu()
+        )
+        self._robot.root_physx_view.set_masses(masses, cpu_ids)
+        inertias = self._robot.root_physx_view.get_inertias()
+        default_inertia = self._robot.data.default_inertia.cpu()
+        inertias[cpu_ids, self._base_body_id] = (
+            default_inertia[cpu_ids, self._base_body_id]
+            * self._mass_scale[env_ids].cpu().unsqueeze(-1)
+        )
+        self._robot.root_physx_view.set_inertias(inertias, cpu_ids)
+
+        materials = self._robot.root_physx_view.get_material_properties()
+        materials[cpu_ids, :, 0] = self._static_friction[env_ids].cpu().unsqueeze(-1)
+        materials[cpu_ids, :, 1] = self._dynamic_friction[env_ids].cpu().unsqueeze(-1)
+        materials[cpu_ids, :, 2] = 0.0
+        self._robot.root_physx_view.set_material_properties(materials, cpu_ids)
+
+    def _sample_dynamic_obstacles(self, env_ids: torch.Tensor) -> None:
+        count = len(env_ids)
+        strength = self._curriculum_strength()
+        segment_ids = self._segment_ids[env_ids]
+        allowed = torch.zeros(count, dtype=torch.bool, device=self.device)
+        for segment_id in self.cfg.dynamic_obstacle_segment_ids:
+            allowed |= segment_ids == segment_id
+        maximum_active = 1 if strength < 0.75 else self.cfg.maximum_active_obstacles
+        active_count = torch.randint(
+            1,
+            maximum_active + 1,
+            (count,),
+            device=self.device,
+        )
+        active_count = torch.where(allowed, active_count, torch.zeros_like(active_count))
+
+        starts = self._segment_starts[segment_ids]
+        goals = self._segment_goals[segment_ids]
+        route_direction = goals - starts
+        route_unit = route_direction / torch.linalg.norm(route_direction, dim=1, keepdim=True).clamp_min(1.0e-6)
+        crossing_axis = torch.stack((-route_unit[:, 1], route_unit[:, 0]), dim=-1)
+
+        for obstacle_index in range(self.cfg.dynamic_obstacle_count):
+            probability_gate = (
+                torch.rand(count, device=self.device)
+                < self.cfg.dynamic_obstacle_activation_probability * strength
+            )
+            active = allowed & (active_count > obstacle_index) & probability_gate
+            fraction = self.cfg.dynamic_obstacle_route_fractions[obstacle_index]
+            fraction_jitter = torch.empty(count, device=self.device).uniform_(-0.05, 0.05)
+            centre = starts + route_direction * (fraction + fraction_jitter).unsqueeze(-1)
+            self._obstacle_active[obstacle_index, env_ids] = active
+            self._obstacle_centres[obstacle_index, env_ids] = centre
+            self._obstacle_axes[obstacle_index, env_ids] = crossing_axis
+            half_span = self._uniform(
+                count, self.cfg.dynamic_obstacle_path_half_span_range_m, self.device
+            )
+            speed = self._uniform(
+                count, self.cfg.dynamic_obstacle_crossing_speed_range_mps, self.device
+            )
+            direction_sign = torch.where(
+                torch.rand(count, device=self.device) < 0.5,
+                -torch.ones(count, device=self.device),
+                torch.ones(count, device=self.device),
+            )
+            self._obstacle_half_spans[obstacle_index, env_ids] = half_span
+            self._obstacle_angular_speeds[obstacle_index, env_ids] = (
+                direction_sign * speed / half_span
+            )
+            self._obstacle_phases[obstacle_index, env_ids] = (
+                -0.5 * math.pi
+                + torch.empty(count, device=self.device).uniform_(-0.12, 0.12)
+            )
+            self._obstacle_pause_phase[obstacle_index, env_ids] = 0.0
+
+    def _update_dynamic_obstacles(self, env_ids: torch.Tensor | None = None) -> None:
+        if env_ids is None:
+            env_ids = torch.arange(self.num_envs, device=self.device)
+        elapsed = self.episode_length_buf[env_ids].float() * self.step_dt
+        origins = self.scene.env_origins[env_ids, :2]
+        for obstacle_index, obstacle in enumerate(self._dynamic_obstacles):
+            phase = (
+                self._obstacle_phases[obstacle_index, env_ids]
+                + elapsed * self._obstacle_angular_speeds[obstacle_index, env_ids]
+                - self._obstacle_pause_phase[obstacle_index, env_ids]
+            )
+            lateral = self._obstacle_half_spans[obstacle_index, env_ids] * torch.sin(phase)
+            local_xy = (
+                self._obstacle_centres[obstacle_index, env_ids]
+                + self._obstacle_axes[obstacle_index, env_ids] * lateral.unsqueeze(-1)
+            )
+            active = self._obstacle_active[obstacle_index, env_ids]
+            robot_local_xy = self._robot.data.root_pos_w[env_ids, :2] - origins
+            yielding = active & (
+                torch.linalg.norm(local_xy - robot_local_xy, dim=1)
+                < self.cfg.dynamic_obstacle_yield_radius_m
+            )
+            # Kinematic people pause instead of walking into a stopped robot.
+            # This is environment behaviour only; the policy observes ordinary
+            # LiDAR ranges and receives no pedestrian position/velocity state.
+            self._obstacle_pause_phase[obstacle_index, env_ids] += (
+                yielding.float()
+                * self.step_dt
+                * self._obstacle_angular_speeds[obstacle_index, env_ids]
+            )
+            root_pose = obstacle.data.default_root_state[env_ids, :7].clone()
+            root_pose[:, :2] = origins + local_xy
+            root_pose[:, 2] = torch.where(
+                active,
+                torch.full_like(lateral, 0.85),
+                torch.full_like(lateral, -5.0),
+            )
+            root_pose[:, 3] = 1.0
+            root_pose[:, 4:] = 0.0
+            velocity = torch.zeros((len(env_ids), 6), device=self.device)
+            lateral_velocity = (
+                self._obstacle_half_spans[obstacle_index, env_ids]
+                * torch.cos(phase)
+                * self._obstacle_angular_speeds[obstacle_index, env_ids]
+            )
+            velocity[:, :2] = (
+                self._obstacle_axes[obstacle_index, env_ids]
+                * lateral_velocity.unsqueeze(-1)
+            )
+            velocity[~active | yielding] = 0.0
+            obstacle.write_root_pose_to_sim(root_pose, env_ids=env_ids)
+            obstacle.write_root_velocity_to_sim(velocity, env_ids=env_ids)
+
+    def _lidar_observation_ranges(self) -> torch.Tensor:
+        ranges = self._lidar_ranges()
+        if not hasattr(self, "_lidar_episode_scale"):
+            return ranges
+        strength = self._curriculum_strength()
+        if self.cfg.observation_lidar_noise_std_m > 0.0:
+            ranges = ranges + torch.randn_like(ranges) * (
+                self.cfg.observation_lidar_noise_std_m * strength
+            )
+        if self.cfg.observation_lidar_dropout_probability > 0.0:
+            drop = torch.rand_like(ranges) < (
+                self.cfg.observation_lidar_dropout_probability * strength
+            )
+            ranges = torch.where(drop, self.cfg.lidar_max_range_m, ranges)
+        ranges = (
+            ranges * self._lidar_episode_scale.unsqueeze(-1)
+            + self._lidar_episode_bias.unsqueeze(-1)
+        )
+        return ranges.clamp(self.cfg.lidar_min_range_m, self.cfg.lidar_max_range_m)
+
+    def _pre_physics_step(self, actions: torch.Tensor) -> None:
+        self._update_dynamic_obstacles()
+        self._action_history[:, 2] = self._action_history[:, 1]
+        self._action_history[:, 1] = self._action_history[:, 0]
+        self._action_history[:, 0] = actions
+        delayed = torch.gather(
+            self._action_history,
+            1,
+            self._action_latency_steps.view(-1, 1, 1).expand(-1, 1, 2),
+        ).squeeze(1)
+
+        self._previous_actions.copy_(self._actions)
+        self._actions = delayed.clone().clamp(-1.0, 1.0)
+        minimum, maximum = self.cfg.linear_velocity_range_mps
+        linear = minimum + (self._actions[:, 0] + 1.0) * 0.5 * (maximum - minimum)
+        angular = self._actions[:, 1] * self.cfg.angular_velocity_max_rad_s
+        half_track = self.cfg.wheel_track_m * self._wheel_track_scale / 2.0
+        wheel_radius = self.cfg.wheel_radius_m * self._wheel_radius_scale
+        self._wheel_targets[:, 0] = (linear - angular * half_track) / wheel_radius
+        self._wheel_targets[:, 1] = (linear + angular * half_track) / wheel_radius
+        self._wheel_targets *= self._motor_strength
+        self._wheel_targets.clamp_(
+            -self.cfg.wheel_speed_limit_rad_s,
+            self.cfg.wheel_speed_limit_rad_s,
+        )
+
+    def _get_rewards(self) -> torch.Tensor:
+        rewards = super()._get_rewards()
+        lidar = self._lidar_ranges()
+        # The five front-facing rays cover +/-20 degrees. Penalizing forward
+        # intent here teaches stopping/avoidance without exposing privileged
+        # obstacle position or velocity to the policy.
+        front_minimum = torch.amin(lidar[:, 16:21], dim=1)
+        normalized_forward = ((self._actions[:, 0] + 1.0) * 0.5).clamp(0.0, 1.0)
+        forward_near = (
+            (front_minimum < self.cfg.forward_near_obstacle_distance_m).float()
+            * normalized_forward
+            * self.cfg.penalty_forward_near_obstacle
+        )
+        self._episode_sums["forward_near_obstacle"] += forward_near
+        return rewards + forward_near
+
+    def _dynamic_obstacle_overlap(self) -> torch.Tensor:
+        """Classify footprint contacts with active person proxies for evaluation."""
+        base_xy = self._robot.data.root_pos_w[:, :2]
+        quaternion = self._robot.data.root_quat_w
+        yaw = torch.atan2(
+            2.0 * (quaternion[:, 0] * quaternion[:, 3] + quaternion[:, 1] * quaternion[:, 2]),
+            1.0 - 2.0 * (quaternion[:, 2].square() + quaternion[:, 3].square()),
+        )
+        cos_yaw, sin_yaw = torch.cos(yaw), torch.sin(yaw)
+        overlap = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        person_radius = 0.24
+        for obstacle_index, obstacle in enumerate(self._dynamic_obstacles):
+            delta = obstacle.data.root_pos_w[:, :2] - base_xy
+            local_x = cos_yaw * delta[:, 0] + sin_yaw * delta[:, 1]
+            local_y = -sin_yaw * delta[:, 0] + cos_yaw * delta[:, 1]
+            overlap |= (
+                self._obstacle_active[obstacle_index]
+                & (local_x >= self.cfg.robot_rear_x_m - person_radius)
+                & (local_x <= self.cfg.robot_front_x_m + person_radius)
+                & (torch.abs(local_y) <= self.cfg.robot_half_width_m + person_radius)
+            )
+        return overlap
+
+    def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
+        terminated, time_out = super()._get_dones()
+        outcomes = self.extras["episode_outcomes"]
+        collision = outcomes["collision"]
+        dynamic_collision = collision & self._dynamic_obstacle_overlap()
+        outcomes["dynamic_obstacle_collision"] = dynamic_collision
+        outcomes["static_collision"] = collision & ~dynamic_collision
+        return terminated, time_out
+
+    def _reset_idx(self, env_ids: Sequence[int] | torch.Tensor | None) -> None:
+        if env_ids is None:
+            env_ids = self._robot._ALL_INDICES
+        if not isinstance(env_ids, torch.Tensor):
+            env_ids = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
+        super()._reset_idx(env_ids)
+        # DirectRLEnv may call the reset hook during base construction. The
+        # Phase 3 buffers are initialized immediately afterwards and are fully
+        # active for the first user-visible reset.
+        if not hasattr(self, "_action_history"):
+            return
+        self._randomize_physics(env_ids)
+        self._sample_dynamic_obstacles(env_ids)
+        self._action_history[env_ids] = self._actions[env_ids].unsqueeze(1).expand(-1, 3, -1)
+        self._update_dynamic_obstacles(env_ids)
+        self.extras["domain_randomization"] = {
+            "curriculum_strength": self._curriculum_strength(),
+            "action_latency_steps": self._action_latency_steps.clone(),
+            "motor_strength": self._motor_strength.clone(),
+            "wheel_radius_scale": self._wheel_radius_scale.clone(),
+            "wheel_track_scale": self._wheel_track_scale.clone(),
+            "base_mass_scale": self._mass_scale.clone(),
+            "static_friction": self._static_friction.clone(),
+            "dynamic_friction": self._dynamic_friction.clone(),
+            "active_obstacle_count": self._obstacle_active.sum(dim=0).clone(),
+        }
+
+
+@configclass
+class AishaPhase3SafetyResidualEnvCfg(AishaPhase3DynamicDREnvCfg):
+    """Full-strength safety adaptation over a hash-locked route actor."""
+
+    frozen_route_checkpoint = str(PHASE3_FROZEN_ROUTE_CHECKPOINT)
+    frozen_route_checkpoint_sha256 = PHASE3_FROZEN_ROUTE_CHECKPOINT_SHA256
+
+    # The learned residual may remove all forward speed, but it cannot reverse
+    # the robot, increase speed, flip steering sign, or add steering magnitude.
+    maximum_angular_attenuation = 0.25
+
+    # There is no route-learning warm-up: the route actor is frozen and the
+    # safety controller trains against the complete declared perturbation set.
+    curriculum_warmup_policy_steps = 0
+    curriculum_ramp_policy_steps = 1
+    curriculum_minimum_strength = 1.0
+    segment_sampling_weights = (
+        18.0,
+        18.0,
+        18.0,
+        4.0,
+        4.0,
+        18.0,
+        6.0,
+        18.0,
+        4.0,
+        4.0,
+        18.0,
+        18.0,
+    )
+
+    # These shaping terms use only the same front LiDAR ranges available in
+    # the policy observation. Simulator obstacle identity remains evaluation
+    # truth, not a policy input.
+    safety_closing_distance_m = 1.80
+    safety_clear_distance_m = 2.00
+    safety_closing_delta_m = 0.01
+    reward_brake_while_closing = 0.15
+    penalty_unmitigated_closing = -0.25
+    penalty_unnecessary_brake = -0.02
+    penalty_clear_path_angular_attenuation = -0.01
+    penalty_forward_near_obstacle = -0.40
+    forward_near_obstacle_distance_m = 1.60
+
+
+class AishaPhase3SafetyResidualEnv(AishaPhase3DynamicDREnv):
+    """Train a recurrent slow/stop layer without modifying the route policy."""
+
+    cfg: AishaPhase3SafetyResidualEnvCfg
+
+    def __init__(self, cfg: AishaPhase3SafetyResidualEnvCfg, render_mode: str | None = None, **kwargs):
+        super().__init__(cfg, render_mode, **kwargs)
+        checkpoint_path = Path(self.cfg.frozen_route_checkpoint).expanduser().resolve()
+        if not checkpoint_path.is_file():
+            raise FileNotFoundError(f"missing frozen route checkpoint: {checkpoint_path}")
+        checkpoint_sha256 = _sha256(checkpoint_path)
+        if checkpoint_sha256 != self.cfg.frozen_route_checkpoint_sha256:
+            raise RuntimeError(
+                "frozen route checkpoint hash mismatch: "
+                f"{checkpoint_sha256} != {self.cfg.frozen_route_checkpoint_sha256}"
+            )
+        checkpoint = torch.load(checkpoint_path, map_location=self.device, weights_only=False)
+        state = checkpoint["model_state_dict"]
+        self._frozen_route_actor = nn.Sequential(
+            nn.Linear(46, 256),
+            nn.ELU(),
+            nn.Linear(256, 128),
+            nn.ELU(),
+            nn.Linear(128, 64),
+            nn.ELU(),
+            nn.Linear(64, 2),
+        ).to(self.device)
+        actor_state = {
+            key.removeprefix("actor."): value
+            for key, value in state.items()
+            if key.startswith("actor.")
+        }
+        self._frozen_route_actor.load_state_dict(actor_state, strict=True)
+        self._frozen_route_actor.eval()
+        self._frozen_route_actor.requires_grad_(False)
+        self._frozen_route_obs_mean = state["actor_obs_normalizer._mean"].to(self.device)
+        self._frozen_route_obs_std = state["actor_obs_normalizer._std"].to(self.device)
+        self._frozen_route_checkpoint_path = checkpoint_path
+        self._frozen_route_checkpoint_actual_sha256 = checkpoint_sha256
+
+        self._residual_action_history = torch.zeros((self.num_envs, 3, 2), device=self.device)
+        self._residual_actions = torch.zeros((self.num_envs, 2), device=self.device)
+        self._applied_residual_actions = torch.zeros((self.num_envs, 2), device=self.device)
+        self._base_actions = torch.zeros((self.num_envs, 2), device=self.device)
+        self._requested_combined_actions = torch.zeros((self.num_envs, 2), device=self.device)
+        self._applied_brake_fraction = torch.zeros(self.num_envs, device=self.device)
+        self._applied_angular_attenuation = torch.zeros(self.num_envs, device=self.device)
+        self._previous_front_minimum = torch.full(
+            (self.num_envs,), self.cfg.lidar_max_range_m, device=self.device
+        )
+        for name in (
+            "brake_while_closing",
+            "unmitigated_closing",
+            "unnecessary_brake",
+            "clear_path_angular_attenuation",
+        ):
+            self._episode_sums[name] = torch.zeros(
+                self.num_envs, dtype=torch.float32, device=self.device
+            )
+
+    def _get_observations(self) -> dict[str, torch.Tensor]:
+        observations = super()._get_observations()
+        # The route actor and recurrent residual receive the exact same sampled
+        # observation, including the same LiDAR noise/dropout realization.
+        self._last_policy_observation = observations["policy"].detach()
+        return observations
+
+    def _route_actions(self) -> torch.Tensor:
+        if not hasattr(self, "_last_policy_observation"):
+            self._last_policy_observation = super()._get_observations()["policy"].detach()
+        normalized = (
+            self._last_policy_observation - self._frozen_route_obs_mean
+        ) / (self._frozen_route_obs_std + 1.0e-2)
+        with torch.inference_mode():
+            return self._frozen_route_actor(normalized).clamp(-1.0, 1.0)
+
+    def _compose_residual_actions(
+        self, base_actions: torch.Tensor, residual_actions: torch.Tensor
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        residual_actions = residual_actions.clamp(-1.0, 1.0)
+        brake_fraction = torch.relu(-residual_actions[:, 0])
+        angular_attenuation = (
+            self.cfg.maximum_angular_attenuation * torch.relu(-residual_actions[:, 1])
+        )
+        base_forward_fraction = ((base_actions[:, 0] + 1.0) * 0.5).clamp(0.0, 1.0)
+        combined_forward_fraction = base_forward_fraction * (1.0 - brake_fraction)
+        combined = torch.stack(
+            (
+                combined_forward_fraction * 2.0 - 1.0,
+                base_actions[:, 1] * (1.0 - angular_attenuation),
+            ),
+            dim=1,
+        )
+        return combined, brake_fraction, angular_attenuation
+
+    def _pre_physics_step(self, actions: torch.Tensor) -> None:
+        self._residual_actions = actions.clone().clamp(-1.0, 1.0)
+        self._base_actions = self._route_actions()
+        combined, _, _ = self._compose_residual_actions(
+            self._base_actions, self._residual_actions
+        )
+        self._requested_combined_actions = combined
+
+        self._residual_action_history[:, 2] = self._residual_action_history[:, 1]
+        self._residual_action_history[:, 1] = self._residual_action_history[:, 0]
+        self._residual_action_history[:, 0] = self._residual_actions
+        self._applied_residual_actions = torch.gather(
+            self._residual_action_history,
+            1,
+            self._action_latency_steps.view(-1, 1, 1).expand(-1, 1, 2),
+        ).squeeze(1)
+        self._applied_brake_fraction = torch.relu(-self._applied_residual_actions[:, 0])
+        self._applied_angular_attenuation = (
+            self.cfg.maximum_angular_attenuation
+            * torch.relu(-self._applied_residual_actions[:, 1])
+        )
+        super()._pre_physics_step(combined)
+
+    def _get_rewards(self) -> torch.Tensor:
+        rewards = super()._get_rewards()
+        front_minimum = torch.amin(self._lidar_ranges()[:, 16:21], dim=1)
+        closing_delta = (self._previous_front_minimum - front_minimum).clamp_min(0.0)
+        closing = (
+            (front_minimum < self.cfg.safety_closing_distance_m)
+            & (closing_delta > self.cfg.safety_closing_delta_m)
+        ).float()
+        clear = (front_minimum > self.cfg.safety_clear_distance_m).float()
+        normalized_forward = ((self._actions[:, 0] + 1.0) * 0.5).clamp(0.0, 1.0)
+        brake_while_closing = (
+            closing
+            * self._applied_brake_fraction
+            * self.cfg.reward_brake_while_closing
+        )
+        unmitigated_closing = (
+            closing
+            * (1.0 - self._applied_brake_fraction)
+            * normalized_forward
+            * self.cfg.penalty_unmitigated_closing
+        )
+        unnecessary_brake = (
+            clear * self._applied_brake_fraction * self.cfg.penalty_unnecessary_brake
+        )
+        clear_path_angular_attenuation = (
+            clear
+            * self._applied_angular_attenuation
+            * self.cfg.penalty_clear_path_angular_attenuation
+        )
+        self._episode_sums["brake_while_closing"] += brake_while_closing
+        self._episode_sums["unmitigated_closing"] += unmitigated_closing
+        self._episode_sums["unnecessary_brake"] += unnecessary_brake
+        self._episode_sums["clear_path_angular_attenuation"] += clear_path_angular_attenuation
+        self._previous_front_minimum.copy_(front_minimum)
+        return (
+            rewards
+            + brake_while_closing
+            + unmitigated_closing
+            + unnecessary_brake
+            + clear_path_angular_attenuation
+        )
+
+    def _reset_idx(self, env_ids: Sequence[int] | torch.Tensor | None) -> None:
+        if env_ids is None:
+            env_ids = self._robot._ALL_INDICES
+        if not isinstance(env_ids, torch.Tensor):
+            env_ids = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
+        super()._reset_idx(env_ids)
+        if not hasattr(self, "_residual_action_history"):
+            return
+        self._residual_action_history[env_ids] = 0.0
+        self._residual_actions[env_ids] = 0.0
+        self._applied_residual_actions[env_ids] = 0.0
+        self._applied_brake_fraction[env_ids] = 0.0
+        self._applied_angular_attenuation[env_ids] = 0.0
+        self._previous_front_minimum[env_ids] = torch.amin(
+            self._lidar_ranges()[env_ids, 16:21], dim=1
+        )
+        self.extras["safety_residual"] = {
+            "frozen_route_checkpoint": str(self._frozen_route_checkpoint_path),
+            "frozen_route_checkpoint_sha256": self._frozen_route_checkpoint_actual_sha256,
+            "maximum_angular_attenuation": self.cfg.maximum_angular_attenuation,
+        }
+
+
+@configclass
+class AishaPhase3Segment6RehearsalEnvCfg(AishaPhase3DynamicDREnvCfg):
+    """Target the principal-office turn without forgetting the other route legs."""
+
+    # Segment 6 receives 40/62 (64.5%) of resets. Every other route leg keeps
+    # 2/62 so the recovery run still rehearses the complete mission.
+    segment_sampling_weights = (
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        40.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+        2.0,
+    )
+
+    # Resume from a zero-collision Phase 3 candidate at 75% declared
+    # perturbation strength, then reach full strength during this 300-iteration
+    # run. This avoids returning to a static-only warm-up.
+    curriculum_warmup_policy_steps = 0
+    curriculum_ramp_policy_steps = 9_600
+    curriculum_minimum_strength = 0.75
+
+
+class AishaPhase3Segment6RehearsalEnv(AishaPhase3DynamicDREnv):
+    """Phase 3 segment-6 recovery environment with whole-route retention."""
+
+    cfg: AishaPhase3Segment6RehearsalEnvCfg
+
+
+@configclass
+class AishaPhase3Segment6SpecialistEnvCfg(AishaPhase3DynamicDREnvCfg):
+    """Robustify the proven learned principal-turn skill as an ensemble specialist."""
+
+    fixed_segment_id = 6
+    curriculum_warmup_policy_steps = 3_200
+    curriculum_ramp_policy_steps = 11_200
+    curriculum_minimum_strength = 0.0
+    penalty_near_obstacle = -0.05
+    penalty_forward_near_obstacle = -0.50
+    forward_near_obstacle_distance_m = 1.50
+
+
+class AishaPhase3Segment6SpecialistEnv(AishaPhase3DynamicDREnv):
+    """Fixed-skill Phase 3 curriculum used only by the learned route ensemble."""
+
+    cfg: AishaPhase3Segment6SpecialistEnvCfg

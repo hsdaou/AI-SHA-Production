@@ -1,0 +1,52 @@
+{
+  "checks": {
+    "all_actions_from_policy": true,
+    "all_live_segments_completed": true,
+    "checkpoint_exists_and_matches": true,
+    "full_route_gate_passed": true,
+    "live_administration_success": true,
+    "no_noninitial_uniform_camera_occlusion": true,
+    "no_root_transform_animation": true,
+    "policy_only_declared": true,
+    "presentation_motion_unchanged": true,
+    "presentation_passed": true,
+    "presentation_policy_only_label": true,
+    "presentation_video_hash_matches": true,
+    "raw_video_complete": true,
+    "same_checkpoint_across_gates": true,
+    "training_course_policy_only_success": true,
+    "turn_gate_passed": true,
+    "wider_camera_requested": true,
+    "zero_dwell_supervisor_steps": true,
+    "zero_turn_supervisor_steps": true
+  },
+  "claim_boundary": "policy-only control in the declared simulation; not Nav2, measured-site, dynamic-person, RTX-sensor or sim-to-real validation",
+  "generated_at_utc": "2026-08-22T05:44:49.176790+00:00",
+  "non_initial_uniform_occlusion_intervals_s": [],
+  "passed": true,
+  "presentation_video": {
+    "duration_s": 54.13333333333333,
+    "fps": 30.0,
+    "frame_count": 1624,
+    "resolution": [
+      1280,
+      720
+    ],
+    "sha256": "8c927b7078b3c2a332aa88bf093ef5c951bf07fea2bfeb898ca85962c81eadc3",
+    "size_bytes": 12817694
+  },
+  "raw_video": {
+    "duration_s": 162.8,
+    "fps": 30.0,
+    "frame_count": 4884,
+    "resolution": [
+      1280,
+      720
+    ],
+    "sha256": "3716f42e68e42f8f750192c7befe21416f339c7d07eff1f6d64a9a05ac3fa9ed",
+    "size_bytes": 15257585
+  },
+  "recorded_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt",
+  "report_type": "phase2_end_to_end_validation",
+  "validated_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt"
+}

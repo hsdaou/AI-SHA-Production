@@ -1,0 +1,174 @@
+{
+  "atrium_column_clearance": {
+    "column_radius_m": 0.19,
+    "columns": [
+      {
+        "closest_trace_segment_index": 0,
+        "column_index": 0,
+        "minimum_surface_clearance_m": 3.237898,
+        "minimum_trace_centre_distance_m": 4.131856,
+        "passed": true,
+        "position_xy_m": [
+          -3.25,
+          -2.55
+        ]
+      },
+      {
+        "closest_trace_segment_index": 0,
+        "column_index": 1,
+        "minimum_surface_clearance_m": 3.237911,
+        "minimum_trace_centre_distance_m": 4.131868,
+        "passed": true,
+        "position_xy_m": [
+          -3.25,
+          2.55
+        ]
+      },
+      {
+        "closest_trace_segment_index": 1548,
+        "column_index": 2,
+        "minimum_surface_clearance_m": 1.245704,
+        "minimum_trace_centre_distance_m": 2.139662,
+        "passed": true,
+        "position_xy_m": [
+          1.25,
+          -4.2
+        ]
+      },
+      {
+        "closest_trace_segment_index": 67,
+        "column_index": 3,
+        "minimum_surface_clearance_m": 1.71535,
+        "minimum_trace_centre_distance_m": 2.609308,
+        "passed": true,
+        "position_xy_m": [
+          2.95,
+          2.55
+        ]
+      }
+    ],
+    "conservative_robot_radius_m": 0.703957,
+    "method": "minimum 2D distance to every interpolated learned-trace segment",
+    "required_trace_centre_distance_m": 0.95,
+    "robot_envelope_length_m": 1.18,
+    "robot_envelope_width_m": 0.768
+  },
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt",
+  "claim_boundary": "live checkpoint inference with wheel physics and ray sensing in the walkthrough-matched administration USD; presentation geometry is not an as-built survey, and this is not Nav2, sim-to-real, or physical release",
+  "clearance_validation_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase2_administration_visual_replay_validation.json",
+  "clearance_validation_report_sha256": "3b0f2abc02fe977886791565be30b8e60d419beae6cdd6bea43af5c4655475b2",
+  "completed_steps": 4885,
+  "disclosure": "visual replay of a verified learned run in the presentation environment; not live policy execution",
+  "duration_s": 12.0,
+  "encoded_duration_s": 12.0,
+  "encoded_fps": 20.0,
+  "encoded_frame_count": 240,
+  "encoder": "ffmpeg/libx264",
+  "encoder_crf": 18,
+  "encoder_preset": "slow",
+  "fps": 20,
+  "frame_count": 240,
+  "frame_directory": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/phase2_visual_upgrade_frames",
+  "motion": "recorded pose samples from the successful Isaac Lab wheel-physics playback; no scripted route interpolation",
+  "path_tracing_spp": 8,
+  "renderer": "PathTracing",
+  "resolution": [
+    1280,
+    720
+  ],
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+  "scene_sha256": "c0d84d2ccdced9132a80ef65c9ed0bd5dcb7cea5bad1c0ea5ee28e2925a84b58",
+  "shots": [
+    {
+      "first_elapsed_s": 0.1,
+      "first_source_step": 3,
+      "last_elapsed_s": 10.2,
+      "last_source_step": 306,
+      "rendered_frames": 40,
+      "segment_ids": [
+        0
+      ],
+      "source_trace_records": 102,
+      "title": "Departure - central atrium"
+    },
+    {
+      "first_elapsed_s": 10.3,
+      "first_source_step": 309,
+      "last_elapsed_s": 49.1,
+      "last_source_step": 1473,
+      "rendered_frames": 40,
+      "segment_ids": [
+        1,
+        2
+      ],
+      "source_trace_records": 389,
+      "title": "East administration hall - Vice-Principal approach"
+    },
+    {
+      "first_elapsed_s": 49.2,
+      "first_source_step": 1476,
+      "last_elapsed_s": 75.2,
+      "last_source_step": 2256,
+      "rendered_frames": 40,
+      "segment_ids": [
+        3,
+        4
+      ],
+      "source_trace_records": 261,
+      "title": "Visit 1 - Vice-Principal office"
+    },
+    {
+      "first_elapsed_s": 75.3,
+      "first_source_step": 2259,
+      "last_elapsed_s": 113.4,
+      "last_source_step": 3402,
+      "rendered_frames": 40,
+      "segment_ids": [
+        5,
+        6
+      ],
+      "source_trace_records": 382,
+      "title": "Return through the hall - Principal suite turn"
+    },
+    {
+      "first_elapsed_s": 113.5,
+      "first_source_step": 3405,
+      "last_elapsed_s": 140.6,
+      "last_source_step": 4218,
+      "rendered_frames": 40,
+      "segment_ids": [
+        7,
+        8,
+        9
+      ],
+      "source_trace_records": 272,
+      "title": "Visit 2 - Principal office"
+    },
+    {
+      "first_elapsed_s": 140.7,
+      "first_source_step": 4221,
+      "last_elapsed_s": 162.8,
+      "last_source_step": 4884,
+      "rendered_frames": 40,
+      "segment_ids": [
+        10,
+        11
+      ],
+      "source_trace_records": 222,
+      "title": "Mission complete - return to the atrium"
+    }
+  ],
+  "source_trace_control_modes": {
+    "learned_sensor_policy": 1628
+  },
+  "source_trace_record_count": 1628,
+  "status": "route_video_encoded",
+  "trajectory_outcome": "success",
+  "trajectory_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase2_administration_policy_only_video_report.json",
+  "trajectory_report_sha256": "e0c713497922048955a9bea4a087827e0371dfd50b70583b3bdb7382f5e325f2",
+  "trajectory_seed": 7084,
+  "video": "media/videos/AI-SHA_Phase2_Administration_Visual_Upgrade.mp4",
+  "video_sha256": "4b02865f831d0d1e0db7bf159d3d1ac09f34e24c2d693eeaf052280817350849",
+  "video_size_bytes": 1507372,
+  "waypoints_completed": 12
+}

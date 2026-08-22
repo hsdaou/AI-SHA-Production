@@ -1,0 +1,32 @@
+{
+  "report_type": "phase3_recurrent_policy_distillation_summary",
+  "generated_at_utc": "2026-08-22T11:41:00Z",
+  "run_directory": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-18-36_phase3i_recurrent_distillation_seed8801",
+  "tensorboard_event_sha256": "14accb343ac9cd339c6e18b06d17b9236834f12e46aa92b7f30d4ad4d94b6841",
+  "teacher": {
+    "checkpoint": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt",
+    "sha256": "3ab596c61259784657b36fe4ee937da8495ce9621a43bd04e2c8a0bf6e0b1880",
+    "architecture": "feed-forward actor"
+  },
+  "student": {
+    "checkpoint": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-18-36_phase3i_recurrent_distillation_seed8801/model_199.pt",
+    "sha256": "048ce1001e55054b0c4ee02f4386551be31236b2d4ce2a8c259c496c2d38c5b5",
+    "architecture": "one-layer GRU with 46 hidden units plus 256-128-64 MLP",
+    "policy_observation_count": 46,
+    "action_count": 2
+  },
+  "protocol": {
+    "algorithm": "RSL-RL recurrent student-teacher distillation",
+    "seed": 8801,
+    "parallel_environments": 32,
+    "steps_per_environment_per_iteration": 32,
+    "iterations": 200,
+    "simulated_policy_transitions": 204800
+  },
+  "behavior_loss": {
+    "first": 3.106621503829956,
+    "final": 0.00458107003942132,
+    "minimum": 0.00458107003942132
+  },
+  "interpretation": "The GRU student closely imitated the accepted feed-forward teacher. Distillation is initialization evidence, not a dynamic-obstacle acceptance result."
+}

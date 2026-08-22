@@ -1,0 +1,30 @@
+{
+  "camera_mode": "cinematic",
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_11-35-30_phase2b_administration_exploration_seed7092/model_2150_rehearsal.pt",
+  "checkpoint_sha256": "e4c072c61a8f8f65c58c9a4780600c8b81ce713cc546d2eae8f96374980b0a0f",
+  "disclosure": "Temporally sampled and labeled from the complete successful live-policy capture; robot motion is unchanged. Door geometry remains a disclosed presentation assumption, and this video is not evidence of physical deployment readiness.",
+  "motion_changed": false,
+  "output_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase2_Administration_Live_Cinematic_Teaser_12x.mp4",
+  "output_video_sha256": "934ab50c7cf44e0fd1f1ce5da61fb391b1accc086ba19d72f12d050d93fcc075",
+  "passed": true,
+  "policy_architecture": "route_planner_selected_learned_skill_ensemble",
+  "policy_only_control": true,
+  "presentation_duration_s": 14.3,
+  "presentation_frame_count": 429,
+  "report_type": "administration_live_policy_presentation_video",
+  "segment_policy_checkpoints": {
+    "6": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_11-35-30_phase2b_administration_exploration_seed7092/model_2150_principal_bc.pt",
+      "sha256": "3839ca7b3960c403e3d1ae371b676e3219328a6459d38215492bc68ed9bf8992"
+    }
+  },
+  "source_duration_s": 171.96666666666667,
+  "source_frame_count": 5159,
+  "source_run_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase2_administration_live_cinematic_report.json",
+  "source_run_report_sha256": "b7512811690707e7bf5bf93abd3af86a57410dcda719c59c3ce7c0d611667541",
+  "source_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/phase2_administration_live_cinematic/aisha-block-a-learned-route-step-0.mp4",
+  "source_video_sha256": "bfa95fc901c35f14fe4142aafcfd1fd1e79d803a9db5be0139f85b32d2567457",
+  "speed_multiplier": 12,
+  "telemetry_overlay": true,
+  "telemetry_source_trace_records": 1720
+}

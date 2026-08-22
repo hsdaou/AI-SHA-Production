@@ -1,0 +1,135 @@
+{
+  "report_type": "learned_block_a_route_playback",
+  "generated_at_utc": "2026-08-21T18:00:26.780895+00:00",
+  "task": "Isaac-AISHA-Administration-Live-Direct-v0",
+  "execution_mode": "checkpoint_policy_live_in_walkthrough_matched_administration_scene",
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-20_22-33-50_ld19_flush_threshold_v9/model_599.pt",
+  "seed": 6084,
+  "outcome": "time_out",
+  "completed_steps": 179,
+  "duration_s": 5.966666666666667,
+  "waypoints_completed": 0,
+  "route_segment_count": 12,
+  "camera": {
+    "eye": [
+      -4.5,
+      4.5,
+      5.5
+    ],
+    "lookat": [
+      0.0,
+      0.0,
+      0.55
+    ]
+  },
+  "waypoint_events": [],
+  "pose_trace_interval_steps": 15,
+  "pose_trace": [
+    {
+      "step": 15,
+      "elapsed_s": 0.5,
+      "x_m": 0.11426,
+      "y_m": 0.00033,
+      "yaw_rad": 0.007228,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 30,
+      "elapsed_s": 1.0,
+      "x_m": 0.32305,
+      "y_m": 0.00234,
+      "yaw_rad": 0.009533,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 45,
+      "elapsed_s": 1.5,
+      "x_m": 0.54092,
+      "y_m": 0.00544,
+      "yaw_rad": 0.019906,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 60,
+      "elapsed_s": 2.0,
+      "x_m": 0.7597,
+      "y_m": 0.01113,
+      "yaw_rad": 0.031749,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 75,
+      "elapsed_s": 2.5,
+      "x_m": 0.97221,
+      "y_m": 0.02213,
+      "yaw_rad": 0.074028,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 90,
+      "elapsed_s": 3.0,
+      "x_m": 1.18276,
+      "y_m": 0.03914,
+      "yaw_rad": 0.084707,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 105,
+      "elapsed_s": 3.5,
+      "x_m": 1.39398,
+      "y_m": 0.05939,
+      "yaw_rad": 0.099833,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 120,
+      "elapsed_s": 4.0,
+      "x_m": 1.60386,
+      "y_m": 0.07876,
+      "yaw_rad": 0.08482,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 135,
+      "elapsed_s": 4.5,
+      "x_m": 1.81364,
+      "y_m": 0.09491,
+      "yaw_rad": 0.070049,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 150,
+      "elapsed_s": 5.0,
+      "x_m": 2.02758,
+      "y_m": 0.10816,
+      "yaw_rad": 0.055632,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 165,
+      "elapsed_s": 5.5,
+      "x_m": 2.24378,
+      "y_m": 0.11872,
+      "yaw_rad": 0.040209,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    }
+  ],
+  "control_steps": {
+    "learned_sensor_policy": 179,
+    "physics_supervisor_turn": 0,
+    "presentation_dwell": 0
+  },
+  "control_disclosure": "The learned LD19-style policy drives each aligned route segment. A deterministic wheel-command supervisor stops, dwells, and turns the physical robot between segments; no root-transform animation.",
+  "claim_boundary": "live checkpoint inference with wheel physics and ray sensing in the walkthrough-matched administration USD; presentation geometry is not an as-built survey, and this is not Nav2, sim-to-real, or physical release"
+}

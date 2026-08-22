@@ -1,0 +1,150 @@
+{
+  "report_type": "held_out_foundation_evaluation",
+  "generated_at_utc": "2026-08-22T07:58:20.296048+00:00",
+  "task": "Isaac-AISHA-Administration-Live-Rehearsal-Direct-v0",
+  "training_contract_revision": "TRAINING-ENDTOEND-I",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_11-57-01_phase2e_administration_handoff_rehearsal_seed7095/model_2175.pt",
+    "sha256": "a731a3ccaeb31d1c1249061ce62a6551270f43517717ca0a1c4fea9535bfc492"
+  },
+  "protocol": {
+    "policy": "deterministic_inference",
+    "seed": 8504,
+    "training_seed": 7095,
+    "episodes": 8,
+    "episodes_per_segment": null,
+    "parallel_environments": 8,
+    "physics_rate_hz": 120,
+    "policy_rate_hz": 30,
+    "randomization": "same declared distribution as training; unseen random sequence",
+    "fixed_segment_id": 4
+  },
+  "results": {
+    "success_count": 8,
+    "success_rate": 1.0,
+    "collision_count": 0,
+    "collision_rate": 0.0,
+    "time_out_count": 0,
+    "time_out_rate": 0.0,
+    "mean_episode_return": 161.09729766845703,
+    "mean_episode_steps": 591.75,
+    "mean_episode_duration_s": 19.725,
+    "mean_final_goal_distance_m": 0.44286855682730675,
+    "mean_abs_final_heading_error_deg": 7.608279357701285,
+    "mean_minimum_lidar_range_m": 1.2945710718631744,
+    "wall_clock_evaluation_s": 6.8831054939983005,
+    "per_segment": [
+      {
+        "segment_id": 4,
+        "label": "vice_principal -> vice_principal_depart",
+        "episodes": 8,
+        "success": 8,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      }
+    ]
+  },
+  "action_diagnostics": {
+    "dimensions": [
+      "normalized_linear_command",
+      "normalized_angular_command"
+    ],
+    "mapping": "linear -1 maps to 0.0 m/s; linear +1 maps to 0.5 m/s; angular \u00b11 maps to \u00b11.0 rad/s",
+    "first_step_mean": [
+      -2.3810136318206787,
+      2.6393208503723145
+    ],
+    "first_step_min": [
+      -2.946399211883545,
+      1.7459205389022827
+    ],
+    "first_step_max": [
+      -1.2656487226486206,
+      3.327080011367798
+    ],
+    "first_30_step_mean": [
+      -3.195905923843384,
+      2.0826144218444824
+    ],
+    "timeline": [
+      {
+        "step": 0,
+        "mean_action": [
+          -2.3810136318206787,
+          2.6393208503723145
+        ]
+      },
+      {
+        "step": 15,
+        "mean_action": [
+          -2.770068645477295,
+          1.6490452289581299
+        ]
+      },
+      {
+        "step": 30,
+        "mean_action": [
+          -3.9625277519226074,
+          1.4727064371109009
+        ]
+      },
+      {
+        "step": 60,
+        "mean_action": [
+          -8.949543952941895,
+          3.4205636978149414
+        ]
+      },
+      {
+        "step": 90,
+        "mean_action": [
+          -8.863698959350586,
+          2.6838035583496094
+        ]
+      },
+      {
+        "step": 120,
+        "mean_action": [
+          -7.8004045486450195,
+          2.7862324714660645
+        ]
+      },
+      {
+        "step": 180,
+        "mean_action": [
+          3.3379569053649902,
+          -0.08217830955982208
+        ]
+      },
+      {
+        "step": 300,
+        "mean_action": [
+          3.905855417251587,
+          -0.07966361194849014
+        ]
+      },
+      {
+        "step": 600,
+        "mean_action": [
+          -2.4467124938964844,
+          1.886220932006836
+        ]
+      }
+    ]
+  },
+  "acceptance_gate": null,
+  "claim_boundary": {
+    "supported": "state-observation Isaac Lab doorway-foundation policy evaluation",
+    "not_supported": [
+      "RTX-rendered LiDAR or depth-camera policy input",
+      "Nav2 integration",
+      "photoreal administration-office fidelity",
+      "sim-to-real transfer",
+      "physical robot release"
+    ],
+    "doorway_width": "presentation_assumption_not_measured"
+  }
+}

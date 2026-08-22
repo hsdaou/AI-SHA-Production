@@ -1,0 +1,33 @@
+{
+  "report_type": "phase2_launch_status",
+  "generated_at_local": "2026-08-22T07:23:54+04:00",
+  "phase": "phase2_turn_acquisition",
+  "implementation_ready": true,
+  "gpu_training_launched": true,
+  "blocker": null,
+  "runtime": {
+    "kernel": "6.17.0-35-generic",
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "driver": "580.159.03",
+    "nvidia_device_nodes_present": true,
+    "nvidia_smi_available": true,
+    "training_run": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_07-23-54_phase2_transition_turn_seed245",
+    "resume_iteration": 599,
+    "target_iteration": 1799
+  },
+  "resume_checkpoint": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-20_22-33-50_ld19_flush_threshold_v9/model_599.pt",
+  "resume_checkpoint_sha256": "3da826c515d0e58a3c0731dd3b72022208eadda3cc2bd2200a78d92f079bfacf",
+  "planned_additional_iterations": 1200,
+  "planned_parallel_environments": 32,
+  "planned_additional_transitions": 1228800,
+  "previous_candidate": {
+    "run": "2026-08-22_07-12-54_phase2_turn_curriculum_seed244",
+    "checkpoint": "model_1798.pt",
+    "held_out_successes": 258,
+    "held_out_episodes": 576,
+    "held_out_collisions": 311,
+    "accepted": false
+  },
+  "launch_command": "isaaclab/scripts/run_phase2_training.sh",
+  "operator_action_required": null
+}

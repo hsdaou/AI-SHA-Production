@@ -1,0 +1,23 @@
+{
+  "report_type": "phase2b_exploration_resume_checkpoint",
+  "generated_at_utc": "2026-08-22T08:06:46.568129+00:00",
+  "source": {
+    "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_11-35-30_phase2b_administration_exploration_seed7092/model_2150_rehearsal.pt",
+    "sha256": "e4c072c61a8f8f65c58c9a4780600c8b81ce713cc546d2eae8f96374980b0a0f"
+  },
+  "output": {
+    "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_11-35-30_phase2b_administration_exploration_seed7092/model_2150_principal_exploration.pt",
+    "sha256": "9f065a1a898358fd1744b4613594ca2b10dc0b4c14afbfb719d5b13c06e4607d"
+  },
+  "old_action_std": [
+    0.5,
+    0.25
+  ],
+  "new_action_std": [
+    1.5,
+    0.5
+  ],
+  "network_weights_changed": false,
+  "normalizers_changed": false,
+  "purpose": "restore PPO exploration around a saturated inherited forward mean so live-scene collision outcomes can teach a near-zero-speed office pivot"
+}

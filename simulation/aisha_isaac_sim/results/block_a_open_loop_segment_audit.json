@@ -1,0 +1,128 @@
+{
+  "task": "Isaac-AISHA-BlockA-SensorNav-Direct-v0",
+  "controller": "constant 0.35 m/s aligned wheel command; no learned policy",
+  "purpose": "physics/geometry feasibility audit only",
+  "all_segments_traversable": false,
+  "segments": [
+    {
+      "segment_id": 0,
+      "start": "home",
+      "goal": "east_atrium_exit",
+      "outcome": "success",
+      "steps": 454,
+      "duration_s": 15.133333333333333,
+      "final_goal_distance_m": 0.4429765045642853,
+      "minimum_lidar_range_m": 1.7212117910385132
+    },
+    {
+      "segment_id": 1,
+      "start": "east_atrium_exit",
+      "goal": "vice_principal_turn",
+      "outcome": "time_out",
+      "steps": 1349,
+      "duration_s": 44.96666666666667,
+      "final_goal_distance_m": 0.674142062664032,
+      "minimum_lidar_range_m": 0.7587710618972778
+    },
+    {
+      "segment_id": 2,
+      "start": "vice_principal_turn",
+      "goal": "vice_principal_approach",
+      "outcome": "success",
+      "steps": 352,
+      "duration_s": 11.733333333333333,
+      "final_goal_distance_m": 0.4406560957431793,
+      "minimum_lidar_range_m": 1.0789903402328491
+    },
+    {
+      "segment_id": 3,
+      "start": "vice_principal_approach",
+      "goal": "vice_principal",
+      "outcome": "time_out",
+      "steps": 1349,
+      "duration_s": 44.96666666666667,
+      "final_goal_distance_m": 1.1148790121078491,
+      "minimum_lidar_range_m": 0.7082278728485107
+    },
+    {
+      "segment_id": 4,
+      "start": "vice_principal",
+      "goal": "vice_principal_depart",
+      "outcome": "time_out",
+      "steps": 1349,
+      "duration_s": 44.96666666666667,
+      "final_goal_distance_m": 5.4626970291137695,
+      "minimum_lidar_range_m": 0.7106867432594299
+    },
+    {
+      "segment_id": 5,
+      "start": "vice_principal_depart",
+      "goal": "hallway_return",
+      "outcome": "success",
+      "steps": 1260,
+      "duration_s": 42.0,
+      "final_goal_distance_m": 0.44853198528289795,
+      "minimum_lidar_range_m": 1.8156700134277344
+    },
+    {
+      "segment_id": 6,
+      "start": "hallway_return",
+      "goal": "principal_turn",
+      "outcome": "success",
+      "steps": 348,
+      "duration_s": 11.6,
+      "final_goal_distance_m": 0.4411064684391022,
+      "minimum_lidar_range_m": 1.1634451150894165
+    },
+    {
+      "segment_id": 7,
+      "start": "principal_turn",
+      "goal": "principal_approach",
+      "outcome": "success",
+      "steps": 443,
+      "duration_s": 14.766666666666667,
+      "final_goal_distance_m": 0.4441274404525757,
+      "minimum_lidar_range_m": 0.8404302000999451
+    },
+    {
+      "segment_id": 8,
+      "start": "principal_approach",
+      "goal": "principal",
+      "outcome": "time_out",
+      "steps": 1349,
+      "duration_s": 44.96666666666667,
+      "final_goal_distance_m": 1.139449119567871,
+      "minimum_lidar_range_m": 0.5938056111335754
+    },
+    {
+      "segment_id": 9,
+      "start": "principal",
+      "goal": "principal_depart",
+      "outcome": "time_out",
+      "steps": 1349,
+      "duration_s": 44.96666666666667,
+      "final_goal_distance_m": 1.270567774772644,
+      "minimum_lidar_range_m": 0.5943558812141418
+    },
+    {
+      "segment_id": 10,
+      "start": "principal_depart",
+      "goal": "atrium_return",
+      "outcome": "success",
+      "steps": 444,
+      "duration_s": 14.8,
+      "final_goal_distance_m": 0.4484527111053467,
+      "minimum_lidar_range_m": 1.17958402633667
+    },
+    {
+      "segment_id": 11,
+      "start": "atrium_return",
+      "goal": "home_return",
+      "outcome": "success",
+      "steps": 477,
+      "duration_s": 15.9,
+      "final_goal_distance_m": 0.4417664110660553,
+      "minimum_lidar_range_m": 5.66436243057251
+    }
+  ]
+}

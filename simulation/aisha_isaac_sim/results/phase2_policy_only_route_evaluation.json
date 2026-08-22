@@ -1,0 +1,201 @@
+{
+  "report_type": "held_out_end_to_end_route_evaluation",
+  "generated_at_utc": "2026-08-22T05:20:28.593419+00:00",
+  "task": "Isaac-AISHA-BlockA-Phase2-EndToEnd-SensorNav-Direct-v0",
+  "training_contract_revision": "TRAINING-ENDTOEND-I",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt",
+    "sha256": "3ab596c61259784657b36fe4ee937da8495ce9621a43bd04e2c8a0bf6e0b1880"
+  },
+  "protocol": {
+    "policy": "deterministic_inference",
+    "seed": 8086,
+    "training_seed": 256,
+    "episodes": 48,
+    "episodes_per_segment": null,
+    "parallel_environments": 48,
+    "physics_rate_hz": 120,
+    "policy_rate_hz": 30,
+    "randomization": "full chained route; training-declared start, goal and observation randomization; unseen sequence",
+    "fixed_segment_id": null
+  },
+  "results": {
+    "success_count": 46,
+    "success_rate": 0.9583333333333334,
+    "collision_count": 2,
+    "collision_rate": 0.041666666666666664,
+    "time_out_count": 0,
+    "time_out_rate": 0.0,
+    "mean_episode_return": 1438.5095714728038,
+    "mean_episode_steps": 4644.354166666667,
+    "mean_episode_duration_s": 154.81180555555557,
+    "mean_final_goal_distance_m": 0.557243729631106,
+    "mean_abs_final_heading_error_deg": 1.8138444082015543,
+    "mean_minimum_lidar_range_m": 5.5606084403892355,
+    "wall_clock_evaluation_s": 47.70003134400031,
+    "per_segment": [
+      {
+        "segment_id": 0,
+        "label": "home -> east_atrium_exit",
+        "episodes": 1,
+        "success": 0,
+        "collision": 1,
+        "time_out": 0,
+        "success_rate": 0.0,
+        "collision_rate": 1.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 9,
+        "label": "principal -> principal_depart",
+        "episodes": 1,
+        "success": 0,
+        "collision": 1,
+        "time_out": 0,
+        "success_rate": 0.0,
+        "collision_rate": 1.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 11,
+        "label": "atrium_return -> home_return",
+        "episodes": 46,
+        "success": 46,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      }
+    ]
+  },
+  "action_diagnostics": {
+    "dimensions": [
+      "normalized_linear_command",
+      "normalized_angular_command"
+    ],
+    "mapping": "linear -1 maps to 0.0 m/s; linear +1 maps to 0.5 m/s; angular \u00b11 maps to \u00b11.0 rad/s",
+    "first_step_mean": [
+      2.6100738048553467,
+      -0.05038328096270561
+    ],
+    "first_step_min": [
+      2.416534423828125,
+      -0.3627127707004547
+    ],
+    "first_step_max": [
+      2.860283613204956,
+      0.40949833393096924
+    ],
+    "first_30_step_mean": [
+      2.697885274887085,
+      -0.020213693380355835
+    ],
+    "timeline": [
+      {
+        "step": 0,
+        "mean_action": [
+          2.6100738048553467,
+          -0.05038328096270561
+        ]
+      },
+      {
+        "step": 15,
+        "mean_action": [
+          2.7087314128875732,
+          -0.011223996058106422
+        ]
+      },
+      {
+        "step": 30,
+        "mean_action": [
+          2.7318930625915527,
+          -0.05041010305285454
+        ]
+      },
+      {
+        "step": 60,
+        "mean_action": [
+          2.8686320781707764,
+          0.0019546858966350555
+        ]
+      },
+      {
+        "step": 90,
+        "mean_action": [
+          2.5691580772399902,
+          0.10471193492412567
+        ]
+      },
+      {
+        "step": 120,
+        "mean_action": [
+          2.6384572982788086,
+          0.012721432372927666
+        ]
+      },
+      {
+        "step": 180,
+        "mean_action": [
+          2.7028348445892334,
+          -0.08998184651136398
+        ]
+      },
+      {
+        "step": 300,
+        "mean_action": [
+          2.9783542156219482,
+          0.010937820188701153
+        ]
+      },
+      {
+        "step": 600,
+        "mean_action": [
+          1.9674322605133057,
+          -0.011075670830905437
+        ]
+      },
+      {
+        "step": 1200,
+        "mean_action": [
+          2.4761314392089844,
+          -1.029701590538025
+        ]
+      },
+      {
+        "step": 2000,
+        "mean_action": [
+          1.8749597072601318,
+          0.005683321505784988
+        ]
+      }
+    ]
+  },
+  "acceptance_gate": {
+    "protocol_satisfied": true,
+    "passed": true,
+    "requirements": {
+      "full_route_episodes": 48,
+      "full_route_success_rate_min": 0.9,
+      "collision_rate_max": 0.05,
+      "time_out_rate_max": 0.05,
+      "policy_only_required": true
+    },
+    "observed": {
+      "full_route_success_rate": 0.9583333333333334,
+      "collision_rate": 0.041666666666666664,
+      "time_out_rate": 0.0
+    }
+  },
+  "claim_boundary": {
+    "supported": "policy-only chained Block A route with no turn or dwell action override",
+    "not_supported": [
+      "RTX-rendered LiDAR or depth-camera policy input",
+      "Nav2 integration",
+      "photoreal administration-office fidelity",
+      "sim-to-real transfer",
+      "physical robot release"
+    ],
+    "doorway_width": "presentation_assumption_not_measured"
+  }
+}

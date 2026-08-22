@@ -1,0 +1,61 @@
+{
+  "checks": {
+    "all_four_materials_have_normal_maps": true,
+    "all_twelve_pbr_textures_exist": true,
+    "atrium_matches_printed_12_75_m": true,
+    "build_report_records_rtx_v2": true,
+    "build_report_records_visual_only_impact": true,
+    "door_widths_remain_disclosed_assumptions": true,
+    "geometry_refinement_tagged_in_usd": true,
+    "hallway_matches_printed_2_80_m": true,
+    "physical_release_stays_blocked": true,
+    "principal_frontage_matches_printed_4_73_m": true,
+    "rtx_material_version_tagged_in_usd": true,
+    "source_is_page_2_block_a": true,
+    "source_pdf_hash_locked": true,
+    "source_pdf_present": true,
+    "stage_reopens": true,
+    "stage_uses_metres": true,
+    "thresholds_remain_disclosed_assumptions": true
+  },
+  "checks_passed": 17,
+  "checks_total": 17,
+  "claim_boundary": "RTX-ready procedural PBR material and lighting refinement, not a site survey, photogrammetric scan, manufacturer-calibrated material library, or photographic proof of the site.\n",
+  "generated_at_utc": "2026-08-22T09:44:24.007150+00:00",
+  "measured_scene_anchors": {
+    "atrium_diagonal_m": 12.749999767259778,
+    "east_hallway_clear_width_m": 2.799999952316284,
+    "principal_diagonal_frontage_m": 4.730000019073486
+  },
+  "passed": true,
+  "refinement_config": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/geometry_rtx_refinement.yaml",
+  "refinement_config_sha256": "c12bbaa3d2205bbe371ec1548c93359aa317a0c256f51bfb00f236d65650c0de",
+  "report_type": "phase3_plan_geometry_rtx_refinement_validation",
+  "rtx_materials": {
+    "maps": [
+      "albedo",
+      "perceptual_roughness",
+      "tangent_space_normal"
+    ],
+    "normal_map_materials": [
+      "TerrazzoFinish",
+      "WalnutFinish",
+      "OakFinish",
+      "MottledGreyFinish"
+    ],
+    "renderer": "PathTracing"
+  },
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+  "scene_sha256": "6e48fa71ff29f9f08cfc35e55e9b65eb394444c1d4fa461fd71cd5a75fe167e7",
+  "source_pdf": "/home/robot-wst/Downloads/DownloadBuildingRequestApprovedPlan.pdf",
+  "source_pdf_sha256": "4d8698f868c296442ebd6e667d4700f2e9bc7f27b4787639395a370d76779112",
+  "unresolved_site_measurements": [
+    "vice_principal_door_clear_width",
+    "principal_door_clear_width",
+    "both_threshold_heights_and_profiles",
+    "finished_wall_thicknesses",
+    "ceiling_and_suspended_services_heights",
+    "furniture_offsets_and_moveable_obstacles",
+    "wheel_and_castor_contact_coefficients_on_actual_floor"
+  ]
+}

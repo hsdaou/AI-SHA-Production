@@ -1,0 +1,123 @@
+{
+  "report_type": "end_to_end_policy_route_playback",
+  "generated_at_utc": "2026-08-22T07:14:29.432622+00:00",
+  "task": "Isaac-AISHA-Administration-Live-Direct-v0",
+  "execution_mode": "checkpoint_policy_live_in_walkthrough_matched_administration_scene",
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase2_policy_model_1850.pt",
+  "checkpoint_sha256": "3ab596c61259784657b36fe4ee937da8495ce9621a43bd04e2c8a0bf6e0b1880",
+  "seed": 7084,
+  "outcome": "collision",
+  "completed_steps": 1842,
+  "duration_s": 61.4,
+  "waypoints_completed": 4,
+  "route_segment_count": 12,
+  "camera": {
+    "mode": "viewer",
+    "eye": [
+      -3.8,
+      0.0,
+      2.4
+    ],
+    "lookat": [
+      0.45,
+      0.0,
+      0.55
+    ]
+  },
+  "camera_tracking": "isaaclab_viewer",
+  "waypoint_events": [
+    {
+      "segment_id": 0,
+      "start": "home",
+      "goal": "east_atrium_exit",
+      "step": 307,
+      "elapsed_s": 10.233333333333333
+    },
+    {
+      "segment_id": 1,
+      "start": "east_atrium_exit",
+      "goal": "vice_principal_turn",
+      "step": 1173,
+      "elapsed_s": 39.1
+    },
+    {
+      "segment_id": 2,
+      "start": "vice_principal_turn",
+      "goal": "vice_principal_approach",
+      "step": 1472,
+      "elapsed_s": 49.06666666666667
+    },
+    {
+      "segment_id": 3,
+      "start": "vice_principal_approach",
+      "goal": "vice_principal",
+      "step": 1680,
+      "elapsed_s": 56.0
+    }
+  ],
+  "pose_trace_interval_steps": 0,
+  "pose_trace": [],
+  "control_steps": {
+    "learned_sensor_policy": 1842,
+    "physics_supervisor_turn": 0,
+    "presentation_dwell": 0
+  },
+  "route_control": "policy-only",
+  "termination_details": {
+    "segment_id": 4,
+    "position_xy_m": [
+      17.829050064086914,
+      -5.907131671905518
+    ],
+    "final_goal_distance_m": 5.951950550079346,
+    "minimum_lidar_range_m": 0.27076950669288635,
+    "minimum_lidar_ray_index": 16,
+    "minimum_lidar_ray_angle_deg": -20.0,
+    "minimum_lidar_hit_world_xyz_m": [
+      17.799999237060547,
+      -5.14424991607666,
+      1.169345498085022
+    ]
+  },
+  "control_disclosure": "Every wheel action is emitted by the learned LD19-style policy; no turn or dwell action override and no root-transform animation.",
+  "physics_rate_hz": 120.0,
+  "policy_rate_hz": 30.0,
+  "root_transform_animation": false,
+  "fabric_enabled": true,
+  "claim_boundary": "live checkpoint inference with wheel physics and ray sensing in the walkthrough-matched administration USD; presentation geometry is not an as-built survey, and this is not Nav2, sim-to-real, or physical release",
+  "live_assets": {
+    "administration_scene": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+      "sha256": "c0d84d2ccdced9132a80ef65c9ed0bd5dcb7cea5bad1c0ea5ee28e2925a84b58"
+    },
+    "live_environment": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/administration_live_environment.usda",
+      "sha256": "802d7497b00bfc80d29f418ec908411c4d8ff372e58b0aac0bf2beed3f0f8f2d"
+    },
+    "presentation_shell": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_presentation_shell.usda",
+      "sha256": "24c18681d2d753be43e7ab9a3fa846d5f07c4346db207c766d4e69df252f008e"
+    },
+    "presentation_robot": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_loaded_presentation.usda",
+      "sha256": "c186008b6c7f65616072bb97bf320d96ca226f97a46fd93c326d46f0f8503039"
+    }
+  },
+  "live_stage_checks": {
+    "live_shell_body": {
+      "path": "/World/envs/env_0/Robot/base_link/presentation_shell_link/Geometry/Body",
+      "valid": true,
+      "active": true
+    },
+    "excluded_replay_robot": {
+      "path": "/World/envs/env_0/Administration/AISHA",
+      "valid": true,
+      "active": false
+    },
+    "live_robot_base": {
+      "path": "/World/envs/env_0/Robot/base_link",
+      "valid": true,
+      "active": true
+    }
+  }
+}

@@ -1,0 +1,97 @@
+revision: "GEOMETRY-RTX-PHASE3-A"
+date: "2026-08-22"
+
+source:
+  file: DownloadBuildingRequestApprovedPlan.pdf
+  page: 2
+  block: A
+  sha256: 4d8698f868c296442ebd6e667d4700f2e9bc7f27b4787639395a370d76779112
+  drawing_size_label: A2
+  pdf_canvas_size: A1
+  authority: approved_plan_printed_dimensions_only
+
+geometry_confidence:
+  plan_dimension:
+    meaning: "explicit numeric dimension printed on approved plan page 2"
+    acceptable_for: [presentation_scale_anchor, simulation_layout_anchor]
+    not_acceptable_for: [as_built_claim, physical_clearance_release]
+  plan_trace:
+    meaning: "route-scoped location/orientation traced from the approved PDF"
+    acceptable_for: [presentation_topology, simulation_route]
+    not_acceptable_for: [survey_claim, physical_clearance_release]
+  walkthrough_assumption:
+    meaning: "appearance inferred from walkthrough without metric scale"
+    acceptable_for: [presentation_visuals]
+    not_acceptable_for: [collision_scale, physical_clearance_release]
+  presentation_assumption:
+    meaning: "reasonable value selected to keep the demonstration feasible"
+    acceptable_for: [scripted_presentation, simulation_training]
+    not_acceptable_for: [measured_site_claim, unattended_operation, physical_release]
+
+printed_dimensions:
+  atrium_diagonal_m:
+    value: 12.75
+    confidence: plan_dimension
+  administration_hallway_clear_width_m:
+    value: 2.80
+    confidence: plan_dimension
+  conference_room_size_m:
+    value: [7.80, 6.30]
+    confidence: plan_dimension
+  office_manager_bay_width_m:
+    value: 3.25
+    confidence: plan_dimension
+  meeting_room_1_bay_width_m:
+    value: 3.00
+    confidence: plan_dimension
+  service_bay_width_m:
+    value: 1.10
+    confidence: plan_dimension
+  meeting_room_3_bay_width_m:
+    value: 3.30
+    confidence: plan_dimension
+  vice_principal_labelled_bay_size_m:
+    value: [3.30, 3.00]
+    confidence: plan_dimension
+    scene_note: >
+      The presentation room remains a wider route-scoped proxy so the supplied
+      walkthrough furniture and the robot pivot zone can coexist. It must not be
+      described as the measured Vice-Principal room envelope.
+  principal_diagonal_frontage_m:
+    value: 4.73
+    confidence: plan_dimension
+    scene_note: "used as the route-scoped principal room length anchor"
+
+scene_mapping:
+  stage_meters_per_unit: 1.0
+  world_convention: "+X east, +Y north, +Z up; origin at Block A atrium centre"
+  scale_anchor_paths:
+    atrium: /World/Architecture/Floors/Atrium
+    east_hallway: /World/Architecture/Floors/EastHallway
+    conference_reference: not_modeled_outside_current_route_scope
+  dimension_tolerance_m: 0.01
+  route_geometry_status: plan_dimension_calibrated_route_scoped_trace
+
+unresolved_site_measurements:
+  - vice_principal_door_clear_width
+  - principal_door_clear_width
+  - both_threshold_heights_and_profiles
+  - finished_wall_thicknesses
+  - ceiling_and_suspended_services_heights
+  - furniture_offsets_and_moveable_obstacles
+  - wheel_and_castor_contact_coefficients_on_actual_floor
+
+rtx_material_profile:
+  renderer: PathTracing
+  interactive_renderer: RaytracedLighting
+  offline_samples_per_pixel: 64
+  texture_resolution_px: 1024
+  maps: [albedo, perceptual_roughness, tangent_space_normal]
+  texture_source: deterministic_project_owned_procedural
+  materials: [terrazzo, walnut, oak, mottled_grey]
+  colour_management: sRGB_albedo_raw_scalar_and_normal_maps
+  geometry_impact: none_visual_only
+  claim_boundary: >
+    RTX-ready procedural PBR material and lighting refinement, not a site survey,
+    photogrammetric scan, manufacturer-calibrated material library, or photographic
+    proof of the site.

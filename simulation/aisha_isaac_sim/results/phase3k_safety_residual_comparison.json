@@ -1,0 +1,86 @@
+{
+  "report_type": "phase3_bounded_safety_residual_same_seed_comparison",
+  "generated_at_utc": "2026-08-22T12:18:30+00:00",
+  "task": "Isaac-AISHA-BlockA-Phase3-SafetyResidual-SensorNav-Direct-v0",
+  "architecture": {
+    "route_actor": "hash-locked frozen feed-forward Phase 3 checkpoint",
+    "residual_actor": "one-layer 64-unit GRU with 128-64 actor MLP",
+    "residual_action_boundary": {
+      "may_reduce_forward_speed_to_zero": true,
+      "may_increase_forward_speed": false,
+      "may_reverse": false,
+      "may_attenuate_steering_magnitude": true,
+      "maximum_steering_attenuation": 0.25,
+      "may_flip_steering_sign": false
+    },
+    "policy_observation_count": 46,
+    "privileged_obstacle_state_in_policy": false
+  },
+  "frozen_route_checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-00-21_phase3h_reciprocal_yield_seed8701/model_2225.pt",
+    "sha256": "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8"
+  },
+  "training": {
+    "run": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-58-01_phase3k_safety_residual_seed9001",
+    "iterations": 600,
+    "parallel_environments": 32,
+    "steps_per_environment_per_iteration": 64,
+    "policy_transitions": 1228800,
+    "seed": 9001,
+    "full_domain_randomization_from_first_iteration": true
+  },
+  "selection": {
+    "seed": 9502,
+    "episodes_per_segment": 1,
+    "zero_residual": {
+      "successes": 4,
+      "dynamic_collisions": 2,
+      "static_collisions": 2,
+      "time_outs": 4
+    },
+    "screened_iterations": [75, 175, 275, 375, 475],
+    "selected_iteration": 175,
+    "selection_reason": "same success count with two fewer dynamic collisions and one fewer total collision than the zero residual on the selection seed"
+  },
+  "full_same_seed_comparison": {
+    "seed": 9501,
+    "episodes_per_segment": 4,
+    "episodes": 48,
+    "zero_residual": {
+      "checkpoint_sha256": "88535b07acce418ee2935cb2835d61a3466b321fa35c394ecbf4f0840d24b317",
+      "report": "results/phase3k_zero_residual_base_seed9501_screen4.json",
+      "report_sha256": "34beac6ccf01d7c14e6b0d1d43cf76980902257e35bfb1a5ec884145d70ed1df",
+      "successes": 25,
+      "dynamic_collisions": 5,
+      "static_collisions": 2,
+      "total_collisions": 7,
+      "time_outs": 16
+    },
+    "trained_residual": {
+      "checkpoint": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-58-01_phase3k_safety_residual_seed9001/model_175.pt",
+      "checkpoint_sha256": "c31e5c52ef66a6860c1f2abc94e85dc1dca23f9f6cbc3fa4593c4a39c35213e6",
+      "report": "results/phase3k_model175_balanced_seed9501_screen4.json",
+      "report_sha256": "e127c2ac9a75608e8673024b7f0412588aa7860447bca8a2594c915c16937476",
+      "successes": 21,
+      "dynamic_collisions": 3,
+      "static_collisions": 8,
+      "total_collisions": 11,
+      "time_outs": 16
+    },
+    "delta_trained_minus_zero": {
+      "successes": -4,
+      "dynamic_collisions": -2,
+      "static_collisions": 6,
+      "total_collisions": 4,
+      "time_outs": 0
+    }
+  },
+  "decision": {
+    "accepted": false,
+    "promoted_to_presentation": false,
+    "reason": "dynamic-collision reduction did not compensate for lower mission success and a four-collision increase overall",
+    "presentation_policy_unchanged": true,
+    "physical_safety_claim_allowed": false
+  },
+  "diagnosis": "A slow/stop-only residual cannot correct static route geometry errors in the frozen actor. The next training gate should preserve this hard speed boundary while allowing a separately bounded, clearance-verified lateral steering correction or use a map-aware local planner with an independent protective-stop layer."
+}

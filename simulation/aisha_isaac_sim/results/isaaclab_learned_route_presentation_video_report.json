@@ -1,0 +1,24 @@
+{
+  "report_type": "learned_route_presentation_video",
+  "source_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/learned_block_a_route/aisha-block-a-learned-route-step-0.mp4",
+  "output_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_IsaacLab_Block_A_Learned_Tour_3x.mp4",
+  "source_frame_count": 5208,
+  "source_fps": 30.0,
+  "source_resolution": [
+    1280,
+    720
+  ],
+  "source_duration_s": 173.6,
+  "presentation_frame_count": 1728,
+  "presentation_fps": 30.0,
+  "presentation_duration_s": 57.6,
+  "speed_multiplier": 3,
+  "crop": {
+    "x": 160,
+    "y": 90,
+    "width": 960,
+    "height": 540
+  },
+  "motion_changed": false,
+  "disclosure": "Post-processed from the complete successful Isaac Lab capture. Frames are center-cropped, labeled, and temporally sampled only; robot motion and route outcomes are unchanged."
+}

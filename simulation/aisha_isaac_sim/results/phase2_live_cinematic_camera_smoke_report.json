@@ -1,0 +1,528 @@
+{
+  "report_type": "end_to_end_policy_route_playback",
+  "generated_at_utc": "2026-08-22T07:04:38.461720+00:00",
+  "task": "Isaac-AISHA-Administration-Live-Direct-v0",
+  "execution_mode": "checkpoint_policy_live_in_walkthrough_matched_administration_scene",
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase2_policy_model_1850.pt",
+  "checkpoint_sha256": "3ab596c61259784657b36fe4ee937da8495ce9621a43bd04e2c8a0bf6e0b1880",
+  "seed": 7084,
+  "outcome": "time_out",
+  "completed_steps": 59,
+  "duration_s": 1.9666666666666666,
+  "waypoints_completed": 0,
+  "route_segment_count": 12,
+  "camera": {
+    "mode": "cinematic",
+    "eye": [
+      -3.8,
+      0.0,
+      2.4
+    ],
+    "lookat": [
+      0.45,
+      0.0,
+      0.55
+    ],
+    "shot_definitions": [
+      {
+        "shot_index": 1,
+        "name": "Departure - central atrium",
+        "segments": [
+          0
+        ],
+        "eye": [
+          -4.35,
+          0.0,
+          1.72
+        ],
+        "target": [
+          2.0,
+          0.0,
+          0.72
+        ]
+      },
+      {
+        "shot_index": 2,
+        "name": "East administration hall - Vice-Principal approach",
+        "segments": [
+          1,
+          2
+        ],
+        "eye": [
+          6.0,
+          1.08,
+          1.75
+        ],
+        "target": [
+          15.0,
+          -0.4,
+          0.72
+        ]
+      },
+      {
+        "shot_index": 3,
+        "name": "Visit 1 - Vice-Principal office",
+        "segments": [
+          3,
+          4
+        ],
+        "eye": [
+          19.55,
+          -7.55,
+          1.86
+        ],
+        "target": [
+          16.75,
+          -6.2,
+          0.7
+        ]
+      },
+      {
+        "shot_index": 4,
+        "name": "Return through the hall - Principal suite turn",
+        "segments": [
+          5,
+          6
+        ],
+        "eye": [
+          3.0,
+          2.5,
+          2.1
+        ],
+        "target": [
+          9.0,
+          -1.4,
+          0.62
+        ]
+      },
+      {
+        "shot_index": 5,
+        "name": "Visit 2 - Principal office",
+        "segments": [
+          7,
+          8,
+          9
+        ],
+        "eye": [
+          10.85,
+          -9.78,
+          1.82
+        ],
+        "target": [
+          8.25,
+          -9.0,
+          0.72
+        ]
+      },
+      {
+        "shot_index": 6,
+        "name": "Mission complete - return to the atrium",
+        "segments": [
+          10,
+          11
+        ],
+        "eye": [
+          -4.35,
+          0.0,
+          1.72
+        ],
+        "target": [
+          2.5,
+          -2.0,
+          0.72
+        ]
+      }
+    ],
+    "shot_events": [
+      {
+        "shot_index": 1,
+        "name": "Departure - central atrium",
+        "segment_id": 0,
+        "step": 0,
+        "elapsed_s": 0.0,
+        "eye": [
+          -4.35,
+          0.0,
+          1.72
+        ],
+        "target": [
+          2.0,
+          0.0,
+          0.72
+        ]
+      }
+    ]
+  },
+  "camera_tracking": "static_segment_cinematic_cameras",
+  "waypoint_events": [],
+  "pose_trace_interval_steps": 3,
+  "pose_trace": [
+    {
+      "step": 3,
+      "elapsed_s": 0.1,
+      "x_m": 0.00112,
+      "y_m": -1e-05,
+      "yaw_rad": -0.000113,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.08255,
+      "yaw_rate_rad_s": -0.00251,
+      "minimum_lidar_range_m": 3.41756,
+      "policy_action": [
+        2.49602,
+        -0.1892
+      ]
+    },
+    {
+      "step": 6,
+      "elapsed_s": 0.2,
+      "x_m": 0.01601,
+      "y_m": -2e-05,
+      "yaw_rad": -0.001091,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.20968,
+      "yaw_rate_rad_s": -0.01437,
+      "minimum_lidar_range_m": 3.41807,
+      "policy_action": [
+        2.52793,
+        -0.18213
+      ]
+    },
+    {
+      "step": 9,
+      "elapsed_s": 0.3,
+      "x_m": 0.04207,
+      "y_m": -0.00011,
+      "yaw_rad": -0.005495,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.30532,
+      "yaw_rate_rad_s": -0.06754,
+      "minimum_lidar_range_m": 3.42041,
+      "policy_action": [
+        2.56337,
+        -0.16573
+      ]
+    },
+    {
+      "step": 12,
+      "elapsed_s": 0.4,
+      "x_m": 0.07553,
+      "y_m": -0.00043,
+      "yaw_rad": -0.013333,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.35957,
+      "yaw_rate_rad_s": -0.08165,
+      "minimum_lidar_range_m": 3.34409,
+      "policy_action": [
+        2.56812,
+        -0.1684
+      ]
+    },
+    {
+      "step": 15,
+      "elapsed_s": 0.5,
+      "x_m": 0.11305,
+      "y_m": -0.00111,
+      "yaw_rad": -0.02116,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.39002,
+      "yaw_rate_rad_s": -0.07227,
+      "minimum_lidar_range_m": 3.28817,
+      "policy_action": [
+        2.54428,
+        -0.14248
+      ]
+    },
+    {
+      "step": 18,
+      "elapsed_s": 0.6,
+      "x_m": 0.15306,
+      "y_m": -0.00212,
+      "yaw_rad": -0.027869,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4093,
+      "yaw_rate_rad_s": -0.06272,
+      "minimum_lidar_range_m": 3.25223,
+      "policy_action": [
+        2.38787,
+        -0.12987
+      ]
+    },
+    {
+      "step": 21,
+      "elapsed_s": 0.7,
+      "x_m": 0.19431,
+      "y_m": -0.00339,
+      "yaw_rad": -0.032593,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41806,
+      "yaw_rate_rad_s": -0.04133,
+      "minimum_lidar_range_m": 3.23162,
+      "policy_action": [
+        2.46773,
+        -0.08939
+      ]
+    },
+    {
+      "step": 24,
+      "elapsed_s": 0.8,
+      "x_m": 0.23606,
+      "y_m": -0.00482,
+      "yaw_rad": -0.035686,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42033,
+      "yaw_rate_rad_s": -0.02792,
+      "minimum_lidar_range_m": 3.22045,
+      "policy_action": [
+        2.39054,
+        -0.07545
+      ]
+    },
+    {
+      "step": 27,
+      "elapsed_s": 0.9,
+      "x_m": 0.27799,
+      "y_m": -0.00637,
+      "yaw_rad": -0.037906,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42165,
+      "yaw_rate_rad_s": -0.02118,
+      "minimum_lidar_range_m": 3.21961,
+      "policy_action": [
+        2.38604,
+        -0.06819
+      ]
+    },
+    {
+      "step": 30,
+      "elapsed_s": 1.0,
+      "x_m": 0.32006,
+      "y_m": -0.00801,
+      "yaw_rad": -0.03972,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42502,
+      "yaw_rate_rad_s": -0.02116,
+      "minimum_lidar_range_m": 3.23818,
+      "policy_action": [
+        2.38983,
+        -0.06319
+      ]
+    },
+    {
+      "step": 33,
+      "elapsed_s": 1.1,
+      "x_m": 0.36289,
+      "y_m": -0.00976,
+      "yaw_rad": -0.042018,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43207,
+      "yaw_rate_rad_s": -0.02073,
+      "minimum_lidar_range_m": 3.33466,
+      "policy_action": [
+        2.39769,
+        -0.05567
+      ]
+    },
+    {
+      "step": 36,
+      "elapsed_s": 1.2,
+      "x_m": 0.40601,
+      "y_m": -0.01161,
+      "yaw_rad": -0.044015,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43286,
+      "yaw_rate_rad_s": -0.01885,
+      "minimum_lidar_range_m": 3.31678,
+      "policy_action": [
+        2.37499,
+        -0.05996
+      ]
+    },
+    {
+      "step": 39,
+      "elapsed_s": 1.3,
+      "x_m": 0.44921,
+      "y_m": -0.01357,
+      "yaw_rad": -0.046745,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43375,
+      "yaw_rate_rad_s": -0.02921,
+      "minimum_lidar_range_m": 3.31392,
+      "policy_action": [
+        2.39724,
+        -0.08373
+      ]
+    },
+    {
+      "step": 42,
+      "elapsed_s": 1.4,
+      "x_m": 0.49251,
+      "y_m": -0.01564,
+      "yaw_rad": -0.049666,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43615,
+      "yaw_rate_rad_s": -0.03013,
+      "minimum_lidar_range_m": 3.32487,
+      "policy_action": [
+        2.40062,
+        -0.07832
+      ]
+    },
+    {
+      "step": 45,
+      "elapsed_s": 1.5,
+      "x_m": 0.53599,
+      "y_m": -0.01784,
+      "yaw_rad": -0.051474,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43531,
+      "yaw_rate_rad_s": -0.00631,
+      "minimum_lidar_range_m": 3.3507,
+      "policy_action": [
+        2.32294,
+        -0.02278
+      ]
+    },
+    {
+      "step": 48,
+      "elapsed_s": 1.6,
+      "x_m": 0.57946,
+      "y_m": -0.02009,
+      "yaw_rad": -0.052008,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43711,
+      "yaw_rate_rad_s": -0.00414,
+      "minimum_lidar_range_m": 3.08402,
+      "policy_action": [
+        2.32168,
+        -0.02075
+      ]
+    },
+    {
+      "step": 51,
+      "elapsed_s": 1.7,
+      "x_m": 0.62312,
+      "y_m": -0.02238,
+      "yaw_rad": -0.052859,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43939,
+      "yaw_rate_rad_s": -0.01054,
+      "minimum_lidar_range_m": 3.02111,
+      "policy_action": [
+        2.42686,
+        -0.03207
+      ]
+    },
+    {
+      "step": 54,
+      "elapsed_s": 1.8,
+      "x_m": 0.66691,
+      "y_m": -0.0247,
+      "yaw_rad": -0.053104,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43961,
+      "yaw_rate_rad_s": 0.00137,
+      "minimum_lidar_range_m": 2.97659,
+      "policy_action": [
+        2.46127,
+        3e-05
+      ]
+    },
+    {
+      "step": 57,
+      "elapsed_s": 1.9,
+      "x_m": 0.71076,
+      "y_m": -0.02697,
+      "yaw_rad": -0.050449,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44075,
+      "yaw_rate_rad_s": 0.04029,
+      "minimum_lidar_range_m": 2.94409,
+      "policy_action": [
+        2.55846,
+        0.09784
+      ]
+    }
+  ],
+  "control_steps": {
+    "learned_sensor_policy": 59,
+    "physics_supervisor_turn": 0,
+    "presentation_dwell": 0
+  },
+  "route_control": "policy-only",
+  "termination_details": {
+    "segment_id": 0,
+    "position_xy_m": [
+      0.7397391200065613,
+      -0.028382137417793274
+    ],
+    "final_goal_distance_m": 3.960362434387207,
+    "minimum_lidar_range_m": 2.9440853595733643,
+    "minimum_lidar_ray_index": 24,
+    "minimum_lidar_ray_angle_deg": 60.0,
+    "minimum_lidar_hit_world_xyz_m": [
+      2.8229548931121826,
+      2.4096548557281494,
+      1.1677844524383545
+    ]
+  },
+  "control_disclosure": "Every wheel action is emitted by the learned LD19-style policy; no turn or dwell action override and no root-transform animation.",
+  "physics_rate_hz": 120.0,
+  "policy_rate_hz": 30.0,
+  "root_transform_animation": false,
+  "fabric_enabled": true,
+  "claim_boundary": "live checkpoint inference with wheel physics and ray sensing in the walkthrough-matched administration USD; presentation geometry is not an as-built survey, and this is not Nav2, sim-to-real, or physical release",
+  "live_assets": {
+    "administration_scene": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+      "sha256": "c0d84d2ccdced9132a80ef65c9ed0bd5dcb7cea5bad1c0ea5ee28e2925a84b58"
+    },
+    "live_environment": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/administration_live_environment.usda",
+      "sha256": "802d7497b00bfc80d29f418ec908411c4d8ff372e58b0aac0bf2beed3f0f8f2d"
+    },
+    "presentation_shell": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_presentation_shell.usda",
+      "sha256": "24c18681d2d753be43e7ab9a3fa846d5f07c4346db207c766d4e69df252f008e"
+    },
+    "presentation_robot": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_loaded_presentation.usda",
+      "sha256": "c186008b6c7f65616072bb97bf320d96ca226f97a46fd93c326d46f0f8503039"
+    }
+  },
+  "live_stage_checks": {
+    "live_shell_body": {
+      "path": "/World/envs/env_0/Robot/base_link/presentation_shell_link/Geometry/Body",
+      "valid": true,
+      "active": true
+    },
+    "excluded_replay_robot": {
+      "path": "/World/envs/env_0/Administration/AISHA",
+      "valid": true,
+      "active": false
+    },
+    "live_robot_base": {
+      "path": "/World/envs/env_0/Robot/base_link",
+      "valid": true,
+      "active": true
+    }
+  }
+}

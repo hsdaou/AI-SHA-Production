@@ -1,0 +1,276 @@
+#usda 1.0
+(
+    customLayerData = {
+        string "aisha:collision" = "none_visual_only"
+        bool "aisha:physicalRelease" = 0
+    }
+    defaultPrim = "PresentationShell"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "PresentationShell" (
+    customData = {
+        dictionary aisha = {
+            string collision = "none_visual_only"
+            string purpose = "live_policy_visual_shell"
+        }
+    }
+)
+{
+    def "Looks"
+    {
+        def Material "AISHAWhite"
+        {
+            token outputs:surface.connect = </PresentationShell/Looks/AISHAWhite/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.68, 0.73, 0.74)
+                float inputs:metallic = 0.08
+                float inputs:roughness = 0.2
+                token outputs:surface
+            }
+        }
+
+        def Material "AISHAGreen"
+        {
+            token outputs:surface.connect = </PresentationShell/Looks/AISHAGreen/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.03, 0.38, 0.24)
+                float inputs:metallic = 0.05
+                float inputs:roughness = 0.3
+                token outputs:surface
+            }
+        }
+
+        def Material "AISHABlack"
+        {
+            token outputs:surface.connect = </PresentationShell/Looks/AISHABlack/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.015, 0.022, 0.025)
+                float inputs:metallic = 0.2
+                float inputs:roughness = 0.2
+                token outputs:surface
+            }
+        }
+
+        def Material "BrushedMetal"
+        {
+            token outputs:surface.connect = </PresentationShell/Looks/BrushedMetal/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.38, 0.41, 0.43)
+                float inputs:metallic = 0.72
+                float inputs:roughness = 0.2
+                token outputs:surface
+            }
+        }
+
+        def Material "AISHALed"
+        {
+            token outputs:surface.connect = </PresentationShell/Looks/AISHALed/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.01, 0.24, 0.12)
+                color3f inputs:emissiveColor = (0, 1.35, 0.55)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.16
+                token outputs:surface
+            }
+        }
+    }
+
+    def "Geometry"
+    {
+        def Sphere "Body" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHAWhite>
+            double radius = 0.5
+            float3 xformOp:scale = (0.82, 0.59, 0.34)
+            double3 xformOp:translate = (0.02, 0, 0.4)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Sphere "LowerBumper" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHABlack>
+            double radius = 0.5
+            float3 xformOp:scale = (0.88, 0.64, 0.16)
+            double3 xformOp:translate = (0.03, 0, 0.27)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "Tray" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHAGreen>
+            double size = 1
+            float3 xformOp:scale = (0.78, 0.57, 0.045)
+            double3 xformOp:translate = (-0.03, 0, 0.565)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "TrayPad" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHABlack>
+            double size = 1
+            float3 xformOp:scale = (0.68, 0.47, 0.012)
+            double3 xformOp:translate = (-0.05, 0, 0.594)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "Mast" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHAWhite>
+            double size = 1
+            float3 xformOp:scale = (0.09, 0.11, 0.43)
+            double3 xformOp:translate = (0.4, 0, 0.76)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Sphere "Head" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHAWhite>
+            double radius = 0.5
+            float3 xformOp:scale = (0.33, 0.4, 0.27)
+            double3 xformOp:translate = (0.5, 0, 0.96)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "Face" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHABlack>
+            double size = 1
+            float3 xformOp:scale = (0.022, 0.275, 0.145)
+            double3 xformOp:translate = (0.691, 0, 0.97)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "FaceStatus" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHALed>
+            double size = 1
+            float3 xformOp:scale = (0.026, 0.06, 0.012)
+            double3 xformOp:translate = (0.705, -0.08, 0.92)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Sphere "CameraAperture" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/BrushedMetal>
+            double radius = 0.5
+            float3 xformOp:scale = (0.018, 0.04, 0.04)
+            double3 xformOp:translate = (0.706, 0.068, 0.985)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cylinder "LidarCollar" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            uniform token axis = "Z"
+            double height = 0.025
+            rel material:binding = </PresentationShell/Looks/BrushedMetal>
+            double radius = 0.075
+            double3 xformOp:translate = (0.5, 0, 1.115)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+        }
+
+        def Cylinder "Lidar" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            uniform token axis = "Z"
+            double height = 0.07
+            rel material:binding = </PresentationShell/Looks/AISHABlack>
+            double radius = 0.055
+            double3 xformOp:translate = (0.5, 0, 1.16)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+        }
+
+        def Cube "LidarWindow" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHALed>
+            double size = 1
+            float3 xformOp:scale = (0.038, 0.07, 0.018)
+            double3 xformOp:translate = (0.552, 0, 1.165)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Sphere "LeftWheelCover" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHABlack>
+            double radius = 0.5
+            float3 xformOp:scale = (0.38, 0.055, 0.23)
+            double3 xformOp:translate = (0.01, 0.301, 0.31)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Sphere "RightWheelCover" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHABlack>
+            double radius = 0.5
+            float3 xformOp:scale = (0.38, 0.055, 0.23)
+            double3 xformOp:translate = (0.01, -0.301, 0.31)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "LeftAccent" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHALed>
+            double size = 1
+            float3 xformOp:scale = (0.42, 0.018, 0.055)
+            double3 xformOp:translate = (0.03, 0.306, 0.43)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "RightAccent" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            rel material:binding = </PresentationShell/Looks/AISHALed>
+            double size = 1
+            float3 xformOp:scale = (0.42, 0.018, 0.055)
+            double3 xformOp:translate = (0.03, -0.306, 0.43)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+    }
+}
+

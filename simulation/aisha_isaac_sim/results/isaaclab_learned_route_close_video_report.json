@@ -1,0 +1,118 @@
+{
+  "report_type": "learned_block_a_route_playback",
+  "generated_at_utc": "2026-08-20T19:46:59.365714+00:00",
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-20_22-33-50_ld19_flush_threshold_v9/model_599.pt",
+  "seed": 6084,
+  "outcome": "success",
+  "completed_steps": 5209,
+  "duration_s": 173.63333333333333,
+  "waypoints_completed": 12,
+  "route_segment_count": 12,
+  "camera": {
+    "eye": [
+      -2.5,
+      2.5,
+      4.2
+    ],
+    "lookat": [
+      0.0,
+      0.0,
+      0.55
+    ]
+  },
+  "waypoint_events": [
+    {
+      "segment_id": 0,
+      "start": "home",
+      "goal": "east_atrium_exit",
+      "step": 320,
+      "elapsed_s": 10.666666666666666
+    },
+    {
+      "segment_id": 1,
+      "start": "east_atrium_exit",
+      "goal": "vice_principal_turn",
+      "step": 1185,
+      "elapsed_s": 39.5
+    },
+    {
+      "segment_id": 2,
+      "start": "vice_principal_turn",
+      "goal": "vice_principal_approach",
+      "step": 1520,
+      "elapsed_s": 50.666666666666664
+    },
+    {
+      "segment_id": 3,
+      "start": "vice_principal_approach",
+      "goal": "vice_principal",
+      "step": 1715,
+      "elapsed_s": 57.166666666666664
+    },
+    {
+      "segment_id": 4,
+      "start": "vice_principal",
+      "goal": "vice_principal_depart",
+      "step": 2361,
+      "elapsed_s": 78.7
+    },
+    {
+      "segment_id": 5,
+      "start": "vice_principal_depart",
+      "goal": "hallway_return",
+      "step": 3302,
+      "elapsed_s": 110.06666666666666
+    },
+    {
+      "segment_id": 6,
+      "start": "hallway_return",
+      "goal": "principal_turn",
+      "step": 3664,
+      "elapsed_s": 122.13333333333334
+    },
+    {
+      "segment_id": 7,
+      "start": "principal_turn",
+      "goal": "principal_approach",
+      "step": 4046,
+      "elapsed_s": 134.86666666666667
+    },
+    {
+      "segment_id": 8,
+      "start": "principal_approach",
+      "goal": "principal",
+      "step": 4203,
+      "elapsed_s": 140.1
+    },
+    {
+      "segment_id": 9,
+      "start": "principal",
+      "goal": "principal_depart",
+      "step": 4547,
+      "elapsed_s": 151.56666666666666
+    },
+    {
+      "segment_id": 10,
+      "start": "principal_depart",
+      "goal": "atrium_return",
+      "step": 4865,
+      "elapsed_s": 162.16666666666666
+    },
+    {
+      "segment_id": 11,
+      "start": "atrium_return",
+      "goal": "home_return",
+      "step": 5209,
+      "elapsed_s": 173.63333333333333
+    }
+  ],
+  "pose_trace_interval_steps": 0,
+  "pose_trace": [],
+  "control_steps": {
+    "learned_sensor_policy": 4239,
+    "physics_supervisor_turn": 910,
+    "presentation_dwell": 60
+  },
+  "control_disclosure": "The learned LD19-style policy drives each aligned route segment. A deterministic wheel-command supervisor stops, dwells, and turns the physical robot between segments; no root-transform animation.",
+  "claim_boundary": "plan-derived training proxy; not photoreal, Nav2, sim-to-real, or physical release"
+}

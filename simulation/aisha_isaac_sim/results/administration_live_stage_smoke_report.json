@@ -1,0 +1,86 @@
+{
+  "report_type": "learned_block_a_route_playback",
+  "generated_at_utc": "2026-08-21T18:24:31.994056+00:00",
+  "task": "Isaac-AISHA-Administration-Live-Direct-v0",
+  "execution_mode": "checkpoint_policy_live_in_walkthrough_matched_administration_scene",
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-20_22-33-50_ld19_flush_threshold_v9/model_599.pt",
+  "checkpoint_sha256": "3da826c515d0e58a3c0731dd3b72022208eadda3cc2bd2200a78d92f079bfacf",
+  "seed": 6084,
+  "outcome": "time_out",
+  "completed_steps": 29,
+  "duration_s": 0.9666666666666667,
+  "waypoints_completed": 0,
+  "route_segment_count": 12,
+  "camera": {
+    "eye": [
+      -4.5,
+      4.5,
+      5.5
+    ],
+    "lookat": [
+      0.0,
+      0.0,
+      0.55
+    ]
+  },
+  "waypoint_events": [],
+  "pose_trace_interval_steps": 0,
+  "pose_trace": [],
+  "control_steps": {
+    "learned_sensor_policy": 29,
+    "physics_supervisor_turn": 0,
+    "presentation_dwell": 0
+  },
+  "termination_details": {
+    "segment_id": 0,
+    "position_xy_m": [
+      0.30869171023368835,
+      0.002196338726207614
+    ],
+    "final_goal_distance_m": 4.391308784484863,
+    "minimum_lidar_range_m": 3.1599552631378174,
+    "minimum_lidar_ray_index": 23,
+    "minimum_lidar_ray_angle_deg": 50.0,
+    "minimum_lidar_hit_world_xyz_m": [
+      2.8047029972076416,
+      2.428988456726074,
+      1.16575288772583
+    ]
+  },
+  "control_disclosure": "The learned LD19-style policy drives each aligned route segment. A deterministic wheel-command supervisor stops, dwells, and turns the physical robot between segments; no root-transform animation.",
+  "physics_rate_hz": 120.0,
+  "policy_rate_hz": 30.0,
+  "root_transform_animation": false,
+  "claim_boundary": "live checkpoint inference with wheel physics and ray sensing in the walkthrough-matched administration USD; presentation geometry is not an as-built survey, and this is not Nav2, sim-to-real, or physical release",
+  "live_assets": {
+    "administration_scene": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+      "sha256": "ec1823b852726434e715acd8fc92ffac5ee15ffc711f5e5b4723a0f88a93c787"
+    },
+    "live_environment": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/administration_live_environment.usda",
+      "sha256": "0bc85e29be8c092de5e1c752444f012631478fef7bee4a9388c912bf30206a63"
+    },
+    "presentation_shell": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_presentation_shell.usda",
+      "sha256": "ab9824196acb47ffbf34b214fb2615fe82e2dab416ea86aea687d147f3d96fcc"
+    }
+  },
+  "live_stage_checks": {
+    "live_shell_body": {
+      "path": "/World/envs/env_0/Robot/base_link/PresentationShell/Geometry/Body",
+      "valid": true,
+      "active": true
+    },
+    "excluded_replay_robot": {
+      "path": "/World/envs/env_0/Administration/AISHA",
+      "valid": true,
+      "active": false
+    },
+    "live_robot_base": {
+      "path": "/World/envs/env_0/Robot/base_link",
+      "valid": true,
+      "active": true
+    }
+  }
+}

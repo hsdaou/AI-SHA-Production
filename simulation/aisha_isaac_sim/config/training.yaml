@@ -1,0 +1,640 @@
+# AI-SHA Isaac Lab training foundation.
+# This file describes a real physics-driven learning task. It is not a claim of
+# physical release or successful sim-to-real transfer.
+
+revision: "TRAINING-ENDTOEND-K"
+date: "2026-08-22"
+
+software_baseline:
+  isaac_sim_version: "5.1.0-rc.19+release.26219.9c81211b.gl"
+  isaac_lab_commit: "80094be3245"
+  ros_distribution: jazzy
+  gpu: "NVIDIA GeForce RTX 5080 16 GB"
+  version_policy: "pin these versions for every comparable training run"
+
+task:
+  gym_id: "Isaac-AISHA-OfficeNav-Direct-v0"
+  purpose: "learn physics-driven straight approach and traversal through an office doorway"
+  status: "state_observation_training_foundation"
+  control_mode: "wheel_joint_velocity_targets"
+  forbidden_shortcut: "direct root pose or USD transform animation"
+  policy_rate_hz: 30
+  physics_rate_hz: 120
+  episode_length_s: 18.0
+  default_parallel_environments: 64
+
+sensor_curriculum:
+  gym_id: "Isaac-AISHA-BlockA-SensorNav-Direct-v0"
+  purpose: "learn goal-conditioned traversal of the complete presentation route as 12 directed waypoint segments"
+  status: "plan_derived_ray_sensor_training"
+  course_usd: "simulation/aisha_isaac_sim/usd/block_a_training_course.usda"
+  control_mode: "wheel_joint_velocity_targets"
+  forbidden_shortcut: "direct root pose or USD transform animation"
+  policy_rate_hz: 30
+  physics_rate_hz: 120
+  lidar_update_rate_hz: 10
+  episode_length_s: 55.0
+  default_parallel_environments: 32
+  selected_training_seed: 144
+  route_segment_count: 12
+  observation_count: 46
+  observation_terms:
+    state_and_goal: 10
+    lidar_ranges: 36
+  action_contract:
+    terms: [normalized_forward_command, normalized_angular_command]
+    linear_velocity_range_mps: [0.0, 0.50]
+    angular_velocity_range_rad_s: [-1.0, 1.0]
+    stop_behavior: "the learned policy may stop; the route supervisor also enforces stops and office dwell timing"
+  lidar_contract:
+    source: "LD19 specification recorded by the AI-SHA production repository"
+    source_scan_rate_hz: 10
+    source_accuracy_m: 0.03
+    source_range_m: [0.12, 12.0]
+    simulated_max_range_m: 10.0
+    horizontal_resolution_deg: 10.0
+    implementation: "Isaac Lab MultiMeshRayCaster attached to the AI-SHA lidar_link"
+    limitation: "scalable geometric rays, not an RTX-rendered sensor model"
+  collision_termination:
+    implementation: "ray intersection with the configured rectangular robot footprint envelope"
+    reason: "Isaac Sim 5.1 fixed-link contact reporter is unavailable on the composed production USD"
+    physical_colliders_present: true
+  randomization:
+    start_lateral_m: [-0.05, 0.05]
+    start_yaw_deg: [-8.0, 8.0]
+    goal_xy_m: [-0.03, 0.03]
+  presentation_assumptions:
+    - "route waypoints are navigation centerlines interpreted from A1 page 2, Block A"
+    - "principal_turn is placed on the corridor centerline at [3.45, -3.45] to avoid the diagonal wall"
+    - "both office door clear widths are 1.40 m presentation assumptions, not site measurements"
+    - "both office thresholds are modeled flush (0 mm) for presentation because the rigid castor proxy cannot support threshold-contact conclusions"
+    - "office stop points are placed far enough inside each doorway for the declared 1.64 m pivot envelope; chained office visits use a tighter 0.20 m learned-goal tolerance"
+    - "hallway_return first reaches the east atrium opening; the policy is not trained to cut diagonally through a wall"
+    - "door clearances remain presentation assumptions until site measurement"
+  anti_reward_hacking:
+    rule: "stationary shaping is below the time penalty and motion below 0.03 m/s receives an additional -0.02 per policy step"
+    purpose: "force the deterministic mean policy to commit to doorway traversal instead of relying on exploration noise"
+  segment_sampling_weights: [1, 1, 1, 10, 10, 1, 1, 1, 10, 10, 1, 1]
+  hard_segment_curriculum_reason: "open-loop PhysX audit proved the assumed 3/5 mm threshold colliders stopped the rigid front-castor proxy exactly 0.415 m before the strips; the presentation course now assumes flush thresholds and keeps physical threshold release blocked"
+  held_out_acceptance_gate:
+    episodes_per_segment: 48
+    overall_success_rate_min: 0.80
+    overall_collision_rate_max: 0.15
+    every_segment_success_rate_min: 0.60
+    office_threshold_segment_ids: [3, 4, 8, 9]
+    office_threshold_success_rate_min: 0.70
+    note: "declared before corrected-policy candidate evaluation and unchanged through revision TRAINING-SENSOR-G; passing supports presentation playback only"
+
+phase2_curriculum:
+  purpose: "replace the Phase 1 turn supervisor with policy-generated wheel actions over the complete Block A mission"
+  status: "policy_only_checkpoint_and_hierarchical_live_ensemble_all_declared_gates_passed"
+  training_gym_id: "Isaac-AISHA-BlockA-Phase2-Turn-SensorNav-Direct-v0"
+  full_route_gate_gym_id: "Isaac-AISHA-BlockA-Phase2-EndToEnd-SensorNav-Direct-v0"
+  live_gate_gym_id: "Isaac-AISHA-Administration-Live-Direct-v0"
+  initialization_checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-20_22-33-50_ld19_flush_threshold_v9/model_599.pt"
+  initialization_checkpoint_sha256: "3da826c515d0e58a3c0731dd3b72022208eadda3cc2bd2200a78d92f079bfacf"
+  control_mode: "policy_only_wheel_joint_velocity_targets"
+  forbidden_shortcuts:
+    - "physical turn-supervisor action override"
+    - "presentation dwell action override"
+    - "direct root pose or USD transform animation"
+  policy_rate_hz: 30
+  physics_rate_hz: 120
+  training_stage:
+    name: "phase2_incoming_transition_and_moving_handoff_refinement"
+    transition_acquisition_iterations: 1200
+    moving_handoff_search_iterations: 300
+    additional_ppo_iterations: 1500
+    parallel_environments: 32
+    steps_per_environment_per_iteration: 32
+    additional_policy_transitions: 1536000
+    seeds: [245, 256]
+    checkpoint_interval_iterations: 50
+    selected_checkpoint: "isaaclab/checkpoints/aisha_phase2_policy_model_1850.pt"
+    source_training_checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt"
+    selected_checkpoint_sha256: "3ab596c61259784657b36fe4ee937da8495ce9621a43bd04e2c8a0bf6e0b1880"
+    selection_note: "model_1850 was selected before later refinement checkpoints became over-aggressive; the complete search budget is disclosed above"
+  randomization:
+    start_lateral_m: [-0.03, 0.03]
+    start_heading: "actual incoming route heading at each waypoint"
+    start_heading_jitter_deg: [-15.0, 15.0]
+    goal_xy_m: [-0.03, 0.03]
+    lidar_observation_noise_std_m: 0.01
+    lidar_observation_dropout_probability: 0.0025
+    limitation: "material/friction, payload and dynamic-obstacle randomization remain for the next Phase 2 stage"
+  reward_change:
+    heading_error_reduction: 10.0
+    forward_motion_while_heading_error_exceeds_25_deg: -0.05
+    purpose: "make a physical in-place realignment productive instead of treating it only as time without translational progress"
+  high_level_route_hint:
+    purpose: "resolve the mathematical left/right ambiguity of an exact 180 degree goal reversal without overriding policy actions"
+    vice_principal_exit_heading_error_bias_deg: 30.0
+    principal_exit_heading_error_bias_deg: 30.0
+    source: "continuous same-side turn cue for near-180-degree reversals; fades to zero by 120 degrees of error"
+    action_override: false
+  live_administration_integration:
+    architecture: "route_planner_selected_learned_skill_ensemble"
+    manifest: "isaaclab/checkpoints/administration_policy_ensemble.json"
+    selection_contract: "the high-level route planner selects a declared learned wheel-action policy for the active route segment; it never overrides a wheel action"
+    base_policy:
+      checkpoint: "isaaclab/checkpoints/aisha_phase2_administration_base_model_2150.pt"
+      sha256: "e4c072c61a8f8f65c58c9a4780600c8b81ce713cc546d2eae8f96374980b0a0f"
+      training: "PPO live-administration adaptation with proxy and live-scene rehearsal"
+      route_segments: [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11]
+    principal_turn_specialist:
+      segment_id: 6
+      checkpoint: "isaaclab/checkpoints/aisha_phase2_administration_principal_specialist.pt"
+      sha256: "3839ca7b3960c403e3d1ae371b676e3219328a6459d38215492bc68ed9bf8992"
+      training: "behavior cloning from 16/16 successful pivot-then-drive demonstrations collected with live administration PhysX and LD19-style observations"
+      deterministic_gate:
+        episodes: 8
+        successes: 8
+        collisions: 0
+        time_outs: 0
+        passed: true
+    final_live_cinematic_gate:
+      seed: 7084
+      outcome: success
+      route_segments_completed: 12
+      policy_steps: 5160
+      base_policy_steps: 4730
+      specialist_policy_steps: 430
+      supervisor_turn_steps: 0
+      supervisor_dwell_steps: 0
+      root_transform_animation: false
+      duration_s: 172.0
+      collisions: 0
+      validation_checks_passed: 42
+      passed: true
+  selected_results:
+    turn_gate:
+      episodes: 576
+      successes: 570
+      collisions: 6
+      time_outs: 0
+      success_rate: 0.9895833333333334
+      minimum_segment_success_rate: 0.875
+      passed: true
+    full_route_gate:
+      episodes: 48
+      successes: 46
+      collisions: 2
+      time_outs: 0
+      success_rate: 0.9583333333333334
+      passed: true
+    training_course_live_route:
+      outcome: success
+      route_segments_completed: 12
+      policy_steps: 4752
+      supervisor_steps: 0
+      duration_s: 158.4
+    administration_live_route:
+      outcome: success
+      route_segments_completed: 12
+      policy_steps: 4885
+      supervisor_steps: 0
+      duration_s: 162.83333333333334
+      collisions: 0
+    end_to_end_validation_passed: true
+  turn_acceptance_gate:
+    episodes_per_segment: 48
+    overall_success_rate_min: 0.90
+    overall_collision_rate_max: 0.05
+    every_segment_success_rate_min: 0.80
+    office_threshold_segment_ids: [3, 4, 8, 9]
+    office_threshold_success_rate_min: 0.85
+  full_route_acceptance_gate:
+    full_route_episodes: 48
+    full_route_success_rate_min: 0.90
+    collision_rate_max: 0.05
+    time_out_rate_max: 0.05
+    policy_only_required: true
+  live_acceptance_gate:
+    deterministic_seed: 7084
+    route_segments: 12
+    successes_required: 12
+    collisions_allowed: 0
+    supervisor_turn_steps_allowed: 0
+    supervisor_dwell_steps_allowed: 0
+    root_transform_animation_allowed: false
+  presentation_camera:
+    desired_eye_route_leg_m: [-3.8, 0.0, 2.40]
+    lookat_route_leg_m: [0.45, 0.0, 0.55]
+    rear_clearance_adaptation: "three_ray_20_degree_route_leg_visibility_fan"
+    minimum_horizontal_distance_m: 0.30
+    obstacle_buffer_m: 0.20
+    note: "the wider camera follows each stable route-leg direction instead of the robot yaw; a narrow visibility fan prevents doorway occlusion without zooming in for ordinary side walls"
+  claim_boundary: "passing Phase 2 supports policy-only navigation in the declared simulation; it does not establish Nav2, measured-site, dynamic-person, RTX-sensor or sim-to-real readiness"
+  rejected_candidates:
+    - run: "2026-08-22_07-12-54_phase2_turn_curriculum_seed244"
+      checkpoint: "model_1798.pt"
+      held_out_successes: 258
+      held_out_episodes: 576
+      held_out_collision_count: 311
+      reason: "uniform ±180 degree resets at narrow waypoints were not representative of physical route transitions"
+    - run: "2026-08-22_09-12-57_phase2_moving_transition_seed256"
+      checkpoint: "model_1900.pt"
+      moving_principal_depart_successes: 20
+      moving_principal_depart_episodes: 48
+      reason: "later refinement reduced held-out moving-departure robustness"
+    - run: "2026-08-22_09-12-57_phase2_moving_transition_seed256"
+      checkpoint: "model_2097.pt"
+      moving_principal_depart_successes: 12
+      moving_principal_depart_episodes: 48
+      reason: "final refinement checkpoint overfit and became collision-prone"
+
+phase3_curriculum:
+  purpose: "fine-tune the accepted learned route policy for moving people and bounded sim-to-real variation"
+  status: "training_completed_screening_candidate_not_accepted"
+  gym_id: "Isaac-AISHA-BlockA-Phase3-DynamicDR-SensorNav-Direct-v0"
+  policy_rate_hz: 30
+  physics_rate_hz: 120
+  initialization:
+    checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_11-35-30_phase2b_administration_exploration_seed7092/model_2150_rehearsal.pt"
+    checkpoint_sha256: "e4c072c61a8f8f65c58c9a4780600c8b81ce713cc546d2eae8f96374980b0a0f"
+    reason: "preserve the accepted administration base skill while adding avoidance and robustness"
+  training:
+    parallel_environments: 32
+    iterations: 600
+    steps_per_environment_per_iteration: 32
+    planned_policy_transitions: 614400
+    seed: 8101
+    checkpoint_interval_iterations: 25
+    policy_observation_count: 46
+    checkpoint_compatible_with_phase2: true
+    initial_abrupt_run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_13-51-59_phase3_dynamic_obstacles_dr_seed8101"
+    run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_14-02-08_phase3b_staged_dynamic_dr_seed8101"
+    executed_search_transitions_including_rejected_abrupt_run: 1228800
+    launched_on_kernel: "6.17.0-35-generic"
+    launch_evidence: "results/phase3_launch_status.json"
+  screening_candidate:
+    checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_14-02-08_phase3b_staged_dynamic_dr_seed8101/model_2525.pt"
+    checkpoint_sha256: "4014edcb7ff8b4664fbd6805865127cdbb64ab60671a15682e8c07ee45b70a4e"
+    report: "results/phase3b_candidate2525_screen4.json"
+    protocol: "4 deterministic unseen-seed episodes per segment; screening only"
+    successes: 43
+    episodes: 48
+    dynamic_obstacle_collisions: 0
+    static_collisions: 0
+    time_outs: 5
+    blocking_segment: 6
+    accepted: false
+  segment6_recovery:
+    status: "completed_rejected_deterministic_mean_collapse"
+    gym_id: "Isaac-AISHA-BlockA-Phase3-Segment6Rehearsal-SensorNav-Direct-v0"
+    initialization_checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_14-02-08_phase3b_staged_dynamic_dr_seed8101/model_2525.pt"
+    initialization_checkpoint_sha256: "4014edcb7ff8b4664fbd6805865127cdbb64ab60671a15682e8c07ee45b70a4e"
+    segment_sampling_weights: [2, 2, 2, 2, 2, 2, 40, 2, 2, 2, 2, 2]
+    target_segment_id: 6
+    target_reset_fraction: 0.6451612903225806
+    whole_route_retention_fraction: 0.3548387096774194
+    curriculum_minimum_strength: 0.75
+    curriculum_warmup_policy_steps: 0
+    curriculum_ramp_policy_steps: 9600
+    parallel_environments: 32
+    iterations: 300
+    steps_per_environment_per_iteration: 32
+    planned_policy_transitions: 307200
+    seed: 8201
+    checkpoint_interval_iterations: 25
+    run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_14-30-31_phase3c_segment6_retention_seed8201"
+    training_report: "results/phase3c_segment6_recovery_training_report.json"
+    training_progress_plot: "results/phase3c_segment6_recovery_training_progress.png"
+    optimizer:
+      learning_rate: 0.00002
+      clip_parameter: 0.06
+      entropy_coefficient: 0.0003
+    promotion_screen:
+      target_segment_episodes: 32
+      target_segment_success_rate_min: 0.80
+      target_segment_collision_rate_max: 0.02
+      balanced_screen_episodes_per_segment: 4
+      note: "screening only; a survivor must still pass the unchanged full Phase 3 acceptance gate"
+    screening_result:
+      checkpoints: [2575, 2750, 2824]
+      reports:
+        - "results/phase3c_model2575_segment6_screen32.json"
+        - "results/phase3c_model2750_segment6_screen32.json"
+        - "results/phase3c_model2824_segment6_screen32.json"
+      episodes_each: 32
+      successes_each: 0
+      collisions_each: 0
+      time_outs_each: 32
+      diagnosis: "PPO stochastic rollouts sometimes succeeded, but the deterministic actor mean saturated to reverse-and-turn actions; no checkpoint promoted"
+  segment6_robust_specialist:
+    status: "executed_no_candidate_accepted"
+    architecture: "route-planner-selected learned skill ensemble"
+    gym_id: "Isaac-AISHA-BlockA-Phase3-Segment6Specialist-SensorNav-Direct-v0"
+    fixed_segment_id: 6
+    initialization_checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt"
+    initialization_checkpoint_sha256: "3ab596c61259784657b36fe4ee937da8495ce9621a43bd04e2c8a0bf6e0b1880"
+    initialization_static_gate: "48/48 successes on segment 6 in the Phase 2 proxy-course held-out evaluation"
+    full_strength_baseline_report: "results/phase3_proxy_model1850_segment6_full_strength_baseline32.json"
+    full_strength_baseline: {episodes: 32, successes: 6, dynamic_collisions: 18, static_collisions: 8, time_outs: 0}
+    rejected_geometry_mismatched_attempt:
+      initialization: "model_2150_principal_bc.pt from the administration-live scene"
+      run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_14-39-39_phase3d_segment6_specialist_seed8301"
+      stopped_early: true
+      reason: "zero static proxy-course successes during warm-up; source expert was geometry-specific to the live administration scene"
+    rejected_proxy_safety_attempt:
+      run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_14-48-21_phase3f_segment6_safety_specialist_seed8501"
+      stopped_early: true
+      reason: "aggressive near-obstacle shaping collapsed the deterministic policy before it produced a promotable checkpoint"
+    curriculum_warmup_policy_steps: 3200
+    curriculum_ramp_policy_steps: 11200
+    parallel_environments: 32
+    iterations: 600
+    steps_per_environment_per_iteration: 32
+    planned_policy_transitions: 614400
+    seed: 8501
+    checkpoint_interval_iterations: 25
+    optimizer:
+      learning_rate: 0.00001
+      clip_parameter: 0.04
+      entropy_coefficient: 0.0
+      learning_epochs: 3
+    lidar_safety_shaping:
+      near_obstacle_penalty: -0.05
+      forward_near_obstacle_penalty: -0.50
+      forward_near_distance_m: 1.50
+      privileged_obstacle_state_used: false
+    role: "experimental segment-6 specialist only; no checkpoint was promoted"
+  reciprocal_yield_recovery:
+    status: "completed_screening_candidate_not_accepted"
+    design_reason: "a non-yielding pedestrian in the exact tight segment-6 U-turn made that leg adversarial rather than presentation-realistic; crossings now use open route legs and pause inside a disclosed reciprocal-yield radius"
+    pedestrian_yield_radius_m: 1.10
+    dynamic_crossing_segments: [0, 1, 2, 5, 7, 10, 11]
+    excluded_tight_turn_segment: 6
+    policy_observation_count: 46
+    privileged_obstacle_state_used: false
+    initialization_checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt"
+    initialization_checkpoint_sha256: "3ab596c61259784657b36fe4ee937da8495ce9621a43bd04e2c8a0bf6e0b1880"
+    segment6_full_dr_no_crossing_baseline_report: "results/phase3_proxy_model1850_segment6_full_dr_no_crossing_baseline32.json"
+    segment6_full_dr_no_crossing_baseline: {episodes: 32, successes: 32, collisions: 0, time_outs: 0}
+    training_run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-00-21_phase3h_reciprocal_yield_seed8701"
+    training_report: "results/phase3h_reciprocal_yield_training_report.json"
+    training_progress_plot: "results/phase3h_reciprocal_yield_training_progress.png"
+    iterations: 600
+    parallel_environments: 32
+    steps_per_environment_per_iteration: 32
+    policy_transitions: 614400
+    seed: 8701
+    runtime_smoke_report: "results/phase3_dynamic_yielding_smoke_report.json"
+    screening_candidate:
+      checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-00-21_phase3h_reciprocal_yield_seed8701/model_2225.pt"
+      checkpoint_sha256: "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8"
+      report: "results/phase3h_model2225_balanced_full_strength_screen4.json"
+      protocol: "four deterministic full-strength randomized episodes per route segment; screening only"
+      episodes: 48
+      successes: 24
+      dynamic_obstacle_collisions: 4
+      static_collisions: 8
+      time_outs: 12
+      segment6_successes: 4
+      segment6_episodes: 4
+      accepted: false
+    next_architecture_gate: "executed as recurrent_temporal_gate; no checkpoint accepted"
+  recurrent_temporal_gate:
+    status: "completed_screening_candidate_not_accepted"
+    architecture: "one-layer GRU with 46 hidden units followed by the existing 256-128-64 actor MLP"
+    policy_observation_count: 46
+    action_count: 2
+    privileged_obstacle_state_used: false
+    distillation:
+      teacher_checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt"
+      teacher_checkpoint_sha256: "3ab596c61259784657b36fe4ee937da8495ce9621a43bd04e2c8a0bf6e0b1880"
+      run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-18-36_phase3i_recurrent_distillation_seed8801"
+      iterations: 200
+      policy_transitions: 204800
+      seed: 8801
+      final_behavior_loss: 0.00458107003942132
+      report: "results/phase3i_recurrent_distillation_report.json"
+    ppo_bootstrap:
+      checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/phase3_recurrent_bootstrap_seed8801/model_0.pt"
+      checkpoint_sha256: "6b6b051c6772d4fe76c01786e4abd95e94e1ea09f4eed6e407ac7bc4dac9de40"
+      report: "results/phase3_recurrent_bootstrap_report.json"
+      balanced_full_strength_screen: "results/phase3_recurrent_bootstrap_balanced_full_strength_screen4.json"
+      result: {episodes: 48, successes: 24, dynamic_collisions: 4, static_collisions: 12, time_outs: 8}
+    ppo_training:
+      run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-22-56_phase3j_recurrent_ppo_seed8901"
+      iterations: 800
+      parallel_environments: 32
+      steps_per_environment_per_iteration: 64
+      policy_transitions: 1638400
+      seed: 8901
+      report: "results/phase3j_recurrent_ppo_training_report.json"
+      progress_plot: "results/phase3j_recurrent_ppo_training_progress.png"
+    screened_checkpoints:
+      - {iteration: 475, report: "results/phase3j_model475_balanced_full_strength_screen4.json", successes: 23, episodes: 48, collisions: 18, time_outs: 7}
+      - {iteration: 600, report: "results/phase3j_model600_balanced_full_strength_screen4.json", successes: 20, episodes: 48, collisions: 18, time_outs: 10}
+      - {iteration: 700, report: "results/phase3j_model700_balanced_full_strength_screen4.json", successes: 26, episodes: 48, collisions: 15, time_outs: 7}
+    leading_candidate:
+      checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-22-56_phase3j_recurrent_ppo_seed8901/model_700.pt"
+      checkpoint_sha256: "85a6938157d3a27aa1f21679c9aac3d538a5f56f93e71d3f2fe8061b6bd17adb"
+      report: "results/phase3j_model700_balanced_full_strength_screen4.json"
+      accepted: false
+    same_seed_9403_comparison:
+      feed_forward: {successes: 23, dynamic_collisions: 3, static_collisions: 10, time_outs: 12}
+      recurrent: {successes: 26, dynamic_collisions: 6, static_collisions: 9, time_outs: 7}
+      decision: "recurrent memory reduced hesitation but increased dynamic collision exposure; do not promote"
+    next_architecture_gate: "freeze the proven route actor and train a bounded recurrent residual/safety policy that can slow or stop near motion but cannot rewrite nominal route steering"
+  bounded_safety_residual_gate:
+    status: "completed_candidate_not_accepted"
+    gym_id: "Isaac-AISHA-BlockA-Phase3-SafetyResidual-SensorNav-Direct-v0"
+    architecture: "hash-locked frozen route actor plus one-layer 64-unit GRU safety residual"
+    policy_observation_count: 46
+    privileged_obstacle_state_used: false
+    action_boundary:
+      may_reduce_forward_speed_to_zero: true
+      may_increase_forward_speed: false
+      may_reverse: false
+      maximum_steering_attenuation: 0.25
+      may_increase_steering_magnitude: false
+      may_flip_steering_sign: false
+    frozen_route_actor:
+      checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-00-21_phase3h_reciprocal_yield_seed8701/model_2225.pt"
+      checkpoint_sha256: "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8"
+      trainable: false
+    zero_output_bootstrap:
+      checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/phase3_safety_residual_bootstrap_seed9001/model_0.pt"
+      checkpoint_sha256: "88535b07acce418ee2935cb2835d61a3466b321fa35c394ecbf4f0840d24b317"
+      report: "results/phase3_safety_residual_bootstrap_report.json"
+      deterministic_initial_action: [0.0, 0.0]
+    runtime_smoke:
+      report: "results/phase3_safety_residual_smoke_report.json"
+      checks_passed: 15
+      checks_total: 15
+      full_domain_randomization_strength: true
+    ppo_training:
+      run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-58-01_phase3k_safety_residual_seed9001"
+      iterations: 600
+      parallel_environments: 32
+      steps_per_environment_per_iteration: 64
+      policy_transitions: 1228800
+      seed: 9001
+      report: "results/phase3k_safety_residual_training_report.json"
+      progress_plot: "results/phase3k_safety_residual_training_progress.png"
+    selection_screen:
+      seed: 9502
+      episodes_per_segment: 1
+      screened_iterations: [75, 175, 275, 375, 475]
+      selected_iteration: 175
+    full_same_seed_comparison:
+      seed: 9501
+      episodes_per_segment: 4
+      comparison_report: "results/phase3k_safety_residual_comparison.json"
+      zero_residual: {successes: 25, dynamic_collisions: 5, static_collisions: 2, time_outs: 16}
+      trained_model_175: {successes: 21, dynamic_collisions: 3, static_collisions: 8, time_outs: 16}
+      selected_checkpoint: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-58-01_phase3k_safety_residual_seed9001/model_175.pt"
+      selected_checkpoint_sha256: "c31e5c52ef66a6860c1f2abc94e85dc1dca23f9f6cbc3fa4593c4a39c35213e6"
+      accepted: false
+      decision: "dynamic collisions fell by two, but successes fell by four and total collisions increased from 7 to 11; do not promote"
+    next_architecture_gate: "retain the hard speed boundary; add only clearance-verified bounded lateral correction or a map-aware local planner plus an independent protective-stop layer"
+  runtime_smoke:
+    report: "results/phase3_dynamic_yielding_smoke_report.json"
+    environments: 4
+    policy_steps: 180
+    checks_passed: 11
+    checks_total: 11
+    passed: true
+  dynamic_obstacles:
+    proxy: "1.70 m high, 0.24 m radius kinematic person capsule with physical collision"
+    maximum_active_per_environment: 2
+    maximum_activation_probability: 0.60
+    crossing_speed_mps: [0.25, 0.65]
+    path_half_span_m: [0.85, 1.25]
+    pedestrian_yield_radius_m: 1.10
+    enabled_route_segments: [0, 1, 2, 5, 7, 10, 11]
+    ray_sensor_integration: "MultiMeshRayCaster tracked dynamic meshes; no privileged obstacle state in policy observations"
+    limitation: "person proxies follow bounded crossing paths, pause within a disclosed 1.10 m reciprocal-yield radius, and do not model human intent, crowds, falls, or protective safety fields; crossings are excluded from the tight segment-6 U-turn zone"
+  domain_randomization:
+    curriculum_warmup_policy_steps: 3200
+    curriculum_ramp_policy_steps: 11200
+    curriculum_note: "100 PPO iterations of static retention, then a 350-iteration linear ramp; the last 150 iterations use full declared strength"
+    lidar_gaussian_noise_std_m: 0.03
+    lidar_dropout_probability: 0.01
+    lidar_episode_bias_m: [-0.025, 0.025]
+    lidar_episode_scale: [0.985, 1.015]
+    action_latency_policy_steps: [0, 2]
+    motor_strength_scale: [0.90, 1.10]
+    wheel_radius_scale: [0.97, 1.03]
+    wheel_track_scale: [0.98, 1.02]
+    drive_joint_damping: [96.0, 144.0]
+    base_mass_scale: [0.88, 1.12]
+    robot_static_friction: [0.45, 0.75]
+    robot_dynamic_friction: [0.35, 0.65]
+    truth_boundary: "LiDAR corruption affects observations only; collision termination uses uncorrupted geometry"
+  acceptance_gate:
+    randomized_episodes_per_segment: 64
+    overall_success_rate_min: 0.90
+    dynamic_obstacle_collision_rate_max: 0.02
+    static_collision_rate_max: 0.05
+    every_enabled_segment_success_rate_min: 0.80
+    phase2_static_route_regression_success_rate_min: 0.90
+    live_administration_dynamic_scenarios: 12
+    live_administration_collisions_allowed: 0
+    physical_safety_claim_allowed: false
+  geometry_rtx_refinement:
+    config: "config/geometry_rtx_refinement.yaml"
+    geometry_status: "approved-plan printed-dimension anchors plus disclosed route-scoped assumptions"
+    printed_anchors_m:
+      atrium_diagonal: 12.75
+      hallway_clear_width: 2.80
+      conference_room: [7.80, 6.30]
+      principal_diagonal_frontage: 4.73
+    material_version: "administration_rtx_pbr_v2"
+    material_maps: [albedo, perceptual_roughness, tangent_space_normal]
+    target_renderer: "RTX PathTracing at 64 samples per pixel"
+    limitation: "not a site survey, photogrammetric scan, or manufacturer-calibrated material capture"
+  claim_boundary: "Phase 3 training and simulation gates cannot establish human-safety performance or physical deployment readiness"
+
+geometry:
+  corridor_clear_width_m: 2.80
+  doorway_clear_width_m: 1.05
+  doorway_width_status: "presentation_assumption_not_measured"
+  doorway_x_m: 2.50
+  goal_xy_m: [4.30, 0.00]
+  robot_start_x_m: -1.80
+  robot_transit_width_m: 0.768
+  nominal_clearance_per_side_m: 0.141
+
+randomization:
+  start_y_m: [-0.30, 0.30]
+  start_yaw_deg: [-14.0, 14.0]
+  enabled_in_foundation:
+    - initial_lateral_offset
+    - initial_heading_offset
+  planned:
+    - door_clear_width
+    - threshold_height
+    - wheel_friction
+    - payload_mass
+    - sensor_noise
+    - furniture_and_people
+
+observations:
+  count: 10
+  terms:
+    - goal_x_in_robot_frame
+    - goal_y_in_robot_frame
+    - goal_distance
+    - goal_heading_sine
+    - goal_heading_cosine
+    - forward_velocity
+    - lateral_velocity
+    - yaw_rate
+    - previous_linear_action
+    - previous_angular_action
+  limitation: "LiDAR and depth are not yet policy inputs in this foundation task"
+
+actions:
+  count: 2
+  terms: [normalized_linear_command, normalized_angular_command]
+  linear_velocity_range_mps: [-0.10, 0.50]
+  angular_velocity_range_rad_s: [-1.0, 1.0]
+  wheel_radius_m: 0.10
+  wheel_track_m: 0.72
+  wheel_velocity_limit_rad_s: 16.755
+  continuous_effort_limit_nm: 6.0
+
+rewards:
+  progress: 8.0
+  goal_proximity: 0.04
+  heading_alignment: 0.02
+  doorway_alignment: 0.04
+  action_rate_penalty: -0.01
+  yaw_rate_penalty: -0.002
+  time_penalty: -0.005
+  success: 25.0
+  collision: -20.0
+
+release:
+  foundation_policy_checkpoint_available: true
+  held_out_foundation_evaluation_available: true
+  sensor_policy_available: true
+  held_out_sensor_evaluation_available: true
+  continuous_learned_route_playback_available: true
+  live_administration_policy_inference_available: true
+  live_administration_route_validation_passed: true
+  presentation_video_available: true
+  end_to_end_learned_route_available: true
+  phase2_curriculum_implemented: true
+  phase2_gpu_training_launched: true
+  phase2_policy_checkpoint_available: true
+  phase2_policy_only_acceptance_passed: true
+  live_administration_learned_skill_ensemble_available: true
+  live_cinematic_validation_passed: true
+  phase3_dynamic_obstacle_curriculum_implemented: true
+  phase3_dynamic_obstacle_training_launched: true
+  phase3_segment6_recovery_launched: true
+  phase3_segment6_robust_specialist_launched: true
+  phase3_reciprocal_yield_training_launched: true
+  phase3_recurrent_distillation_completed: true
+  phase3_recurrent_ppo_training_completed: true
+  phase3_bounded_safety_residual_training_completed: true
+  phase3_bounded_safety_residual_checkpoint_accepted: false
+  phase3_dynamic_obstacle_checkpoint_accepted: false
+  phase3_geometry_rtx_refinement_available: true
+  nav2_integrated: false
+  physical_robot_release: false
+  required_next_gate: "preserve the hard speed boundary while adding clearance-verified bounded lateral correction or a map-aware local planner with an independent protective-stop layer; then pass 64 randomized episodes per segment and the Phase 2 static regression before 12 live-scene dynamic scenarios; site survey, Nav2 and sim-to-real commissioning remain separate"

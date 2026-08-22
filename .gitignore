@@ -77,3 +77,15 @@ VM_*.mp4
 
 # Isaac Sim cinematic intermediates (final MP4 is kept under media/videos)
 simulation/aisha_isaac_sim/media/route_frames/
+simulation/aisha_isaac_sim/media/learned_route_replay_frames/
+simulation/aisha_isaac_sim/media/*_frames/
+simulation/aisha_isaac_sim/media/videos/*/
+simulation/results/
+
+# Isaac Lab run logs and generated checkpoints (summaries are kept in results/)
+simulation/aisha_isaac_sim/isaaclab/logs/
+simulation/aisha_isaac_sim/isaaclab/outputs/
+
+# Selected Phase 2 presentation policy (small, hash-locked release artifact)
+!simulation/aisha_isaac_sim/isaaclab/checkpoints/
+!simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase2_policy_model_1850.pt

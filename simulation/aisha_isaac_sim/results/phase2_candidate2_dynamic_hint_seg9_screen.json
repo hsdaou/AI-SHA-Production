@@ -1,0 +1,107 @@
+{
+  "report_type": "held_out_phase2_turn_evaluation",
+  "generated_at_utc": "2026-08-22T04:27:13.291304+00:00",
+  "task": "Isaac-AISHA-BlockA-Phase2-Turn-SensorNav-Direct-v0",
+  "training_contract_revision": "TRAINING-ENDTOEND-I",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_07-23-54_phase2_transition_turn_seed245/model_1798.pt",
+    "sha256": "8df0e4882e9edb2e5c3687938a0aeb0f206d97cbeacbc105e056040dd67d7fa9"
+  },
+  "protocol": {
+    "policy": "deterministic_inference",
+    "seed": 6085,
+    "training_seed": 245,
+    "episodes": 48,
+    "episodes_per_segment": null,
+    "parallel_environments": 48,
+    "physics_rate_hz": 120,
+    "policy_rate_hz": 30,
+    "randomization": "same declared distribution as training; unseen random sequence",
+    "fixed_segment_id": 9
+  },
+  "results": {
+    "success_count": 0,
+    "success_rate": 0.0,
+    "collision_count": 14,
+    "collision_rate": 0.2916666666666667,
+    "time_out_count": 34,
+    "time_out_rate": 0.7083333333333334,
+    "mean_episode_return": -102.47784026463826,
+    "mean_episode_steps": 1658.4166666666667,
+    "mean_episode_duration_s": 55.28055555555556,
+    "mean_final_goal_distance_m": 2.1416674653689065,
+    "mean_abs_final_heading_error_deg": 131.7981223489805,
+    "mean_minimum_lidar_range_m": 1.1981776754061382,
+    "wall_clock_evaluation_s": 21.571508603999973,
+    "per_segment": [
+      {
+        "segment_id": 9,
+        "label": "principal -> principal_depart",
+        "episodes": 48,
+        "success": 0,
+        "collision": 14,
+        "time_out": 34,
+        "success_rate": 0.0,
+        "collision_rate": 0.2916666666666667,
+        "time_out_rate": 0.7083333333333334
+      }
+    ]
+  },
+  "action_diagnostics": {
+    "dimensions": [
+      "normalized_linear_command",
+      "normalized_angular_command"
+    ],
+    "mapping": "linear -1 maps to 0.0 m/s; linear +1 maps to 0.5 m/s; angular \u00b11 maps to \u00b11.0 rad/s",
+    "first_step_mean": [
+      0.8154840469360352,
+      -2.0405235290527344
+    ],
+    "first_step_min": [
+      0.37070125341415405,
+      -2.3464324474334717
+    ],
+    "first_step_max": [
+      1.1863826513290405,
+      -1.7868008613586426
+    ],
+    "first_30_step_mean": [
+      1.6185076236724854,
+      -1.56736421585083
+    ]
+  },
+  "acceptance_gate": {
+    "protocol_satisfied": false,
+    "passed": false,
+    "requirements": {
+      "episodes_per_segment": 48,
+      "overall_success_rate_min": 0.9,
+      "overall_collision_rate_max": 0.05,
+      "every_segment_success_rate_min": 0.8,
+      "office_threshold_segment_ids": [
+        3,
+        4,
+        8,
+        9
+      ],
+      "office_threshold_success_rate_min": 0.85
+    },
+    "observed": {
+      "overall_success_rate": 0.0,
+      "overall_collision_rate": 0.2916666666666667,
+      "minimum_segment_success_rate": 0.0,
+      "minimum_office_threshold_success_rate": 0.0
+    }
+  },
+  "claim_boundary": {
+    "supported": "Phase 2 arbitrary-heading turn-acquisition curriculum",
+    "not_supported": [
+      "RTX-rendered LiDAR or depth-camera policy input",
+      "Nav2 integration",
+      "photoreal administration-office fidelity",
+      "sim-to-real transfer",
+      "physical robot release"
+    ],
+    "doorway_width": "presentation_assumption_not_measured"
+  }
+}

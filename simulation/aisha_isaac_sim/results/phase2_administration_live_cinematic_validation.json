@@ -1,0 +1,189 @@
+{
+  "camera_shot_events": [
+    {
+      "elapsed_s": 0.0,
+      "eye": [
+        -4.35,
+        0.0,
+        1.72
+      ],
+      "name": "Departure - central atrium",
+      "segment_id": 0,
+      "shot_index": 1,
+      "step": 0,
+      "target": [
+        2.0,
+        0.0,
+        0.72
+      ]
+    },
+    {
+      "elapsed_s": 10.766666666666667,
+      "eye": [
+        6.0,
+        1.08,
+        1.75
+      ],
+      "name": "East administration hall - Vice-Principal approach",
+      "segment_id": 1,
+      "shot_index": 2,
+      "step": 323,
+      "target": [
+        15.0,
+        -0.4,
+        0.72
+      ]
+    },
+    {
+      "elapsed_s": 49.36666666666667,
+      "eye": [
+        19.55,
+        -7.55,
+        1.86
+      ],
+      "name": "Visit 1 - Vice-Principal office",
+      "segment_id": 3,
+      "shot_index": 3,
+      "step": 1481,
+      "target": [
+        16.75,
+        -6.2,
+        0.7
+      ]
+    },
+    {
+      "elapsed_s": 77.1,
+      "eye": [
+        3.0,
+        1.0,
+        1.85
+      ],
+      "name": "Return through the hall - Principal suite turn",
+      "segment_id": 5,
+      "shot_index": 4,
+      "step": 2313,
+      "target": [
+        9.0,
+        -0.45,
+        0.68
+      ]
+    },
+    {
+      "elapsed_s": 122.53333333333333,
+      "eye": [
+        10.85,
+        -9.78,
+        1.82
+      ],
+      "name": "Visit 2 - Principal office",
+      "segment_id": 7,
+      "shot_index": 5,
+      "step": 3676,
+      "target": [
+        8.25,
+        -9.0,
+        0.72
+      ]
+    },
+    {
+      "elapsed_s": 149.46666666666667,
+      "eye": [
+        -4.35,
+        0.0,
+        1.72
+      ],
+      "name": "Mission complete - return to the atrium",
+      "segment_id": 10,
+      "shot_index": 6,
+      "step": 4484,
+      "target": [
+        2.5,
+        -2.0,
+        0.72
+      ]
+    }
+  ],
+  "checks": {
+    "all_actions_from_policy": true,
+    "all_route_segments_completed": true,
+    "all_six_cameras_activated": true,
+    "camera_segments_cover_route_once": true,
+    "checkpoint_exists_and_matches": true,
+    "cinematic_camera_mode": true,
+    "declared_learned_skill_ensemble": true,
+    "learned_policy_sources_account_for_all_actions": true,
+    "live_administration_success": true,
+    "live_assets_match_current_scene": true,
+    "live_assets_passed": true,
+    "live_robot_active": true,
+    "live_shell_composed": true,
+    "no_noninitial_uniform_camera_occlusion": true,
+    "no_root_transform_animation": true,
+    "policy_only_declared": true,
+    "presentation_hash_matches": true,
+    "presentation_live_cinematic_label": true,
+    "presentation_motion_unchanged": true,
+    "presentation_passed": true,
+    "presentation_policy_only": true,
+    "presentation_source_matches_raw": true,
+    "presentation_telemetry_overlay": true,
+    "raw_video_complete": true,
+    "replay_robot_inactive": true,
+    "segment_specialists_exist_and_match": true,
+    "six_camera_definitions": true,
+    "teaser_hash_matches": true,
+    "teaser_live_cinematic_label": true,
+    "teaser_motion_unchanged": true,
+    "teaser_passed": true,
+    "teaser_policy_only": true,
+    "teaser_source_matches_raw": true,
+    "teaser_telemetry_overlay": true,
+    "telemetry_trace_declares_policy_source": true,
+    "telemetry_trace_policy_only": true,
+    "telemetry_trace_present": true,
+    "upgraded_scene_build_passed": true,
+    "visual_upgrade_declared": true,
+    "visual_upgrade_preserves_collision_geometry": true,
+    "zero_dwell_supervisor_steps": true,
+    "zero_turn_supervisor_steps": true
+  },
+  "claim_boundary": "live learned-skill-ensemble inference, policy-only wheel commands, PhysX contacts and LD19-style ray observations in the upgraded plan/walkthrough-derived administration USD; not measured-site, RTX-LD19, Nav2, dynamic-person, sim-to-real or physical-release evidence",
+  "generated_at_utc": "2026-08-22T09:20:36.045750+00:00",
+  "non_initial_uniform_occlusion_intervals_s": [],
+  "passed": true,
+  "presentation_video": {
+    "duration_s": 57.2,
+    "fps": 30.0,
+    "frame_count": 1716,
+    "resolution": [
+      1280,
+      720
+    ],
+    "sha256": "57d68c8d8c980e84424466b2673cede8bbda57405024cd895fc94a754b77ee60",
+    "size_bytes": 7839691
+  },
+  "raw_video": {
+    "duration_s": 171.96666666666667,
+    "fps": 30.0,
+    "frame_count": 5159,
+    "resolution": [
+      1280,
+      720
+    ],
+    "sha256": "bfa95fc901c35f14fe4142aafcfd1fd1e79d803a9db5be0139f85b32d2567457",
+    "size_bytes": 7506107
+  },
+  "report_type": "phase2_administration_live_cinematic_validation",
+  "run_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase2_administration_live_cinematic_report.json",
+  "teaser_video": {
+    "duration_s": 14.3,
+    "fps": 30.0,
+    "frame_count": 429,
+    "resolution": [
+      1280,
+      720
+    ],
+    "sha256": "934ab50c7cf44e0fd1f1ce5da61fb391b1accc086ba19d72f12d050d93fcc075",
+    "size_bytes": 3285241
+  }
+}
