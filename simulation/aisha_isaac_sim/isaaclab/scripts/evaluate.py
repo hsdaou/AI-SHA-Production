@@ -92,6 +92,8 @@ def _relative_or_absolute(path: Path) -> str:
 def main() -> int:
     device = args.device or "cuda:0"
     is_phase3_task = "Phase3-" in args.task
+    is_phase3_safety_residual_task = "Phase3-SafetyResidual" in args.task
+    is_phase3_clearance_planner_task = "Phase3-ClearancePlanner" in args.task
     torch.manual_seed(args.seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(args.seed)
@@ -458,8 +460,24 @@ def main() -> int:
             "per_segment": per_segment,
         },
         "action_diagnostics": {
-            "dimensions": ["normalized_linear_command", "normalized_angular_command"],
+            "dimensions": (
+                ["brake_request", "signed_clearance_projected_steering_request"]
+                if is_phase3_clearance_planner_task
+                else ["brake_request", "steering_attenuation_request"]
+                if is_phase3_safety_residual_task
+                else ["normalized_linear_command", "normalized_angular_command"]
+            ),
             "mapping": (
+                "action 0 negative requests braking and positive is a no-op; action 1 requests "
+                f"up to ±{env_cfg.maximum_lateral_correction_rad_s} rad/s around the frozen "
+                "route actor, subject to clearance projection and the independent protective stop"
+                if is_phase3_clearance_planner_task
+                else
+                "action 0 negative requests braking and positive is a no-op; action 1 negative "
+                f"attenuates frozen-route steering by at most {env_cfg.maximum_angular_attenuation:.0%} "
+                "and positive is a no-op"
+                if is_phase3_safety_residual_task
+                else
                 f"linear -1 maps to {env_cfg.linear_velocity_range_mps[0]} m/s; "
                 f"linear +1 maps to {env_cfg.linear_velocity_range_mps[1]} m/s; "
                 f"angular ±1 maps to ±{env_cfg.angular_velocity_max_rad_s} rad/s"

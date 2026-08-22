@@ -1,0 +1,77 @@
+{
+  "report_type": "phase3l_clearance_planner_same_seed_comparison",
+  "generated_at_utc": "2026-08-22T13:23:01Z",
+  "protocol": {
+    "seed": 9701,
+    "episodes_per_segment": 4,
+    "route_segments": 12,
+    "episodes_per_controller": 48,
+    "parallel_environments": 12,
+    "policy": "deterministic_inference",
+    "randomization": "full-strength Phase 3 domain randomization and moving-person distribution"
+  },
+  "controllers": {
+    "original_frozen_route": {
+      "task": "Isaac-AISHA-BlockA-Phase3-SafetyResidual-SensorNav-Direct-v0",
+      "checkpoint": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/phase3_safety_residual_bootstrap_seed9001/model_0.pt",
+      "checkpoint_sha256": "88535b07acce418ee2935cb2835d61a3466b321fa35c394ecbf4f0840d24b317",
+      "report": "results/phase3l_original_route_control_balanced_seed9701_screen4.json",
+      "results": {
+        "successes": 19,
+        "dynamic_collisions": 3,
+        "static_collisions": 10,
+        "total_collisions": 13,
+        "time_outs": 16
+      }
+    },
+    "protective_stop_zero_policy": {
+      "task": "Isaac-AISHA-BlockA-Phase3-ClearancePlanner-SensorNav-Direct-v0",
+      "checkpoint": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/phase3l_clearance_planner_bootstrap_seed9601/model_0.pt",
+      "checkpoint_sha256": "4c8c55521b0ae14af866bf4e6a2167ee7eb7f09d7eb88eb1de79e09c823bbd32",
+      "report": "results/phase3l_zero_policy_balanced_seed9701.json",
+      "results": {
+        "successes": 19,
+        "dynamic_collisions": 3,
+        "static_collisions": 3,
+        "total_collisions": 6,
+        "time_outs": 23
+      }
+    },
+    "trained_clearance_planner_model_200": {
+      "task": "Isaac-AISHA-BlockA-Phase3-ClearancePlanner-SensorNav-Direct-v0",
+      "checkpoint": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_16-59-19_phase3l_clearance_planner_seed9601/model_200.pt",
+      "checkpoint_sha256": "f58951c6e0f3bc7129ff479d925dc75472eca88f0dfec75c5436df12259d53e7",
+      "packaged_checkpoint": "isaaclab/checkpoints/aisha_phase3l_clearance_planner_model_200.pt",
+      "report": "results/phase3l_model200_balanced_seed9701_screen4.json",
+      "results": {
+        "successes": 29,
+        "dynamic_collisions": 1,
+        "static_collisions": 4,
+        "total_collisions": 5,
+        "time_outs": 14
+      }
+    }
+  },
+  "trained_delta_vs_original_route": {
+    "successes": 10,
+    "dynamic_collisions": -2,
+    "static_collisions": -6,
+    "total_collisions": -8,
+    "time_outs": -2
+  },
+  "trained_delta_vs_protective_stop_zero_policy": {
+    "successes": 10,
+    "dynamic_collisions": -2,
+    "static_collisions": 1,
+    "total_collisions": -1,
+    "time_outs": -9
+  },
+  "decision": {
+    "architecture_candidate_promoted": true,
+    "full_phase3_acceptance_passed": false,
+    "presentation_policy_replaced": false,
+    "reason": "model 200 dominates both same-seed controls on successes, total collisions, dynamic-person collisions and timeouts, but its 60.4% success rate, 2.1% dynamic-collision rate and 8.3% static-collision rate do not pass the declared 90% / 2% / 5% Phase 3 thresholds; the 4-episode-per-segment comparison is also a selection gate, not the declared 64-episode-per-segment release protocol"
+  },
+  "next_gate": "retain model 200 and the independent protective stop; target office-departure pivot recovery and segment-6 static-clearance failures, then rerun the same-seed screen before the declared 64-episode-per-segment, Phase 2 regression and 12 live-scene gates",
+  "claim_boundary": "This report supports simulation architecture selection only. It is not a human-safety certification, physical release, or full Phase 3 acceptance result."
+}

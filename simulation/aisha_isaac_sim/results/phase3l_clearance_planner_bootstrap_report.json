@@ -1,0 +1,32 @@
+{
+  "report_type": "phase3l_clearance_planner_ppo_bootstrap",
+  "generated_at_utc": "2026-08-22T12:56:09.736501+00:00",
+  "output_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/phase3l_clearance_planner_bootstrap_seed9601/model_0.pt",
+  "output_checkpoint_sha256": "4c8c55521b0ae14af866bf4e6a2167ee7eb7f09d7eb88eb1de79e09c823bbd32",
+  "policy": {
+    "class": "ActorCriticRecurrent",
+    "rnn_type": "gru",
+    "rnn_hidden_dim": 64,
+    "rnn_num_layers": 1,
+    "observation_count": 46,
+    "action_count": 2,
+    "actor_hidden_dims": [
+      128,
+      64
+    ],
+    "deterministic_initial_action": [
+      0.0,
+      0.0
+    ],
+    "stochastic_initial_std": 0.18
+  },
+  "action_semantics": {
+    "action_0_negative": "brake fraction; positive values are a no-op",
+    "action_1_signed": "request up to +/-0.35 rad/s steering correction",
+    "steering_request_is_clearance_projected": true,
+    "protective_stop_is_policy_independent": true,
+    "can_increase_speed": false,
+    "can_reverse": false
+  },
+  "optimizer_initialized_fresh": true
+}

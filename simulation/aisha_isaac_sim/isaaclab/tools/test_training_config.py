@@ -80,6 +80,15 @@ PHASE3_SAFETY_RESIDUAL_LAUNCHER = (
 PHASE3_SAFETY_RESIDUAL_SMOKE = (
     Path(__file__).resolve().parents[1] / "scripts" / "smoke_phase3_safety_residual.py"
 )
+PHASE3_CLEARANCE_PLANNER_BOOTSTRAP = (
+    Path(__file__).resolve().parents[1] / "scripts" / "bootstrap_clearance_planner_ppo.py"
+)
+PHASE3_CLEARANCE_PLANNER_LAUNCHER = (
+    Path(__file__).resolve().parents[1] / "scripts" / "run_phase3_clearance_planner.sh"
+)
+PHASE3_CLEARANCE_PLANNER_SMOKE = (
+    Path(__file__).resolve().parents[1] / "scripts" / "smoke_phase3_clearance_planner.py"
+)
 
 
 class TrainingConfigTests(unittest.TestCase):
@@ -131,6 +140,9 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertTrue(release["phase3_dynamic_obstacle_curriculum_implemented"])
         self.assertTrue(release["phase3_bounded_safety_residual_training_completed"])
         self.assertFalse(release["phase3_bounded_safety_residual_checkpoint_accepted"])
+        self.assertTrue(release["phase3_clearance_planner_training_completed"])
+        self.assertTrue(release["phase3_clearance_planner_architecture_candidate_promoted"])
+        self.assertFalse(release["phase3_clearance_planner_full_acceptance_passed"])
         self.assertFalse(release["nav2_integrated"])
         self.assertFalse(release["physical_robot_release"])
 
@@ -485,6 +497,60 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertEqual(
             hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
             residual["full_same_seed_comparison"]["selected_checkpoint_sha256"],
+        )
+
+    def test_phase3_clearance_planner_has_independent_runtime_gates(self) -> None:
+        planner = self.data["phase3_curriculum"]["clearance_planner_gate"]
+        source = PHASE3_ENVIRONMENT.read_text(encoding="utf-8")
+        runner = PHASE3_RUNNER.read_text(encoding="utf-8")
+        registry = TASK_REGISTRY.read_text(encoding="utf-8")
+        bootstrap = PHASE3_CLEARANCE_PLANNER_BOOTSTRAP.read_text(encoding="utf-8")
+        launcher = PHASE3_CLEARANCE_PLANNER_LAUNCHER.read_text(encoding="utf-8")
+        smoke = PHASE3_CLEARANCE_PLANNER_SMOKE.read_text(encoding="utf-8")
+        evaluator = EVALUATOR.read_text(encoding="utf-8")
+        self.assertIn("AishaPhase3ClearancePlannerEnvCfg", source)
+        self.assertIn("AishaPhase3ClearancePlannerPPORunnerCfg", runner)
+        self.assertIn("Phase3-ClearancePlanner", registry)
+        self.assertIn("_predict_candidate_geometry", source)
+        self.assertIn("planner_minimum_predicted_clearance_m", source)
+        self.assertIn("_apply_protective_stop", source)
+        self.assertIn("self._protective_stop_latched", source)
+        self.assertIn("protected[:, 0]", source)
+        self.assertIn("protective_stop_preserves_steering", smoke)
+        self.assertIn("planner_never_accepts_below_clearance_floor", smoke)
+        self.assertIn("torch.nn.init.zeros_(final_actor_layer.weight)", bootstrap)
+        self.assertIn("FROZEN_ROUTE_SHA256", launcher)
+        self.assertIn("signed_clearance_projected_steering_request", evaluator)
+        self.assertFalse(planner["action_boundary"]["may_increase_forward_speed"])
+        self.assertFalse(planner["action_boundary"]["may_reverse"])
+        self.assertFalse(
+            planner["action_boundary"]["steering_request_sent_directly_to_wheels"]
+        )
+        self.assertTrue(planner["action_boundary"]["protective_stop_can_remove_forward_motion"])
+        self.assertLess(
+            planner["protective_stop_contract"]["trigger_clearance_beyond_robot_envelope_m"],
+            planner["protective_stop_contract"]["release_clearance_beyond_robot_envelope_m"],
+        )
+        self.assertEqual(planner["ppo_training"]["policy_transitions"], 1_228_800)
+        comparison = planner["full_same_seed_comparison"]
+        self.assertTrue(comparison["architecture_candidate_promoted"])
+        self.assertFalse(comparison["full_phase3_accepted"])
+        self.assertFalse(comparison["presentation_policy_replaced"])
+        self.assertGreater(
+            comparison["trained_model_200"]["successes"],
+            comparison["original_frozen_route"]["successes"],
+        )
+        self.assertLess(
+            comparison["trained_model_200"]["dynamic_collisions"],
+            comparison["protective_stop_zero_policy"]["dynamic_collisions"],
+        )
+        checkpoint = Path(__file__).resolve().parents[1] / Path(
+            comparison["selected_checkpoint"]
+        ).relative_to("isaaclab")
+        self.assertTrue(checkpoint.is_file())
+        self.assertEqual(
+            hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+            comparison["selected_checkpoint_sha256"],
         )
 
 

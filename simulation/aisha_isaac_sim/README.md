@@ -507,6 +507,30 @@ retain the hard speed boundary while adding only clearance-verified bounded
 lateral correction, or use a map-aware local planner beneath an independent
 protective-stop layer.
 
+That follow-up Phase 3L gate has now been executed. The frozen route actor
+remains hash locked. A 64-unit recurrent policy may brake and request at most
+±0.35 rad/s of steering correction, but its request is sent to the wheels only
+when a one-second, five-sample rectangular-footprint forecast preserves both
+clearance and route alignment. A separate hysteretic front-LiDAR stop runs
+after randomized latency and can always remove forward motion while preserving
+steering. The Isaac runtime gate passed 21/21 checks.
+
+Phase 3L PPO ran for 600 iterations / 1,228,800 transitions. `model_200.pt` won
+two unseen-seed screens. In the decisive seed-9701 comparison it achieved 29/48
+successes, 1 dynamic collision, 4 static collisions and 14 timeouts. The same
+frozen route without Phase 3L achieved 19 successes, 13 collisions and 16
+timeouts; the zero-output hard-stop controller achieved 19 successes, 6
+collisions and 23 timeouts. Model 200 is therefore promoted as the leading
+protected-navigation architecture candidate. It is not the accepted
+presentation or deployment policy: the result does not meet the declared 90%
+success / 2% dynamic / 5% static thresholds or the 64-episode-per-segment
+protocol. The next targeted gate is office-departure pivot recovery on segments
+4 and 9 plus segment-6 static-clearance recovery.
+The frozen route actor and Phase 3L leader are packaged at
+`isaaclab/checkpoints/aisha_phase3_frozen_route_model_2225.pt` and
+`isaaclab/checkpoints/aisha_phase3l_clearance_planner_model_200.pt`, with the
+same hashes used by the runtime and comparison evidence.
+
 The administration USD was rebuilt with page-2 Block A printed-dimension anchors
 (12.75 m atrium, 2.80 m hall, 7.80 x 6.30 m conference room and 4.73 m
 Principal frontage) and tagged `GEOMETRY-RTX-PHASE3-A`. Four procedural finish
@@ -536,6 +560,15 @@ phase3_safety_residual_bootstrap_seed9001/model_0.pt \
 TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p \
   isaaclab/scripts/smoke_phase3_safety_residual.py --num-envs 4 --steps 90 --headless
 isaaclab/scripts/run_phase3_safety_residual.sh
+TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p \
+  isaaclab/scripts/bootstrap_clearance_planner_ppo.py \
+  --output-checkpoint isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/\
+phase3l_clearance_planner_bootstrap_seed9601/model_0.pt \
+  --report results/phase3l_clearance_planner_bootstrap_report.json
+TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p \
+  isaaclab/scripts/smoke_phase3_clearance_planner.py \
+  --num-envs 4 --steps 120 --headless
+isaaclab/scripts/run_phase3_clearance_planner.sh
 TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p \
   isaaclab/scripts/smoke_phase3_dynamic.py --num-envs 4 --steps 180 --headless
 TERM=xterm /home/robot-wst/isaacsim/python.sh \
