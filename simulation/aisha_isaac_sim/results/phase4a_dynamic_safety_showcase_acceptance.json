@@ -1,0 +1,53 @@
+{
+  "report_type": "phase4a_dynamic_safety_showcase_acceptance",
+  "passed": true,
+  "checks_passed": 22,
+  "checks_total": 22,
+  "checks": {
+    "run_report_type": true,
+    "video_report_type": true,
+    "run_passed": true,
+    "run_checks_all_passed": true,
+    "video_passed": true,
+    "accepted_phase3n_checkpoint": true,
+    "formal_phase3n_contract_unchanged": true,
+    "segment_7_principal_approach": true,
+    "learned_authority_during_crossing": true,
+    "learned_brake_output_observed": true,
+    "physical_stop_observed": true,
+    "forward_motion_resumed": true,
+    "zero_dynamic_collision": true,
+    "zero_static_collision": true,
+    "no_supervisor": true,
+    "no_root_animation": true,
+    "no_privileged_pedestrian_state": true,
+    "run_report_hash_linked": true,
+    "raw_video_hash_linked": true,
+    "presentation_video_hash_linked": true,
+    "presentation_resolution_1280x720": true,
+    "learned_and_protective_states_labeled_separately": true
+  },
+  "evidence": {
+    "run_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase4a_administration_dynamic_showcase_report.json",
+    "run_report_sha256": "8acb793d5877aa3a86e2122c9649fbb255738cb987f736b870af17020ba910e9",
+    "video_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase4a_dynamic_safety_presentation_video_report.json",
+    "video_report_sha256": "99280ecaeb3a27cad66e39eaf1c52e171a69031476f8111d1f0243ef1b00b120",
+    "raw_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/phase4a_administration_dynamic_showcase_final/aisha-phase4a-dynamic-showcase-step-0.mp4",
+    "raw_video_sha256": "25309cb1f2faca3afb575554f9b1039834b6af2eb40a8d1b889058c2f75c6258",
+    "presentation_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4",
+    "presentation_video_sha256": "556468502d6f5a86a6e13cf5809bd9fd6dba5d3ae76db6d82d3eea64afa77886"
+  },
+  "measured_result": {
+    "completed_steps": 395,
+    "simulated_duration_s": 13.166666666666666,
+    "encounter_safety_authority_steps": 16,
+    "maximum_learned_brake_fraction": 0.1432,
+    "protective_full_stop_duration_s": 2.2333333333333334,
+    "maximum_resumed_velocity_mps": 0.46277,
+    "minimum_robot_pedestrian_centre_distance_m": 1.01483,
+    "minimum_360_ring_clearance_m": 0.28614,
+    "dynamic_collisions": 0,
+    "static_collisions": 0
+  },
+  "decision": "Accept as a presentation-grade live checkpoint demonstration of one deterministic pedestrian encounter in the administration scene. This does not replace randomized Phase 3N evaluation or permit a physical human-safety claim."
+}

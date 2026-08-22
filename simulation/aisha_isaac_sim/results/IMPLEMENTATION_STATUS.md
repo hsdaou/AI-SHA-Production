@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-22. Phase 3N freezes the successful Phase 3M pivot/clearance stack, adds a one-action recurrent 360-degree brake layer, and passes the declared randomized, static-regression and live-administration simulation gates. This is not a physical safety or deployment release.**
+**Updated 2026-08-22. Phase 3N freezes the successful Phase 3M pivot/clearance stack, adds a one-action recurrent 360-degree brake layer, and passes the declared randomized, static-regression and live-administration simulation gates. Phase 4A now packages a separate live dynamic-pedestrian presentation insert. This is not a physical safety or deployment release.**
 
 ## Completed
 
@@ -312,6 +312,22 @@
   telemetry and labels the frozen Phase 3M plus learned 360-degree brake stack;
   SHA-256 is
   `44cd1e975b6b13a98f3013cdb1f3dc90db52e9d240f763a6f03d843f877e2f13`.
+- Phase 4A preserves the accepted checkpoint and all formal Phase 3N gates,
+  then adds a deterministic presentation-only crossing on segment 7, the
+  Principal-office approach. The stylized kinematic pedestrian proxy has a
+  torso collider and remains evaluation truth; no pedestrian position or
+  velocity enters the policy observation.
+- Seed 10401 passes in 395 policy steps / 13.17 simulated seconds. It records
+  16 learned-authority samples during the crossing, a 14.32% peak learned brake
+  fraction, a separately measured 2.23 s frozen-stack protective stop, recovery
+  to 0.463 m/s, and zero dynamic or static contacts. There is no physics
+  supervisor or root-transform animation.
+- The 13.13 s, 1280 x 720 presentation video labels learned brake authority and
+  protective-stop state independently. Its SHA-256 is
+  `556468502d6f5a86a6e13cf5809bd9fd6dba5d3ae76db6d82d3eea64afa77886`;
+  `phase4a_dynamic_safety_showcase_acceptance.json` passes 22/22 evidence-chain
+  checks. This is a controlled simulation demonstration, not proof of physical
+  human safety.
 - Geometry refinement `GEOMETRY-RTX-PHASE3-A` locks the source PDF hash and uses
   printed page-2 Block A dimensions for the 12.75 m atrium, 2.80 m hall,
   7.80 x 6.30 m conference room and 4.73 m Principal frontage. Door widths,
@@ -480,6 +496,9 @@ claim. See `config/physics_materials.yaml`.
 - `phase3n_dynamic_safety_acceptance.json`
 - `phase3n_administration_final_omniverse_report.json`
 - `phase3n_administration_final_omniverse_3x_report.json`
+- `phase4a_administration_dynamic_showcase_report.json`
+- `phase4a_dynamic_safety_presentation_video_report.json`
+- `phase4a_dynamic_safety_showcase_acceptance.json`
 - `phase3_geometry_rtx_refinement_validation.json`
 - `phase3_launch_status.json`
 - `PRODUCTION_REPOSITORY_REVIEW.md`
@@ -512,3 +531,5 @@ claim. See `config/physics_materials.yaml`.
 - `../media/videos/AI-SHA_Phase2_Administration_Live_Cinematic_Teaser_12x.mp4`
 - `../media/videos/phase3n_administration_final_omniverse/aisha-block-a-learned-route-step-0.mp4`
 - `../media/videos/AI-SHA_Phase3N_Administration_Final_Omniverse_3x.mp4`
+- `../media/videos/phase4a_administration_dynamic_showcase_final/aisha-phase4a-dynamic-showcase-step-0.mp4`
+- `../media/videos/AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4`
