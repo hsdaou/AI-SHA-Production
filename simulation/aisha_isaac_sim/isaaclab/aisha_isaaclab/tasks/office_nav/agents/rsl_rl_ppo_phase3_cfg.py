@@ -235,3 +235,40 @@ class AishaPhase3ClearancePlannerPPORunnerCfg(AishaPhase3SafetyResidualPPORunner
         desired_kl=0.006,
         max_grad_norm=0.7,
     )
+
+
+@configclass
+class AishaPhase3TargetedRecoveryPPORunnerCfg(AishaPhase3ClearancePlannerPPORunnerCfg):
+    """Low-noise Phase 3M deterministic-policy consolidation."""
+
+    seed = 9807
+    num_steps_per_env = 64
+    max_iterations = 150
+    save_interval = 25
+    run_name = "phase3m_corrected_physics_recovery_seed9807"
+    policy = RslRlPpoActorCriticRecurrentCfg(
+        init_noise_std=0.10,
+        noise_std_type="scalar",
+        actor_obs_normalization=True,
+        critic_obs_normalization=True,
+        actor_hidden_dims=[128, 64],
+        critic_hidden_dims=[256, 128, 64],
+        activation="elu",
+        rnn_type="gru",
+        rnn_hidden_dim=64,
+        rnn_num_layers=1,
+    )
+    algorithm = RslRlPpoAlgorithmCfg(
+        value_loss_coef=1.0,
+        use_clipped_value_loss=True,
+        clip_param=0.06,
+        entropy_coef=0.0,
+        num_learning_epochs=5,
+        num_mini_batches=4,
+        learning_rate=1.0e-5,
+        schedule="adaptive",
+        gamma=0.995,
+        lam=0.95,
+        desired_kl=0.004,
+        max_grad_norm=0.7,
+    )

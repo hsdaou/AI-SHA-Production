@@ -89,6 +89,21 @@ PHASE3_CLEARANCE_PLANNER_LAUNCHER = (
 PHASE3_CLEARANCE_PLANNER_SMOKE = (
     Path(__file__).resolve().parents[1] / "scripts" / "smoke_phase3_clearance_planner.py"
 )
+PHASE3_TARGETED_RECOVERY_BOOTSTRAP = (
+    Path(__file__).resolve().parents[1]
+    / "scripts"
+    / "prepare_phase3m_recovery_checkpoint.py"
+)
+PHASE3_TARGETED_RECOVERY_LAUNCHER = (
+    Path(__file__).resolve().parents[1]
+    / "scripts"
+    / "run_phase3_targeted_recovery.sh"
+)
+PACKAGED_PHASE3M_CHECKPOINT = (
+    Path(__file__).resolve().parents[1]
+    / "checkpoints"
+    / "aisha_phase3m_hybrid_recovery_model_125.pt"
+)
 
 
 class TrainingConfigTests(unittest.TestCase):
@@ -143,6 +158,10 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertTrue(release["phase3_clearance_planner_training_completed"])
         self.assertTrue(release["phase3_clearance_planner_architecture_candidate_promoted"])
         self.assertFalse(release["phase3_clearance_planner_full_acceptance_passed"])
+        self.assertTrue(release["phase3_targeted_recovery_training_completed"])
+        self.assertTrue(release["phase3_targeted_recovery_candidate_packaged"])
+        self.assertTrue(release["phase3_targeted_recovery_target_segments_passed"])
+        self.assertFalse(release["phase3_targeted_recovery_full_acceptance_passed"])
         self.assertFalse(release["nav2_integrated"])
         self.assertFalse(release["physical_robot_release"])
 
@@ -551,6 +570,65 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertEqual(
             hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
             comparison["selected_checkpoint_sha256"],
+        )
+
+    def test_phase3_targeted_recovery_is_retention_safe(self) -> None:
+        source = PHASE3_ENVIRONMENT.read_text(encoding="utf-8")
+        runner = PHASE3_RUNNER.read_text(encoding="utf-8")
+        registry = TASK_REGISTRY.read_text(encoding="utf-8")
+        bootstrap = PHASE3_TARGETED_RECOVERY_BOOTSTRAP.read_text(encoding="utf-8")
+        launcher = PHASE3_TARGETED_RECOVERY_LAUNCHER.read_text(encoding="utf-8")
+        smoke = PHASE3_CLEARANCE_PLANNER_SMOKE.read_text(encoding="utf-8")
+        evaluator = EVALUATOR.read_text(encoding="utf-8")
+        self.assertIn("AishaPhase3TargetedRecoveryEnvCfg", source)
+        self.assertIn("AishaPhase3TargetedRecoveryTrainingEnvCfg", source)
+        self.assertIn("recovery_supervisor_enabled = False", source)
+        self.assertIn("targeted_recovery_segment_ids = (4, 6, 9)", source)
+        self.assertIn("reward_targeted_heading_progress", source)
+        self.assertIn("penalty_targeted_pivot_forward", source)
+        self.assertIn("penalty_targeted_aligned_nonforward", source)
+        self.assertIn("penalty_targeted_low_clearance", source)
+        self.assertIn("rated_motor_effort_limit_nm = 6.0", source)
+        self.assertIn("peak_motor_effort_limit_nm = 18.0", source)
+        self.assertIn("peak_motor_time_limit_s = 3.0", source)
+        self.assertIn("_update_pivot_torque_limits", source)
+        self.assertIn("zero_translation_command", source)
+        self.assertIn("self._robot.write_joint_effort_limit_to_sim", source)
+        self.assertIn("castor_static_friction_range = (0.15, 0.25)", source)
+        self.assertIn("castor_dynamic_friction_range = (0.10, 0.20)", source)
+        self.assertIn("_resolve_material_shape_ids", source)
+        self.assertIn("AishaPhase3TargetedRecoveryPPORunnerCfg", runner)
+        self.assertIn("Phase3-TargetedRecovery", registry)
+        self.assertIn("Phase3-TargetedRecoveryTraining", registry)
+        self.assertIn("hidden_actor_critic_recurrent_and_normalizers_changed", bootstrap)
+        self.assertIn("final_actor_bias_key", bootstrap)
+        self.assertIn("optimizer_state[\"state\"] = {}", bootstrap)
+        self.assertIn("FROZEN_ROUTE_SHA256", launcher)
+        self.assertIn("all_route_segments_rehearsed", smoke)
+        self.assertIn("target_segments_receive_majority_of_resets", smoke)
+        self.assertIn("planner_diagnostics", evaluator)
+        self.assertIn("protective_stop_steps", evaluator)
+        self.assertIn("pivot_supervisor_engage_heading_error_rad", source)
+        self.assertIn("pivot_supervisor_angular_command_rad_s", source)
+        self.assertIn("office_departure_protective_release_clearance_m", source)
+        self.assertIn("predictive_creep_linear_velocity_mps", source)
+        self.assertIn("_apply_recovery_supervisor", source)
+        self.assertIn("pivot_supervisor_steering_steps", evaluator)
+        self.assertIn("office_pivot_supervisor_has_heading_hysteresis", smoke)
+
+        recovery = self.data["phase3_curriculum"]["targeted_recovery_gate"]
+        self.assertEqual(recovery["targeted_segment_ids"], [4, 6, 9])
+        self.assertFalse(
+            recovery["ppo_training"]["deterministic_recovery_supervisor_enabled"]
+        )
+        self.assertEqual(recovery["runtime_smoke"]["checks_passed"], 38)
+        self.assertTrue(recovery["selected_candidate"]["candidate_packaged"])
+        self.assertFalse(recovery["selected_candidate"]["full_phase3_accepted"])
+        self.assertFalse(recovery["selected_candidate"]["presentation_policy_replaced"])
+        self.assertTrue(PACKAGED_PHASE3M_CHECKPOINT.is_file())
+        self.assertEqual(
+            hashlib.sha256(PACKAGED_PHASE3M_CHECKPOINT.read_bytes()).hexdigest(),
+            recovery["selected_candidate"]["checkpoint_sha256"],
         )
 
 

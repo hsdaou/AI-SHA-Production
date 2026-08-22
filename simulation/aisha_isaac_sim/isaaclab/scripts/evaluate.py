@@ -93,7 +93,10 @@ def main() -> int:
     device = args.device or "cuda:0"
     is_phase3_task = "Phase3-" in args.task
     is_phase3_safety_residual_task = "Phase3-SafetyResidual" in args.task
-    is_phase3_clearance_planner_task = "Phase3-ClearancePlanner" in args.task
+    is_phase3_clearance_planner_task = (
+        "Phase3-ClearancePlanner" in args.task
+        or "Phase3-TargetedRecovery" in args.task
+    )
     torch.manual_seed(args.seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(args.seed)
@@ -152,6 +155,7 @@ def main() -> int:
     completed_distances: list[float] = []
     completed_heading_errors: list[float] = []
     completed_minimum_ranges: list[float] = []
+    planner_episode_diagnostics: list[dict[str, float | int | bool | str]] = []
     counts = {"success": 0, "collision": 0, "time_out": 0}
     collision_classes = {"dynamic_obstacle": 0, "static": 0}
     segment_counts: dict[int, dict[str, int]] = {}
@@ -228,6 +232,96 @@ def main() -> int:
                 )
             if "minimum_lidar_range_m" in outcomes:
                 completed_minimum_ranges.append(float(outcomes["minimum_lidar_range_m"][env_id].item()))
+            if is_phase3_clearance_planner_task and "planner_steps" in outcomes:
+                planner_episode_diagnostics.append(
+                    {
+                        "segment_id": -1 if segment_id is None else segment_id,
+                        "outcome": outcome,
+                        "planner_steps": int(outcomes["planner_steps"][env_id].item()),
+                        "protective_stop_steps": int(
+                            outcomes["protective_stop_steps"][env_id].item()
+                        ),
+                        "protective_stop_intervention_steps": int(
+                            outcomes["protective_stop_intervention_steps"][env_id].item()
+                        ),
+                        "planner_request_steps": int(
+                            outcomes["planner_request_steps"][env_id].item()
+                        ),
+                        "planner_accept_steps": int(
+                            outcomes["planner_accept_steps"][env_id].item()
+                        ),
+                        "abs_steering_request_sum": float(
+                            outcomes["abs_steering_request_sum"][env_id].item()
+                        ),
+                        "brake_fraction_sum": float(
+                            outcomes["brake_fraction_sum"][env_id].item()
+                        ),
+                        "base_angular_command_sum": float(
+                            outcomes["base_angular_command_sum"][env_id].item()
+                        ),
+                        "applied_angular_command_sum": float(
+                            outcomes["applied_angular_command_sum"][env_id].item()
+                        ),
+                        "minimum_applied_clearance_m": float(
+                            outcomes["minimum_applied_clearance_m"][env_id].item()
+                        ),
+                        "final_protective_stop_latched": bool(
+                            outcomes["final_protective_stop_latched"][env_id].item()
+                        ),
+                        "peak_torque_steps": int(
+                            outcomes.get(
+                                "peak_torque_steps",
+                                torch.zeros_like(outcomes["planner_steps"]),
+                            )[env_id].item()
+                        ),
+                        "peak_torque_elapsed_s": float(
+                            outcomes.get(
+                                "peak_torque_elapsed_s",
+                                torch.zeros_like(outcomes["minimum_applied_clearance_m"]),
+                            )[env_id].item()
+                        ),
+                        "pivot_supervisor_steps": int(
+                            outcomes.get(
+                                "pivot_supervisor_steps",
+                                torch.zeros_like(outcomes["planner_steps"]),
+                            )[env_id].item()
+                        ),
+                        "predictive_stop_steps": int(
+                            outcomes.get(
+                                "predictive_stop_steps",
+                                torch.zeros_like(outcomes["planner_steps"]),
+                            )[env_id].item()
+                        ),
+                        "pivot_supervisor_steering_steps": int(
+                            outcomes.get(
+                                "pivot_supervisor_steering_steps",
+                                torch.zeros_like(outcomes["planner_steps"]),
+                            )[env_id].item()
+                        ),
+                        "office_departure_protective_release_steps": int(
+                            outcomes.get(
+                                "office_departure_protective_release_steps",
+                                torch.zeros_like(outcomes["planner_steps"]),
+                            )[env_id].item()
+                        ),
+                        "final_recovery_supervisor_brake_active": bool(
+                            outcomes.get(
+                                "final_recovery_supervisor_brake_active",
+                                torch.zeros_like(outcomes["planner_steps"], dtype=torch.bool),
+                            )[env_id].item()
+                        ),
+                        "final_distance_m": float(
+                            outcomes["final_distance_m"][env_id].item()
+                        ),
+                        "final_heading_error_rad": float(
+                            outcomes["final_heading_error_rad"][env_id].item()
+                        ),
+                        "final_position_xy_m": [
+                            float(value)
+                            for value in outcomes["position_xy_m"][env_id].tolist()
+                        ],
+                    }
+                )
             if segment_id is not None:
                 segment = segment_counts.setdefault(
                     segment_id, {"episodes": 0, "success": 0, "collision": 0, "time_out": 0}
@@ -287,6 +381,112 @@ def main() -> int:
             }
         )
     acceptance_gate = None
+    planner_diagnostics = None
+    if planner_episode_diagnostics:
+        def summarize_planner(records: list[dict[str, float | int | bool | str]]) -> dict[str, object]:
+            steps = sum(int(record["planner_steps"]) for record in records)
+            request_steps = sum(int(record["planner_request_steps"]) for record in records)
+            return {
+                "episodes": len(records),
+                "planner_steps": steps,
+                "protective_stop_step_fraction": (
+                    sum(int(record["protective_stop_steps"]) for record in records)
+                    / max(steps, 1)
+                ),
+                "protective_stop_intervention_step_fraction": (
+                    sum(
+                        int(record["protective_stop_intervention_steps"])
+                        for record in records
+                    )
+                    / max(steps, 1)
+                ),
+                "planner_request_step_fraction": request_steps / max(steps, 1),
+                "planner_request_acceptance_rate": (
+                    sum(int(record["planner_accept_steps"]) for record in records)
+                    / max(request_steps, 1)
+                ),
+                "mean_abs_normalized_steering_request": (
+                    sum(float(record["abs_steering_request_sum"]) for record in records)
+                    / max(steps, 1)
+                ),
+                "mean_brake_fraction": (
+                    sum(float(record["brake_fraction_sum"]) for record in records)
+                    / max(steps, 1)
+                ),
+                "mean_normalized_base_angular_command": (
+                    sum(
+                        float(record["base_angular_command_sum"])
+                        for record in records
+                    )
+                    / max(steps, 1)
+                ),
+                "mean_normalized_applied_angular_command": (
+                    sum(
+                        float(record["applied_angular_command_sum"])
+                        for record in records
+                    )
+                    / max(steps, 1)
+                ),
+                "minimum_applied_projected_clearance_m": min(
+                    float(record["minimum_applied_clearance_m"])
+                    for record in records
+                ),
+                "episodes_ending_with_protective_stop_latched": sum(
+                    bool(record["final_protective_stop_latched"])
+                    for record in records
+                ),
+                "peak_torque_step_fraction": (
+                    sum(int(record["peak_torque_steps"]) for record in records)
+                    / max(steps, 1)
+                ),
+                "mean_peak_torque_elapsed_s": (
+                    sum(float(record["peak_torque_elapsed_s"]) for record in records)
+                    / max(len(records), 1)
+                ),
+                "pivot_supervisor_step_fraction": (
+                    sum(int(record["pivot_supervisor_steps"]) for record in records)
+                    / max(steps, 1)
+                ),
+                "predictive_stop_step_fraction": (
+                    sum(int(record["predictive_stop_steps"]) for record in records)
+                    / max(steps, 1)
+                ),
+                "pivot_supervisor_steering_step_fraction": (
+                    sum(
+                        int(record["pivot_supervisor_steering_steps"])
+                        for record in records
+                    )
+                    / max(steps, 1)
+                ),
+                "office_departure_protective_release_step_fraction": (
+                    sum(
+                        int(record["office_departure_protective_release_steps"])
+                        for record in records
+                    )
+                    / max(steps, 1)
+                ),
+                "episodes_ending_with_recovery_supervisor_brake_active": sum(
+                    bool(record["final_recovery_supervisor_brake_active"])
+                    for record in records
+                ),
+            }
+
+        planner_diagnostics = summarize_planner(planner_episode_diagnostics)
+        planner_diagnostics["per_segment"] = [
+            {
+                "segment_id": segment_id,
+                **summarize_planner(
+                    [
+                        record
+                        for record in planner_episode_diagnostics
+                        if int(record["segment_id"]) == segment_id
+                    ]
+                ),
+            }
+            for segment_id in sorted(
+                {int(record["segment_id"]) for record in planner_episode_diagnostics}
+            )
+        ]
     gate_contract = (
         task_contract.get("acceptance_gate")
         if is_phase3_task
@@ -490,6 +690,8 @@ def main() -> int:
             ).tolist(),
             "timeline": diagnostic_snapshots,
         },
+        "planner_diagnostics": planner_diagnostics,
+        "planner_episode_diagnostics": planner_episode_diagnostics,
         "acceptance_gate": acceptance_gate,
         "claim_boundary": {
             "supported": (

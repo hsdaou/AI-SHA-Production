@@ -1,0 +1,99 @@
+{
+  "checks": {
+    "all_route_segments_rehearsed": true,
+    "castor_proxy_dynamic_friction_stays_in_low_band": true,
+    "castor_proxy_static_friction_stays_in_low_band": true,
+    "clear_scan_does_not_stop": true,
+    "dynamic_crossing_creep_is_bounded": true,
+    "frozen_route_actor_has_no_trainable_parameters": true,
+    "frozen_route_checkpoint_hash_matches": true,
+    "full_brake_fraction_is_one": true,
+    "full_brake_maps_to_zero_forward_speed": true,
+    "full_domain_randomization_strength": true,
+    "non_target_segment_retains_rated_torque": true,
+    "observation_contract_46": true,
+    "observation_values_finite": true,
+    "office_pivot_rate_is_within_peak_and_task_limits": true,
+    "office_pivot_supervisor_has_heading_hysteresis": true,
+    "office_pivot_supervisor_is_limited_to_segments_4_and_9": true,
+    "peak_time_limit_is_enforced": true,
+    "planner_never_accepts_below_clearance_floor": true,
+    "positive_brake_action_is_no_op": true,
+    "predictive_clearance_guard_has_hysteresis": true,
+    "predictive_clearance_guard_is_scoped": true,
+    "protective_stop_hysteresis_holds": true,
+    "protective_stop_preserves_steering": true,
+    "protective_stop_releases_on_clear_scan": true,
+    "recovery_supervisor_mode_matches_task": true,
+    "runtime_steering_request_stays_bounded": true,
+    "signed_steering_request_is_bounded": true,
+    "stationary_targeted_pivot_uses_declared_peak_torque": true,
+    "steering_request_never_changes_forward_component": true,
+    "target_segments_are_4_6_9": true,
+    "target_segments_receive_majority_of_resets": true,
+    "targeted_shaping_does_not_bypass_planner": true,
+    "task_registered": true,
+    "translation_command_retains_rated_torque": true,
+    "trigger_scan_removes_forward_motion": true,
+    "zero_policy_output_has_no_brake": true,
+    "zero_policy_output_has_no_steering_request": true,
+    "zero_policy_output_preserves_route_request": true
+  },
+  "claim_boundary": "Simulation runtime and command-boundary evidence only; not a trained-policy acceptance result, human-safety certification, or physical release.",
+  "frozen_route_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase3_frozen_route_model_2225.pt",
+  "frozen_route_checkpoint_sha256": "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8",
+  "generated_at_utc": "2026-08-22T15:26:02.160893+00:00",
+  "num_envs": 4,
+  "passed": true,
+  "planner": {
+    "footprint_margin_m": 0.08,
+    "maximum_lateral_correction_rad_s": 0.7,
+    "maximum_observed_normalized_correction": 0.7000000476837158,
+    "minimum_predicted_clearance_m": 0.04,
+    "prediction_horizon_s": 1.0,
+    "prediction_samples": 5
+  },
+  "policy_rate_hz": 30,
+  "protective_stop": {
+    "observed_during_environment_rollout": false,
+    "release_clearance_beyond_envelope_m": 0.75,
+    "trigger_clearance_beyond_envelope_m": 0.6
+  },
+  "report_type": "phase3m_targeted_recovery_runtime_smoke",
+  "steps": 120,
+  "targeted_castor_contact": {
+    "dynamic_friction_range": [
+      0.1,
+      0.2
+    ],
+    "material_shape_count": 4,
+    "model": "fixed_sphere_low_friction_proxy",
+    "static_friction_range": [
+      0.15,
+      0.25
+    ]
+  },
+  "targeted_peak_torque": {
+    "peak_effort_limit_nm": 18.0,
+    "peak_time_limit_s": 3.0,
+    "rated_effort_limit_nm": 6.0,
+    "scope": "targeted stationary large-heading pivots only"
+  },
+  "targeted_recovery_supervisor": {
+    "dynamic_crossing_creep_linear_velocity_mps": 0.08,
+    "office_departure_segment_ids": [
+      4,
+      9
+    ],
+    "pivot_angular_command_rad_s": 0.55,
+    "pivot_engage_heading_error_rad": 1.0471975511965976,
+    "pivot_release_heading_error_rad": 0.4363323129985824,
+    "predictive_creep_linear_velocity_mps": 0.1,
+    "predictive_guard_segment_ids": [
+      6,
+      10,
+      11
+    ]
+  },
+  "task": "Isaac-AISHA-BlockA-Phase3-TargetedRecovery-SensorNav-Direct-v0"
+}

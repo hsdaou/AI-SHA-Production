@@ -531,6 +531,32 @@ The frozen route actor and Phase 3L leader are packaged at
 `isaaclab/checkpoints/aisha_phase3l_clearance_planner_model_200.pt`, with the
 same hashes used by the runtime and comparison evidence.
 
+Phase 3M has now executed the targeted recovery gate. Diagnosis found that
+Phase 3 domain randomization was applying drive-wheel friction to the four
+fixed-sphere caster proxies; the targeted task restores their declared
+0.15-0.25 static / 0.10-0.20 dynamic low-friction bands. The task also models
+the repository-specified 6 Nm continuous / 18 Nm, 3-second peak motor boundary.
+The runtime smoke passes 38/38 checks.
+
+PPO fine-tuning ran without deterministic recovery actions for 150 iterations /
+307,200 transitions. Checkpoint 125 is
+packaged at `isaaclab/checkpoints/aisha_phase3m_hybrid_recovery_model_125.pt`
+(SHA-256 `bc8727e3ea42c8b29ca74fa5a535fd37b1600633ffd8bf606b02220a557c1a0d`).
+The separate runtime task retains the trained recurrent residual for normal transit and
+adds two narrow, auditable recovery primitives: a clearance-projected,
+goal-signed 0.55 rad/s stopped pivot only on office-departure segments 4 and 9,
+and 0.10/0.08 m/s predictive creep on tight return segments 6, 10 and 11.
+
+On seed 9701 it achieved 46/48 successes, 2 dynamic collisions, no static
+collisions and no timeouts; segments 4, 6 and 9 each improved to 4/4. An
+independent seed achieved 43/48 with 4 dynamic and 1 static collision. Phase 3M
+is therefore a packaged architecture candidate, not a fully accepted or
+presentation-replacing policy. Dynamic-person performance remains
+seed-sensitive, and the declared 64-episode-per-segment, Phase 2 regression and
+12 live-scene gates are still pending. The next gate is a 360-degree
+dynamic-obstacle safety layer while freezing the successful pivot/clearance
+stack.
+
 The administration USD was rebuilt with page-2 Block A printed-dimension anchors
 (12.75 m atrium, 2.80 m hall, 7.80 x 6.30 m conference room and 4.73 m
 Principal frontage) and tagged `GEOMETRY-RTX-PHASE3-A`. Four procedural finish
@@ -569,6 +595,17 @@ TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p \
   isaaclab/scripts/smoke_phase3_clearance_planner.py \
   --num-envs 4 --steps 120 --headless
 isaaclab/scripts/run_phase3_clearance_planner.sh
+TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p \
+  isaaclab/scripts/smoke_phase3_clearance_planner.py \
+  --task Isaac-AISHA-BlockA-Phase3-TargetedRecovery-SensorNav-Direct-v0 \
+  --num-envs 4 --steps 120 --headless \
+  --output-report results/phase3m_targeted_recovery_smoke_report.json
+isaaclab/scripts/run_phase3_targeted_recovery.sh
+TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p isaaclab/scripts/evaluate.py \
+  --task Isaac-AISHA-BlockA-Phase3-TargetedRecovery-SensorNav-Direct-v0 \
+  --checkpoint isaaclab/checkpoints/aisha_phase3m_hybrid_recovery_model_125.pt \
+  --output results/phase3m_hybrid_model125_balanced_seed9701.json \
+  --episodes 48 --episodes-per-segment 4 --num_envs 48 --seed 9701 --headless
 TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p \
   isaaclab/scripts/smoke_phase3_dynamic.py --num-envs 4 --steps 180 --headless
 TERM=xterm /home/robot-wst/isaacsim/python.sh \
