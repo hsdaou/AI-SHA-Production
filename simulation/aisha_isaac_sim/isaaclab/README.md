@@ -12,7 +12,10 @@ moved by setting its root transform outside normal episode resets.
 The Phase 2 tasks add arbitrary-heading turn acquisition and policy-only route
 control. Phase 3 keeps the same 46-value observation contract while adding
 tracked moving-person proxies and bounded sensor/actuation/dynamics
-randomization.
+randomization. Phase 3N freezes the successful recurrent pivot/clearance stack
+and places a one-action recurrent 360-degree brake layer outside it. The
+declared randomized, static-regression and live-administration simulation gates
+pass; this does not constitute a physical human-safety release.
 
 The Block A task is a genuine sensor-grounded PPO curriculum, but its
 MultiMeshRayCaster is a scalable geometric ray model rather than a validated RTX

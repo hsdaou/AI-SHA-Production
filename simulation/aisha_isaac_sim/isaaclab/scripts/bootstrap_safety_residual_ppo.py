@@ -27,6 +27,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-checkpoint", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--action-count", type=int, choices=(1, 2), default=2)
     args = parser.parse_args()
 
     observations = TensorDict(
@@ -36,7 +37,7 @@ def main() -> int:
     policy = ActorCriticRecurrent(
         observations,
         {"policy": ["policy"], "critic": ["policy"]},
-        num_actions=2,
+        num_actions=args.action_count,
         actor_obs_normalization=True,
         critic_obs_normalization=True,
         actor_hidden_dims=[128, 64],
@@ -49,7 +50,10 @@ def main() -> int:
         rnn_num_layers=1,
     )
     final_actor_layer = policy.actor[-1]
-    if not isinstance(final_actor_layer, torch.nn.Linear) or final_actor_layer.out_features != 2:
+    if (
+        not isinstance(final_actor_layer, torch.nn.Linear)
+        or final_actor_layer.out_features != args.action_count
+    ):
         raise TypeError("unexpected recurrent residual actor output layer")
     torch.nn.init.zeros_(final_actor_layer.weight)
     torch.nn.init.zeros_(final_actor_layer.bias)
@@ -94,14 +98,22 @@ def main() -> int:
             "rnn_hidden_dim": 64,
             "rnn_num_layers": 1,
             "observation_count": 46,
-            "action_count": 2,
+            "action_count": args.action_count,
             "actor_hidden_dims": [128, 64],
             "deterministic_initial_action": [0.0, 0.0],
             "stochastic_initial_std": 0.12,
         },
         "action_semantics": {
             "action_0_negative": "brake_fraction; positive values are a no-op",
-            "action_1_negative": "bounded steering attenuation; positive values are a no-op",
+            **(
+                {
+                    "action_1_negative": (
+                        "bounded steering attenuation; positive values are a no-op"
+                    )
+                }
+                if args.action_count == 2
+                else {}
+            ),
             "can_increase_speed": False,
             "can_reverse": False,
             "can_flip_steering_sign": False,

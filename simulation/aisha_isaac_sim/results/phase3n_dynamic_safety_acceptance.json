@@ -1,0 +1,106 @@
+{
+  "report_type": "phase3n_dynamic_safety_combined_acceptance",
+  "generated_at_utc": "2026-08-22T19:05:00+00:00",
+  "training_contract_revision": "TRAINING-ENDTOEND-N",
+  "architecture": {
+    "outer_policy": "one-action recurrent 360-degree brake-only safety layer",
+    "action_authority": "remove forward motion only while sensor-derived full-ring clearance is closing on a declared pedestrian segment",
+    "forbidden_authority": [
+      "steering",
+      "speed increase",
+      "reverse command",
+      "root-transform motion"
+    ],
+    "privileged_obstacle_state_used_by_policy": false,
+    "frozen_phase3m_checkpoint_sha256": "bc8727e3ea42c8b29ca74fa5a535fd37b1600633ffd8bf606b02220a557c1a0d",
+    "frozen_route_checkpoint_sha256": "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8",
+    "selected_phase3n_checkpoint_sha256": "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b"
+  },
+  "training": {
+    "seed": 10017,
+    "iterations": 200,
+    "parallel_environments": 32,
+    "steps_per_environment_per_iteration": 64,
+    "simulated_policy_transitions": 409600,
+    "selected_iteration": 50,
+    "report": "phase3n_dynamic_safety_training_report.json"
+  },
+  "matched_two_seed_screen": {
+    "seeds": [9701, 9702],
+    "episodes_per_candidate": 96,
+    "frozen_stack_control": {
+      "successes": 95,
+      "dynamic_collisions": 1,
+      "static_collisions": 0,
+      "time_outs": 0
+    },
+    "selected_model_50": {
+      "successes": 96,
+      "dynamic_collisions": 0,
+      "static_collisions": 0,
+      "time_outs": 0
+    },
+    "reports": [
+      "phase3n_control_balanced_seed9701.json",
+      "phase3n_control_balanced_seed9702.json",
+      "phase3n_model50_balanced_seed9701.json",
+      "phase3n_model50_balanced_seed9702.json"
+    ]
+  },
+  "randomized_segment_gate": {
+    "seed": 10101,
+    "episodes_per_segment": 64,
+    "episodes": 768,
+    "successes": 744,
+    "success_rate": 0.96875,
+    "dynamic_collisions": 8,
+    "dynamic_collision_rate": 0.010416666666666666,
+    "static_collisions": 12,
+    "static_collision_rate": 0.015625,
+    "time_outs": 4,
+    "minimum_pedestrian_enabled_segment_success_rate": 0.921875,
+    "requirements": {
+      "success_rate_min": 0.9,
+      "dynamic_collision_rate_max": 0.02,
+      "static_collision_rate_max": 0.05,
+      "minimum_pedestrian_enabled_segment_success_rate": 0.8
+    },
+    "report": "phase3n_model50_full_acceptance_seed10101.json",
+    "passed": true
+  },
+  "static_regression_gate": {
+    "seed": 10201,
+    "episodes": 48,
+    "successes": 48,
+    "collisions": 0,
+    "time_outs": 0,
+    "success_rate": 1.0,
+    "success_rate_min": 0.9,
+    "dynamic_obstacle_activation_probability": 0.0,
+    "full_domain_randomization": true,
+    "report": "phase3n_model50_static_regression_seed10201.json",
+    "passed": true
+  },
+  "live_administration_dynamic_gate": {
+    "seed": 10301,
+    "scenarios": 12,
+    "successes": 12,
+    "dynamic_collisions": 0,
+    "static_collisions": 0,
+    "time_outs": 0,
+    "report": "phase3n_model50_live_administration_dynamic12_seed10301.json",
+    "passed": true
+  },
+  "decision": {
+    "full_phase3_simulation_acceptance_passed": true,
+    "selected_checkpoint_packaged": true,
+    "physical_safety_claim_allowed": false,
+    "physical_robot_release": false,
+    "remaining_physical_gates": [
+      "as-built site survey and measured clearances",
+      "Nav2 integration",
+      "sim-to-real validation",
+      "hardware emergency-stop and human-safety commissioning"
+    ]
+  }
+}

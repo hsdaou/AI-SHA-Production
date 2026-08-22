@@ -2,7 +2,7 @@
 # This file describes a real physics-driven learning task. It is not a claim of
 # physical release or successful sim-to-real transfer.
 
-revision: "TRAINING-ENDTOEND-L"
+revision: "TRAINING-ENDTOEND-N"
 date: "2026-08-22"
 
 software_baseline:
@@ -245,7 +245,7 @@ phase2_curriculum:
 
 phase3_curriculum:
   purpose: "fine-tune the accepted learned route policy for moving people and bounded sim-to-real variation"
-  status: "training_completed_screening_candidate_not_accepted"
+  status: "phase3n_simulation_acceptance_passed_physical_release_pending"
   gym_id: "Isaac-AISHA-BlockA-Phase3-DynamicDR-SensorNav-Direct-v0"
   policy_rate_hz: 30
   physics_rate_hz: 120
@@ -625,6 +625,116 @@ phase3_curriculum:
       physical_release: false
       decision: "package as a Phase 3M architecture candidate because it repairs all targeted legs and strongly improves completion; do not call it fully trained or safe because dynamic contacts remain seed-sensitive and the 64-episode-per-segment, static-regression and live-scene gates remain pending"
     next_architecture_gate: "freeze the successful pivot/clearance stack and train a 360-degree dynamic-obstacle safety layer; then execute 64 episodes per segment, Phase 2 static regression and 12 collision-free live-administration dynamic scenarios"
+  dynamic_safety_gate:
+    status: "completed_full_phase3_simulation_acceptance_passed"
+    training_gym_id: "Isaac-AISHA-BlockA-Phase3-DynamicSafety-SensorNav-Direct-v0"
+    static_regression_gym_id: "Isaac-AISHA-BlockA-Phase3-DynamicSafety-StaticRegression-SensorNav-Direct-v0"
+    live_gym_id: "Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Direct-v0"
+    architecture: "one-action recurrent 360-degree brake layer outside the hash-locked Phase 3M recurrent pivot/clearance controller"
+    observation_count: 46
+    action_count: 1
+    action_contract: "a negative request may remove forward motion only while full-ring LiDAR clearance is closing on declared pedestrian segments; it cannot steer, accelerate, reverse, or replace the frozen stack"
+    privileged_obstacle_state_used_by_policy: false
+    emergency_action_override_enabled: false
+    safety_dynamic_segment_ids: [0, 1, 2, 5, 7, 10, 11]
+    frozen_stack:
+      phase3m_checkpoint: "isaaclab/checkpoints/aisha_phase3m_hybrid_recovery_model_125.pt"
+      phase3m_checkpoint_sha256: "bc8727e3ea42c8b29ca74fa5a535fd37b1600633ffd8bf606b02220a557c1a0d"
+      route_checkpoint: "isaaclab/checkpoints/aisha_phase3_frozen_route_model_2225.pt"
+      route_checkpoint_sha256: "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8"
+      frozen_during_phase3n: true
+    runtime_smoke:
+      report: "results/phase3n_dynamic_safety_smoke_report.json"
+      checks_passed: 29
+      checks_total: 29
+      passed: true
+    bootstrap:
+      report: "results/phase3n_dynamic_safety_bootstrap_report.json"
+      checkpoint_sha256: "ab4fd52ce15d796d641daaea9c98f153525b443627482f3aea2d35701ba07e3f"
+    ppo_training:
+      run: "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_21-35-00_phase3n_brake_only_social_safety_seed10017"
+      seed: 10017
+      iterations: 200
+      selected_iteration: 50
+      parallel_environments: 32
+      steps_per_environment_per_iteration: 64
+      policy_transitions: 409600
+      report: "results/phase3n_dynamic_safety_training_report.json"
+      progress_plot: "results/phase3n_dynamic_safety_training_progress.png"
+    selected_checkpoint:
+      path: "isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt"
+      sha256: "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b"
+    matched_two_seed_screen:
+      reports:
+        - "results/phase3n_control_balanced_seed9701.json"
+        - "results/phase3n_control_balanced_seed9702.json"
+        - "results/phase3n_model50_balanced_seed9701.json"
+        - "results/phase3n_model50_balanced_seed9702.json"
+      frozen_stack_control: {episodes: 96, successes: 95, dynamic_collisions: 1, static_collisions: 0, time_outs: 0}
+      model_50: {episodes: 96, successes: 96, dynamic_collisions: 0, static_collisions: 0, time_outs: 0}
+    randomized_segment_gate:
+      report: "results/phase3n_model50_full_acceptance_seed10101.json"
+      seed: 10101
+      episodes_per_segment: 64
+      episodes: 768
+      successes: 744
+      success_rate: 0.96875
+      dynamic_collisions: 8
+      dynamic_collision_rate: 0.010416666666666666
+      static_collisions: 12
+      static_collision_rate: 0.015625
+      time_outs: 4
+      minimum_pedestrian_enabled_segment_success_rate: 0.921875
+      passed: true
+    static_regression_gate:
+      report: "results/phase3n_model50_static_regression_seed10201.json"
+      seed: 10201
+      dynamic_obstacle_activation_probability: 0.0
+      full_domain_randomization: true
+      episodes: 48
+      successes: 48
+      collisions: 0
+      time_outs: 0
+      passed: true
+    live_administration_gate:
+      report: "results/phase3n_model50_live_administration_dynamic12_seed10301.json"
+      seed: 10301
+      scenarios: 12
+      successes: 12
+      dynamic_collisions: 0
+      static_collisions: 0
+      time_outs: 0
+      passed: true
+    final_omniverse_presentation:
+      task: "Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Presentation-Direct-v0"
+      seed: 10201
+      checkpoint: "isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt"
+      dynamic_obstacle_activation_probability: 0.0
+      reason_for_static_scene: "show the verified learned office route clearly; moving-obstacle performance is demonstrated by the separate accepted randomized and live-dynamic gates"
+      presentation_goal_tolerance_m: {vice_principal: 0.22, principal: 0.22, principal_depart: 0.20}
+      presentation_predictive_guard_segment_ids: [6, 11]
+      presentation_adaptation: "the redundant segment-10 predictive-creep guard is omitted only from the clean continuous film; weights, steering, wheel physics, LiDAR observations, office pivots and the outer safety policy remain active"
+      route_report: "results/phase3n_administration_final_omniverse_report.json"
+      raw_video: "media/videos/phase3n_administration_final_omniverse/aisha-block-a-learned-route-step-0.mp4"
+      raw_video_sha256: "fad47145d00e32c492b739cffb190a15e703a625345cc1ee76071e1760b54b8b"
+      waypoints_completed: 12
+      policy_steps: 4941
+      simulated_duration_s: 164.7
+      supervisor_turn_steps: 0
+      presentation_dwell_steps: 0
+      collisions: 0
+      recurrent_state_reset_during_route: false
+      presentation_video: "media/videos/AI-SHA_Phase3N_Administration_Final_Omniverse_3x.mp4"
+      presentation_video_report: "results/phase3n_administration_final_omniverse_3x_report.json"
+      presentation_video_sha256: "44cd1e975b6b13a98f3013cdb1f3dc90db52e9d240f763a6f03d843f877e2f13"
+      presentation_duration_s: 54.766666666666666
+      motion_changed_by_edit: false
+      passed: true
+    combined_acceptance_report: "results/phase3n_dynamic_safety_acceptance.json"
+    full_phase3_simulation_acceptance_passed: true
+    physical_safety_claim_allowed: false
+    physical_release: false
+    decision: "accept model 50 for the declared Phase 3 simulation scope because all randomized, static-regression and live-administration subgates passed; retain site survey, Nav2, sim-to-real validation and physical safety commissioning as separate gates"
   runtime_smoke:
     report: "results/phase3_dynamic_yielding_smoke_report.json"
     environments: 4
@@ -775,8 +885,16 @@ release:
   phase3_targeted_recovery_candidate_packaged: true
   phase3_targeted_recovery_target_segments_passed: true
   phase3_targeted_recovery_full_acceptance_passed: false
-  phase3_dynamic_obstacle_checkpoint_accepted: false
+  phase3_dynamic_safety_training_completed: true
+  phase3_dynamic_safety_checkpoint_packaged: true
+  phase3_dynamic_safety_randomized_gate_passed: true
+  phase3_dynamic_safety_static_regression_passed: true
+  phase3_dynamic_safety_live_scenarios_passed: true
+  phase3_dynamic_obstacle_checkpoint_accepted: true
+  phase3_full_simulation_acceptance_passed: true
+  phase3n_final_omniverse_policy_only_route_passed: true
+  phase3n_final_omniverse_presentation_available: true
   phase3_geometry_rtx_refinement_available: true
   nav2_integrated: false
   physical_robot_release: false
-  required_next_gate: "freeze the Phase 3M pivot/clearance recovery candidate and train a 360-degree dynamic-obstacle safety layer; then pass 64 randomized episodes per segment, the Phase 2 static regression and 12 collision-free live-scene dynamic scenarios; site survey, Nav2 and sim-to-real commissioning remain separate"
+  required_next_gate: "capture and validate the final policy-only Omniverse presentation run; physical deployment still requires an as-built site survey, measured clearances, Nav2 integration, sim-to-real validation and hardware safety commissioning"

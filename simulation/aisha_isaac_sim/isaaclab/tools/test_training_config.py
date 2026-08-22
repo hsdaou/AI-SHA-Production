@@ -104,6 +104,47 @@ PACKAGED_PHASE3M_CHECKPOINT = (
     / "checkpoints"
     / "aisha_phase3m_hybrid_recovery_model_125.pt"
 )
+PHASE3_DYNAMIC_SAFETY_LAUNCHER = (
+    Path(__file__).resolve().parents[1] / "scripts" / "run_phase3_dynamic_safety.sh"
+)
+PHASE3_DYNAMIC_SAFETY_SMOKE = (
+    Path(__file__).resolve().parents[1] / "scripts" / "smoke_phase3_dynamic_safety.py"
+)
+PHASE3_DYNAMIC_SAFETY_LIVE_ENVIRONMENT = (
+    Path(__file__).resolve().parents[1]
+    / "aisha_isaaclab"
+    / "tasks"
+    / "office_nav"
+    / "administration_dynamic_safety_env.py"
+)
+PACKAGED_PHASE3N_CHECKPOINT = (
+    Path(__file__).resolve().parents[1]
+    / "checkpoints"
+    / "aisha_phase3n_dynamic_safety_model_50.pt"
+)
+PHASE3N_ACCEPTANCE_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "phase3n_dynamic_safety_acceptance.json"
+)
+PHASE3N_RAW_PRESENTATION_VIDEO = (
+    Path(__file__).resolve().parents[2]
+    / "media"
+    / "videos"
+    / "phase3n_administration_final_omniverse"
+    / "aisha-block-a-learned-route-step-0.mp4"
+)
+PHASE3N_PRESENTATION_VIDEO = (
+    Path(__file__).resolve().parents[2]
+    / "media"
+    / "videos"
+    / "AI-SHA_Phase3N_Administration_Final_Omniverse_3x.mp4"
+)
+PHASE3N_PRESENTATION_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "phase3n_administration_final_omniverse_3x_report.json"
+)
 
 
 class TrainingConfigTests(unittest.TestCase):
@@ -162,6 +203,15 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertTrue(release["phase3_targeted_recovery_candidate_packaged"])
         self.assertTrue(release["phase3_targeted_recovery_target_segments_passed"])
         self.assertFalse(release["phase3_targeted_recovery_full_acceptance_passed"])
+        self.assertTrue(release["phase3_dynamic_safety_training_completed"])
+        self.assertTrue(release["phase3_dynamic_safety_checkpoint_packaged"])
+        self.assertTrue(release["phase3_dynamic_safety_randomized_gate_passed"])
+        self.assertTrue(release["phase3_dynamic_safety_static_regression_passed"])
+        self.assertTrue(release["phase3_dynamic_safety_live_scenarios_passed"])
+        self.assertTrue(release["phase3_dynamic_obstacle_checkpoint_accepted"])
+        self.assertTrue(release["phase3_full_simulation_acceptance_passed"])
+        self.assertTrue(release["phase3n_final_omniverse_policy_only_route_passed"])
+        self.assertTrue(release["phase3n_final_omniverse_presentation_available"])
         self.assertFalse(release["nav2_integrated"])
         self.assertFalse(release["physical_robot_release"])
 
@@ -630,6 +680,91 @@ class TrainingConfigTests(unittest.TestCase):
             hashlib.sha256(PACKAGED_PHASE3M_CHECKPOINT.read_bytes()).hexdigest(),
             recovery["selected_candidate"]["checkpoint_sha256"],
         )
+
+    def test_phase3_dynamic_safety_freezes_recovery_and_limits_authority(self) -> None:
+        source = PHASE3_ENVIRONMENT.read_text(encoding="utf-8")
+        live_source = PHASE3_DYNAMIC_SAFETY_LIVE_ENVIRONMENT.read_text(
+            encoding="utf-8"
+        )
+        runner = PHASE3_RUNNER.read_text(encoding="utf-8")
+        registry = TASK_REGISTRY.read_text(encoding="utf-8")
+        launcher = PHASE3_DYNAMIC_SAFETY_LAUNCHER.read_text(encoding="utf-8")
+        smoke = PHASE3_DYNAMIC_SAFETY_SMOKE.read_text(encoding="utf-8")
+        player = ROUTE_PLAYER.read_text(encoding="utf-8")
+
+        self.assertIn("AishaPhase3DynamicSafetyEnvCfg", source)
+        self.assertIn("action_space = 1", source)
+        self.assertIn("_frozen_phase3m_actions", source)
+        self.assertIn("module.requires_grad_(False)", source)
+        self.assertIn("safety_emergency_guard_enabled = False", source)
+        self.assertIn("brake_fraction = torch.relu(-safety_actions[:, 0])", source)
+        self.assertIn('"may_flip_steering_sign": False', source)
+        self.assertIn("AishaPhase3DynamicSafetyStaticRegressionEnvCfg", source)
+        self.assertIn("AishaAdministrationDynamicSafetyEnvCfg", live_source)
+        self.assertIn("AishaAdministrationSafetyPresentationEnvCfg", live_source)
+        self.assertIn("PHASE3N_LIVE_GOAL_TOLERANCES_M", live_source)
+        self.assertIn("AishaPhase3DynamicSafetyPPORunnerCfg", runner)
+        self.assertIn("Phase3-DynamicSafety", registry)
+        self.assertIn("Administration-Live-Phase3-DynamicSafety", registry)
+        self.assertIn("--action-count 1", launcher)
+        self.assertIn("FROZEN_RECOVERY_SHA256", launcher)
+        self.assertIn("brake_only_action_contract_1", smoke)
+        self.assertIn("continuous recurrent state preserved", player)
+
+        gate = self.data["phase3_curriculum"]["dynamic_safety_gate"]
+        self.assertEqual(gate["action_count"], 1)
+        self.assertFalse(gate["privileged_obstacle_state_used_by_policy"])
+        self.assertFalse(gate["emergency_action_override_enabled"])
+        self.assertTrue(gate["frozen_stack"]["frozen_during_phase3n"])
+        self.assertTrue(gate["runtime_smoke"]["passed"])
+        self.assertEqual(gate["runtime_smoke"]["checks_passed"], 29)
+        self.assertTrue(gate["randomized_segment_gate"]["passed"])
+        self.assertTrue(gate["static_regression_gate"]["passed"])
+        self.assertTrue(gate["live_administration_gate"]["passed"])
+        self.assertTrue(gate["full_phase3_simulation_acceptance_passed"])
+        self.assertFalse(gate["physical_safety_claim_allowed"])
+        presentation = gate["final_omniverse_presentation"]
+        self.assertTrue(presentation["passed"])
+        self.assertEqual(presentation["waypoints_completed"], 12)
+        self.assertEqual(presentation["supervisor_turn_steps"], 0)
+        self.assertEqual(presentation["presentation_dwell_steps"], 0)
+        self.assertEqual(presentation["collisions"], 0)
+        self.assertFalse(presentation["recurrent_state_reset_during_route"])
+        self.assertFalse(presentation["motion_changed_by_edit"])
+        self.assertTrue(PHASE3N_RAW_PRESENTATION_VIDEO.is_file())
+        self.assertTrue(PHASE3N_PRESENTATION_VIDEO.is_file())
+        self.assertEqual(
+            hashlib.sha256(PHASE3N_RAW_PRESENTATION_VIDEO.read_bytes()).hexdigest(),
+            presentation["raw_video_sha256"],
+        )
+        self.assertEqual(
+            hashlib.sha256(PHASE3N_PRESENTATION_VIDEO.read_bytes()).hexdigest(),
+            presentation["presentation_video_sha256"],
+        )
+        presentation_report = json.loads(
+            PHASE3N_PRESENTATION_REPORT.read_text(encoding="utf-8")
+        )
+        self.assertTrue(presentation_report["passed"])
+        self.assertTrue(presentation_report["phase3n_dynamic_safety_overlay"])
+        self.assertFalse(presentation_report["motion_changed"])
+        self.assertEqual(
+            presentation_report["output_video_sha256"],
+            presentation["presentation_video_sha256"],
+        )
+        self.assertTrue(PACKAGED_PHASE3N_CHECKPOINT.is_file())
+        self.assertEqual(
+            hashlib.sha256(PACKAGED_PHASE3N_CHECKPOINT.read_bytes()).hexdigest(),
+            gate["selected_checkpoint"]["sha256"],
+        )
+
+        acceptance = json.loads(PHASE3N_ACCEPTANCE_REPORT.read_text(encoding="utf-8"))
+        self.assertTrue(
+            acceptance["decision"]["full_phase3_simulation_acceptance_passed"]
+        )
+        self.assertFalse(acceptance["decision"]["physical_safety_claim_allowed"])
+        self.assertTrue(acceptance["randomized_segment_gate"]["passed"])
+        self.assertTrue(acceptance["static_regression_gate"]["passed"])
+        self.assertTrue(acceptance["live_administration_dynamic_gate"]["passed"])
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-22. The clearance-projected recurrent planner completed 1,228,800 transitions and model 200 was promoted as the leading protected-navigation architecture candidate after dominating two same-seed controls. Full Phase 3 acceptance and the presentation policy remain unchanged.**
+**Updated 2026-08-22. Phase 3N freezes the successful Phase 3M pivot/clearance stack, adds a one-action recurrent 360-degree brake layer, and passes the declared randomized, static-regression and live-administration simulation gates. This is not a physical safety or deployment release.**
 
 ## Completed
 
@@ -278,6 +278,40 @@
   not a physical release. The next gate freezes this pivot/clearance stack and
   trains a 360-degree dynamic-obstacle safety layer before the declared 64
   episodes per segment, Phase 2 regression and 12 live-scene scenarios.
+- Phase 3N executes that gate without modifying either frozen controller. The
+  Phase 3M recurrent checkpoint and its underlying route checkpoint are both
+  SHA-256 checked and have no trainable parameters. A separate 64-unit GRU has
+  one brake-only action: it can remove forward motion when the 36-ray ring is
+  closing on a declared pedestrian leg, but cannot steer, accelerate, reverse
+  or move the robot root. The runtime contract passes 29/29 checks.
+- PPO ran for 200 iterations across 32 environments, totaling 409,600
+  transitions. Selected model 50 is packaged as
+  `aisha_phase3n_dynamic_safety_model_50.pt`, SHA-256
+  `11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b`.
+  Across matched seeds 9701/9702 it records 96/96 successes and no contacts;
+  the exact frozen-stack control records 95/96 and one dynamic contact.
+- The declared randomized gate passes with 744/768 successes (96.875%), 8
+  dynamic contacts (1.042%), 12 static contacts (1.563%), four timeouts and a
+  92.188% minimum success rate on pedestrian-enabled segments. The separate
+  full-randomization/no-pedestrian regression passes 48/48 with zero contacts,
+  and the walkthrough-matched live gate passes 12/12 dynamic scenarios with
+  zero contacts or timeouts. Full Phase 3 simulation acceptance is therefore
+  recorded; site survey, Nav2, sim-to-real and physical safety commissioning
+  remain mandatory before physical release.
+- The final seed-10201 Omniverse film run uses the packaged Phase 3N checkpoint
+  and completes all 12 waypoints in 4,941 learned-policy steps / 164.7 simulated
+  seconds. It records zero turn-supervisor steps, zero dwell actions, zero
+  collisions, no root animation and continuous recurrent state across both
+  office visits and the return. The static presentation scenario, 0.22 m office
+  stops, 0.20 m Principal-departure stop and omitted redundant segment-10
+  predictive-creep guard are disclosed film-only adaptations; the separate
+  accepted dynamic gates remain the safety evidence.
+- The raw 1280 x 720 capture has SHA-256
+  `fad47145d00e32c492b739cffb190a15e703a625345cc1ee76071e1760b54b8b`.
+  Its 54.77 s 3x presentation cut retains motion, adds synchronized controller
+  telemetry and labels the frozen Phase 3M plus learned 360-degree brake stack;
+  SHA-256 is
+  `44cd1e975b6b13a98f3013cdb1f3dc90db52e9d240f763a6f03d843f877e2f13`.
 - Geometry refinement `GEOMETRY-RTX-PHASE3-A` locks the source PDF hash and uses
   printed page-2 Block A dimensions for the 12.75 m atrium, 2.80 m hall,
   7.80 x 6.30 m conference room and 4.73 m Principal frontage. Door widths,
@@ -313,9 +347,10 @@ claim. See `config/physics_materials.yaml`.
   are scalable geometric sensing, not a validated RTX LD19 noise model.
 - The 12-segment Principal/Vice-Principal sensor policy now passes its declared
   held-out gate. D435 depth/semantic inputs, broader material and sensor domain
-  randomization and dynamic-person training are now implemented and completed;
-  their Phase 3 held-out acceptance, dynamic furniture, Nav2 integration and
-  sim-to-real validation remain subsequent gates.
+  randomization and dynamic-person training are now implemented and completed,
+  and the declared Phase 3 simulation acceptance gate passes. Dynamic
+  furniture, Nav2 integration, measured-site validation and sim-to-real
+  commissioning remain subsequent gates.
 - The administration USD has been rebuilt around the walkthrough's primary
   visual anchors: brighter polished terrazzo and aggregate, white atrium
   columns, dark timber/slatted walls, office glazing, a round timber meeting
@@ -431,6 +466,20 @@ claim. See `config/physics_materials.yaml`.
 - `phase3m_hybrid_model125_balanced_seed9701.json`
 - `phase3m_hybrid_model125_balanced_seed9702.json`
 - `phase3m_targeted_recovery_comparison.json`
+- `phase3n_dynamic_safety_bootstrap_report.json`
+- `phase3n_dynamic_safety_smoke_report.json`
+- `phase3n_dynamic_safety_training_report.json`
+- `phase3n_dynamic_safety_training_progress.png`
+- `phase3n_control_balanced_seed9701.json`
+- `phase3n_control_balanced_seed9702.json`
+- `phase3n_model50_balanced_seed9701.json`
+- `phase3n_model50_balanced_seed9702.json`
+- `phase3n_model50_full_acceptance_seed10101.json`
+- `phase3n_model50_static_regression_seed10201.json`
+- `phase3n_model50_live_administration_dynamic12_seed10301.json`
+- `phase3n_dynamic_safety_acceptance.json`
+- `phase3n_administration_final_omniverse_report.json`
+- `phase3n_administration_final_omniverse_3x_report.json`
 - `phase3_geometry_rtx_refinement_validation.json`
 - `phase3_launch_status.json`
 - `PRODUCTION_REPOSITORY_REVIEW.md`
@@ -461,3 +510,5 @@ claim. See `config/physics_materials.yaml`.
 - `../media/videos/phase2_administration_live_cinematic/aisha-block-a-learned-route-step-0.mp4`
 - `../media/videos/AI-SHA_Phase2_Administration_Live_Cinematic_3x.mp4`
 - `../media/videos/AI-SHA_Phase2_Administration_Live_Cinematic_Teaser_12x.mp4`
+- `../media/videos/phase3n_administration_final_omniverse/aisha-block-a-learned-route-step-0.mp4`
+- `../media/videos/AI-SHA_Phase3N_Administration_Final_Omniverse_3x.mp4`

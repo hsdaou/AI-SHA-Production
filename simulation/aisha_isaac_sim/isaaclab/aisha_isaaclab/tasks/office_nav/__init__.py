@@ -311,6 +311,86 @@ gym.register(
 
 
 gym.register(
+    id="Isaac-AISHA-BlockA-Phase3-DynamicSafety-SensorNav-Direct-v0",
+    entry_point=(
+        "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+        "AishaPhase3DynamicSafetyEnv"
+    ),
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+            "AishaPhase3DynamicSafetyEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+            "AishaPhase3DynamicSafetyPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Isaac-AISHA-BlockA-Phase3-DynamicSafety-StaticRegression-SensorNav-Direct-v0",
+    entry_point=(
+        "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+        "AishaPhase3DynamicSafetyEnv"
+    ),
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+            "AishaPhase3DynamicSafetyStaticRegressionEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+            "AishaPhase3DynamicSafetyPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Direct-v0",
+    entry_point=(
+        "aisha_isaaclab.tasks.office_nav.administration_dynamic_safety_env:"
+        "AishaAdministrationDynamicSafetyEnv"
+    ),
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.administration_dynamic_safety_env:"
+            "AishaAdministrationDynamicSafetyEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+            "AishaPhase3DynamicSafetyPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Presentation-Direct-v0",
+    entry_point=(
+        "aisha_isaaclab.tasks.office_nav.administration_dynamic_safety_env:"
+        "AishaAdministrationDynamicSafetyEnv"
+    ),
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.administration_dynamic_safety_env:"
+            "AishaAdministrationSafetyPresentationEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+            "AishaPhase3DynamicSafetyPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
     id="Isaac-AISHA-BlockA-Phase3-Segment6Rehearsal-SensorNav-Direct-v0",
     entry_point=(
         "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
