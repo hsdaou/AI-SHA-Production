@@ -1,0 +1,51 @@
+{
+  "report_type": "administration_nav2_bridge_external_probe",
+  "generated_at_utc": "2026-08-22T21:57:06.517877+00:00",
+  "checks": {
+    "required_topics_discovered": true,
+    "clock_received": true,
+    "odometry_received": true,
+    "crown_scan_received": true,
+    "front_scan_received": true,
+    "front_scan_has_25_rays": true,
+    "front_scan_ranges_finite": true,
+    "external_cmd_vel_moved_physics_robot": true
+  },
+  "checks_passed": 8,
+  "checks_total": 8,
+  "passed": true,
+  "observed_topics": [
+    "/clock",
+    "/cmd_vel",
+    "/front_scan",
+    "/odom",
+    "/parameter_events",
+    "/rosout",
+    "/scan",
+    "/tf",
+    "/tf_static"
+  ],
+  "samples": {
+    "clock": 213,
+    "odometry": 212,
+    "crown_scan": 69,
+    "front_scan": 103,
+    "front_range_count": 25
+  },
+  "command": {
+    "linear_mps": 0.2,
+    "duration_wall_s": 2.0,
+    "start_xy_m": [
+      0.000564645859412849,
+      -0.02461392991244793
+    ],
+    "end_xy_m": [
+      0.8107398152351379,
+      0.04281521588563919
+    ],
+    "observed_displacement_m": 0.8129763187055602,
+    "maximum_observed_forward_velocity_mps": 0.1479252129793167
+  },
+  "physical_release": false,
+  "claim_boundary": "This probe proves bidirectional ROS 2 message exchange and simulated wheel-driven motion. It is not a Nav2 mission, learned-policy integration, or physical safety test."
+}
