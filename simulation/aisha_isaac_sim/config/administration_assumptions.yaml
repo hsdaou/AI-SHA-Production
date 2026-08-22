@@ -31,6 +31,12 @@ known_dimensions:
   conference_room_m:
     value: [7.80, 6.30]
     status: approved_plan_page_2_dimension
+  principal_diagonal_frontage_m:
+    value: 4.73
+    status: approved_plan_page_2_dimension
+  vice_principal_labelled_bay_m:
+    value: [3.30, 3.00]
+    status: approved_plan_page_2_dimension_not_current_presentation_room_envelope
 
 # World convention: atrium centre is (0,0); +X is east, +Y is north, +Z is up.
 # The plan-derived values below are a route-scoped trace of the labelled Block A
@@ -54,9 +60,9 @@ plan_geometry:
     office_manager: {centre_xy_m: [9.10, -3.20], size_xy_m: [3.25, 3.60], rotation_deg: 0.0}
     meeting_room_1: {centre_xy_m: [12.40, -3.20], size_xy_m: [3.20, 3.60], rotation_deg: 0.0}
     meeting_room_2: {centre_xy_m: [15.65, -3.20], size_xy_m: [3.10, 3.60], rotation_deg: 0.0}
-    vice_principal: {centre_xy_m: [17.10, -6.55], size_xy_m: [6.30, 3.00], rotation_deg: 0.0}
+    vice_principal: {centre_xy_m: [17.10, -6.55], size_xy_m: [6.30, 3.00], rotation_deg: 0.0, status: route_scoped_presentation_expansion_not_plan_room_envelope}
     secretary: {centre_xy_m: [8.25, -5.70], size_xy_m: [3.20, 2.60], rotation_deg: -45.0}
-    principal: {centre_xy_m: [8.65, -9.30], size_xy_m: [4.75, 3.60], rotation_deg: -45.0}
+    principal: {centre_xy_m: [8.65, -9.30], size_xy_m: [4.73, 3.60], rotation_deg: -45.0, status: plan_frontage_anchor_with_traced_depth}
   main_entrance:
     centre_xy_m: [0.00, -12.80]
     status: plan_derived
@@ -68,19 +74,21 @@ doors:
   vice_principal:
     centre_xy_m: [17.10, -5.05]
     wall_rotation_deg: 0.0
-    clear_width_m: 1.10
+    clear_width_m: 1.40
     width_status: presentation_assumption_not_measured
-    threshold_height_mm: 3
-    threshold_status: presentation_assumption_not_measured
-    swing: inward_open_90_deg_for_presentation
+    threshold_height_mm: 0
+    threshold_status: flush_presentation_assumption_not_measured
+    swing: outward_open_90_deg_for_presentation_route_clearance
+    hinge: left_jamb_presentation_assumption
   principal:
-    centre_xy_m: [6.971, -7.621]
+    centre_xy_m: [6.978, -7.628]
     wall_rotation_deg: 45.0
-    clear_width_m: 1.05
+    clear_width_m: 1.40
     width_status: presentation_assumption_not_measured
-    threshold_height_mm: 5
-    threshold_status: presentation_assumption_not_measured
-    swing: inward_open_90_deg_for_presentation
+    threshold_height_mm: 0
+    threshold_status: flush_presentation_assumption_not_measured
+    swing: outward_open_90_deg_for_presentation_route_clearance
+    hinge: left_jamb_for_approach_and_pivot_clearance_presentation_assumption
 
 route:
   status: plan_derived_topology_with_presentation_goal_offsets
@@ -88,17 +96,17 @@ route:
   approach_speed_mps: 0.20
   waypoints:
     - {id: home, x_m: 0.00, y_m: 0.00, yaw_deg: 0.0, action: start_and_end}
-    - {id: east_atrium_exit, x_m: 5.20, y_m: 0.00, yaw_deg: 0.0, action: transit}
-    - {id: vice_principal_turn, x_m: 17.10, y_m: 0.00, yaw_deg: -90.0, action: align_in_hallway}
+    - {id: east_atrium_exit, x_m: 4.70, y_m: 0.00, yaw_deg: 0.0, action: transit}
+    - {id: vice_principal_turn, x_m: 17.10, y_m: 0.50, yaw_deg: -90.0, action: align_in_open_hallway_with_turn_clearance}
     - {id: vice_principal_approach, x_m: 17.10, y_m: -3.80, yaw_deg: -90.0, action: straight_door_approach}
-    - {id: vice_principal, x_m: 17.10, y_m: -6.25, yaw_deg: -90.0, action: presentation_stop}
-    - {id: vice_principal_depart, x_m: 17.10, y_m: -3.80, yaw_deg: 90.0, action: room_turn_and_depart}
-    - {id: hallway_return, x_m: 10.20, y_m: 0.00, yaw_deg: 180.0, action: transit}
-    - {id: principal_turn, x_m: 5.10, y_m: -3.80, yaw_deg: -45.0, action: align_in_open_atrium_edge}
+    - {id: vice_principal, x_m: 17.10, y_m: -6.40, yaw_deg: -90.0, action: presentation_stop_inside_with_pivot_clearance}
+    - {id: vice_principal_depart, x_m: 17.10, y_m: 0.00, yaw_deg: 90.0, action: straight_room_depart_then_hallway_turn}
+    - {id: hallway_return, x_m: 4.70, y_m: 0.00, yaw_deg: 180.0, action: return_to_atrium_before_turning}
+    - {id: principal_turn, x_m: 3.45, y_m: -3.45, yaw_deg: -45.0, action: align_on_diagonal_corridor_centreline}
     - {id: principal_approach, x_m: 6.45, y_m: -6.95, yaw_deg: -45.0, action: straight_door_approach}
-    - {id: principal, x_m: 8.65, y_m: -9.10, yaw_deg: -45.0, action: presentation_stop}
-    - {id: principal_depart, x_m: 6.45, y_m: -6.95, yaw_deg: 135.0, action: room_turn_and_depart}
-    - {id: atrium_return, x_m: 4.20, y_m: -3.40, yaw_deg: 135.0, action: transit}
+    - {id: principal, x_m: 8.01, y_m: -8.66, yaw_deg: -45.0, action: presentation_stop_inside_clear_pivot_zone}
+    - {id: principal_depart, x_m: 6.53, y_m: -6.90, yaw_deg: 135.0, action: clear_side_room_turn_then_door_centre_departure}
+    - {id: atrium_return, x_m: 3.45, y_m: -3.45, yaw_deg: 135.0, action: corridor_to_atrium_turn}
     - {id: home_return, x_m: 0.00, y_m: 0.00, yaw_deg: 180.0, action: end}
 
 appearance:
@@ -110,10 +118,24 @@ appearance:
   partitions: frosted_glass_with_grey_frames
   ceiling: white_suspended_grid_with_led_panels
   furniture: timber_desks_black_chairs_low_cabinets_and_planters
+  atrium_columns:
+    status: walkthrough_derived_not_surveyed_route_clearance_adjusted
+    radius_m: 0.190
+    height_m: 3.000
+    positions_xy_m:
+      - [-3.25, -2.55]
+      - [-3.25, 2.55]
+      - [1.25, -4.20]
+      - [2.95, 2.55]
+    minimum_trace_centre_clearance_m: 0.950
+    clearance_rule: >
+      Conservative circumscribed robot radius plus column radius and a presentation
+      buffer; every interpolated learned-trace segment must remain outside this value.
 
 presentation_release:
-  minimum_demo_door_clear_width_m: 0.920
+  minimum_demo_door_clear_width_m: 1.400
   robot_transit_width_m: 0.768
+  robot_transit_length_m: 1.180
   pivot_clear_circle_m: 1.640
   accepted_for_scripted_presentation: true
   accepted_for_physical_or_unsupervised_operation: false

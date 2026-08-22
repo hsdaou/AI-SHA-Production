@@ -1,0 +1,8237 @@
+{
+  "report_type": "learned_block_a_route_playback",
+  "generated_at_utc": "2026-08-21T18:15:26.109033+00:00",
+  "task": "Isaac-AISHA-Administration-Live-Direct-v0",
+  "execution_mode": "checkpoint_policy_live_in_walkthrough_matched_administration_scene",
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-20_22-33-50_ld19_flush_threshold_v9/model_599.pt",
+  "checkpoint_sha256": "3da826c515d0e58a3c0731dd3b72022208eadda3cc2bd2200a78d92f079bfacf",
+  "seed": 6084,
+  "outcome": "success",
+  "completed_steps": 5389,
+  "duration_s": 179.63333333333333,
+  "waypoints_completed": 12,
+  "route_segment_count": 12,
+  "camera": {
+    "eye": [
+      -4.5,
+      4.5,
+      5.5
+    ],
+    "lookat": [
+      0.0,
+      0.0,
+      0.55
+    ]
+  },
+  "waypoint_events": [
+    {
+      "segment_id": 0,
+      "start": "home",
+      "goal": "east_atrium_exit",
+      "step": 314,
+      "elapsed_s": 10.466666666666667
+    },
+    {
+      "segment_id": 1,
+      "start": "east_atrium_exit",
+      "goal": "vice_principal_turn",
+      "step": 1190,
+      "elapsed_s": 39.666666666666664
+    },
+    {
+      "segment_id": 2,
+      "start": "vice_principal_turn",
+      "goal": "vice_principal_approach",
+      "step": 1573,
+      "elapsed_s": 52.43333333333333
+    },
+    {
+      "segment_id": 3,
+      "start": "vice_principal_approach",
+      "goal": "vice_principal",
+      "step": 1790,
+      "elapsed_s": 59.666666666666664
+    },
+    {
+      "segment_id": 4,
+      "start": "vice_principal",
+      "goal": "vice_principal_depart",
+      "step": 2473,
+      "elapsed_s": 82.43333333333334
+    },
+    {
+      "segment_id": 5,
+      "start": "vice_principal_depart",
+      "goal": "hallway_return",
+      "step": 3441,
+      "elapsed_s": 114.7
+    },
+    {
+      "segment_id": 6,
+      "start": "hallway_return",
+      "goal": "principal_turn",
+      "step": 3793,
+      "elapsed_s": 126.43333333333334
+    },
+    {
+      "segment_id": 7,
+      "start": "principal_turn",
+      "goal": "principal_approach",
+      "step": 4183,
+      "elapsed_s": 139.43333333333334
+    },
+    {
+      "segment_id": 8,
+      "start": "principal_approach",
+      "goal": "principal",
+      "step": 4346,
+      "elapsed_s": 144.86666666666667
+    },
+    {
+      "segment_id": 9,
+      "start": "principal",
+      "goal": "principal_depart",
+      "step": 4708,
+      "elapsed_s": 156.93333333333334
+    },
+    {
+      "segment_id": 10,
+      "start": "principal_depart",
+      "goal": "atrium_return",
+      "step": 5038,
+      "elapsed_s": 167.93333333333334
+    },
+    {
+      "segment_id": 11,
+      "start": "atrium_return",
+      "goal": "home_return",
+      "step": 5389,
+      "elapsed_s": 179.63333333333333
+    }
+  ],
+  "pose_trace_interval_steps": 6,
+  "pose_trace": [
+    {
+      "step": 6,
+      "elapsed_s": 0.2,
+      "x_m": 0.01603,
+      "y_m": -1e-05,
+      "yaw_rad": -0.000302,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 12,
+      "elapsed_s": 0.4,
+      "x_m": 0.07648,
+      "y_m": 0.0001,
+      "yaw_rad": 0.004423,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 18,
+      "elapsed_s": 0.6,
+      "x_m": 0.15422,
+      "y_m": 0.00067,
+      "yaw_rad": 0.00883,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 24,
+      "elapsed_s": 0.8,
+      "x_m": 0.23744,
+      "y_m": 0.00148,
+      "yaw_rad": 0.010068,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 30,
+      "elapsed_s": 1.0,
+      "x_m": 0.32305,
+      "y_m": 0.00234,
+      "yaw_rad": 0.009533,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 36,
+      "elapsed_s": 1.2,
+      "x_m": 0.40997,
+      "y_m": 0.00328,
+      "yaw_rad": 0.012342,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 42,
+      "elapsed_s": 1.4,
+      "x_m": 0.49723,
+      "y_m": 0.00461,
+      "yaw_rad": 0.017411,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 48,
+      "elapsed_s": 1.6,
+      "x_m": 0.58463,
+      "y_m": 0.00639,
+      "yaw_rad": 0.022337,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 54,
+      "elapsed_s": 1.8,
+      "x_m": 0.67209,
+      "y_m": 0.00857,
+      "yaw_rad": 0.026531,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 60,
+      "elapsed_s": 2.0,
+      "x_m": 0.76023,
+      "y_m": 0.0111,
+      "yaw_rad": 0.031016,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 66,
+      "elapsed_s": 2.2,
+      "x_m": 0.84796,
+      "y_m": 0.01449,
+      "yaw_rad": 0.045893,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 72,
+      "elapsed_s": 2.4,
+      "x_m": 0.93158,
+      "y_m": 0.01904,
+      "yaw_rad": 0.06667,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 78,
+      "elapsed_s": 2.6,
+      "x_m": 1.01509,
+      "y_m": 0.02517,
+      "yaw_rad": 0.076777,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 84,
+      "elapsed_s": 2.8,
+      "x_m": 1.09965,
+      "y_m": 0.0319,
+      "yaw_rad": 0.081627,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 90,
+      "elapsed_s": 3.0,
+      "x_m": 1.18428,
+      "y_m": 0.03895,
+      "yaw_rad": 0.084342,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 96,
+      "elapsed_s": 3.2,
+      "x_m": 1.26881,
+      "y_m": 0.04645,
+      "yaw_rad": 0.093817,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 102,
+      "elapsed_s": 3.4,
+      "x_m": 1.35309,
+      "y_m": 0.0548,
+      "yaw_rad": 0.100902,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 108,
+      "elapsed_s": 3.6,
+      "x_m": 1.4372,
+      "y_m": 0.06312,
+      "yaw_rad": 0.096299,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 114,
+      "elapsed_s": 3.8,
+      "x_m": 1.52104,
+      "y_m": 0.07094,
+      "yaw_rad": 0.090377,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 120,
+      "elapsed_s": 4.0,
+      "x_m": 1.6049,
+      "y_m": 0.07826,
+      "yaw_rad": 0.084508,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 126,
+      "elapsed_s": 4.2,
+      "x_m": 1.68872,
+      "y_m": 0.08506,
+      "yaw_rad": 0.078407,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 132,
+      "elapsed_s": 4.4,
+      "x_m": 1.77256,
+      "y_m": 0.09138,
+      "yaw_rad": 0.072957,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 138,
+      "elapsed_s": 4.6,
+      "x_m": 1.85645,
+      "y_m": 0.09723,
+      "yaw_rad": 0.067006,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 144,
+      "elapsed_s": 4.8,
+      "x_m": 1.94157,
+      "y_m": 0.10264,
+      "yaw_rad": 0.060637,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 150,
+      "elapsed_s": 5.0,
+      "x_m": 2.02788,
+      "y_m": 0.10764,
+      "yaw_rad": 0.056267,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 156,
+      "elapsed_s": 5.2,
+      "x_m": 2.11406,
+      "y_m": 0.11234,
+      "yaw_rad": 0.05221,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 162,
+      "elapsed_s": 5.4,
+      "x_m": 2.20036,
+      "y_m": 0.1165,
+      "yaw_rad": 0.045089,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 168,
+      "elapsed_s": 5.6,
+      "x_m": 2.28698,
+      "y_m": 0.12009,
+      "yaw_rad": 0.038546,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 174,
+      "elapsed_s": 5.8,
+      "x_m": 2.37434,
+      "y_m": 0.12318,
+      "yaw_rad": 0.032231,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 180,
+      "elapsed_s": 6.0,
+      "x_m": 2.46213,
+      "y_m": 0.1256,
+      "yaw_rad": 0.02348,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 186,
+      "elapsed_s": 6.2,
+      "x_m": 2.5496,
+      "y_m": 0.1272,
+      "yaw_rad": 0.014214,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 192,
+      "elapsed_s": 6.4,
+      "x_m": 2.63732,
+      "y_m": 0.12798,
+      "yaw_rad": 0.003632,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 198,
+      "elapsed_s": 6.6,
+      "x_m": 2.72535,
+      "y_m": 0.12769,
+      "yaw_rad": -0.008753,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 204,
+      "elapsed_s": 6.8,
+      "x_m": 2.81376,
+      "y_m": 0.12641,
+      "yaw_rad": -0.019018,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 210,
+      "elapsed_s": 7.0,
+      "x_m": 2.90244,
+      "y_m": 0.12431,
+      "yaw_rad": -0.027365,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 216,
+      "elapsed_s": 7.2,
+      "x_m": 2.99042,
+      "y_m": 0.12158,
+      "yaw_rad": -0.032801,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 222,
+      "elapsed_s": 7.4,
+      "x_m": 3.07699,
+      "y_m": 0.11867,
+      "yaw_rad": -0.034151,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 228,
+      "elapsed_s": 7.6,
+      "x_m": 3.16345,
+      "y_m": 0.11549,
+      "yaw_rad": -0.038918,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 234,
+      "elapsed_s": 7.8,
+      "x_m": 3.24854,
+      "y_m": 0.11191,
+      "yaw_rad": -0.044315,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 240,
+      "elapsed_s": 8.0,
+      "x_m": 3.33118,
+      "y_m": 0.1082,
+      "yaw_rad": -0.049782,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 246,
+      "elapsed_s": 8.2,
+      "x_m": 3.41388,
+      "y_m": 0.10393,
+      "yaw_rad": -0.05291,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 252,
+      "elapsed_s": 8.4,
+      "x_m": 3.49686,
+      "y_m": 0.09964,
+      "yaw_rad": -0.047441,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 258,
+      "elapsed_s": 8.6,
+      "x_m": 3.58025,
+      "y_m": 0.09638,
+      "yaw_rad": -0.03236,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 264,
+      "elapsed_s": 8.8,
+      "x_m": 3.66376,
+      "y_m": 0.09424,
+      "yaw_rad": -0.020789,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 270,
+      "elapsed_s": 9.0,
+      "x_m": 3.74738,
+      "y_m": 0.0929,
+      "yaw_rad": -0.012267,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 276,
+      "elapsed_s": 9.2,
+      "x_m": 3.83104,
+      "y_m": 0.09226,
+      "yaw_rad": -0.004493,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 282,
+      "elapsed_s": 9.4,
+      "x_m": 3.91448,
+      "y_m": 0.09205,
+      "yaw_rad": 0.002211,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 288,
+      "elapsed_s": 9.6,
+      "x_m": 3.99489,
+      "y_m": 0.09219,
+      "yaw_rad": 0.005832,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 294,
+      "elapsed_s": 9.8,
+      "x_m": 4.06285,
+      "y_m": 0.09232,
+      "yaw_rad": -0.011694,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 300,
+      "elapsed_s": 10.0,
+      "x_m": 4.12941,
+      "y_m": 0.09101,
+      "yaw_rad": -0.019987,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 306,
+      "elapsed_s": 10.2,
+      "x_m": 4.18464,
+      "y_m": 0.08961,
+      "yaw_rad": -0.044611,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 312,
+      "elapsed_s": 10.4,
+      "x_m": 4.24366,
+      "y_m": 0.08646,
+      "yaw_rad": -0.05271,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 318,
+      "elapsed_s": 10.6,
+      "x_m": 4.31045,
+      "y_m": 0.0833,
+      "yaw_rad": -0.031785,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 324,
+      "elapsed_s": 10.8,
+      "x_m": 4.38597,
+      "y_m": 0.08387,
+      "yaw_rad": 0.044303,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 330,
+      "elapsed_s": 11.0,
+      "x_m": 4.4672,
+      "y_m": 0.09013,
+      "yaw_rad": 0.099997,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 336,
+      "elapsed_s": 11.2,
+      "x_m": 4.54985,
+      "y_m": 0.09937,
+      "yaw_rad": 0.117745,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 342,
+      "elapsed_s": 11.4,
+      "x_m": 4.63295,
+      "y_m": 0.10937,
+      "yaw_rad": 0.120805,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 348,
+      "elapsed_s": 11.6,
+      "x_m": 4.71622,
+      "y_m": 0.11933,
+      "yaw_rad": 0.117941,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 354,
+      "elapsed_s": 11.8,
+      "x_m": 4.79891,
+      "y_m": 0.12927,
+      "yaw_rad": 0.121625,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 360,
+      "elapsed_s": 12.0,
+      "x_m": 4.88143,
+      "y_m": 0.13953,
+      "yaw_rad": 0.125349,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 366,
+      "elapsed_s": 12.2,
+      "x_m": 4.96434,
+      "y_m": 0.15007,
+      "yaw_rad": 0.127441,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 372,
+      "elapsed_s": 12.4,
+      "x_m": 5.03987,
+      "y_m": 0.15958,
+      "yaw_rad": 0.124246,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 378,
+      "elapsed_s": 12.6,
+      "x_m": 5.1186,
+      "y_m": 0.16947,
+      "yaw_rad": 0.122642,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 384,
+      "elapsed_s": 12.8,
+      "x_m": 5.19573,
+      "y_m": 0.17859,
+      "yaw_rad": 0.121614,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 390,
+      "elapsed_s": 13.0,
+      "x_m": 5.27347,
+      "y_m": 0.18823,
+      "yaw_rad": 0.121015,
+      "segment_id": 1,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 396,
+      "elapsed_s": 13.2,
+      "x_m": 5.3439,
+      "y_m": 0.19634,
+      "yaw_rad": 0.114603,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 402,
+      "elapsed_s": 13.4,
+      "x_m": 5.42414,
+      "y_m": 0.20584,
+      "yaw_rad": 0.120078,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 408,
+      "elapsed_s": 13.6,
+      "x_m": 5.50368,
+      "y_m": 0.21546,
+      "yaw_rad": 0.117167,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 414,
+      "elapsed_s": 13.8,
+      "x_m": 5.58283,
+      "y_m": 0.22461,
+      "yaw_rad": 0.117859,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 420,
+      "elapsed_s": 14.0,
+      "x_m": 5.66308,
+      "y_m": 0.23414,
+      "yaw_rad": 0.115494,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 426,
+      "elapsed_s": 14.2,
+      "x_m": 5.74695,
+      "y_m": 0.24379,
+      "yaw_rad": 0.113751,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 432,
+      "elapsed_s": 14.4,
+      "x_m": 5.834,
+      "y_m": 0.2536,
+      "yaw_rad": 0.110749,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 438,
+      "elapsed_s": 14.6,
+      "x_m": 5.92206,
+      "y_m": 0.26312,
+      "yaw_rad": 0.102451,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 444,
+      "elapsed_s": 14.8,
+      "x_m": 6.00966,
+      "y_m": 0.27147,
+      "yaw_rad": 0.092424,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 450,
+      "elapsed_s": 15.0,
+      "x_m": 6.09582,
+      "y_m": 0.27946,
+      "yaw_rad": 0.092853,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 456,
+      "elapsed_s": 15.2,
+      "x_m": 6.18206,
+      "y_m": 0.2875,
+      "yaw_rad": 0.092109,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 462,
+      "elapsed_s": 15.4,
+      "x_m": 6.26869,
+      "y_m": 0.29537,
+      "yaw_rad": 0.089225,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 468,
+      "elapsed_s": 15.6,
+      "x_m": 6.35651,
+      "y_m": 0.3031,
+      "yaw_rad": 0.086522,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 474,
+      "elapsed_s": 15.8,
+      "x_m": 6.44505,
+      "y_m": 0.31068,
+      "yaw_rad": 0.085132,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 480,
+      "elapsed_s": 16.0,
+      "x_m": 6.53387,
+      "y_m": 0.31846,
+      "yaw_rad": 0.089154,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 486,
+      "elapsed_s": 16.2,
+      "x_m": 6.62274,
+      "y_m": 0.32651,
+      "yaw_rad": 0.090748,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 492,
+      "elapsed_s": 16.4,
+      "x_m": 6.71171,
+      "y_m": 0.33458,
+      "yaw_rad": 0.090076,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 498,
+      "elapsed_s": 16.6,
+      "x_m": 6.80064,
+      "y_m": 0.34272,
+      "yaw_rad": 0.09234,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 504,
+      "elapsed_s": 16.8,
+      "x_m": 6.88948,
+      "y_m": 0.35095,
+      "yaw_rad": 0.091985,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 510,
+      "elapsed_s": 17.0,
+      "x_m": 6.97833,
+      "y_m": 0.35908,
+      "yaw_rad": 0.090157,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 516,
+      "elapsed_s": 17.2,
+      "x_m": 7.06712,
+      "y_m": 0.36686,
+      "yaw_rad": 0.084764,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 522,
+      "elapsed_s": 17.4,
+      "x_m": 7.15591,
+      "y_m": 0.37412,
+      "yaw_rad": 0.078806,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 528,
+      "elapsed_s": 17.6,
+      "x_m": 7.2448,
+      "y_m": 0.3809,
+      "yaw_rad": 0.073878,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 534,
+      "elapsed_s": 17.8,
+      "x_m": 7.33376,
+      "y_m": 0.3873,
+      "yaw_rad": 0.070508,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 540,
+      "elapsed_s": 18.0,
+      "x_m": 7.42277,
+      "y_m": 0.39359,
+      "yaw_rad": 0.070666,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 546,
+      "elapsed_s": 18.2,
+      "x_m": 7.5117,
+      "y_m": 0.39992,
+      "yaw_rad": 0.071076,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 552,
+      "elapsed_s": 18.4,
+      "x_m": 7.6006,
+      "y_m": 0.40625,
+      "yaw_rad": 0.070972,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 558,
+      "elapsed_s": 18.6,
+      "x_m": 7.68943,
+      "y_m": 0.41256,
+      "yaw_rad": 0.070644,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 564,
+      "elapsed_s": 18.8,
+      "x_m": 7.77836,
+      "y_m": 0.41882,
+      "yaw_rad": 0.069832,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 570,
+      "elapsed_s": 19.0,
+      "x_m": 7.86734,
+      "y_m": 0.42499,
+      "yaw_rad": 0.068706,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 576,
+      "elapsed_s": 19.2,
+      "x_m": 7.95633,
+      "y_m": 0.43106,
+      "yaw_rad": 0.067675,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 582,
+      "elapsed_s": 19.4,
+      "x_m": 8.04527,
+      "y_m": 0.43703,
+      "yaw_rad": 0.065253,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 588,
+      "elapsed_s": 19.6,
+      "x_m": 8.13379,
+      "y_m": 0.44232,
+      "yaw_rad": 0.054724,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 594,
+      "elapsed_s": 19.8,
+      "x_m": 8.22202,
+      "y_m": 0.44672,
+      "yaw_rad": 0.045359,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 600,
+      "elapsed_s": 20.0,
+      "x_m": 8.31047,
+      "y_m": 0.45022,
+      "yaw_rad": 0.034478,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 606,
+      "elapsed_s": 20.2,
+      "x_m": 8.39821,
+      "y_m": 0.45281,
+      "yaw_rad": 0.02568,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 612,
+      "elapsed_s": 20.4,
+      "x_m": 8.48585,
+      "y_m": 0.45477,
+      "yaw_rad": 0.019822,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 618,
+      "elapsed_s": 20.6,
+      "x_m": 8.57312,
+      "y_m": 0.45627,
+      "yaw_rad": 0.015182,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 624,
+      "elapsed_s": 20.8,
+      "x_m": 8.6605,
+      "y_m": 0.45743,
+      "yaw_rad": 0.011816,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 630,
+      "elapsed_s": 21.0,
+      "x_m": 8.74804,
+      "y_m": 0.45833,
+      "yaw_rad": 0.009289,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 636,
+      "elapsed_s": 21.2,
+      "x_m": 8.83634,
+      "y_m": 0.4591,
+      "yaw_rad": 0.008315,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 642,
+      "elapsed_s": 21.4,
+      "x_m": 8.92482,
+      "y_m": 0.45981,
+      "yaw_rad": 0.007643,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 648,
+      "elapsed_s": 21.6,
+      "x_m": 9.01321,
+      "y_m": 0.46043,
+      "yaw_rad": 0.006472,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 654,
+      "elapsed_s": 21.8,
+      "x_m": 9.10098,
+      "y_m": 0.46089,
+      "yaw_rad": 0.004309,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 660,
+      "elapsed_s": 22.0,
+      "x_m": 9.18864,
+      "y_m": 0.46117,
+      "yaw_rad": 0.002492,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 666,
+      "elapsed_s": 22.2,
+      "x_m": 9.27712,
+      "y_m": 0.46136,
+      "yaw_rad": 0.001643,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 672,
+      "elapsed_s": 22.4,
+      "x_m": 9.3647,
+      "y_m": 0.46139,
+      "yaw_rad": -0.000767,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 678,
+      "elapsed_s": 22.6,
+      "x_m": 9.45061,
+      "y_m": 0.46116,
+      "yaw_rad": -0.003965,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 684,
+      "elapsed_s": 22.8,
+      "x_m": 9.53608,
+      "y_m": 0.46068,
+      "yaw_rad": -0.006422,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 690,
+      "elapsed_s": 23.0,
+      "x_m": 9.62146,
+      "y_m": 0.46003,
+      "yaw_rad": -0.008435,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 696,
+      "elapsed_s": 23.2,
+      "x_m": 9.70728,
+      "y_m": 0.45923,
+      "yaw_rad": -0.010026,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 702,
+      "elapsed_s": 23.4,
+      "x_m": 9.79297,
+      "y_m": 0.45828,
+      "yaw_rad": -0.011448,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 708,
+      "elapsed_s": 23.6,
+      "x_m": 9.87902,
+      "y_m": 0.45723,
+      "yaw_rad": -0.012703,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 714,
+      "elapsed_s": 23.8,
+      "x_m": 9.96521,
+      "y_m": 0.45607,
+      "yaw_rad": -0.013574,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 720,
+      "elapsed_s": 24.0,
+      "x_m": 10.05116,
+      "y_m": 0.45486,
+      "yaw_rad": -0.013732,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 726,
+      "elapsed_s": 24.2,
+      "x_m": 10.13769,
+      "y_m": 0.45375,
+      "yaw_rad": -0.012189,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 732,
+      "elapsed_s": 24.4,
+      "x_m": 10.22317,
+      "y_m": 0.45269,
+      "yaw_rad": -0.012503,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 738,
+      "elapsed_s": 24.6,
+      "x_m": 10.30845,
+      "y_m": 0.45159,
+      "yaw_rad": -0.01301,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 744,
+      "elapsed_s": 24.8,
+      "x_m": 10.39359,
+      "y_m": 0.45041,
+      "yaw_rad": -0.014161,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 750,
+      "elapsed_s": 25.0,
+      "x_m": 10.47907,
+      "y_m": 0.44914,
+      "yaw_rad": -0.01525,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 756,
+      "elapsed_s": 25.2,
+      "x_m": 10.56422,
+      "y_m": 0.44775,
+      "yaw_rad": -0.016971,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 762,
+      "elapsed_s": 25.4,
+      "x_m": 10.64907,
+      "y_m": 0.44621,
+      "yaw_rad": -0.01865,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 768,
+      "elapsed_s": 25.6,
+      "x_m": 10.73353,
+      "y_m": 0.44456,
+      "yaw_rad": -0.020153,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 774,
+      "elapsed_s": 25.8,
+      "x_m": 10.81826,
+      "y_m": 0.4428,
+      "yaw_rad": -0.021168,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 780,
+      "elapsed_s": 26.0,
+      "x_m": 10.90265,
+      "y_m": 0.44093,
+      "yaw_rad": -0.022704,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 786,
+      "elapsed_s": 26.2,
+      "x_m": 10.98713,
+      "y_m": 0.43895,
+      "yaw_rad": -0.023817,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 792,
+      "elapsed_s": 26.4,
+      "x_m": 11.07155,
+      "y_m": 0.43687,
+      "yaw_rad": -0.024999,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 798,
+      "elapsed_s": 26.6,
+      "x_m": 11.15595,
+      "y_m": 0.43469,
+      "yaw_rad": -0.026327,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 804,
+      "elapsed_s": 26.8,
+      "x_m": 11.24046,
+      "y_m": 0.43237,
+      "yaw_rad": -0.028286,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 810,
+      "elapsed_s": 27.0,
+      "x_m": 11.32469,
+      "y_m": 0.42989,
+      "yaw_rad": -0.030261,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 816,
+      "elapsed_s": 27.2,
+      "x_m": 11.40904,
+      "y_m": 0.42726,
+      "yaw_rad": -0.031826,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 822,
+      "elapsed_s": 27.4,
+      "x_m": 11.49297,
+      "y_m": 0.42449,
+      "yaw_rad": -0.03373,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 828,
+      "elapsed_s": 27.6,
+      "x_m": 11.57632,
+      "y_m": 0.42156,
+      "yaw_rad": -0.035999,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 834,
+      "elapsed_s": 27.8,
+      "x_m": 11.65998,
+      "y_m": 0.41846,
+      "yaw_rad": -0.037367,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 840,
+      "elapsed_s": 28.0,
+      "x_m": 11.74352,
+      "y_m": 0.41524,
+      "yaw_rad": -0.039018,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 846,
+      "elapsed_s": 28.2,
+      "x_m": 11.82731,
+      "y_m": 0.4119,
+      "yaw_rad": -0.04009,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 852,
+      "elapsed_s": 28.4,
+      "x_m": 11.91122,
+      "y_m": 0.40847,
+      "yaw_rad": -0.0412,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 858,
+      "elapsed_s": 28.6,
+      "x_m": 11.9949,
+      "y_m": 0.40493,
+      "yaw_rad": -0.042565,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 864,
+      "elapsed_s": 28.8,
+      "x_m": 12.07861,
+      "y_m": 0.4013,
+      "yaw_rad": -0.04387,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 870,
+      "elapsed_s": 29.0,
+      "x_m": 12.16158,
+      "y_m": 0.39756,
+      "yaw_rad": -0.045665,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 876,
+      "elapsed_s": 29.2,
+      "x_m": 12.24477,
+      "y_m": 0.39369,
+      "yaw_rad": -0.04706,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 882,
+      "elapsed_s": 29.4,
+      "x_m": 12.32782,
+      "y_m": 0.3897,
+      "yaw_rad": -0.048276,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 888,
+      "elapsed_s": 29.6,
+      "x_m": 12.411,
+      "y_m": 0.38562,
+      "yaw_rad": -0.048987,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 894,
+      "elapsed_s": 29.8,
+      "x_m": 12.49428,
+      "y_m": 0.38146,
+      "yaw_rad": -0.050473,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 900,
+      "elapsed_s": 30.0,
+      "x_m": 12.57762,
+      "y_m": 0.37718,
+      "yaw_rad": -0.051648,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 906,
+      "elapsed_s": 30.2,
+      "x_m": 12.66094,
+      "y_m": 0.37282,
+      "yaw_rad": -0.052406,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 912,
+      "elapsed_s": 30.4,
+      "x_m": 12.7444,
+      "y_m": 0.36837,
+      "yaw_rad": -0.05358,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 918,
+      "elapsed_s": 30.6,
+      "x_m": 12.8279,
+      "y_m": 0.36384,
+      "yaw_rad": -0.054443,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 924,
+      "elapsed_s": 30.8,
+      "x_m": 12.91151,
+      "y_m": 0.35922,
+      "yaw_rad": -0.055586,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 930,
+      "elapsed_s": 31.0,
+      "x_m": 12.99495,
+      "y_m": 0.35448,
+      "yaw_rad": -0.057408,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 936,
+      "elapsed_s": 31.2,
+      "x_m": 13.07845,
+      "y_m": 0.34959,
+      "yaw_rad": -0.059757,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 942,
+      "elapsed_s": 31.4,
+      "x_m": 13.16187,
+      "y_m": 0.34446,
+      "yaw_rad": -0.062445,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 948,
+      "elapsed_s": 31.6,
+      "x_m": 13.24542,
+      "y_m": 0.33914,
+      "yaw_rad": -0.064448,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 954,
+      "elapsed_s": 31.8,
+      "x_m": 13.32931,
+      "y_m": 0.33361,
+      "yaw_rad": -0.066817,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 960,
+      "elapsed_s": 32.0,
+      "x_m": 13.41324,
+      "y_m": 0.32785,
+      "yaw_rad": -0.069618,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 966,
+      "elapsed_s": 32.2,
+      "x_m": 13.49719,
+      "y_m": 0.32187,
+      "yaw_rad": -0.071906,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 972,
+      "elapsed_s": 32.4,
+      "x_m": 13.58119,
+      "y_m": 0.31571,
+      "yaw_rad": -0.073873,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 978,
+      "elapsed_s": 32.6,
+      "x_m": 13.66503,
+      "y_m": 0.30943,
+      "yaw_rad": -0.075031,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 984,
+      "elapsed_s": 32.8,
+      "x_m": 13.74941,
+      "y_m": 0.30304,
+      "yaw_rad": -0.075872,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 990,
+      "elapsed_s": 33.0,
+      "x_m": 13.8349,
+      "y_m": 0.29655,
+      "yaw_rad": -0.075387,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 996,
+      "elapsed_s": 33.2,
+      "x_m": 13.92155,
+      "y_m": 0.29007,
+      "yaw_rad": -0.074577,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1002,
+      "elapsed_s": 33.4,
+      "x_m": 14.00389,
+      "y_m": 0.28378,
+      "yaw_rad": -0.074467,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1008,
+      "elapsed_s": 33.6,
+      "x_m": 14.08537,
+      "y_m": 0.27749,
+      "yaw_rad": -0.079718,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1014,
+      "elapsed_s": 33.8,
+      "x_m": 14.16748,
+      "y_m": 0.27067,
+      "yaw_rad": -0.08472,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1020,
+      "elapsed_s": 34.0,
+      "x_m": 14.25065,
+      "y_m": 0.26346,
+      "yaw_rad": -0.087102,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1026,
+      "elapsed_s": 34.2,
+      "x_m": 14.33487,
+      "y_m": 0.25608,
+      "yaw_rad": -0.087688,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1032,
+      "elapsed_s": 34.4,
+      "x_m": 14.41989,
+      "y_m": 0.24856,
+      "yaw_rad": -0.088754,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1038,
+      "elapsed_s": 34.6,
+      "x_m": 14.50574,
+      "y_m": 0.24064,
+      "yaw_rad": -0.095759,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1044,
+      "elapsed_s": 34.8,
+      "x_m": 14.59092,
+      "y_m": 0.23209,
+      "yaw_rad": -0.103506,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1050,
+      "elapsed_s": 35.0,
+      "x_m": 14.67573,
+      "y_m": 0.22298,
+      "yaw_rad": -0.109612,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1056,
+      "elapsed_s": 35.2,
+      "x_m": 14.75994,
+      "y_m": 0.21364,
+      "yaw_rad": -0.111462,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1062,
+      "elapsed_s": 35.4,
+      "x_m": 14.84457,
+      "y_m": 0.20415,
+      "yaw_rad": -0.112046,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1068,
+      "elapsed_s": 35.6,
+      "x_m": 14.93102,
+      "y_m": 0.19446,
+      "yaw_rad": -0.111556,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1074,
+      "elapsed_s": 35.8,
+      "x_m": 15.0181,
+      "y_m": 0.18476,
+      "yaw_rad": -0.110691,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1080,
+      "elapsed_s": 36.0,
+      "x_m": 15.10551,
+      "y_m": 0.17507,
+      "yaw_rad": -0.110624,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1086,
+      "elapsed_s": 36.2,
+      "x_m": 15.19291,
+      "y_m": 0.16506,
+      "yaw_rad": -0.118548,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1092,
+      "elapsed_s": 36.4,
+      "x_m": 15.28041,
+      "y_m": 0.15417,
+      "yaw_rad": -0.128148,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1098,
+      "elapsed_s": 36.6,
+      "x_m": 15.36773,
+      "y_m": 0.14259,
+      "yaw_rad": -0.135091,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1104,
+      "elapsed_s": 36.8,
+      "x_m": 15.45528,
+      "y_m": 0.13045,
+      "yaw_rad": -0.139523,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1110,
+      "elapsed_s": 37.0,
+      "x_m": 15.54281,
+      "y_m": 0.11812,
+      "yaw_rad": -0.140126,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1116,
+      "elapsed_s": 37.2,
+      "x_m": 15.63014,
+      "y_m": 0.10583,
+      "yaw_rad": -0.139442,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1122,
+      "elapsed_s": 37.4,
+      "x_m": 15.71737,
+      "y_m": 0.09366,
+      "yaw_rad": -0.138171,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1128,
+      "elapsed_s": 37.6,
+      "x_m": 15.80454,
+      "y_m": 0.08158,
+      "yaw_rad": -0.137788,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1134,
+      "elapsed_s": 37.8,
+      "x_m": 15.88799,
+      "y_m": 0.06925,
+      "yaw_rad": -0.133355,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1140,
+      "elapsed_s": 38.0,
+      "x_m": 15.97141,
+      "y_m": 0.05792,
+      "yaw_rad": -0.130109,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1146,
+      "elapsed_s": 38.2,
+      "x_m": 16.0535,
+      "y_m": 0.04735,
+      "yaw_rad": -0.126536,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1152,
+      "elapsed_s": 38.4,
+      "x_m": 16.13682,
+      "y_m": 0.03685,
+      "yaw_rad": -0.124882,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1158,
+      "elapsed_s": 38.6,
+      "x_m": 16.22159,
+      "y_m": 0.02631,
+      "yaw_rad": -0.122116,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1164,
+      "elapsed_s": 38.8,
+      "x_m": 16.3059,
+      "y_m": 0.0161,
+      "yaw_rad": -0.11893,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1170,
+      "elapsed_s": 39.0,
+      "x_m": 16.3898,
+      "y_m": 0.00621,
+      "yaw_rad": -0.115488,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1176,
+      "elapsed_s": 39.2,
+      "x_m": 16.4739,
+      "y_m": -0.00334,
+      "yaw_rad": -0.110945,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1182,
+      "elapsed_s": 39.4,
+      "x_m": 16.55856,
+      "y_m": -0.01255,
+      "yaw_rad": -0.106351,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1188,
+      "elapsed_s": 39.6,
+      "x_m": 16.6388,
+      "y_m": -0.02095,
+      "yaw_rad": -0.100141,
+      "segment_id": 1,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1194,
+      "elapsed_s": 39.8,
+      "x_m": 16.67403,
+      "y_m": -0.02433,
+      "yaw_rad": -0.10629,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1200,
+      "elapsed_s": 40.0,
+      "x_m": 16.68285,
+      "y_m": -0.02551,
+      "yaw_rad": -0.171686,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1206,
+      "elapsed_s": 40.2,
+      "x_m": 16.68596,
+      "y_m": -0.02619,
+      "yaw_rad": -0.245154,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1212,
+      "elapsed_s": 40.4,
+      "x_m": 16.68773,
+      "y_m": -0.02671,
+      "yaw_rad": -0.320441,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1218,
+      "elapsed_s": 40.6,
+      "x_m": 16.68882,
+      "y_m": -0.02711,
+      "yaw_rad": -0.398439,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1224,
+      "elapsed_s": 40.8,
+      "x_m": 16.68935,
+      "y_m": -0.0273,
+      "yaw_rad": -0.479213,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1230,
+      "elapsed_s": 41.0,
+      "x_m": 16.68984,
+      "y_m": -0.02748,
+      "yaw_rad": -0.559941,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1236,
+      "elapsed_s": 41.2,
+      "x_m": 16.68994,
+      "y_m": -0.02741,
+      "yaw_rad": -0.640228,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1242,
+      "elapsed_s": 41.4,
+      "x_m": 16.68982,
+      "y_m": -0.02716,
+      "yaw_rad": -0.719218,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1248,
+      "elapsed_s": 41.6,
+      "x_m": 16.68959,
+      "y_m": -0.0268,
+      "yaw_rad": -0.797243,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1254,
+      "elapsed_s": 41.8,
+      "x_m": 16.68966,
+      "y_m": -0.02682,
+      "yaw_rad": -0.875797,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1260,
+      "elapsed_s": 42.0,
+      "x_m": 16.68997,
+      "y_m": -0.02714,
+      "yaw_rad": -0.956193,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1266,
+      "elapsed_s": 42.2,
+      "x_m": 16.69038,
+      "y_m": -0.02776,
+      "yaw_rad": -1.039617,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1272,
+      "elapsed_s": 42.4,
+      "x_m": 16.69077,
+      "y_m": -0.02841,
+      "yaw_rad": -1.122311,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1278,
+      "elapsed_s": 42.6,
+      "x_m": 16.691,
+      "y_m": -0.02882,
+      "yaw_rad": -1.204305,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1284,
+      "elapsed_s": 42.8,
+      "x_m": 16.69114,
+      "y_m": -0.02885,
+      "yaw_rad": -1.28511,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1290,
+      "elapsed_s": 43.0,
+      "x_m": 16.69281,
+      "y_m": -0.03616,
+      "yaw_rad": -1.358339,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1296,
+      "elapsed_s": 43.2,
+      "x_m": 16.70189,
+      "y_m": -0.08412,
+      "yaw_rad": -1.400236,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1302,
+      "elapsed_s": 43.4,
+      "x_m": 16.71322,
+      "y_m": -0.15722,
+      "yaw_rad": -1.429373,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1308,
+      "elapsed_s": 43.6,
+      "x_m": 16.72406,
+      "y_m": -0.23862,
+      "yaw_rad": -1.443459,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1314,
+      "elapsed_s": 43.8,
+      "x_m": 16.73458,
+      "y_m": -0.32199,
+      "yaw_rad": -1.44637,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1320,
+      "elapsed_s": 44.0,
+      "x_m": 16.74501,
+      "y_m": -0.40657,
+      "yaw_rad": -1.449212,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1326,
+      "elapsed_s": 44.2,
+      "x_m": 16.75543,
+      "y_m": -0.49262,
+      "yaw_rad": -1.450773,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1332,
+      "elapsed_s": 44.4,
+      "x_m": 16.76589,
+      "y_m": -0.57962,
+      "yaw_rad": -1.451922,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1338,
+      "elapsed_s": 44.6,
+      "x_m": 16.7762,
+      "y_m": -0.66666,
+      "yaw_rad": -1.453262,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1344,
+      "elapsed_s": 44.8,
+      "x_m": 16.78664,
+      "y_m": -0.75385,
+      "yaw_rad": -1.449323,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1350,
+      "elapsed_s": 45.0,
+      "x_m": 16.79768,
+      "y_m": -0.8411,
+      "yaw_rad": -1.441112,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1356,
+      "elapsed_s": 45.2,
+      "x_m": 16.80965,
+      "y_m": -0.92845,
+      "yaw_rad": -1.428855,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1362,
+      "elapsed_s": 45.4,
+      "x_m": 16.8226,
+      "y_m": -1.01532,
+      "yaw_rad": -1.418365,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1368,
+      "elapsed_s": 45.6,
+      "x_m": 16.83526,
+      "y_m": -1.09746,
+      "yaw_rad": -1.417608,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1374,
+      "elapsed_s": 45.8,
+      "x_m": 16.84748,
+      "y_m": -1.17502,
+      "yaw_rad": -1.412375,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1380,
+      "elapsed_s": 46.0,
+      "x_m": 16.85994,
+      "y_m": -1.25204,
+      "yaw_rad": -1.409281,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1386,
+      "elapsed_s": 46.2,
+      "x_m": 16.87238,
+      "y_m": -1.32884,
+      "yaw_rad": -1.411739,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1392,
+      "elapsed_s": 46.4,
+      "x_m": 16.88422,
+      "y_m": -1.40361,
+      "yaw_rad": -1.415084,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1398,
+      "elapsed_s": 46.6,
+      "x_m": 16.89552,
+      "y_m": -1.47614,
+      "yaw_rad": -1.416835,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1404,
+      "elapsed_s": 46.8,
+      "x_m": 16.90645,
+      "y_m": -1.54751,
+      "yaw_rad": -1.423804,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1410,
+      "elapsed_s": 47.0,
+      "x_m": 16.91663,
+      "y_m": -1.62168,
+      "yaw_rad": -1.443298,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1416,
+      "elapsed_s": 47.2,
+      "x_m": 16.92577,
+      "y_m": -1.69744,
+      "yaw_rad": -1.45675,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1422,
+      "elapsed_s": 47.4,
+      "x_m": 16.93401,
+      "y_m": -1.77408,
+      "yaw_rad": -1.47001,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1428,
+      "elapsed_s": 47.6,
+      "x_m": 16.94126,
+      "y_m": -1.85183,
+      "yaw_rad": -1.484154,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1434,
+      "elapsed_s": 47.8,
+      "x_m": 16.94743,
+      "y_m": -1.93014,
+      "yaw_rad": -1.498844,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1440,
+      "elapsed_s": 48.0,
+      "x_m": 16.95256,
+      "y_m": -2.00792,
+      "yaw_rad": -1.510349,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1446,
+      "elapsed_s": 48.2,
+      "x_m": 16.95692,
+      "y_m": -2.08549,
+      "yaw_rad": -1.517343,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1452,
+      "elapsed_s": 48.4,
+      "x_m": 16.96087,
+      "y_m": -2.16278,
+      "yaw_rad": -1.521976,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1458,
+      "elapsed_s": 48.6,
+      "x_m": 16.96454,
+      "y_m": -2.24063,
+      "yaw_rad": -1.525475,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1464,
+      "elapsed_s": 48.8,
+      "x_m": 16.96793,
+      "y_m": -2.31932,
+      "yaw_rad": -1.529158,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1470,
+      "elapsed_s": 49.0,
+      "x_m": 16.9711,
+      "y_m": -2.39827,
+      "yaw_rad": -1.531823,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1476,
+      "elapsed_s": 49.2,
+      "x_m": 16.97407,
+      "y_m": -2.47678,
+      "yaw_rad": -1.533935,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1482,
+      "elapsed_s": 49.4,
+      "x_m": 16.97685,
+      "y_m": -2.55486,
+      "yaw_rad": -1.537587,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1488,
+      "elapsed_s": 49.6,
+      "x_m": 16.97909,
+      "y_m": -2.63277,
+      "yaw_rad": -1.545933,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1494,
+      "elapsed_s": 49.8,
+      "x_m": 16.98071,
+      "y_m": -2.71086,
+      "yaw_rad": -1.553253,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1500,
+      "elapsed_s": 50.0,
+      "x_m": 16.98174,
+      "y_m": -2.78895,
+      "yaw_rad": -1.560385,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1506,
+      "elapsed_s": 50.2,
+      "x_m": 16.98234,
+      "y_m": -2.86718,
+      "yaw_rad": -1.564968,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1512,
+      "elapsed_s": 50.4,
+      "x_m": 16.98259,
+      "y_m": -2.94458,
+      "yaw_rad": -1.569819,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1518,
+      "elapsed_s": 50.6,
+      "x_m": 16.98261,
+      "y_m": -3.00577,
+      "yaw_rad": -1.564094,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1524,
+      "elapsed_s": 50.8,
+      "x_m": 16.98318,
+      "y_m": -3.04291,
+      "yaw_rad": -1.554573,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1530,
+      "elapsed_s": 51.0,
+      "x_m": 16.98397,
+      "y_m": -3.0866,
+      "yaw_rad": -1.546748,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1536,
+      "elapsed_s": 51.2,
+      "x_m": 16.98504,
+      "y_m": -3.12846,
+      "yaw_rad": -1.536141,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1542,
+      "elapsed_s": 51.4,
+      "x_m": 16.98665,
+      "y_m": -3.17494,
+      "yaw_rad": -1.535116,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1548,
+      "elapsed_s": 51.6,
+      "x_m": 16.98827,
+      "y_m": -3.20781,
+      "yaw_rad": -1.518117,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1554,
+      "elapsed_s": 51.8,
+      "x_m": 16.99062,
+      "y_m": -3.2517,
+      "yaw_rad": -1.507779,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1560,
+      "elapsed_s": 52.0,
+      "x_m": 16.99344,
+      "y_m": -3.29576,
+      "yaw_rad": -1.504997,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1566,
+      "elapsed_s": 52.2,
+      "x_m": 16.9959,
+      "y_m": -3.32925,
+      "yaw_rad": -1.492392,
+      "segment_id": 2,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1572,
+      "elapsed_s": 52.4,
+      "x_m": 16.99826,
+      "y_m": -3.35754,
+      "yaw_rad": -1.48239,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1578,
+      "elapsed_s": 52.6,
+      "x_m": 17.00223,
+      "y_m": -3.40682,
+      "yaw_rad": -1.500713,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1584,
+      "elapsed_s": 52.8,
+      "x_m": 17.00608,
+      "y_m": -3.47693,
+      "yaw_rad": -1.526929,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1590,
+      "elapsed_s": 53.0,
+      "x_m": 17.00903,
+      "y_m": -3.55503,
+      "yaw_rad": -1.536189,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1596,
+      "elapsed_s": 53.2,
+      "x_m": 17.01169,
+      "y_m": -3.63602,
+      "yaw_rad": -1.539306,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1602,
+      "elapsed_s": 53.4,
+      "x_m": 17.01411,
+      "y_m": -3.71601,
+      "yaw_rad": -1.541926,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1608,
+      "elapsed_s": 53.6,
+      "x_m": 17.01634,
+      "y_m": -3.79557,
+      "yaw_rad": -1.541553,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1614,
+      "elapsed_s": 53.8,
+      "x_m": 17.01899,
+      "y_m": -3.87603,
+      "yaw_rad": -1.536076,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1620,
+      "elapsed_s": 54.0,
+      "x_m": 17.02149,
+      "y_m": -3.95713,
+      "yaw_rad": -1.545456,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1626,
+      "elapsed_s": 54.2,
+      "x_m": 17.02297,
+      "y_m": -4.03843,
+      "yaw_rad": -1.558266,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1632,
+      "elapsed_s": 54.4,
+      "x_m": 17.02382,
+      "y_m": -4.12025,
+      "yaw_rad": -1.560242,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1638,
+      "elapsed_s": 54.6,
+      "x_m": 17.02455,
+      "y_m": -4.20154,
+      "yaw_rad": -1.564141,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1644,
+      "elapsed_s": 54.8,
+      "x_m": 17.02476,
+      "y_m": -4.28266,
+      "yaw_rad": -1.571947,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1650,
+      "elapsed_s": 55.0,
+      "x_m": 17.02432,
+      "y_m": -4.36355,
+      "yaw_rad": -1.580222,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1656,
+      "elapsed_s": 55.2,
+      "x_m": 17.02327,
+      "y_m": -4.44469,
+      "yaw_rad": -1.586038,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1662,
+      "elapsed_s": 55.4,
+      "x_m": 17.02187,
+      "y_m": -4.5267,
+      "yaw_rad": -1.58933,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1668,
+      "elapsed_s": 55.6,
+      "x_m": 17.02007,
+      "y_m": -4.60831,
+      "yaw_rad": -1.596029,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1674,
+      "elapsed_s": 55.8,
+      "x_m": 17.01783,
+      "y_m": -4.68987,
+      "yaw_rad": -1.600829,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1680,
+      "elapsed_s": 56.0,
+      "x_m": 17.01542,
+      "y_m": -4.77196,
+      "yaw_rad": -1.601097,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1686,
+      "elapsed_s": 56.2,
+      "x_m": 17.01256,
+      "y_m": -4.85699,
+      "yaw_rad": -1.606999,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1692,
+      "elapsed_s": 56.4,
+      "x_m": 17.00935,
+      "y_m": -4.94371,
+      "yaw_rad": -1.608181,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1698,
+      "elapsed_s": 56.6,
+      "x_m": 17.00579,
+      "y_m": -5.03136,
+      "yaw_rad": -1.615162,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1704,
+      "elapsed_s": 56.8,
+      "x_m": 17.0016,
+      "y_m": -5.11587,
+      "yaw_rad": -1.624403,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1710,
+      "elapsed_s": 57.0,
+      "x_m": 16.99722,
+      "y_m": -5.19832,
+      "yaw_rad": -1.621735,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1716,
+      "elapsed_s": 57.2,
+      "x_m": 16.99336,
+      "y_m": -5.2808,
+      "yaw_rad": -1.613458,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1722,
+      "elapsed_s": 57.4,
+      "x_m": 16.99022,
+      "y_m": -5.36319,
+      "yaw_rad": -1.604387,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1728,
+      "elapsed_s": 57.6,
+      "x_m": 16.98811,
+      "y_m": -5.43555,
+      "yaw_rad": -1.595058,
+      "segment_id": 3,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1734,
+      "elapsed_s": 57.8,
+      "x_m": 16.98753,
+      "y_m": -5.49108,
+      "yaw_rad": -1.573149,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1740,
+      "elapsed_s": 58.0,
+      "x_m": 16.98759,
+      "y_m": -5.56664,
+      "yaw_rad": -1.568894,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1746,
+      "elapsed_s": 58.2,
+      "x_m": 16.98783,
+      "y_m": -5.64373,
+      "yaw_rad": -1.563335,
+      "segment_id": 3,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1752,
+      "elapsed_s": 58.4,
+      "x_m": 16.98872,
+      "y_m": -5.70082,
+      "yaw_rad": -1.550907,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1758,
+      "elapsed_s": 58.6,
+      "x_m": 16.99035,
+      "y_m": -5.76185,
+      "yaw_rad": -1.534431,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1764,
+      "elapsed_s": 58.8,
+      "x_m": 16.99264,
+      "y_m": -5.82125,
+      "yaw_rad": -1.527923,
+      "segment_id": 3,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1770,
+      "elapsed_s": 59.0,
+      "x_m": 16.99497,
+      "y_m": -5.86485,
+      "yaw_rad": -1.516706,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1776,
+      "elapsed_s": 59.2,
+      "x_m": 16.99704,
+      "y_m": -5.89988,
+      "yaw_rad": -1.506286,
+      "segment_id": 3,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1782,
+      "elapsed_s": 59.4,
+      "x_m": 16.99854,
+      "y_m": -5.92257,
+      "yaw_rad": -1.495857,
+      "segment_id": 3,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1788,
+      "elapsed_s": 59.6,
+      "x_m": 17.00087,
+      "y_m": -5.95188,
+      "yaw_rad": -1.493048,
+      "segment_id": 3,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 1794,
+      "elapsed_s": 59.8,
+      "x_m": 17.00294,
+      "y_m": -5.97654,
+      "yaw_rad": -1.480395,
+      "segment_id": 4,
+      "control_mode": "presentation_dwell"
+    },
+    {
+      "step": 1800,
+      "elapsed_s": 60.0,
+      "x_m": 17.00301,
+      "y_m": -5.97735,
+      "yaw_rad": -1.480498,
+      "segment_id": 4,
+      "control_mode": "presentation_dwell"
+    },
+    {
+      "step": 1806,
+      "elapsed_s": 60.2,
+      "x_m": 17.00301,
+      "y_m": -5.97735,
+      "yaw_rad": -1.480497,
+      "segment_id": 4,
+      "control_mode": "presentation_dwell"
+    },
+    {
+      "step": 1812,
+      "elapsed_s": 60.4,
+      "x_m": 17.00301,
+      "y_m": -5.97735,
+      "yaw_rad": -1.480497,
+      "segment_id": 4,
+      "control_mode": "presentation_dwell"
+    },
+    {
+      "step": 1818,
+      "elapsed_s": 60.6,
+      "x_m": 17.00301,
+      "y_m": -5.97735,
+      "yaw_rad": -1.480498,
+      "segment_id": 4,
+      "control_mode": "presentation_dwell"
+    },
+    {
+      "step": 1824,
+      "elapsed_s": 60.8,
+      "x_m": 17.00298,
+      "y_m": -5.97718,
+      "yaw_rad": -1.459354,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1830,
+      "elapsed_s": 61.0,
+      "x_m": 17.00303,
+      "y_m": -5.97738,
+      "yaw_rad": -1.395811,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1836,
+      "elapsed_s": 61.2,
+      "x_m": 17.00308,
+      "y_m": -5.9777,
+      "yaw_rad": -1.319796,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1842,
+      "elapsed_s": 61.4,
+      "x_m": 17.00313,
+      "y_m": -5.97787,
+      "yaw_rad": -1.243145,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1848,
+      "elapsed_s": 61.6,
+      "x_m": 17.00324,
+      "y_m": -5.97812,
+      "yaw_rad": -1.166001,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1854,
+      "elapsed_s": 61.8,
+      "x_m": 17.00327,
+      "y_m": -5.97819,
+      "yaw_rad": -1.088632,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1860,
+      "elapsed_s": 62.0,
+      "x_m": 17.00336,
+      "y_m": -5.97837,
+      "yaw_rad": -1.009654,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1866,
+      "elapsed_s": 62.2,
+      "x_m": 17.00353,
+      "y_m": -5.97859,
+      "yaw_rad": -0.932006,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1872,
+      "elapsed_s": 62.4,
+      "x_m": 17.00364,
+      "y_m": -5.97874,
+      "yaw_rad": -0.853307,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1878,
+      "elapsed_s": 62.6,
+      "x_m": 17.00366,
+      "y_m": -5.97874,
+      "yaw_rad": -0.775253,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1884,
+      "elapsed_s": 62.8,
+      "x_m": 17.00357,
+      "y_m": -5.97874,
+      "yaw_rad": -0.695616,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1890,
+      "elapsed_s": 63.0,
+      "x_m": 17.00348,
+      "y_m": -5.97871,
+      "yaw_rad": -0.614661,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1896,
+      "elapsed_s": 63.2,
+      "x_m": 17.00327,
+      "y_m": -5.9786,
+      "yaw_rad": -0.53499,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1902,
+      "elapsed_s": 63.4,
+      "x_m": 17.00299,
+      "y_m": -5.97843,
+      "yaw_rad": -0.460763,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1908,
+      "elapsed_s": 63.6,
+      "x_m": 17.0028,
+      "y_m": -5.97838,
+      "yaw_rad": -0.381173,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1914,
+      "elapsed_s": 63.8,
+      "x_m": 17.00292,
+      "y_m": -5.97839,
+      "yaw_rad": -0.300947,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1920,
+      "elapsed_s": 64.0,
+      "x_m": 17.00339,
+      "y_m": -5.97847,
+      "yaw_rad": -0.220902,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1926,
+      "elapsed_s": 64.2,
+      "x_m": 17.00369,
+      "y_m": -5.97852,
+      "yaw_rad": -0.137672,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1932,
+      "elapsed_s": 64.4,
+      "x_m": 17.00337,
+      "y_m": -5.97859,
+      "yaw_rad": -0.056856,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1938,
+      "elapsed_s": 64.6,
+      "x_m": 17.00246,
+      "y_m": -5.97867,
+      "yaw_rad": 0.01811,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1944,
+      "elapsed_s": 64.8,
+      "x_m": 17.0021,
+      "y_m": -5.97876,
+      "yaw_rad": 0.089808,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1950,
+      "elapsed_s": 65.0,
+      "x_m": 17.00193,
+      "y_m": -5.97882,
+      "yaw_rad": 0.15909,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1956,
+      "elapsed_s": 65.2,
+      "x_m": 17.00237,
+      "y_m": -5.97879,
+      "yaw_rad": 0.227299,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1962,
+      "elapsed_s": 65.4,
+      "x_m": 17.00248,
+      "y_m": -5.97887,
+      "yaw_rad": 0.297663,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1968,
+      "elapsed_s": 65.6,
+      "x_m": 17.00201,
+      "y_m": -5.97914,
+      "yaw_rad": 0.371294,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1974,
+      "elapsed_s": 65.8,
+      "x_m": 17.00115,
+      "y_m": -5.97958,
+      "yaw_rad": 0.444667,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1980,
+      "elapsed_s": 66.0,
+      "x_m": 17.00043,
+      "y_m": -5.98006,
+      "yaw_rad": 0.519748,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1986,
+      "elapsed_s": 66.2,
+      "x_m": 16.99996,
+      "y_m": -5.98045,
+      "yaw_rad": 0.597412,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1992,
+      "elapsed_s": 66.4,
+      "x_m": 16.99953,
+      "y_m": -5.98086,
+      "yaw_rad": 0.675341,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 1998,
+      "elapsed_s": 66.6,
+      "x_m": 16.99924,
+      "y_m": -5.9812,
+      "yaw_rad": 0.755129,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2004,
+      "elapsed_s": 66.8,
+      "x_m": 16.99898,
+      "y_m": -5.98154,
+      "yaw_rad": 0.834467,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2010,
+      "elapsed_s": 67.0,
+      "x_m": 16.99881,
+      "y_m": -5.98184,
+      "yaw_rad": 0.912844,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2016,
+      "elapsed_s": 67.2,
+      "x_m": 16.99872,
+      "y_m": -5.98206,
+      "yaw_rad": 0.990793,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2022,
+      "elapsed_s": 67.4,
+      "x_m": 16.99863,
+      "y_m": -5.98232,
+      "yaw_rad": 1.070251,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2028,
+      "elapsed_s": 67.6,
+      "x_m": 16.99859,
+      "y_m": -5.98255,
+      "yaw_rad": 1.14736,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2034,
+      "elapsed_s": 67.8,
+      "x_m": 16.99856,
+      "y_m": -5.98281,
+      "yaw_rad": 1.225455,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2040,
+      "elapsed_s": 68.0,
+      "x_m": 16.99859,
+      "y_m": -5.98302,
+      "yaw_rad": 1.302571,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2046,
+      "elapsed_s": 68.2,
+      "x_m": 16.99861,
+      "y_m": -5.98312,
+      "yaw_rad": 1.382916,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2052,
+      "elapsed_s": 68.4,
+      "x_m": 16.99919,
+      "y_m": -5.97914,
+      "yaw_rad": 1.441794,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2058,
+      "elapsed_s": 68.6,
+      "x_m": 17.00246,
+      "y_m": -5.95251,
+      "yaw_rad": 1.450612,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2064,
+      "elapsed_s": 68.8,
+      "x_m": 17.00752,
+      "y_m": -5.90804,
+      "yaw_rad": 1.462644,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2070,
+      "elapsed_s": 69.0,
+      "x_m": 17.01372,
+      "y_m": -5.8427,
+      "yaw_rad": 1.48832,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2076,
+      "elapsed_s": 69.2,
+      "x_m": 17.01906,
+      "y_m": -5.76195,
+      "yaw_rad": 1.517807,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2082,
+      "elapsed_s": 69.4,
+      "x_m": 17.02246,
+      "y_m": -5.67568,
+      "yaw_rad": 1.54199,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2088,
+      "elapsed_s": 69.6,
+      "x_m": 17.02398,
+      "y_m": -5.58727,
+      "yaw_rad": 1.561764,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2094,
+      "elapsed_s": 69.8,
+      "x_m": 17.02438,
+      "y_m": -5.49954,
+      "yaw_rad": 1.567834,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2100,
+      "elapsed_s": 70.0,
+      "x_m": 17.02473,
+      "y_m": -5.41226,
+      "yaw_rad": 1.566728,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2106,
+      "elapsed_s": 70.2,
+      "x_m": 17.02496,
+      "y_m": -5.32708,
+      "yaw_rad": 1.569633,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2112,
+      "elapsed_s": 70.4,
+      "x_m": 17.02486,
+      "y_m": -5.24328,
+      "yaw_rad": 1.573842,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2118,
+      "elapsed_s": 70.6,
+      "x_m": 17.02455,
+      "y_m": -5.15962,
+      "yaw_rad": 1.574035,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2124,
+      "elapsed_s": 70.8,
+      "x_m": 17.02444,
+      "y_m": -5.07769,
+      "yaw_rad": 1.570237,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2130,
+      "elapsed_s": 71.0,
+      "x_m": 17.02442,
+      "y_m": -4.99722,
+      "yaw_rad": 1.573099,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2136,
+      "elapsed_s": 71.2,
+      "x_m": 17.02417,
+      "y_m": -4.91692,
+      "yaw_rad": 1.57374,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2142,
+      "elapsed_s": 71.4,
+      "x_m": 17.02397,
+      "y_m": -4.83611,
+      "yaw_rad": 1.572118,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2148,
+      "elapsed_s": 71.6,
+      "x_m": 17.02396,
+      "y_m": -4.75755,
+      "yaw_rad": 1.569869,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2154,
+      "elapsed_s": 71.8,
+      "x_m": 17.02419,
+      "y_m": -4.6807,
+      "yaw_rad": 1.566382,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2160,
+      "elapsed_s": 72.0,
+      "x_m": 17.02471,
+      "y_m": -4.60445,
+      "yaw_rad": 1.562657,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2166,
+      "elapsed_s": 72.2,
+      "x_m": 17.02541,
+      "y_m": -4.52813,
+      "yaw_rad": 1.561489,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2172,
+      "elapsed_s": 72.4,
+      "x_m": 17.026,
+      "y_m": -4.45177,
+      "yaw_rad": 1.564721,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2178,
+      "elapsed_s": 72.6,
+      "x_m": 17.02575,
+      "y_m": -4.37493,
+      "yaw_rad": 1.582702,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2184,
+      "elapsed_s": 72.8,
+      "x_m": 17.02469,
+      "y_m": -4.29767,
+      "yaw_rad": 1.585388,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2190,
+      "elapsed_s": 73.0,
+      "x_m": 17.02383,
+      "y_m": -4.22073,
+      "yaw_rad": 1.577939,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2196,
+      "elapsed_s": 73.2,
+      "x_m": 17.02368,
+      "y_m": -4.14351,
+      "yaw_rad": 1.568782,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2202,
+      "elapsed_s": 73.4,
+      "x_m": 17.02409,
+      "y_m": -4.06542,
+      "yaw_rad": 1.563049,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2208,
+      "elapsed_s": 73.6,
+      "x_m": 17.02489,
+      "y_m": -3.98657,
+      "yaw_rad": 1.558952,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2214,
+      "elapsed_s": 73.8,
+      "x_m": 17.02592,
+      "y_m": -3.90781,
+      "yaw_rad": 1.555962,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2220,
+      "elapsed_s": 74.0,
+      "x_m": 17.02728,
+      "y_m": -3.82896,
+      "yaw_rad": 1.551347,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2226,
+      "elapsed_s": 74.2,
+      "x_m": 17.02914,
+      "y_m": -3.75067,
+      "yaw_rad": 1.544093,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2232,
+      "elapsed_s": 74.4,
+      "x_m": 17.03118,
+      "y_m": -3.67285,
+      "yaw_rad": 1.545236,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2238,
+      "elapsed_s": 74.6,
+      "x_m": 17.03307,
+      "y_m": -3.59572,
+      "yaw_rad": 1.54698,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2244,
+      "elapsed_s": 74.8,
+      "x_m": 17.03482,
+      "y_m": -3.51895,
+      "yaw_rad": 1.548507,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2250,
+      "elapsed_s": 75.0,
+      "x_m": 17.03648,
+      "y_m": -3.44162,
+      "yaw_rad": 1.549789,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2256,
+      "elapsed_s": 75.2,
+      "x_m": 17.03808,
+      "y_m": -3.36233,
+      "yaw_rad": 1.549943,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2262,
+      "elapsed_s": 75.4,
+      "x_m": 17.03984,
+      "y_m": -3.28073,
+      "yaw_rad": 1.548701,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2268,
+      "elapsed_s": 75.6,
+      "x_m": 17.04172,
+      "y_m": -3.19862,
+      "yaw_rad": 1.547216,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2274,
+      "elapsed_s": 75.8,
+      "x_m": 17.04366,
+      "y_m": -3.11988,
+      "yaw_rad": 1.54456,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2280,
+      "elapsed_s": 76.0,
+      "x_m": 17.04604,
+      "y_m": -3.04232,
+      "yaw_rad": 1.537044,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2286,
+      "elapsed_s": 76.2,
+      "x_m": 17.04895,
+      "y_m": -2.96357,
+      "yaw_rad": 1.531844,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2292,
+      "elapsed_s": 76.4,
+      "x_m": 17.05227,
+      "y_m": -2.88264,
+      "yaw_rad": 1.528668,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2298,
+      "elapsed_s": 76.6,
+      "x_m": 17.05579,
+      "y_m": -2.80029,
+      "yaw_rad": 1.528757,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2304,
+      "elapsed_s": 76.8,
+      "x_m": 17.05886,
+      "y_m": -2.71813,
+      "yaw_rad": 1.537512,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2310,
+      "elapsed_s": 77.0,
+      "x_m": 17.06141,
+      "y_m": -2.63796,
+      "yaw_rad": 1.539546,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2316,
+      "elapsed_s": 77.2,
+      "x_m": 17.0639,
+      "y_m": -2.55823,
+      "yaw_rad": 1.539832,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2322,
+      "elapsed_s": 77.4,
+      "x_m": 17.06635,
+      "y_m": -2.47732,
+      "yaw_rad": 1.541479,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2328,
+      "elapsed_s": 77.6,
+      "x_m": 17.06862,
+      "y_m": -2.39592,
+      "yaw_rad": 1.544837,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2334,
+      "elapsed_s": 77.8,
+      "x_m": 17.07055,
+      "y_m": -2.314,
+      "yaw_rad": 1.549547,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2340,
+      "elapsed_s": 78.0,
+      "x_m": 17.07208,
+      "y_m": -2.23136,
+      "yaw_rad": 1.554405,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2346,
+      "elapsed_s": 78.2,
+      "x_m": 17.07326,
+      "y_m": -2.14905,
+      "yaw_rad": 1.557271,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2352,
+      "elapsed_s": 78.4,
+      "x_m": 17.07455,
+      "y_m": -2.06687,
+      "yaw_rad": 1.552525,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2358,
+      "elapsed_s": 78.6,
+      "x_m": 17.07625,
+      "y_m": -1.98503,
+      "yaw_rad": 1.54761,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2364,
+      "elapsed_s": 78.8,
+      "x_m": 17.0786,
+      "y_m": -1.90304,
+      "yaw_rad": 1.534896,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2370,
+      "elapsed_s": 79.0,
+      "x_m": 17.08212,
+      "y_m": -1.82112,
+      "yaw_rad": 1.523279,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2376,
+      "elapsed_s": 79.2,
+      "x_m": 17.08621,
+      "y_m": -1.73975,
+      "yaw_rad": 1.519769,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2382,
+      "elapsed_s": 79.4,
+      "x_m": 17.09068,
+      "y_m": -1.65773,
+      "yaw_rad": 1.51381,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2388,
+      "elapsed_s": 79.6,
+      "x_m": 17.09575,
+      "y_m": -1.57255,
+      "yaw_rad": 1.510288,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2394,
+      "elapsed_s": 79.8,
+      "x_m": 17.10118,
+      "y_m": -1.48656,
+      "yaw_rad": 1.505884,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2400,
+      "elapsed_s": 80.0,
+      "x_m": 17.10703,
+      "y_m": -1.39972,
+      "yaw_rad": 1.501812,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2406,
+      "elapsed_s": 80.2,
+      "x_m": 17.11298,
+      "y_m": -1.31536,
+      "yaw_rad": 1.500498,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2412,
+      "elapsed_s": 80.4,
+      "x_m": 17.11872,
+      "y_m": -1.23146,
+      "yaw_rad": 1.504722,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2418,
+      "elapsed_s": 80.6,
+      "x_m": 17.12398,
+      "y_m": -1.14842,
+      "yaw_rad": 1.509706,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2424,
+      "elapsed_s": 80.8,
+      "x_m": 17.12874,
+      "y_m": -1.06572,
+      "yaw_rad": 1.516641,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2430,
+      "elapsed_s": 81.0,
+      "x_m": 17.13312,
+      "y_m": -0.98192,
+      "yaw_rad": 1.520137,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2436,
+      "elapsed_s": 81.2,
+      "x_m": 17.1373,
+      "y_m": -0.89732,
+      "yaw_rad": 1.522895,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2442,
+      "elapsed_s": 81.4,
+      "x_m": 17.14112,
+      "y_m": -0.81358,
+      "yaw_rad": 1.527189,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2448,
+      "elapsed_s": 81.6,
+      "x_m": 17.14455,
+      "y_m": -0.7296,
+      "yaw_rad": 1.532408,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2454,
+      "elapsed_s": 81.8,
+      "x_m": 17.14779,
+      "y_m": -0.64584,
+      "yaw_rad": 1.530646,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2460,
+      "elapsed_s": 82.0,
+      "x_m": 17.15129,
+      "y_m": -0.56285,
+      "yaw_rad": 1.527784,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2466,
+      "elapsed_s": 82.2,
+      "x_m": 17.15407,
+      "y_m": -0.49516,
+      "yaw_rad": 1.539329,
+      "segment_id": 4,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2472,
+      "elapsed_s": 82.4,
+      "x_m": 17.15496,
+      "y_m": -0.4524,
+      "yaw_rad": 1.55108,
+      "segment_id": 4,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2478,
+      "elapsed_s": 82.6,
+      "x_m": 17.15533,
+      "y_m": -0.4187,
+      "yaw_rad": 1.586428,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2484,
+      "elapsed_s": 82.8,
+      "x_m": 17.15498,
+      "y_m": -0.41075,
+      "yaw_rad": 1.660884,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2490,
+      "elapsed_s": 83.0,
+      "x_m": 17.15471,
+      "y_m": -0.40857,
+      "yaw_rad": 1.742564,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2496,
+      "elapsed_s": 83.2,
+      "x_m": 17.15458,
+      "y_m": -0.40785,
+      "yaw_rad": 1.825308,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2502,
+      "elapsed_s": 83.4,
+      "x_m": 17.15441,
+      "y_m": -0.40731,
+      "yaw_rad": 1.907014,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2508,
+      "elapsed_s": 83.6,
+      "x_m": 17.15417,
+      "y_m": -0.40674,
+      "yaw_rad": 1.98621,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2514,
+      "elapsed_s": 83.8,
+      "x_m": 17.15383,
+      "y_m": -0.4061,
+      "yaw_rad": 2.065279,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2520,
+      "elapsed_s": 84.0,
+      "x_m": 17.15346,
+      "y_m": -0.40547,
+      "yaw_rad": 2.145309,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2526,
+      "elapsed_s": 84.2,
+      "x_m": 17.15311,
+      "y_m": -0.40496,
+      "yaw_rad": 2.225548,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2532,
+      "elapsed_s": 84.4,
+      "x_m": 17.1531,
+      "y_m": -0.40485,
+      "yaw_rad": 2.308074,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2538,
+      "elapsed_s": 84.6,
+      "x_m": 17.15316,
+      "y_m": -0.40483,
+      "yaw_rad": 2.39186,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2544,
+      "elapsed_s": 84.8,
+      "x_m": 17.15332,
+      "y_m": -0.4049,
+      "yaw_rad": 2.475489,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2550,
+      "elapsed_s": 85.0,
+      "x_m": 17.15356,
+      "y_m": -0.40498,
+      "yaw_rad": 2.55893,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2556,
+      "elapsed_s": 85.2,
+      "x_m": 17.15373,
+      "y_m": -0.40502,
+      "yaw_rad": 2.643525,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2562,
+      "elapsed_s": 85.4,
+      "x_m": 17.15393,
+      "y_m": -0.40506,
+      "yaw_rad": 2.727934,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2568,
+      "elapsed_s": 85.6,
+      "x_m": 17.15406,
+      "y_m": -0.40505,
+      "yaw_rad": 2.812488,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2574,
+      "elapsed_s": 85.8,
+      "x_m": 17.15414,
+      "y_m": -0.40502,
+      "yaw_rad": 2.897199,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2580,
+      "elapsed_s": 86.0,
+      "x_m": 17.1541,
+      "y_m": -0.40498,
+      "yaw_rad": 2.982516,
+      "segment_id": 5,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 2586,
+      "elapsed_s": 86.2,
+      "x_m": 17.1291,
+      "y_m": -0.40212,
+      "yaw_rad": 3.048948,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2592,
+      "elapsed_s": 86.4,
+      "x_m": 17.06896,
+      "y_m": -0.399,
+      "yaw_rad": 3.122144,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2598,
+      "elapsed_s": 86.6,
+      "x_m": 16.99133,
+      "y_m": -0.39982,
+      "yaw_rad": -3.111333,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2604,
+      "elapsed_s": 86.8,
+      "x_m": 16.90887,
+      "y_m": -0.40292,
+      "yaw_rad": -3.100545,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2610,
+      "elapsed_s": 87.0,
+      "x_m": 16.82507,
+      "y_m": -0.40643,
+      "yaw_rad": -3.099061,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2616,
+      "elapsed_s": 87.2,
+      "x_m": 16.7409,
+      "y_m": -0.41004,
+      "yaw_rad": -3.098167,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2622,
+      "elapsed_s": 87.4,
+      "x_m": 16.65665,
+      "y_m": -0.41363,
+      "yaw_rad": -3.099506,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2628,
+      "elapsed_s": 87.6,
+      "x_m": 16.5724,
+      "y_m": -0.41714,
+      "yaw_rad": -3.099902,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2634,
+      "elapsed_s": 87.8,
+      "x_m": 16.48812,
+      "y_m": -0.42066,
+      "yaw_rad": -3.099458,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2640,
+      "elapsed_s": 88.0,
+      "x_m": 16.40378,
+      "y_m": -0.42419,
+      "yaw_rad": -3.099556,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2646,
+      "elapsed_s": 88.2,
+      "x_m": 16.31947,
+      "y_m": -0.42762,
+      "yaw_rad": -3.101681,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2652,
+      "elapsed_s": 88.4,
+      "x_m": 16.23511,
+      "y_m": -0.43096,
+      "yaw_rad": -3.101685,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2658,
+      "elapsed_s": 88.6,
+      "x_m": 16.15073,
+      "y_m": -0.43423,
+      "yaw_rad": -3.104025,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2664,
+      "elapsed_s": 88.8,
+      "x_m": 16.06634,
+      "y_m": -0.43725,
+      "yaw_rad": -3.106699,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2670,
+      "elapsed_s": 89.0,
+      "x_m": 15.98199,
+      "y_m": -0.43986,
+      "yaw_rad": -3.11446,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2676,
+      "elapsed_s": 89.2,
+      "x_m": 15.89764,
+      "y_m": -0.4418,
+      "yaw_rad": -3.12121,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2682,
+      "elapsed_s": 89.4,
+      "x_m": 15.81332,
+      "y_m": -0.4432,
+      "yaw_rad": -3.128062,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2688,
+      "elapsed_s": 89.6,
+      "x_m": 15.72948,
+      "y_m": -0.44404,
+      "yaw_rad": -3.13361,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2694,
+      "elapsed_s": 89.8,
+      "x_m": 15.64597,
+      "y_m": -0.44453,
+      "yaw_rad": -3.136422,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2700,
+      "elapsed_s": 90.0,
+      "x_m": 15.56199,
+      "y_m": -0.44499,
+      "yaw_rad": -3.135375,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2706,
+      "elapsed_s": 90.2,
+      "x_m": 15.47767,
+      "y_m": -0.44553,
+      "yaw_rad": -3.134672,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2712,
+      "elapsed_s": 90.4,
+      "x_m": 15.3935,
+      "y_m": -0.44608,
+      "yaw_rad": -3.134605,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2718,
+      "elapsed_s": 90.6,
+      "x_m": 15.30941,
+      "y_m": -0.44665,
+      "yaw_rad": -3.13471,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2724,
+      "elapsed_s": 90.8,
+      "x_m": 15.22528,
+      "y_m": -0.44723,
+      "yaw_rad": -3.134481,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2730,
+      "elapsed_s": 91.0,
+      "x_m": 15.14128,
+      "y_m": -0.44785,
+      "yaw_rad": -3.13381,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2736,
+      "elapsed_s": 91.2,
+      "x_m": 15.05706,
+      "y_m": -0.44846,
+      "yaw_rad": -3.134181,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2742,
+      "elapsed_s": 91.4,
+      "x_m": 14.97233,
+      "y_m": -0.44901,
+      "yaw_rad": -3.135359,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2748,
+      "elapsed_s": 91.6,
+      "x_m": 14.8876,
+      "y_m": -0.44948,
+      "yaw_rad": -3.135436,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2754,
+      "elapsed_s": 91.8,
+      "x_m": 14.80297,
+      "y_m": -0.45005,
+      "yaw_rad": -3.133875,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2760,
+      "elapsed_s": 92.0,
+      "x_m": 14.71823,
+      "y_m": -0.45073,
+      "yaw_rad": -3.132882,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2766,
+      "elapsed_s": 92.2,
+      "x_m": 14.63347,
+      "y_m": -0.45148,
+      "yaw_rad": -3.132241,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2772,
+      "elapsed_s": 92.4,
+      "x_m": 14.54922,
+      "y_m": -0.45232,
+      "yaw_rad": -3.130483,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2778,
+      "elapsed_s": 92.6,
+      "x_m": 14.46421,
+      "y_m": -0.45337,
+      "yaw_rad": -3.128354,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2784,
+      "elapsed_s": 92.8,
+      "x_m": 14.37845,
+      "y_m": -0.45457,
+      "yaw_rad": -3.126768,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2790,
+      "elapsed_s": 93.0,
+      "x_m": 14.29267,
+      "y_m": -0.45592,
+      "yaw_rad": -3.125257,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2796,
+      "elapsed_s": 93.2,
+      "x_m": 14.20624,
+      "y_m": -0.45738,
+      "yaw_rad": -3.124619,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2802,
+      "elapsed_s": 93.4,
+      "x_m": 14.11886,
+      "y_m": -0.45887,
+      "yaw_rad": -3.124806,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2808,
+      "elapsed_s": 93.6,
+      "x_m": 14.03125,
+      "y_m": -0.46032,
+      "yaw_rad": -3.125906,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2814,
+      "elapsed_s": 93.8,
+      "x_m": 13.94588,
+      "y_m": -0.46143,
+      "yaw_rad": -3.125985,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2820,
+      "elapsed_s": 94.0,
+      "x_m": 13.86226,
+      "y_m": -0.46307,
+      "yaw_rad": -3.130615,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2826,
+      "elapsed_s": 94.2,
+      "x_m": 13.781,
+      "y_m": -0.4642,
+      "yaw_rad": -3.136602,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2832,
+      "elapsed_s": 94.4,
+      "x_m": 13.70176,
+      "y_m": -0.46498,
+      "yaw_rad": 3.141536,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2838,
+      "elapsed_s": 94.6,
+      "x_m": 13.6204,
+      "y_m": -0.46502,
+      "yaw_rad": -3.141282,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2844,
+      "elapsed_s": 94.8,
+      "x_m": 13.53621,
+      "y_m": -0.46517,
+      "yaw_rad": -3.138448,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2850,
+      "elapsed_s": 95.0,
+      "x_m": 13.45097,
+      "y_m": -0.46552,
+      "yaw_rad": -3.137043,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2856,
+      "elapsed_s": 95.2,
+      "x_m": 13.36572,
+      "y_m": -0.46594,
+      "yaw_rad": -3.136309,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2862,
+      "elapsed_s": 95.4,
+      "x_m": 13.27976,
+      "y_m": -0.46645,
+      "yaw_rad": -3.135549,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2868,
+      "elapsed_s": 95.6,
+      "x_m": 13.19275,
+      "y_m": -0.46697,
+      "yaw_rad": -3.135867,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2874,
+      "elapsed_s": 95.8,
+      "x_m": 13.10612,
+      "y_m": -0.4675,
+      "yaw_rad": -3.135959,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2880,
+      "elapsed_s": 96.0,
+      "x_m": 13.0203,
+      "y_m": -0.46805,
+      "yaw_rad": -3.135299,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2886,
+      "elapsed_s": 96.2,
+      "x_m": 12.93468,
+      "y_m": -0.46862,
+      "yaw_rad": -3.135335,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2892,
+      "elapsed_s": 96.4,
+      "x_m": 12.84917,
+      "y_m": -0.46916,
+      "yaw_rad": -3.135507,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2898,
+      "elapsed_s": 96.6,
+      "x_m": 12.76408,
+      "y_m": -0.4697,
+      "yaw_rad": -3.135735,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2904,
+      "elapsed_s": 96.8,
+      "x_m": 12.67896,
+      "y_m": -0.47021,
+      "yaw_rad": -3.136151,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2910,
+      "elapsed_s": 97.0,
+      "x_m": 12.59347,
+      "y_m": -0.47065,
+      "yaw_rad": -3.137016,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2916,
+      "elapsed_s": 97.2,
+      "x_m": 12.50794,
+      "y_m": -0.47102,
+      "yaw_rad": -3.13777,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2922,
+      "elapsed_s": 97.4,
+      "x_m": 12.42261,
+      "y_m": -0.47135,
+      "yaw_rad": -3.138314,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2928,
+      "elapsed_s": 97.6,
+      "x_m": 12.33766,
+      "y_m": -0.47165,
+      "yaw_rad": -3.138669,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2934,
+      "elapsed_s": 97.8,
+      "x_m": 12.25259,
+      "y_m": -0.47188,
+      "yaw_rad": -3.139611,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2940,
+      "elapsed_s": 98.0,
+      "x_m": 12.16763,
+      "y_m": -0.47204,
+      "yaw_rad": -3.140171,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2946,
+      "elapsed_s": 98.2,
+      "x_m": 12.08268,
+      "y_m": -0.47215,
+      "yaw_rad": -3.141088,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2952,
+      "elapsed_s": 98.4,
+      "x_m": 11.99784,
+      "y_m": -0.47217,
+      "yaw_rad": 3.141192,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2958,
+      "elapsed_s": 98.6,
+      "x_m": 11.91306,
+      "y_m": -0.47212,
+      "yaw_rad": 3.14039,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2964,
+      "elapsed_s": 98.8,
+      "x_m": 11.82822,
+      "y_m": -0.47205,
+      "yaw_rad": 3.140663,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2970,
+      "elapsed_s": 99.0,
+      "x_m": 11.74319,
+      "y_m": -0.47202,
+      "yaw_rad": 3.141101,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2976,
+      "elapsed_s": 99.2,
+      "x_m": 11.65826,
+      "y_m": -0.47201,
+      "yaw_rad": 3.141147,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2982,
+      "elapsed_s": 99.4,
+      "x_m": 11.57351,
+      "y_m": -0.47199,
+      "yaw_rad": 3.140898,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2988,
+      "elapsed_s": 99.6,
+      "x_m": 11.48882,
+      "y_m": -0.47193,
+      "yaw_rad": 3.140183,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 2994,
+      "elapsed_s": 99.8,
+      "x_m": 11.40417,
+      "y_m": -0.4718,
+      "yaw_rad": 3.139418,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3000,
+      "elapsed_s": 100.0,
+      "x_m": 11.31929,
+      "y_m": -0.47159,
+      "yaw_rad": 3.138201,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3006,
+      "elapsed_s": 100.2,
+      "x_m": 11.2343,
+      "y_m": -0.4713,
+      "yaw_rad": 3.137089,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3012,
+      "elapsed_s": 100.4,
+      "x_m": 11.14927,
+      "y_m": -0.47093,
+      "yaw_rad": 3.135718,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3018,
+      "elapsed_s": 100.6,
+      "x_m": 11.06452,
+      "y_m": -0.47039,
+      "yaw_rad": 3.134074,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3024,
+      "elapsed_s": 100.8,
+      "x_m": 10.97982,
+      "y_m": -0.46969,
+      "yaw_rad": 3.132391,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3030,
+      "elapsed_s": 101.0,
+      "x_m": 10.89509,
+      "y_m": -0.46887,
+      "yaw_rad": 3.130835,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3036,
+      "elapsed_s": 101.2,
+      "x_m": 10.81032,
+      "y_m": -0.4679,
+      "yaw_rad": 3.128892,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3042,
+      "elapsed_s": 101.4,
+      "x_m": 10.72549,
+      "y_m": -0.46676,
+      "yaw_rad": 3.127095,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3048,
+      "elapsed_s": 101.6,
+      "x_m": 10.6407,
+      "y_m": -0.46549,
+      "yaw_rad": 3.125512,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3054,
+      "elapsed_s": 101.8,
+      "x_m": 10.55633,
+      "y_m": -0.46411,
+      "yaw_rad": 3.124068,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3060,
+      "elapsed_s": 102.0,
+      "x_m": 10.47167,
+      "y_m": -0.46258,
+      "yaw_rad": 3.122469,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3066,
+      "elapsed_s": 102.2,
+      "x_m": 10.38721,
+      "y_m": -0.46093,
+      "yaw_rad": 3.120853,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3072,
+      "elapsed_s": 102.4,
+      "x_m": 10.30263,
+      "y_m": -0.45911,
+      "yaw_rad": 3.119087,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3078,
+      "elapsed_s": 102.6,
+      "x_m": 10.21795,
+      "y_m": -0.45716,
+      "yaw_rad": 3.117472,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3084,
+      "elapsed_s": 102.8,
+      "x_m": 10.13327,
+      "y_m": -0.45505,
+      "yaw_rad": 3.115465,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3090,
+      "elapsed_s": 103.0,
+      "x_m": 10.04848,
+      "y_m": -0.45279,
+      "yaw_rad": 3.11389,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3096,
+      "elapsed_s": 103.2,
+      "x_m": 9.96418,
+      "y_m": -0.45028,
+      "yaw_rad": 3.111232,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3102,
+      "elapsed_s": 103.4,
+      "x_m": 9.88104,
+      "y_m": -0.44768,
+      "yaw_rad": 3.109147,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3108,
+      "elapsed_s": 103.6,
+      "x_m": 9.79754,
+      "y_m": -0.44493,
+      "yaw_rad": 3.107786,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3114,
+      "elapsed_s": 103.8,
+      "x_m": 9.71456,
+      "y_m": -0.44208,
+      "yaw_rad": 3.106152,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3120,
+      "elapsed_s": 104.0,
+      "x_m": 9.63099,
+      "y_m": -0.43908,
+      "yaw_rad": 3.104454,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3126,
+      "elapsed_s": 104.2,
+      "x_m": 9.5467,
+      "y_m": -0.43582,
+      "yaw_rad": 3.101231,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3132,
+      "elapsed_s": 104.4,
+      "x_m": 9.46154,
+      "y_m": -0.43227,
+      "yaw_rad": 3.0988,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3138,
+      "elapsed_s": 104.6,
+      "x_m": 9.37633,
+      "y_m": -0.42852,
+      "yaw_rad": 3.096113,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3144,
+      "elapsed_s": 104.8,
+      "x_m": 9.29095,
+      "y_m": -0.42448,
+      "yaw_rad": 3.092752,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3150,
+      "elapsed_s": 105.0,
+      "x_m": 9.20657,
+      "y_m": -0.42012,
+      "yaw_rad": 3.088242,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3156,
+      "elapsed_s": 105.2,
+      "x_m": 9.12251,
+      "y_m": -0.41543,
+      "yaw_rad": 3.084295,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3162,
+      "elapsed_s": 105.4,
+      "x_m": 9.03817,
+      "y_m": -0.41044,
+      "yaw_rad": 3.081383,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3168,
+      "elapsed_s": 105.6,
+      "x_m": 8.95368,
+      "y_m": -0.40522,
+      "yaw_rad": 3.078938,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3174,
+      "elapsed_s": 105.8,
+      "x_m": 8.8693,
+      "y_m": -0.39981,
+      "yaw_rad": 3.076288,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3180,
+      "elapsed_s": 106.0,
+      "x_m": 8.7844,
+      "y_m": -0.39403,
+      "yaw_rad": 3.07149,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3186,
+      "elapsed_s": 106.2,
+      "x_m": 8.69976,
+      "y_m": -0.38785,
+      "yaw_rad": 3.066682,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3192,
+      "elapsed_s": 106.4,
+      "x_m": 8.61571,
+      "y_m": -0.38133,
+      "yaw_rad": 3.06254,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3198,
+      "elapsed_s": 106.6,
+      "x_m": 8.53175,
+      "y_m": -0.37451,
+      "yaw_rad": 3.059288,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3204,
+      "elapsed_s": 106.8,
+      "x_m": 8.44797,
+      "y_m": -0.36745,
+      "yaw_rad": 3.056536,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3210,
+      "elapsed_s": 107.0,
+      "x_m": 8.36423,
+      "y_m": -0.36021,
+      "yaw_rad": 3.056718,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3216,
+      "elapsed_s": 107.2,
+      "x_m": 8.28029,
+      "y_m": -0.35366,
+      "yaw_rad": 3.070959,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3222,
+      "elapsed_s": 107.4,
+      "x_m": 8.19616,
+      "y_m": -0.34826,
+      "yaw_rad": 3.083623,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3228,
+      "elapsed_s": 107.6,
+      "x_m": 8.11203,
+      "y_m": -0.34381,
+      "yaw_rad": 3.093456,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3234,
+      "elapsed_s": 107.8,
+      "x_m": 8.02798,
+      "y_m": -0.33991,
+      "yaw_rad": 3.096613,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3240,
+      "elapsed_s": 108.0,
+      "x_m": 7.94396,
+      "y_m": -0.33612,
+      "yaw_rad": 3.097023,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3246,
+      "elapsed_s": 108.2,
+      "x_m": 7.85994,
+      "y_m": -0.33233,
+      "yaw_rad": 3.096905,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3252,
+      "elapsed_s": 108.4,
+      "x_m": 7.77591,
+      "y_m": -0.32852,
+      "yaw_rad": 3.096432,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3258,
+      "elapsed_s": 108.6,
+      "x_m": 7.69184,
+      "y_m": -0.32465,
+      "yaw_rad": 3.095676,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3264,
+      "elapsed_s": 108.8,
+      "x_m": 7.60767,
+      "y_m": -0.3207,
+      "yaw_rad": 3.094661,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3270,
+      "elapsed_s": 109.0,
+      "x_m": 7.52358,
+      "y_m": -0.31608,
+      "yaw_rad": 3.077771,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3276,
+      "elapsed_s": 109.2,
+      "x_m": 7.43968,
+      "y_m": -0.30972,
+      "yaw_rad": 3.056831,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3282,
+      "elapsed_s": 109.4,
+      "x_m": 7.35598,
+      "y_m": -0.3019,
+      "yaw_rad": 3.043796,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3288,
+      "elapsed_s": 109.6,
+      "x_m": 7.2722,
+      "y_m": -0.2934,
+      "yaw_rad": 3.038779,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3294,
+      "elapsed_s": 109.8,
+      "x_m": 7.18808,
+      "y_m": -0.28453,
+      "yaw_rad": 3.035865,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3300,
+      "elapsed_s": 110.0,
+      "x_m": 7.1034,
+      "y_m": -0.27559,
+      "yaw_rad": 3.037537,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3306,
+      "elapsed_s": 110.2,
+      "x_m": 7.01808,
+      "y_m": -0.26676,
+      "yaw_rad": 3.039763,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3312,
+      "elapsed_s": 110.4,
+      "x_m": 6.93233,
+      "y_m": -0.25806,
+      "yaw_rad": 3.041596,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3318,
+      "elapsed_s": 110.6,
+      "x_m": 6.84627,
+      "y_m": -0.24936,
+      "yaw_rad": 3.040042,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3324,
+      "elapsed_s": 110.8,
+      "x_m": 6.75993,
+      "y_m": -0.24046,
+      "yaw_rad": 3.038332,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3330,
+      "elapsed_s": 111.0,
+      "x_m": 6.6732,
+      "y_m": -0.23146,
+      "yaw_rad": 3.03845,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3336,
+      "elapsed_s": 111.2,
+      "x_m": 6.58606,
+      "y_m": -0.22239,
+      "yaw_rad": 3.037106,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3342,
+      "elapsed_s": 111.4,
+      "x_m": 6.49864,
+      "y_m": -0.21309,
+      "yaw_rad": 3.034562,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3348,
+      "elapsed_s": 111.6,
+      "x_m": 6.41088,
+      "y_m": -0.20357,
+      "yaw_rad": 3.032943,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3354,
+      "elapsed_s": 111.8,
+      "x_m": 6.32272,
+      "y_m": -0.19394,
+      "yaw_rad": 3.033006,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3360,
+      "elapsed_s": 112.0,
+      "x_m": 6.23879,
+      "y_m": -0.18518,
+      "yaw_rad": 3.045244,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3366,
+      "elapsed_s": 112.2,
+      "x_m": 6.15835,
+      "y_m": -0.17765,
+      "yaw_rad": 3.048451,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3372,
+      "elapsed_s": 112.4,
+      "x_m": 6.07406,
+      "y_m": -0.16962,
+      "yaw_rad": 3.044261,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3378,
+      "elapsed_s": 112.6,
+      "x_m": 5.98874,
+      "y_m": -0.16104,
+      "yaw_rad": 3.03851,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3384,
+      "elapsed_s": 112.8,
+      "x_m": 5.90557,
+      "y_m": -0.15234,
+      "yaw_rad": 3.037491,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3390,
+      "elapsed_s": 113.0,
+      "x_m": 5.82523,
+      "y_m": -0.14351,
+      "yaw_rad": 3.025271,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3396,
+      "elapsed_s": 113.2,
+      "x_m": 5.74635,
+      "y_m": -0.13402,
+      "yaw_rad": 3.022141,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3402,
+      "elapsed_s": 113.4,
+      "x_m": 5.668,
+      "y_m": -0.12473,
+      "yaw_rad": 3.026321,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3408,
+      "elapsed_s": 113.6,
+      "x_m": 5.58955,
+      "y_m": -0.11581,
+      "yaw_rad": 3.030698,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3414,
+      "elapsed_s": 113.8,
+      "x_m": 5.50994,
+      "y_m": -0.10699,
+      "yaw_rad": 3.032454,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3420,
+      "elapsed_s": 114.0,
+      "x_m": 5.42861,
+      "y_m": -0.09812,
+      "yaw_rad": 3.033621,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3426,
+      "elapsed_s": 114.2,
+      "x_m": 5.34595,
+      "y_m": -0.08919,
+      "yaw_rad": 3.034914,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3432,
+      "elapsed_s": 114.4,
+      "x_m": 5.26314,
+      "y_m": -0.08052,
+      "yaw_rad": 3.038677,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3438,
+      "elapsed_s": 114.6,
+      "x_m": 5.18019,
+      "y_m": -0.07202,
+      "yaw_rad": 3.039949,
+      "segment_id": 5,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3444,
+      "elapsed_s": 114.8,
+      "x_m": 5.10597,
+      "y_m": -0.06455,
+      "yaw_rad": 3.046085,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3450,
+      "elapsed_s": 115.0,
+      "x_m": 5.07897,
+      "y_m": -0.06239,
+      "yaw_rad": 3.096576,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3456,
+      "elapsed_s": 115.2,
+      "x_m": 5.07271,
+      "y_m": -0.06229,
+      "yaw_rad": -3.107541,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3462,
+      "elapsed_s": 115.4,
+      "x_m": 5.07117,
+      "y_m": -0.06236,
+      "yaw_rad": -3.023247,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3468,
+      "elapsed_s": 115.6,
+      "x_m": 5.07083,
+      "y_m": -0.0624,
+      "yaw_rad": -2.938865,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3474,
+      "elapsed_s": 115.8,
+      "x_m": 5.07067,
+      "y_m": -0.06241,
+      "yaw_rad": -2.853982,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3480,
+      "elapsed_s": 116.0,
+      "x_m": 5.07071,
+      "y_m": -0.06234,
+      "yaw_rad": -2.770114,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3486,
+      "elapsed_s": 116.2,
+      "x_m": 5.0707,
+      "y_m": -0.06227,
+      "yaw_rad": -2.686145,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3492,
+      "elapsed_s": 116.4,
+      "x_m": 5.0708,
+      "y_m": -0.06216,
+      "yaw_rad": -2.602851,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3498,
+      "elapsed_s": 116.6,
+      "x_m": 5.07094,
+      "y_m": -0.06201,
+      "yaw_rad": -2.51933,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3504,
+      "elapsed_s": 116.8,
+      "x_m": 5.07106,
+      "y_m": -0.06184,
+      "yaw_rad": -2.435848,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3510,
+      "elapsed_s": 117.0,
+      "x_m": 5.07123,
+      "y_m": -0.06162,
+      "yaw_rad": -2.352508,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3516,
+      "elapsed_s": 117.2,
+      "x_m": 5.0714,
+      "y_m": -0.06135,
+      "yaw_rad": -2.269188,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3522,
+      "elapsed_s": 117.4,
+      "x_m": 5.07163,
+      "y_m": -0.06096,
+      "yaw_rad": -2.18642,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3528,
+      "elapsed_s": 117.6,
+      "x_m": 5.06918,
+      "y_m": -0.06489,
+      "yaw_rad": -2.123356,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3534,
+      "elapsed_s": 117.8,
+      "x_m": 5.0459,
+      "y_m": -0.10297,
+      "yaw_rad": -2.118831,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3540,
+      "elapsed_s": 118.0,
+      "x_m": 5.00804,
+      "y_m": -0.16518,
+      "yaw_rad": -2.11531,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3546,
+      "elapsed_s": 118.2,
+      "x_m": 4.96633,
+      "y_m": -0.23469,
+      "yaw_rad": -2.107883,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3552,
+      "elapsed_s": 118.4,
+      "x_m": 4.92398,
+      "y_m": -0.30645,
+      "yaw_rad": -2.10118,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3558,
+      "elapsed_s": 118.6,
+      "x_m": 4.88169,
+      "y_m": -0.37903,
+      "yaw_rad": -2.096495,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3564,
+      "elapsed_s": 118.8,
+      "x_m": 4.83956,
+      "y_m": -0.45194,
+      "yaw_rad": -2.0941,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3570,
+      "elapsed_s": 119.0,
+      "x_m": 4.79747,
+      "y_m": -0.52495,
+      "yaw_rad": -2.093885,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3576,
+      "elapsed_s": 119.2,
+      "x_m": 4.75542,
+      "y_m": -0.59791,
+      "yaw_rad": -2.093332,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3582,
+      "elapsed_s": 119.4,
+      "x_m": 4.71382,
+      "y_m": -0.67029,
+      "yaw_rad": -2.092552,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3588,
+      "elapsed_s": 119.6,
+      "x_m": 4.67187,
+      "y_m": -0.74304,
+      "yaw_rad": -2.095676,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3594,
+      "elapsed_s": 119.8,
+      "x_m": 4.62949,
+      "y_m": -0.81591,
+      "yaw_rad": -2.099485,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3600,
+      "elapsed_s": 120.0,
+      "x_m": 4.58659,
+      "y_m": -0.88863,
+      "yaw_rad": -2.111993,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3606,
+      "elapsed_s": 120.2,
+      "x_m": 4.54299,
+      "y_m": -0.95974,
+      "yaw_rad": -2.126347,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3612,
+      "elapsed_s": 120.4,
+      "x_m": 4.51124,
+      "y_m": -1.01177,
+      "yaw_rad": -2.118483,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3618,
+      "elapsed_s": 120.6,
+      "x_m": 4.47912,
+      "y_m": -1.06443,
+      "yaw_rad": -2.118126,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3624,
+      "elapsed_s": 120.8,
+      "x_m": 4.44986,
+      "y_m": -1.11304,
+      "yaw_rad": -2.112111,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3630,
+      "elapsed_s": 121.0,
+      "x_m": 4.41725,
+      "y_m": -1.16738,
+      "yaw_rad": -2.1074,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3636,
+      "elapsed_s": 121.2,
+      "x_m": 4.38459,
+      "y_m": -1.22232,
+      "yaw_rad": -2.10272,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3642,
+      "elapsed_s": 121.4,
+      "x_m": 4.35011,
+      "y_m": -1.28077,
+      "yaw_rad": -2.105238,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3648,
+      "elapsed_s": 121.6,
+      "x_m": 4.3184,
+      "y_m": -1.33497,
+      "yaw_rad": -2.100245,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3654,
+      "elapsed_s": 121.8,
+      "x_m": 4.28763,
+      "y_m": -1.38822,
+      "yaw_rad": -2.095928,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3660,
+      "elapsed_s": 122.0,
+      "x_m": 4.25543,
+      "y_m": -1.44425,
+      "yaw_rad": -2.087332,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3666,
+      "elapsed_s": 122.2,
+      "x_m": 4.21852,
+      "y_m": -1.51013,
+      "yaw_rad": -2.076997,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3672,
+      "elapsed_s": 122.4,
+      "x_m": 4.17912,
+      "y_m": -1.58227,
+      "yaw_rad": -2.066245,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3678,
+      "elapsed_s": 122.6,
+      "x_m": 4.13961,
+      "y_m": -1.65693,
+      "yaw_rad": -2.048994,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3684,
+      "elapsed_s": 122.8,
+      "x_m": 4.1017,
+      "y_m": -1.73272,
+      "yaw_rad": -2.021307,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3690,
+      "elapsed_s": 123.0,
+      "x_m": 4.06587,
+      "y_m": -1.81104,
+      "yaw_rad": -1.980117,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3696,
+      "elapsed_s": 123.2,
+      "x_m": 4.03304,
+      "y_m": -1.89063,
+      "yaw_rad": -1.949363,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3702,
+      "elapsed_s": 123.4,
+      "x_m": 4.0017,
+      "y_m": -1.97169,
+      "yaw_rad": -1.931889,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3708,
+      "elapsed_s": 123.6,
+      "x_m": 3.97185,
+      "y_m": -2.05358,
+      "yaw_rad": -1.909262,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3714,
+      "elapsed_s": 123.8,
+      "x_m": 3.94405,
+      "y_m": -2.13489,
+      "yaw_rad": -1.893811,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3720,
+      "elapsed_s": 124.0,
+      "x_m": 3.91727,
+      "y_m": -2.2162,
+      "yaw_rad": -1.885076,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3726,
+      "elapsed_s": 124.2,
+      "x_m": 3.8912,
+      "y_m": -2.29731,
+      "yaw_rad": -1.878476,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3732,
+      "elapsed_s": 124.4,
+      "x_m": 3.86572,
+      "y_m": -2.37841,
+      "yaw_rad": -1.87158,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3738,
+      "elapsed_s": 124.6,
+      "x_m": 3.84077,
+      "y_m": -2.46003,
+      "yaw_rad": -1.863843,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3744,
+      "elapsed_s": 124.8,
+      "x_m": 3.81645,
+      "y_m": -2.54177,
+      "yaw_rad": -1.855007,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3750,
+      "elapsed_s": 125.0,
+      "x_m": 3.79312,
+      "y_m": -2.62366,
+      "yaw_rad": -1.842139,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3756,
+      "elapsed_s": 125.2,
+      "x_m": 3.771,
+      "y_m": -2.70485,
+      "yaw_rad": -1.833431,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3762,
+      "elapsed_s": 125.4,
+      "x_m": 3.75608,
+      "y_m": -2.75698,
+      "yaw_rad": -1.864372,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3768,
+      "elapsed_s": 125.6,
+      "x_m": 3.73561,
+      "y_m": -2.82532,
+      "yaw_rad": -1.855542,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3774,
+      "elapsed_s": 125.8,
+      "x_m": 3.72022,
+      "y_m": -2.87623,
+      "yaw_rad": -1.881201,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3780,
+      "elapsed_s": 126.0,
+      "x_m": 3.70134,
+      "y_m": -2.93489,
+      "yaw_rad": -1.882497,
+      "segment_id": 6,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3786,
+      "elapsed_s": 126.2,
+      "x_m": 3.68333,
+      "y_m": -2.98785,
+      "yaw_rad": -1.90462,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3792,
+      "elapsed_s": 126.4,
+      "x_m": 3.66284,
+      "y_m": -3.04617,
+      "yaw_rad": -1.92231,
+      "segment_id": 6,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3798,
+      "elapsed_s": 126.6,
+      "x_m": 3.64876,
+      "y_m": -3.08417,
+      "yaw_rad": -1.910492,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3804,
+      "elapsed_s": 126.8,
+      "x_m": 3.64557,
+      "y_m": -3.09388,
+      "yaw_rad": -1.841169,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3810,
+      "elapsed_s": 127.0,
+      "x_m": 3.64501,
+      "y_m": -3.09603,
+      "yaw_rad": -1.759094,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3816,
+      "elapsed_s": 127.2,
+      "x_m": 3.64493,
+      "y_m": -3.09626,
+      "yaw_rad": -1.674627,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3822,
+      "elapsed_s": 127.4,
+      "x_m": 3.64489,
+      "y_m": -3.09596,
+      "yaw_rad": -1.590238,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3828,
+      "elapsed_s": 127.6,
+      "x_m": 3.64481,
+      "y_m": -3.09563,
+      "yaw_rad": -1.507273,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3834,
+      "elapsed_s": 127.8,
+      "x_m": 3.64462,
+      "y_m": -3.09493,
+      "yaw_rad": -1.429429,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3840,
+      "elapsed_s": 128.0,
+      "x_m": 3.64432,
+      "y_m": -3.09389,
+      "yaw_rad": -1.354035,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3846,
+      "elapsed_s": 128.2,
+      "x_m": 3.64391,
+      "y_m": -3.09277,
+      "yaw_rad": -1.279697,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3852,
+      "elapsed_s": 128.4,
+      "x_m": 3.64341,
+      "y_m": -3.09167,
+      "yaw_rad": -1.205443,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3858,
+      "elapsed_s": 128.6,
+      "x_m": 3.64289,
+      "y_m": -3.09073,
+      "yaw_rad": -1.130839,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3864,
+      "elapsed_s": 128.8,
+      "x_m": 3.64418,
+      "y_m": -3.09319,
+      "yaw_rad": -1.060271,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3870,
+      "elapsed_s": 129.0,
+      "x_m": 3.66596,
+      "y_m": -3.12968,
+      "yaw_rad": -1.015201,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3876,
+      "elapsed_s": 129.2,
+      "x_m": 3.70574,
+      "y_m": -3.18969,
+      "yaw_rad": -0.961772,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3882,
+      "elapsed_s": 129.4,
+      "x_m": 3.75453,
+      "y_m": -3.25619,
+      "yaw_rad": -0.91925,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3888,
+      "elapsed_s": 129.6,
+      "x_m": 3.80639,
+      "y_m": -3.32196,
+      "yaw_rad": -0.891264,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3894,
+      "elapsed_s": 129.8,
+      "x_m": 3.86058,
+      "y_m": -3.3872,
+      "yaw_rad": -0.865675,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3900,
+      "elapsed_s": 130.0,
+      "x_m": 3.91622,
+      "y_m": -3.45098,
+      "yaw_rad": -0.843777,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3906,
+      "elapsed_s": 130.2,
+      "x_m": 3.97327,
+      "y_m": -3.51394,
+      "yaw_rad": -0.828285,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3912,
+      "elapsed_s": 130.4,
+      "x_m": 4.03278,
+      "y_m": -3.57805,
+      "yaw_rad": -0.819464,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3918,
+      "elapsed_s": 130.6,
+      "x_m": 4.09344,
+      "y_m": -3.64275,
+      "yaw_rad": -0.816416,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3924,
+      "elapsed_s": 130.8,
+      "x_m": 4.15338,
+      "y_m": -3.70632,
+      "yaw_rad": -0.815394,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3930,
+      "elapsed_s": 131.0,
+      "x_m": 4.20899,
+      "y_m": -3.76593,
+      "yaw_rad": -0.821237,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3936,
+      "elapsed_s": 131.2,
+      "x_m": 4.26622,
+      "y_m": -3.82734,
+      "yaw_rad": -0.822335,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3942,
+      "elapsed_s": 131.4,
+      "x_m": 4.32217,
+      "y_m": -3.88781,
+      "yaw_rad": -0.824309,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3948,
+      "elapsed_s": 131.6,
+      "x_m": 4.37663,
+      "y_m": -3.94701,
+      "yaw_rad": -0.830037,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3954,
+      "elapsed_s": 131.8,
+      "x_m": 4.42423,
+      "y_m": -3.99891,
+      "yaw_rad": -0.835206,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3960,
+      "elapsed_s": 132.0,
+      "x_m": 4.46888,
+      "y_m": -4.04869,
+      "yaw_rad": -0.838609,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3966,
+      "elapsed_s": 132.2,
+      "x_m": 4.52012,
+      "y_m": -4.10537,
+      "yaw_rad": -0.834699,
+      "segment_id": 7,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 3972,
+      "elapsed_s": 132.4,
+      "x_m": 4.56291,
+      "y_m": -4.15355,
+      "yaw_rad": -0.847096,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3978,
+      "elapsed_s": 132.6,
+      "x_m": 4.61377,
+      "y_m": -4.21075,
+      "yaw_rad": -0.842014,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3984,
+      "elapsed_s": 132.8,
+      "x_m": 4.66575,
+      "y_m": -4.26905,
+      "yaw_rad": -0.845487,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3990,
+      "elapsed_s": 133.0,
+      "x_m": 4.71613,
+      "y_m": -4.3263,
+      "yaw_rad": -0.851003,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 3996,
+      "elapsed_s": 133.2,
+      "x_m": 4.76916,
+      "y_m": -4.38696,
+      "yaw_rad": -0.854244,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4002,
+      "elapsed_s": 133.4,
+      "x_m": 4.82282,
+      "y_m": -4.44883,
+      "yaw_rad": -0.858441,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4008,
+      "elapsed_s": 133.6,
+      "x_m": 4.87647,
+      "y_m": -4.51124,
+      "yaw_rad": -0.862911,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4014,
+      "elapsed_s": 133.8,
+      "x_m": 4.92988,
+      "y_m": -4.57412,
+      "yaw_rad": -0.870934,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4020,
+      "elapsed_s": 134.0,
+      "x_m": 4.98274,
+      "y_m": -4.63752,
+      "yaw_rad": -0.879779,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4026,
+      "elapsed_s": 134.2,
+      "x_m": 5.03509,
+      "y_m": -4.70137,
+      "yaw_rad": -0.887778,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4032,
+      "elapsed_s": 134.4,
+      "x_m": 5.08708,
+      "y_m": -4.76576,
+      "yaw_rad": -0.894806,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4038,
+      "elapsed_s": 134.6,
+      "x_m": 5.13864,
+      "y_m": -4.83051,
+      "yaw_rad": -0.901124,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4044,
+      "elapsed_s": 134.8,
+      "x_m": 5.18985,
+      "y_m": -4.89558,
+      "yaw_rad": -0.906466,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4050,
+      "elapsed_s": 135.0,
+      "x_m": 5.2408,
+      "y_m": -4.96102,
+      "yaw_rad": -0.911691,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4056,
+      "elapsed_s": 135.2,
+      "x_m": 5.29146,
+      "y_m": -5.02684,
+      "yaw_rad": -0.917229,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4062,
+      "elapsed_s": 135.4,
+      "x_m": 5.34182,
+      "y_m": -5.09301,
+      "yaw_rad": -0.922731,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4068,
+      "elapsed_s": 135.6,
+      "x_m": 5.39186,
+      "y_m": -5.15928,
+      "yaw_rad": -0.924885,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4074,
+      "elapsed_s": 135.8,
+      "x_m": 5.44206,
+      "y_m": -5.22598,
+      "yaw_rad": -0.926352,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4080,
+      "elapsed_s": 136.0,
+      "x_m": 5.49281,
+      "y_m": -5.29374,
+      "yaw_rad": -0.931058,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4086,
+      "elapsed_s": 136.2,
+      "x_m": 5.54374,
+      "y_m": -5.36299,
+      "yaw_rad": -0.942946,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4092,
+      "elapsed_s": 136.4,
+      "x_m": 5.59259,
+      "y_m": -5.43141,
+      "yaw_rad": -0.955508,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4098,
+      "elapsed_s": 136.6,
+      "x_m": 5.64013,
+      "y_m": -5.49959,
+      "yaw_rad": -0.96884,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4104,
+      "elapsed_s": 136.8,
+      "x_m": 5.68699,
+      "y_m": -5.56869,
+      "yaw_rad": -0.976072,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4110,
+      "elapsed_s": 137.0,
+      "x_m": 5.73488,
+      "y_m": -5.63911,
+      "yaw_rad": -0.970967,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4116,
+      "elapsed_s": 137.2,
+      "x_m": 5.78445,
+      "y_m": -5.7115,
+      "yaw_rad": -0.973845,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4122,
+      "elapsed_s": 137.4,
+      "x_m": 5.8337,
+      "y_m": -5.78519,
+      "yaw_rad": -0.988705,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4128,
+      "elapsed_s": 137.6,
+      "x_m": 5.88199,
+      "y_m": -5.85978,
+      "yaw_rad": -1.001598,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4134,
+      "elapsed_s": 137.8,
+      "x_m": 5.92955,
+      "y_m": -5.93481,
+      "yaw_rad": -1.009383,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4140,
+      "elapsed_s": 138.0,
+      "x_m": 5.97566,
+      "y_m": -6.00901,
+      "yaw_rad": -1.020658,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4146,
+      "elapsed_s": 138.2,
+      "x_m": 6.02018,
+      "y_m": -6.08297,
+      "yaw_rad": -1.03528,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4152,
+      "elapsed_s": 138.4,
+      "x_m": 6.06325,
+      "y_m": -6.15645,
+      "yaw_rad": -1.044115,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4158,
+      "elapsed_s": 138.6,
+      "x_m": 6.10569,
+      "y_m": -6.23001,
+      "yaw_rad": -1.050882,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4164,
+      "elapsed_s": 138.8,
+      "x_m": 6.14827,
+      "y_m": -6.30528,
+      "yaw_rad": -1.060632,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4170,
+      "elapsed_s": 139.0,
+      "x_m": 6.19029,
+      "y_m": -6.38132,
+      "yaw_rad": -1.071064,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4176,
+      "elapsed_s": 139.2,
+      "x_m": 6.23134,
+      "y_m": -6.45793,
+      "yaw_rad": -1.085804,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4182,
+      "elapsed_s": 139.4,
+      "x_m": 6.27165,
+      "y_m": -6.5346,
+      "yaw_rad": -1.085026,
+      "segment_id": 7,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4188,
+      "elapsed_s": 139.6,
+      "x_m": 6.30179,
+      "y_m": -6.59062,
+      "yaw_rad": -1.05905,
+      "segment_id": 8,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4194,
+      "elapsed_s": 139.8,
+      "x_m": 6.31367,
+      "y_m": -6.61025,
+      "yaw_rad": -0.994175,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4200,
+      "elapsed_s": 140.0,
+      "x_m": 6.34441,
+      "y_m": -6.65488,
+      "yaw_rad": -0.951534,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4206,
+      "elapsed_s": 140.2,
+      "x_m": 6.38992,
+      "y_m": -6.71692,
+      "yaw_rad": -0.929427,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4212,
+      "elapsed_s": 140.4,
+      "x_m": 6.44084,
+      "y_m": -6.78428,
+      "yaw_rad": -0.919373,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4218,
+      "elapsed_s": 140.6,
+      "x_m": 6.4942,
+      "y_m": -6.85361,
+      "yaw_rad": -0.910467,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4224,
+      "elapsed_s": 140.8,
+      "x_m": 6.54902,
+      "y_m": -6.9234,
+      "yaw_rad": -0.900206,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4230,
+      "elapsed_s": 141.0,
+      "x_m": 6.60484,
+      "y_m": -6.99303,
+      "yaw_rad": -0.891475,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4236,
+      "elapsed_s": 141.2,
+      "x_m": 6.6611,
+      "y_m": -7.0625,
+      "yaw_rad": -0.889546,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4242,
+      "elapsed_s": 141.4,
+      "x_m": 6.71741,
+      "y_m": -7.13195,
+      "yaw_rad": -0.889991,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4248,
+      "elapsed_s": 141.6,
+      "x_m": 6.77346,
+      "y_m": -7.20145,
+      "yaw_rad": -0.895,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4254,
+      "elapsed_s": 141.8,
+      "x_m": 6.82826,
+      "y_m": -7.27018,
+      "yaw_rad": -0.898803,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4260,
+      "elapsed_s": 142.0,
+      "x_m": 6.87956,
+      "y_m": -7.33504,
+      "yaw_rad": -0.904526,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4266,
+      "elapsed_s": 142.2,
+      "x_m": 6.92857,
+      "y_m": -7.39782,
+      "yaw_rad": -0.910562,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4272,
+      "elapsed_s": 142.4,
+      "x_m": 6.97667,
+      "y_m": -7.46007,
+      "yaw_rad": -0.914806,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4278,
+      "elapsed_s": 142.6,
+      "x_m": 7.02493,
+      "y_m": -7.52285,
+      "yaw_rad": -0.916152,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4284,
+      "elapsed_s": 142.8,
+      "x_m": 7.0749,
+      "y_m": -7.58782,
+      "yaw_rad": -0.91686,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4290,
+      "elapsed_s": 143.0,
+      "x_m": 7.12509,
+      "y_m": -7.6532,
+      "yaw_rad": -0.915205,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4296,
+      "elapsed_s": 143.2,
+      "x_m": 7.17559,
+      "y_m": -7.71872,
+      "yaw_rad": -0.913256,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4302,
+      "elapsed_s": 143.4,
+      "x_m": 7.22642,
+      "y_m": -7.78444,
+      "yaw_rad": -0.911857,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4308,
+      "elapsed_s": 143.6,
+      "x_m": 7.27722,
+      "y_m": -7.8502,
+      "yaw_rad": -0.913499,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4314,
+      "elapsed_s": 143.8,
+      "x_m": 7.32797,
+      "y_m": -7.916,
+      "yaw_rad": -0.913501,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4320,
+      "elapsed_s": 144.0,
+      "x_m": 7.37891,
+      "y_m": -7.98202,
+      "yaw_rad": -0.913674,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4326,
+      "elapsed_s": 144.2,
+      "x_m": 7.42999,
+      "y_m": -8.04829,
+      "yaw_rad": -0.914642,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4332,
+      "elapsed_s": 144.4,
+      "x_m": 7.48103,
+      "y_m": -8.11469,
+      "yaw_rad": -0.915536,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4338,
+      "elapsed_s": 144.6,
+      "x_m": 7.53216,
+      "y_m": -8.18116,
+      "yaw_rad": -0.914235,
+      "segment_id": 8,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4344,
+      "elapsed_s": 144.8,
+      "x_m": 7.58266,
+      "y_m": -8.24636,
+      "yaw_rad": -0.907923,
+      "segment_id": 8,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4350,
+      "elapsed_s": 145.0,
+      "x_m": 7.60712,
+      "y_m": -8.27679,
+      "yaw_rad": -0.880991,
+      "segment_id": 9,
+      "control_mode": "presentation_dwell"
+    },
+    {
+      "step": 4356,
+      "elapsed_s": 145.2,
+      "x_m": 7.60963,
+      "y_m": -8.27983,
+      "yaw_rad": -0.880909,
+      "segment_id": 9,
+      "control_mode": "presentation_dwell"
+    },
+    {
+      "step": 4362,
+      "elapsed_s": 145.4,
+      "x_m": 7.60963,
+      "y_m": -8.27983,
+      "yaw_rad": -0.880907,
+      "segment_id": 9,
+      "control_mode": "presentation_dwell"
+    },
+    {
+      "step": 4368,
+      "elapsed_s": 145.6,
+      "x_m": 7.60963,
+      "y_m": -8.27983,
+      "yaw_rad": -0.880905,
+      "segment_id": 9,
+      "control_mode": "presentation_dwell"
+    },
+    {
+      "step": 4374,
+      "elapsed_s": 145.8,
+      "x_m": 7.60963,
+      "y_m": -8.27983,
+      "yaw_rad": -0.880903,
+      "segment_id": 9,
+      "control_mode": "presentation_dwell"
+    },
+    {
+      "step": 4380,
+      "elapsed_s": 146.0,
+      "x_m": 7.60958,
+      "y_m": -8.27976,
+      "yaw_rad": -0.903295,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4386,
+      "elapsed_s": 146.2,
+      "x_m": 7.60986,
+      "y_m": -8.28015,
+      "yaw_rad": -0.970802,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4392,
+      "elapsed_s": 146.4,
+      "x_m": 7.61048,
+      "y_m": -8.28115,
+      "yaw_rad": -1.046943,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4398,
+      "elapsed_s": 146.6,
+      "x_m": 7.61108,
+      "y_m": -8.28233,
+      "yaw_rad": -1.12526,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4404,
+      "elapsed_s": 146.8,
+      "x_m": 7.61162,
+      "y_m": -8.2836,
+      "yaw_rad": -1.204014,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4410,
+      "elapsed_s": 147.0,
+      "x_m": 7.61206,
+      "y_m": -8.28495,
+      "yaw_rad": -1.282005,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4416,
+      "elapsed_s": 147.2,
+      "x_m": 7.6124,
+      "y_m": -8.28645,
+      "yaw_rad": -1.356871,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4422,
+      "elapsed_s": 147.4,
+      "x_m": 7.61261,
+      "y_m": -8.28769,
+      "yaw_rad": -1.429879,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4428,
+      "elapsed_s": 147.6,
+      "x_m": 7.61267,
+      "y_m": -8.28853,
+      "yaw_rad": -1.504209,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4434,
+      "elapsed_s": 147.8,
+      "x_m": 7.61269,
+      "y_m": -8.28948,
+      "yaw_rad": -1.578452,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4440,
+      "elapsed_s": 148.0,
+      "x_m": 7.61269,
+      "y_m": -8.29029,
+      "yaw_rad": -1.655176,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4446,
+      "elapsed_s": 148.2,
+      "x_m": 7.61277,
+      "y_m": -8.29052,
+      "yaw_rad": -1.732875,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4452,
+      "elapsed_s": 148.4,
+      "x_m": 7.61295,
+      "y_m": -8.29022,
+      "yaw_rad": -1.810982,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4458,
+      "elapsed_s": 148.6,
+      "x_m": 7.61311,
+      "y_m": -8.28998,
+      "yaw_rad": -1.892642,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4464,
+      "elapsed_s": 148.8,
+      "x_m": 7.61325,
+      "y_m": -8.28988,
+      "yaw_rad": -1.97457,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4470,
+      "elapsed_s": 149.0,
+      "x_m": 7.61341,
+      "y_m": -8.28969,
+      "yaw_rad": -2.053306,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4476,
+      "elapsed_s": 149.2,
+      "x_m": 7.61347,
+      "y_m": -8.28963,
+      "yaw_rad": -2.13134,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4482,
+      "elapsed_s": 149.4,
+      "x_m": 7.6135,
+      "y_m": -8.28968,
+      "yaw_rad": -2.212187,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4488,
+      "elapsed_s": 149.6,
+      "x_m": 7.61332,
+      "y_m": -8.29,
+      "yaw_rad": -2.292867,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4494,
+      "elapsed_s": 149.8,
+      "x_m": 7.61287,
+      "y_m": -8.29049,
+      "yaw_rad": -2.374293,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4500,
+      "elapsed_s": 150.0,
+      "x_m": 7.61239,
+      "y_m": -8.291,
+      "yaw_rad": -2.454931,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4506,
+      "elapsed_s": 150.2,
+      "x_m": 7.61212,
+      "y_m": -8.29124,
+      "yaw_rad": -2.537302,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4512,
+      "elapsed_s": 150.4,
+      "x_m": 7.61167,
+      "y_m": -8.29157,
+      "yaw_rad": -2.622957,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4518,
+      "elapsed_s": 150.6,
+      "x_m": 7.6112,
+      "y_m": -8.29186,
+      "yaw_rad": -2.709763,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4524,
+      "elapsed_s": 150.8,
+      "x_m": 7.61079,
+      "y_m": -8.29214,
+      "yaw_rad": -2.791332,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4530,
+      "elapsed_s": 151.0,
+      "x_m": 7.61071,
+      "y_m": -8.29226,
+      "yaw_rad": -2.870207,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4536,
+      "elapsed_s": 151.2,
+      "x_m": 7.61068,
+      "y_m": -8.29236,
+      "yaw_rad": -2.950364,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4542,
+      "elapsed_s": 151.4,
+      "x_m": 7.61025,
+      "y_m": -8.29247,
+      "yaw_rad": -3.035161,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4548,
+      "elapsed_s": 151.6,
+      "x_m": 7.60946,
+      "y_m": -8.29259,
+      "yaw_rad": -3.121436,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4554,
+      "elapsed_s": 151.8,
+      "x_m": 7.60873,
+      "y_m": -8.29263,
+      "yaw_rad": 3.074462,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4560,
+      "elapsed_s": 152.0,
+      "x_m": 7.60848,
+      "y_m": -8.2927,
+      "yaw_rad": 2.990082,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4566,
+      "elapsed_s": 152.2,
+      "x_m": 7.60871,
+      "y_m": -8.29289,
+      "yaw_rad": 2.910434,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4572,
+      "elapsed_s": 152.4,
+      "x_m": 7.60875,
+      "y_m": -8.29303,
+      "yaw_rad": 2.837459,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4578,
+      "elapsed_s": 152.6,
+      "x_m": 7.60879,
+      "y_m": -8.29316,
+      "yaw_rad": 2.763539,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4584,
+      "elapsed_s": 152.8,
+      "x_m": 7.6089,
+      "y_m": -8.2933,
+      "yaw_rad": 2.683328,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4590,
+      "elapsed_s": 153.0,
+      "x_m": 7.60876,
+      "y_m": -8.29327,
+      "yaw_rad": 2.597823,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4596,
+      "elapsed_s": 153.2,
+      "x_m": 7.60837,
+      "y_m": -8.29307,
+      "yaw_rad": 2.511115,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4602,
+      "elapsed_s": 153.4,
+      "x_m": 7.6085,
+      "y_m": -8.2934,
+      "yaw_rad": 2.432524,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4608,
+      "elapsed_s": 153.6,
+      "x_m": 7.59398,
+      "y_m": -8.27986,
+      "yaw_rad": 2.379223,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4614,
+      "elapsed_s": 153.8,
+      "x_m": 7.54982,
+      "y_m": -8.23601,
+      "yaw_rad": 2.345326,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4620,
+      "elapsed_s": 154.0,
+      "x_m": 7.49466,
+      "y_m": -8.17794,
+      "yaw_rad": 2.319264,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4626,
+      "elapsed_s": 154.2,
+      "x_m": 7.43665,
+      "y_m": -8.1143,
+      "yaw_rad": 2.302881,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4632,
+      "elapsed_s": 154.4,
+      "x_m": 7.38076,
+      "y_m": -8.05153,
+      "yaw_rad": 2.293628,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4638,
+      "elapsed_s": 154.6,
+      "x_m": 7.32838,
+      "y_m": -7.9914,
+      "yaw_rad": 2.281913,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4644,
+      "elapsed_s": 154.8,
+      "x_m": 7.2774,
+      "y_m": -7.93157,
+      "yaw_rad": 2.271977,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4650,
+      "elapsed_s": 155.0,
+      "x_m": 7.22704,
+      "y_m": -7.87152,
+      "yaw_rad": 2.265919,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4656,
+      "elapsed_s": 155.2,
+      "x_m": 7.17553,
+      "y_m": -7.80925,
+      "yaw_rad": 2.258303,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4662,
+      "elapsed_s": 155.4,
+      "x_m": 7.12189,
+      "y_m": -7.74359,
+      "yaw_rad": 2.252993,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4668,
+      "elapsed_s": 155.6,
+      "x_m": 7.06934,
+      "y_m": -7.67821,
+      "yaw_rad": 2.24221,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4674,
+      "elapsed_s": 155.8,
+      "x_m": 7.01793,
+      "y_m": -7.61266,
+      "yaw_rad": 2.230592,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4680,
+      "elapsed_s": 156.0,
+      "x_m": 6.96726,
+      "y_m": -7.54667,
+      "yaw_rad": 2.221334,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4686,
+      "elapsed_s": 156.2,
+      "x_m": 6.91717,
+      "y_m": -7.48027,
+      "yaw_rad": 2.212602,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4692,
+      "elapsed_s": 156.4,
+      "x_m": 6.86778,
+      "y_m": -7.41331,
+      "yaw_rad": 2.201278,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4698,
+      "elapsed_s": 156.6,
+      "x_m": 6.81901,
+      "y_m": -7.34594,
+      "yaw_rad": 2.194475,
+      "segment_id": 9,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4704,
+      "elapsed_s": 156.8,
+      "x_m": 6.77615,
+      "y_m": -7.28613,
+      "yaw_rad": 2.19534,
+      "segment_id": 9,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 4710,
+      "elapsed_s": 157.0,
+      "x_m": 6.75199,
+      "y_m": -7.25359,
+      "yaw_rad": 2.216976,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4716,
+      "elapsed_s": 157.2,
+      "x_m": 6.71115,
+      "y_m": -7.20063,
+      "yaw_rad": 2.235402,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4722,
+      "elapsed_s": 157.4,
+      "x_m": 6.66203,
+      "y_m": -7.13901,
+      "yaw_rad": 2.249453,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4728,
+      "elapsed_s": 157.6,
+      "x_m": 6.61017,
+      "y_m": -7.07537,
+      "yaw_rad": 2.258059,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4734,
+      "elapsed_s": 157.8,
+      "x_m": 6.55711,
+      "y_m": -7.0114,
+      "yaw_rad": 2.267843,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4740,
+      "elapsed_s": 158.0,
+      "x_m": 6.50323,
+      "y_m": -6.94769,
+      "yaw_rad": 2.276232,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4746,
+      "elapsed_s": 158.2,
+      "x_m": 6.44883,
+      "y_m": -6.88426,
+      "yaw_rad": 2.282056,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4752,
+      "elapsed_s": 158.4,
+      "x_m": 6.3941,
+      "y_m": -6.82108,
+      "yaw_rad": 2.286615,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4758,
+      "elapsed_s": 158.6,
+      "x_m": 6.33914,
+      "y_m": -6.7581,
+      "yaw_rad": 2.28924,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4764,
+      "elapsed_s": 158.8,
+      "x_m": 6.28412,
+      "y_m": -6.69528,
+      "yaw_rad": 2.29111,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4770,
+      "elapsed_s": 159.0,
+      "x_m": 6.22899,
+      "y_m": -6.63297,
+      "yaw_rad": 2.29936,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4776,
+      "elapsed_s": 159.2,
+      "x_m": 6.17374,
+      "y_m": -6.57154,
+      "yaw_rad": 2.306015,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4782,
+      "elapsed_s": 159.4,
+      "x_m": 6.11849,
+      "y_m": -6.51049,
+      "yaw_rad": 2.305645,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4788,
+      "elapsed_s": 159.6,
+      "x_m": 6.06336,
+      "y_m": -6.44935,
+      "yaw_rad": 2.303472,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4794,
+      "elapsed_s": 159.8,
+      "x_m": 6.0083,
+      "y_m": -6.38804,
+      "yaw_rad": 2.301383,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4800,
+      "elapsed_s": 160.0,
+      "x_m": 5.95341,
+      "y_m": -6.32647,
+      "yaw_rad": 2.296141,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4806,
+      "elapsed_s": 160.2,
+      "x_m": 5.89888,
+      "y_m": -6.26451,
+      "yaw_rad": 2.289452,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4812,
+      "elapsed_s": 160.4,
+      "x_m": 5.8446,
+      "y_m": -6.20209,
+      "yaw_rad": 2.28423,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4818,
+      "elapsed_s": 160.6,
+      "x_m": 5.7903,
+      "y_m": -6.13932,
+      "yaw_rad": 2.284485,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4824,
+      "elapsed_s": 160.8,
+      "x_m": 5.73598,
+      "y_m": -6.07657,
+      "yaw_rad": 2.283587,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4830,
+      "elapsed_s": 161.0,
+      "x_m": 5.68183,
+      "y_m": -6.0136,
+      "yaw_rad": 2.279331,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4836,
+      "elapsed_s": 161.2,
+      "x_m": 5.6278,
+      "y_m": -5.95027,
+      "yaw_rad": 2.275928,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4842,
+      "elapsed_s": 161.4,
+      "x_m": 5.57363,
+      "y_m": -5.88641,
+      "yaw_rad": 2.273608,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4848,
+      "elapsed_s": 161.6,
+      "x_m": 5.51914,
+      "y_m": -5.82198,
+      "yaw_rad": 2.273014,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4854,
+      "elapsed_s": 161.8,
+      "x_m": 5.4648,
+      "y_m": -5.75777,
+      "yaw_rad": 2.273253,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4860,
+      "elapsed_s": 162.0,
+      "x_m": 5.41049,
+      "y_m": -5.69377,
+      "yaw_rad": 2.275624,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4866,
+      "elapsed_s": 162.2,
+      "x_m": 5.35562,
+      "y_m": -5.62948,
+      "yaw_rad": 2.278051,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4872,
+      "elapsed_s": 162.4,
+      "x_m": 5.29991,
+      "y_m": -5.56434,
+      "yaw_rad": 2.277988,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4878,
+      "elapsed_s": 162.6,
+      "x_m": 5.24557,
+      "y_m": -5.50071,
+      "yaw_rad": 2.278842,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4884,
+      "elapsed_s": 162.8,
+      "x_m": 5.19073,
+      "y_m": -5.43763,
+      "yaw_rad": 2.293321,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4890,
+      "elapsed_s": 163.0,
+      "x_m": 5.13464,
+      "y_m": -5.37478,
+      "yaw_rad": 2.30296,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4896,
+      "elapsed_s": 163.2,
+      "x_m": 5.07698,
+      "y_m": -5.31035,
+      "yaw_rad": 2.298922,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4902,
+      "elapsed_s": 163.4,
+      "x_m": 5.01956,
+      "y_m": -5.24581,
+      "yaw_rad": 2.295761,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4908,
+      "elapsed_s": 163.6,
+      "x_m": 4.96208,
+      "y_m": -5.18078,
+      "yaw_rad": 2.293609,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4914,
+      "elapsed_s": 163.8,
+      "x_m": 4.90451,
+      "y_m": -5.1155,
+      "yaw_rad": 2.293368,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4920,
+      "elapsed_s": 164.0,
+      "x_m": 4.84761,
+      "y_m": -5.05117,
+      "yaw_rad": 2.295629,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4926,
+      "elapsed_s": 164.2,
+      "x_m": 4.79048,
+      "y_m": -4.98679,
+      "yaw_rad": 2.296813,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4932,
+      "elapsed_s": 164.4,
+      "x_m": 4.73236,
+      "y_m": -4.92132,
+      "yaw_rad": 2.296009,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4938,
+      "elapsed_s": 164.6,
+      "x_m": 4.67381,
+      "y_m": -4.85512,
+      "yaw_rad": 2.293499,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4944,
+      "elapsed_s": 164.8,
+      "x_m": 4.61563,
+      "y_m": -4.7886,
+      "yaw_rad": 2.283993,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4950,
+      "elapsed_s": 165.0,
+      "x_m": 4.55859,
+      "y_m": -4.7217,
+      "yaw_rad": 2.271126,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4956,
+      "elapsed_s": 165.2,
+      "x_m": 4.50186,
+      "y_m": -4.65364,
+      "yaw_rad": 2.261698,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4962,
+      "elapsed_s": 165.4,
+      "x_m": 4.44539,
+      "y_m": -4.58489,
+      "yaw_rad": 2.255703,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4968,
+      "elapsed_s": 165.6,
+      "x_m": 4.38931,
+      "y_m": -4.51584,
+      "yaw_rad": 2.250675,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4974,
+      "elapsed_s": 165.8,
+      "x_m": 4.33765,
+      "y_m": -4.45278,
+      "yaw_rad": 2.263354,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4980,
+      "elapsed_s": 166.0,
+      "x_m": 4.28554,
+      "y_m": -4.38975,
+      "yaw_rad": 2.257624,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4986,
+      "elapsed_s": 166.2,
+      "x_m": 4.23154,
+      "y_m": -4.32372,
+      "yaw_rad": 2.256712,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4992,
+      "elapsed_s": 166.4,
+      "x_m": 4.17671,
+      "y_m": -4.25692,
+      "yaw_rad": 2.258543,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 4998,
+      "elapsed_s": 166.6,
+      "x_m": 4.12281,
+      "y_m": -4.19114,
+      "yaw_rad": 2.259631,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5004,
+      "elapsed_s": 166.8,
+      "x_m": 4.07052,
+      "y_m": -4.12738,
+      "yaw_rad": 2.258401,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5010,
+      "elapsed_s": 167.0,
+      "x_m": 4.0177,
+      "y_m": -4.06354,
+      "yaw_rad": 2.264906,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5016,
+      "elapsed_s": 167.2,
+      "x_m": 3.96439,
+      "y_m": -3.99957,
+      "yaw_rad": 2.265241,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5022,
+      "elapsed_s": 167.4,
+      "x_m": 3.91112,
+      "y_m": -3.93541,
+      "yaw_rad": 2.262918,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5028,
+      "elapsed_s": 167.6,
+      "x_m": 3.85857,
+      "y_m": -3.87186,
+      "yaw_rad": 2.260536,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5034,
+      "elapsed_s": 167.8,
+      "x_m": 3.80596,
+      "y_m": -3.808,
+      "yaw_rad": 2.259987,
+      "segment_id": 10,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5040,
+      "elapsed_s": 168.0,
+      "x_m": 3.75298,
+      "y_m": -3.74391,
+      "yaw_rad": 2.266142,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5046,
+      "elapsed_s": 168.2,
+      "x_m": 3.69844,
+      "y_m": -3.6808,
+      "yaw_rad": 2.298898,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5052,
+      "elapsed_s": 168.4,
+      "x_m": 3.64171,
+      "y_m": -3.61927,
+      "yaw_rad": 2.329176,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5058,
+      "elapsed_s": 168.6,
+      "x_m": 3.58294,
+      "y_m": -3.55865,
+      "yaw_rad": 2.347264,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5064,
+      "elapsed_s": 168.8,
+      "x_m": 3.52375,
+      "y_m": -3.49892,
+      "yaw_rad": 2.354713,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5070,
+      "elapsed_s": 169.0,
+      "x_m": 3.46459,
+      "y_m": -3.43972,
+      "yaw_rad": 2.356995,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5076,
+      "elapsed_s": 169.2,
+      "x_m": 3.40403,
+      "y_m": -3.3797,
+      "yaw_rad": 2.364569,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5082,
+      "elapsed_s": 169.4,
+      "x_m": 3.34215,
+      "y_m": -3.31936,
+      "yaw_rad": 2.371814,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5088,
+      "elapsed_s": 169.6,
+      "x_m": 3.28129,
+      "y_m": -3.26085,
+      "yaw_rad": 2.378997,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5094,
+      "elapsed_s": 169.8,
+      "x_m": 3.21871,
+      "y_m": -3.20138,
+      "yaw_rad": 2.383534,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5100,
+      "elapsed_s": 170.0,
+      "x_m": 3.15507,
+      "y_m": -3.14138,
+      "yaw_rad": 2.387635,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5106,
+      "elapsed_s": 170.2,
+      "x_m": 3.09143,
+      "y_m": -3.08192,
+      "yaw_rad": 2.3918,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5112,
+      "elapsed_s": 170.4,
+      "x_m": 3.02816,
+      "y_m": -3.02321,
+      "yaw_rad": 2.394888,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5118,
+      "elapsed_s": 170.6,
+      "x_m": 2.9657,
+      "y_m": -2.96578,
+      "yaw_rad": 2.400585,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5124,
+      "elapsed_s": 170.8,
+      "x_m": 2.90321,
+      "y_m": -2.90896,
+      "yaw_rad": 2.404993,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5130,
+      "elapsed_s": 171.0,
+      "x_m": 2.84022,
+      "y_m": -2.85164,
+      "yaw_rad": 2.40002,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5136,
+      "elapsed_s": 171.2,
+      "x_m": 2.7769,
+      "y_m": -2.79325,
+      "yaw_rad": 2.393517,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5142,
+      "elapsed_s": 171.4,
+      "x_m": 2.71312,
+      "y_m": -2.73358,
+      "yaw_rad": 2.385553,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5148,
+      "elapsed_s": 171.6,
+      "x_m": 2.64966,
+      "y_m": -2.67321,
+      "yaw_rad": 2.37712,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5154,
+      "elapsed_s": 171.8,
+      "x_m": 2.58821,
+      "y_m": -2.614,
+      "yaw_rad": 2.373959,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5160,
+      "elapsed_s": 172.0,
+      "x_m": 2.52724,
+      "y_m": -2.55498,
+      "yaw_rad": 2.371634,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5166,
+      "elapsed_s": 172.2,
+      "x_m": 2.46493,
+      "y_m": -2.49456,
+      "yaw_rad": 2.371043,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5172,
+      "elapsed_s": 172.4,
+      "x_m": 2.40218,
+      "y_m": -2.43326,
+      "yaw_rad": 2.365069,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5178,
+      "elapsed_s": 172.6,
+      "x_m": 2.33973,
+      "y_m": -2.37162,
+      "yaw_rad": 2.361255,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5184,
+      "elapsed_s": 172.8,
+      "x_m": 2.2773,
+      "y_m": -2.30968,
+      "yaw_rad": 2.359602,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5190,
+      "elapsed_s": 173.0,
+      "x_m": 2.21588,
+      "y_m": -2.24847,
+      "yaw_rad": 2.356133,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5196,
+      "elapsed_s": 173.2,
+      "x_m": 2.15587,
+      "y_m": -2.18826,
+      "yaw_rad": 2.354644,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5202,
+      "elapsed_s": 173.4,
+      "x_m": 2.09586,
+      "y_m": -2.12828,
+      "yaw_rad": 2.357683,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5208,
+      "elapsed_s": 173.6,
+      "x_m": 2.03493,
+      "y_m": -2.06776,
+      "yaw_rad": 2.363085,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5214,
+      "elapsed_s": 173.8,
+      "x_m": 1.97208,
+      "y_m": -2.00646,
+      "yaw_rad": 2.373493,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5220,
+      "elapsed_s": 174.0,
+      "x_m": 1.90835,
+      "y_m": -1.94607,
+      "yaw_rad": 2.386844,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5226,
+      "elapsed_s": 174.2,
+      "x_m": 1.84506,
+      "y_m": -1.8874,
+      "yaw_rad": 2.399793,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5232,
+      "elapsed_s": 174.4,
+      "x_m": 1.78126,
+      "y_m": -1.82951,
+      "yaw_rad": 2.408813,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5238,
+      "elapsed_s": 174.6,
+      "x_m": 1.71743,
+      "y_m": -1.7722,
+      "yaw_rad": 2.408927,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5244,
+      "elapsed_s": 174.8,
+      "x_m": 1.65362,
+      "y_m": -1.71472,
+      "yaw_rad": 2.403123,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5250,
+      "elapsed_s": 175.0,
+      "x_m": 1.58889,
+      "y_m": -1.65556,
+      "yaw_rad": 2.399544,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5256,
+      "elapsed_s": 175.2,
+      "x_m": 1.52372,
+      "y_m": -1.5956,
+      "yaw_rad": 2.395925,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5262,
+      "elapsed_s": 175.4,
+      "x_m": 1.45858,
+      "y_m": -1.53511,
+      "yaw_rad": 2.390264,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5268,
+      "elapsed_s": 175.6,
+      "x_m": 1.39379,
+      "y_m": -1.47414,
+      "yaw_rad": 2.383293,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5274,
+      "elapsed_s": 175.8,
+      "x_m": 1.3293,
+      "y_m": -1.41279,
+      "yaw_rad": 2.379834,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5280,
+      "elapsed_s": 176.0,
+      "x_m": 1.26487,
+      "y_m": -1.35127,
+      "yaw_rad": 2.378804,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5286,
+      "elapsed_s": 176.2,
+      "x_m": 1.20044,
+      "y_m": -1.28962,
+      "yaw_rad": 2.377644,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5292,
+      "elapsed_s": 176.4,
+      "x_m": 1.13611,
+      "y_m": -1.22788,
+      "yaw_rad": 2.375859,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5298,
+      "elapsed_s": 176.6,
+      "x_m": 1.07189,
+      "y_m": -1.16602,
+      "yaw_rad": 2.374265,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5304,
+      "elapsed_s": 176.8,
+      "x_m": 1.00763,
+      "y_m": -1.10415,
+      "yaw_rad": 2.376322,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5310,
+      "elapsed_s": 177.0,
+      "x_m": 0.94313,
+      "y_m": -1.04253,
+      "yaw_rad": 2.381486,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5316,
+      "elapsed_s": 177.2,
+      "x_m": 0.87826,
+      "y_m": -0.98123,
+      "yaw_rad": 2.387019,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5322,
+      "elapsed_s": 177.4,
+      "x_m": 0.81308,
+      "y_m": -0.9203,
+      "yaw_rad": 2.391917,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5328,
+      "elapsed_s": 177.6,
+      "x_m": 0.75022,
+      "y_m": -0.86224,
+      "yaw_rad": 2.39439,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5334,
+      "elapsed_s": 177.8,
+      "x_m": 0.6866,
+      "y_m": -0.80349,
+      "yaw_rad": 2.397008,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5340,
+      "elapsed_s": 178.0,
+      "x_m": 0.62148,
+      "y_m": -0.74371,
+      "yaw_rad": 2.400259,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5346,
+      "elapsed_s": 178.2,
+      "x_m": 0.5625,
+      "y_m": -0.68963,
+      "yaw_rad": 2.392946,
+      "segment_id": 11,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 5352,
+      "elapsed_s": 178.4,
+      "x_m": 0.51244,
+      "y_m": -0.64224,
+      "yaw_rad": 2.38105,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5358,
+      "elapsed_s": 178.6,
+      "x_m": 0.46329,
+      "y_m": -0.59524,
+      "yaw_rad": 2.367954,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5364,
+      "elapsed_s": 178.8,
+      "x_m": 0.4146,
+      "y_m": -0.54721,
+      "yaw_rad": 2.36211,
+      "segment_id": 11,
+      "control_mode": "physics_supervisor_turn"
+    },
+    {
+      "step": 5370,
+      "elapsed_s": 179.0,
+      "x_m": 0.37444,
+      "y_m": -0.50663,
+      "yaw_rad": 2.345165,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5376,
+      "elapsed_s": 179.2,
+      "x_m": 0.33316,
+      "y_m": -0.46383,
+      "yaw_rad": 2.329631,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5382,
+      "elapsed_s": 179.4,
+      "x_m": 0.29401,
+      "y_m": -0.42211,
+      "yaw_rad": 2.309021,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    },
+    {
+      "step": 5388,
+      "elapsed_s": 179.6,
+      "x_m": 0.25193,
+      "y_m": -0.37496,
+      "yaw_rad": 2.297918,
+      "segment_id": 11,
+      "control_mode": "learned_sensor_policy"
+    }
+  ],
+  "control_steps": {
+    "learned_sensor_policy": 4375,
+    "physics_supervisor_turn": 954,
+    "presentation_dwell": 60
+  },
+  "termination_details": {
+    "segment_id": 11,
+    "position_xy_m": [
+      0.24348890781402588,
+      -0.36548349261283875
+    ],
+    "final_goal_distance_m": 0.43916401267051697,
+    "minimum_lidar_range_m": 3.8073947429656982,
+    "minimum_lidar_ray_index": 9,
+    "minimum_lidar_ray_angle_deg": -90.0,
+    "minimum_lidar_hit_world_xyz_m": [
+      2.760087490081787,
+      2.5491089820861816,
+      1.1715519428253174
+    ]
+  },
+  "control_disclosure": "The learned LD19-style policy drives each aligned route segment. A deterministic wheel-command supervisor stops, dwells, and turns the physical robot between segments; no root-transform animation.",
+  "physics_rate_hz": 120.0,
+  "policy_rate_hz": 30.0,
+  "root_transform_animation": false,
+  "claim_boundary": "live checkpoint inference with wheel physics and ray sensing in the walkthrough-matched administration USD; presentation geometry is not an as-built survey, and this is not Nav2, sim-to-real, or physical release",
+  "live_assets": {
+    "administration_scene": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+      "sha256": "ec1823b852726434e715acd8fc92ffac5ee15ffc711f5e5b4723a0f88a93c787"
+    },
+    "live_environment": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/administration_live_environment.usda",
+      "sha256": "0bc85e29be8c092de5e1c752444f012631478fef7bee4a9388c912bf30206a63"
+    },
+    "presentation_shell": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_presentation_shell.usda",
+      "sha256": "ab9824196acb47ffbf34b214fb2615fe82e2dab416ea86aea687d147f3d96fcc"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "task": "Isaac-AISHA-BlockA-SensorNav-Direct-v0",
+  "controller": "constant 0.35 m/s aligned wheel command; no learned policy",
+  "purpose": "physics/geometry feasibility audit only",
+  "selected_segment_ids": [
+    3,
+    4,
+    8,
+    9
+  ],
+  "all_segments_traversable": true,
+  "segments": [
+    {
+      "segment_id": 3,
+      "start": "vice_principal_approach",
+      "goal": "vice_principal",
+      "outcome": "success",
+      "steps": 233,
+      "duration_s": 7.766666666666667,
+      "final_goal_distance_m": 0.4474107027053833,
+      "minimum_lidar_range_m": 1.5178333520889282
+    },
+    {
+      "segment_id": 4,
+      "start": "vice_principal",
+      "goal": "vice_principal_depart",
+      "outcome": "success",
+      "steps": 621,
+      "duration_s": 20.7,
+      "final_goal_distance_m": 0.4434548616409302,
+      "minimum_lidar_range_m": 1.2710047960281372
+    },
+    {
+      "segment_id": 8,
+      "start": "principal_approach",
+      "goal": "principal",
+      "outcome": "success",
+      "steps": 185,
+      "duration_s": 6.166666666666667,
+      "final_goal_distance_m": 0.44922351837158203,
+      "minimum_lidar_range_m": 1.530088186264038
+    },
+    {
+      "segment_id": 9,
+      "start": "principal",
+      "goal": "principal_depart",
+      "outcome": "success",
+      "steps": 186,
+      "duration_s": 6.2,
+      "final_goal_distance_m": 0.4467494487762451,
+      "minimum_lidar_range_m": 0.8685104250907898
+    }
+  ]
+}

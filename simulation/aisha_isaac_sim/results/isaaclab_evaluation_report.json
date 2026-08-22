@@ -1,0 +1,44 @@
+{
+  "report_type": "held_out_foundation_evaluation",
+  "generated_at_utc": "2026-08-20T16:49:46.831220+00:00",
+  "task": "Isaac-AISHA-OfficeNav-Direct-v0",
+  "training_contract_revision": "TRAINING-FOUNDATION-A",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_office_nav/2026-08-20_20-43-22_doorway_foundation/model_199.pt",
+    "sha256": "ea4ae4966276ada16d8910f155accfc42e268f96140c819dfc7889e490b5e5ab"
+  },
+  "protocol": {
+    "policy": "deterministic_inference",
+    "seed": 1001,
+    "training_seed": 42,
+    "episodes": 512,
+    "parallel_environments": 64,
+    "physics_rate_hz": 120,
+    "policy_rate_hz": 30,
+    "randomization": "same declared distribution as training; unseen random sequence"
+  },
+  "results": {
+    "success_count": 420,
+    "success_rate": 0.8203125,
+    "collision_count": 88,
+    "collision_rate": 0.171875,
+    "time_out_count": 4,
+    "time_out_rate": 0.0078125,
+    "mean_episode_return": 73.36920299381018,
+    "mean_episode_steps": 396.552734375,
+    "mean_episode_duration_s": 13.218424479166666,
+    "mean_final_goal_distance_m": 0.6975173085229471,
+    "wall_clock_evaluation_s": 34.55314757199994
+  },
+  "claim_boundary": {
+    "supported": "state-observation Isaac Lab doorway-foundation policy evaluation",
+    "not_supported": [
+      "sensor-policy performance",
+      "Nav2 integration",
+      "photoreal administration-office fidelity",
+      "sim-to-real transfer",
+      "physical robot release"
+    ],
+    "doorway_width": "presentation_assumption_not_measured"
+  }
+}

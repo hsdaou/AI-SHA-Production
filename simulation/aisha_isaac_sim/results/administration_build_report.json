@@ -1,5 +1,30 @@
 {
   "appearance": {
+    "atrium_columns": {
+      "clearance_rule": "Conservative circumscribed robot radius plus column radius and a presentation buffer; every interpolated learned-trace segment must remain outside this value.\n",
+      "height_m": 3.0,
+      "minimum_trace_centre_clearance_m": 0.95,
+      "positions_xy_m": [
+        [
+          -3.25,
+          -2.55
+        ],
+        [
+          -3.25,
+          2.55
+        ],
+        [
+          1.25,
+          -4.2
+        ],
+        [
+          2.95,
+          2.55
+        ]
+      ],
+      "radius_m": 0.19,
+      "status": "walkthrough_derived_not_surveyed_route_clearance_adjusted"
+    },
     "ceiling": "white_suspended_grid_with_led_panels",
     "corridor_floor": "polished_grey_terrazzo",
     "furniture": "timber_desks_black_chairs_low_cabinets_and_planters",
@@ -30,13 +55,16 @@
   ],
   "checks": {
     "all_presentation_door_widths_pass": true,
+    "all_visual_texture_assets_present": true,
+    "atrium_columns_declared_for_trace_clearance": true,
     "hallway_supports_pivot_circle": true,
     "plan_hash_matches_reviewed_source": true,
     "scene_reopens": true,
-    "vice_principal_is_east_of_principal": true
+    "vice_principal_is_east_of_principal": true,
+    "visual_upgrade_preserves_collision_geometry": true
   },
   "config_file": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
-  "config_sha256": "00882348a6cce513a0eedd6791b63cfb23bee0a985e392df4ddbd3d87fd53466",
+  "config_sha256": "f7ca8bfb79850640334715665fe329c70e0ddb45816c38da7f6a9dd4c538ad06",
   "contact_material_bindings": {
     "castor_low_friction": [
       "/World/AISHA/base_link/castor_fl_link",
@@ -56,16 +84,18 @@
   "doors": {
     "principal": {
       "centre_xy_m": [
-        6.971,
-        -7.621
+        6.978,
+        -7.628
       ],
-      "clear_width_m": 1.05,
+      "clear_width_m": 1.4,
       "high_fidelity_threshold_validation": "blocked",
-      "minimum_required_m": 0.92,
-      "nominal_side_clearance_m": 0.14100000000000001,
+      "hinge_assumption": "left_jamb",
+      "minimum_required_m": 1.4,
+      "nominal_side_clearance_m": 0.31599999999999995,
       "presentation_width_gate_passed": true,
-      "threshold_height_mm": 5,
-      "threshold_status": "presentation_assumption_not_measured",
+      "swing_assumption": "outward_for_camera_and_route_clearance",
+      "threshold_height_mm": 0,
+      "threshold_status": "flush_presentation_assumption_not_measured",
       "wall_rotation_deg": 45.0,
       "width_status": "presentation_assumption_not_measured"
     },
@@ -74,17 +104,167 @@
         17.1,
         -5.05
       ],
-      "clear_width_m": 1.1,
+      "clear_width_m": 1.4,
       "high_fidelity_threshold_validation": "blocked",
-      "minimum_required_m": 0.92,
-      "nominal_side_clearance_m": 0.16600000000000004,
+      "hinge_assumption": "left_jamb",
+      "minimum_required_m": 1.4,
+      "nominal_side_clearance_m": 0.31599999999999995,
       "presentation_width_gate_passed": true,
-      "threshold_height_mm": 3,
-      "threshold_status": "presentation_assumption_not_measured",
+      "swing_assumption": "outward_for_camera_and_route_clearance",
+      "threshold_height_mm": 0,
+      "threshold_status": "flush_presentation_assumption_not_measured",
       "wall_rotation_deg": 0.0,
       "width_status": "presentation_assumption_not_measured"
     }
   },
+  "geometry_rtx_refinement": {
+    "date": "2026-08-22",
+    "geometry_confidence": {
+      "plan_dimension": {
+        "acceptable_for": [
+          "presentation_scale_anchor",
+          "simulation_layout_anchor"
+        ],
+        "meaning": "explicit numeric dimension printed on approved plan page 2",
+        "not_acceptable_for": [
+          "as_built_claim",
+          "physical_clearance_release"
+        ]
+      },
+      "plan_trace": {
+        "acceptable_for": [
+          "presentation_topology",
+          "simulation_route"
+        ],
+        "meaning": "route-scoped location/orientation traced from the approved PDF",
+        "not_acceptable_for": [
+          "survey_claim",
+          "physical_clearance_release"
+        ]
+      },
+      "presentation_assumption": {
+        "acceptable_for": [
+          "scripted_presentation",
+          "simulation_training"
+        ],
+        "meaning": "reasonable value selected to keep the demonstration feasible",
+        "not_acceptable_for": [
+          "measured_site_claim",
+          "unattended_operation",
+          "physical_release"
+        ]
+      },
+      "walkthrough_assumption": {
+        "acceptable_for": [
+          "presentation_visuals"
+        ],
+        "meaning": "appearance inferred from walkthrough without metric scale",
+        "not_acceptable_for": [
+          "collision_scale",
+          "physical_clearance_release"
+        ]
+      }
+    },
+    "printed_dimensions": {
+      "administration_hallway_clear_width_m": {
+        "confidence": "plan_dimension",
+        "value": 2.8
+      },
+      "atrium_diagonal_m": {
+        "confidence": "plan_dimension",
+        "value": 12.75
+      },
+      "conference_room_size_m": {
+        "confidence": "plan_dimension",
+        "value": [
+          7.8,
+          6.3
+        ]
+      },
+      "meeting_room_1_bay_width_m": {
+        "confidence": "plan_dimension",
+        "value": 3.0
+      },
+      "meeting_room_3_bay_width_m": {
+        "confidence": "plan_dimension",
+        "value": 3.3
+      },
+      "office_manager_bay_width_m": {
+        "confidence": "plan_dimension",
+        "value": 3.25
+      },
+      "principal_diagonal_frontage_m": {
+        "confidence": "plan_dimension",
+        "scene_note": "used as the route-scoped principal room length anchor",
+        "value": 4.73
+      },
+      "service_bay_width_m": {
+        "confidence": "plan_dimension",
+        "value": 1.1
+      },
+      "vice_principal_labelled_bay_size_m": {
+        "confidence": "plan_dimension",
+        "scene_note": "The presentation room remains a wider route-scoped proxy so the supplied walkthrough furniture and the robot pivot zone can coexist. It must not be described as the measured Vice-Principal room envelope.\n",
+        "value": [
+          3.3,
+          3.0
+        ]
+      }
+    },
+    "revision": "GEOMETRY-RTX-PHASE3-A",
+    "rtx_material_profile": {
+      "claim_boundary": "RTX-ready procedural PBR material and lighting refinement, not a site survey, photogrammetric scan, manufacturer-calibrated material library, or photographic proof of the site.\n",
+      "colour_management": "sRGB_albedo_raw_scalar_and_normal_maps",
+      "geometry_impact": "none_visual_only",
+      "interactive_renderer": "RaytracedLighting",
+      "maps": [
+        "albedo",
+        "perceptual_roughness",
+        "tangent_space_normal"
+      ],
+      "materials": [
+        "terrazzo",
+        "walnut",
+        "oak",
+        "mottled_grey"
+      ],
+      "offline_samples_per_pixel": 64,
+      "renderer": "PathTracing",
+      "texture_resolution_px": 1024,
+      "texture_source": "deterministic_project_owned_procedural"
+    },
+    "scene_mapping": {
+      "dimension_tolerance_m": 0.01,
+      "route_geometry_status": "plan_dimension_calibrated_route_scoped_trace",
+      "scale_anchor_paths": {
+        "atrium": "/World/Architecture/Floors/Atrium",
+        "conference_reference": "not_modeled_outside_current_route_scope",
+        "east_hallway": "/World/Architecture/Floors/EastHallway"
+      },
+      "stage_meters_per_unit": 1.0,
+      "world_convention": "+X east, +Y north, +Z up; origin at Block A atrium centre"
+    },
+    "source": {
+      "authority": "approved_plan_printed_dimensions_only",
+      "block": "A",
+      "drawing_size_label": "A2",
+      "file": "DownloadBuildingRequestApprovedPlan.pdf",
+      "page": 2,
+      "pdf_canvas_size": "A1",
+      "sha256": "4d8698f868c296442ebd6e667d4700f2e9bc7f27b4787639395a370d76779112"
+    },
+    "unresolved_site_measurements": [
+      "vice_principal_door_clear_width",
+      "principal_door_clear_width",
+      "both_threshold_heights_and_profiles",
+      "finished_wall_thicknesses",
+      "ceiling_and_suspended_services_heights",
+      "furniture_offsets_and_moveable_obstacles",
+      "wheel_and_castor_contact_coefficients_on_actual_floor"
+    ]
+  },
+  "geometry_rtx_refinement_config": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/geometry_rtx_refinement.yaml",
+  "geometry_rtx_refinement_config_sha256": "c12bbaa3d2205bbe371ec1548c93359aa317a0c256f51bfb00f236d65650c0de",
   "known_dimensions": {
     "atrium_diagonal_m": {
       "status": "approved_plan_page_2_dimension",
@@ -100,6 +280,17 @@
     "hallway_clear_width_m": {
       "status": "approved_plan_page_2_dimension",
       "value": 2.8
+    },
+    "principal_diagonal_frontage_m": {
+      "status": "approved_plan_page_2_dimension",
+      "value": 4.73
+    },
+    "vice_principal_labelled_bay_m": {
+      "status": "approved_plan_page_2_dimension_not_current_presentation_room_envelope",
+      "value": [
+        3.3,
+        3.0
+      ]
     }
   },
   "passed": true,
@@ -184,9 +375,10 @@
         ],
         "rotation_deg": -45.0,
         "size_xy_m": [
-          4.75,
+          4.73,
           3.6
-        ]
+        ],
+        "status": "plan_frontage_anchor_with_traced_depth"
       },
       "relationship": "south of the east hallway; Vice-Principal east of Principal",
       "secretary": {
@@ -209,7 +401,8 @@
         "size_xy_m": [
           6.3,
           3.0
-        ]
+        ],
+        "status": "route_scoped_presentation_expansion_not_plan_room_envelope"
       }
     },
     "trace_status": "route_scoped_plan_derived",
@@ -235,15 +428,15 @@
     {
       "action": "transit",
       "id": "east_atrium_exit",
-      "x_m": 5.2,
+      "x_m": 4.7,
       "y_m": 0.0,
       "yaw_deg": 0.0
     },
     {
-      "action": "align_in_hallway",
+      "action": "align_in_open_hallway_with_turn_clearance",
       "id": "vice_principal_turn",
       "x_m": 17.1,
-      "y_m": 0.0,
+      "y_m": 0.5,
       "yaw_deg": -90.0
     },
     {
@@ -254,31 +447,31 @@
       "yaw_deg": -90.0
     },
     {
-      "action": "presentation_stop",
+      "action": "presentation_stop_inside_with_pivot_clearance",
       "id": "vice_principal",
       "x_m": 17.1,
-      "y_m": -6.25,
+      "y_m": -6.4,
       "yaw_deg": -90.0
     },
     {
-      "action": "room_turn_and_depart",
+      "action": "straight_room_depart_then_hallway_turn",
       "id": "vice_principal_depart",
       "x_m": 17.1,
-      "y_m": -3.8,
+      "y_m": 0.0,
       "yaw_deg": 90.0
     },
     {
-      "action": "transit",
+      "action": "return_to_atrium_before_turning",
       "id": "hallway_return",
-      "x_m": 10.2,
+      "x_m": 4.7,
       "y_m": 0.0,
       "yaw_deg": 180.0
     },
     {
-      "action": "align_in_open_atrium_edge",
+      "action": "align_on_diagonal_corridor_centreline",
       "id": "principal_turn",
-      "x_m": 5.1,
-      "y_m": -3.8,
+      "x_m": 3.45,
+      "y_m": -3.45,
       "yaw_deg": -45.0
     },
     {
@@ -289,24 +482,24 @@
       "yaw_deg": -45.0
     },
     {
-      "action": "presentation_stop",
+      "action": "presentation_stop_inside_clear_pivot_zone",
       "id": "principal",
-      "x_m": 8.65,
-      "y_m": -9.1,
+      "x_m": 8.01,
+      "y_m": -8.66,
       "yaw_deg": -45.0
     },
     {
-      "action": "room_turn_and_depart",
+      "action": "clear_side_room_turn_then_door_centre_departure",
       "id": "principal_depart",
-      "x_m": 6.45,
-      "y_m": -6.95,
+      "x_m": 6.53,
+      "y_m": -6.9,
       "yaw_deg": 135.0
     },
     {
-      "action": "transit",
+      "action": "corridor_to_atrium_turn",
       "id": "atrium_return",
-      "x_m": 4.2,
-      "y_m": -3.4,
+      "x_m": 3.45,
+      "y_m": -3.45,
       "yaw_deg": 135.0
     },
     {
@@ -332,6 +525,67 @@
       "prim": "/World/AISHA/base_link/imu_link"
     }
   ],
-  "status": "plan_derived_presentation_scene_built",
-  "timestamp_utc": "2026-08-20T16:01:54.986432+00:00"
+  "status": "walkthrough_matched_plan_derived_presentation_scene_built",
+  "timestamp_utc": "2026-08-22T09:43:29.977778+00:00",
+  "visual_upgrade": {
+    "collision_geometry_changed": false,
+    "reference_policy": "walkthrough appearance only; approved plan remains the geometry authority",
+    "rtx_material_version": "administration_rtx_pbr_v2",
+    "texture_assets": [
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/terrazzo_albedo.png",
+        "sha256": "36d84021932a296d0d35b8e19d64b822f3fe4b789477aaf9fc1027d4d5fd761b"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/terrazzo_roughness.png",
+        "sha256": "6c4237083fbabc26f01ce610150f0c6c352a8dfa6f35d69d4103af78614c96b1"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/terrazzo_normal.png",
+        "sha256": "e11f95b5d7faf3acddaf0c170aa17c7e8db986d1073958eab9190068c0c97091"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/walnut_albedo.png",
+        "sha256": "bb66839b604d2904bc62871df0622a01260e5865ec36f82abd7358758d36c1b1"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/walnut_roughness.png",
+        "sha256": "b91960b1b182605b7f87c59317285cc54a1adc09c09a25aca7b6ba7adecc2d6f"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/walnut_normal.png",
+        "sha256": "ae4f15753ee49e21ba5ced7d5f63eefe74464825e41968400dac948bec9d07d4"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/oak_albedo.png",
+        "sha256": "de1f3ef5c9e43311c254eed83c86c0d3590a1e1bf1b959671c5de8809ce5828b"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/oak_roughness.png",
+        "sha256": "44f8b48d1fb42c23e6d3cccfc14a0b3f5d296a5c924b1102c523c2b0e4c36976"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/oak_normal.png",
+        "sha256": "2a459614774b0402034ce1d6fb279901a32649d29e2590fb6ea59ba258b4acf7"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/mottled_grey_albedo.png",
+        "sha256": "004965baae1199c739905bea6170041d1a92105a6461548ecc57c69ea5f4c1c4"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/mottled_grey_roughness.png",
+        "sha256": "4906eada7b2c12e738b8317be5750cb75a9017766ff23f0ae0065919a377464e"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/mottled_grey_normal.png",
+        "sha256": "cfdd54a3a7afde4d012d54d662053339ea977e112f809a0ba4acc00140853424"
+      }
+    ],
+    "texture_maps": [
+      "albedo",
+      "perceptual_roughness",
+      "tangent_space_normal"
+    ],
+    "version": "administration_walkthrough_procedural_pbr_v1"
+  }
 }

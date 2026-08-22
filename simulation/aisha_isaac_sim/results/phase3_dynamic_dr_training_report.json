@@ -1,0 +1,30 @@
+{
+  "report_type": "isaac_lab_training_summary",
+  "generated_at_utc": "2026-08-22T09:56:59.447802+00:00",
+  "run_directory": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_13-51-59_phase3_dynamic_obstacles_dr_seed8101",
+  "tensorboard_event_sha256": "3373acddee0dca6b39432dfb279d094438053fc1b2d0ee24166cf03a942cc05e",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_13-51-59_phase3_dynamic_obstacles_dr_seed8101/model_2749.pt",
+    "sha256": "11b2c66f9d4f30415c80fbc494ce07fb245d7a1c0c8298f8a1d871ab6ee4d6d0"
+  },
+  "protocol": {
+    "algorithm": "RSL-RL PPO",
+    "training_seed": 8101,
+    "parallel_environments": 32,
+    "steps_per_environment_per_iteration": 32,
+    "executed_iterations": 599,
+    "first_logged_iteration": 2151,
+    "final_logged_iteration": 2749,
+    "simulated_policy_transitions": 613376
+  },
+  "training_log_metrics": {
+    "final_mean_reward": -58.38090515136719,
+    "peak_mean_reward": -16.784400939941406,
+    "final_training_batch_success_rate": 0.0,
+    "peak_training_batch_success_rate": 1.0,
+    "final_training_batch_collision_rate": 1.0,
+    "first_iteration_at_or_above_90_percent_training_success": 2196,
+    "mean_reported_training_fps": 2276.8866666666668
+  },
+  "interpretation": "Training-batch metrics show learning progress but are not held-out evaluation. Use the corresponding held-out evaluation report for deterministic unseen-seed results."
+}

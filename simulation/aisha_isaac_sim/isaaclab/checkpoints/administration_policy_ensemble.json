@@ -1,0 +1,35 @@
+{
+  "format": "route_planner_selected_learned_skill_ensemble_v1",
+  "base_policy": {
+    "path": "aisha_phase2_administration_base_model_2150.pt",
+    "sha256": "e4c072c61a8f8f65c58c9a4780600c8b81ce713cc546d2eae8f96374980b0a0f",
+    "training": "PPO live-administration adaptation plus balanced proxy rehearsal",
+    "segments": [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11]
+  },
+  "segment_specialists": {
+    "6": {
+      "path": "aisha_phase2_administration_principal_specialist.pt",
+      "sha256": "3839ca7b3960c403e3d1ae371b676e3219328a6459d38215492bc68ed9bf8992",
+      "training": "behavior cloning from 16/16 successful live-physics pivot-then-drive demonstrations",
+      "held_out_deterministic_gate": {
+        "episodes": 8,
+        "successes": 8,
+        "collisions": 0,
+        "time_outs": 0
+      }
+    }
+  },
+  "selection": "The high-level route planner selects only between declared learned wheel-action policies; it never overrides a wheel action.",
+  "final_live_gate": {
+    "report": "../../results/phase2_administration_live_cinematic_report.json",
+    "route_segments_completed": 12,
+    "policy_steps": 5160,
+    "base_policy_steps": 4730,
+    "segment_6_specialist_steps": 430,
+    "supervisor_turn_steps": 0,
+    "presentation_dwell_steps": 0,
+    "root_transform_animation": false,
+    "outcome": "success"
+  },
+  "claim_boundary": "Simulation-only learned navigation evidence in the disclosed plan/walkthrough-derived scene; not a measured-site, Nav2, dynamic-person, sim-to-real, or physical safety release."
+}

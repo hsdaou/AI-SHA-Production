@@ -1,0 +1,147 @@
+{
+  "atrium_column_clearance": {
+    "column_radius_m": 0.19,
+    "columns": [
+      {
+        "closest_trace_segment_index": 0,
+        "column_index": 0,
+        "minimum_surface_clearance_m": 3.237615,
+        "minimum_trace_centre_distance_m": 4.131572,
+        "passed": true,
+        "position_xy_m": [
+          -3.25,
+          -2.55
+        ]
+      },
+      {
+        "closest_trace_segment_index": 0,
+        "column_index": 1,
+        "minimum_surface_clearance_m": 3.237627,
+        "minimum_trace_centre_distance_m": 4.131585,
+        "passed": true,
+        "position_xy_m": [
+          -3.25,
+          2.55
+        ]
+      },
+      {
+        "closest_trace_segment_index": 1654,
+        "column_index": 2,
+        "minimum_surface_clearance_m": 1.202949,
+        "minimum_trace_centre_distance_m": 2.096906,
+        "passed": true,
+        "position_xy_m": [
+          1.25,
+          -4.2
+        ]
+      },
+      {
+        "closest_trace_segment_index": 69,
+        "column_index": 3,
+        "minimum_surface_clearance_m": 1.526499,
+        "minimum_trace_centre_distance_m": 2.420457,
+        "passed": true,
+        "position_xy_m": [
+          2.95,
+          2.55
+        ]
+      }
+    ],
+    "conservative_robot_radius_m": 0.703957,
+    "method": "minimum 2D distance to every interpolated learned-trace segment",
+    "required_trace_centre_distance_m": 0.95,
+    "robot_envelope_length_m": 1.18,
+    "robot_envelope_width_m": 0.768
+  },
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-20_22-33-50_ld19_flush_threshold_v9/model_599.pt",
+  "checkpoint_sha256": "3da826c515d0e58a3c0731dd3b72022208eadda3cc2bd2200a78d92f079bfacf",
+  "checks": {
+    "all_atrium_columns_clear_conservative_robot_sweep": true,
+    "both_door_width_gates_pass": true,
+    "both_thresholds_assumed_flush": true,
+    "checkpoint_exists": true,
+    "physical_release_remains_false": true,
+    "render_shots_cover_each_segment_once": true,
+    "scene_build_passed": true,
+    "scene_build_records_current_column_layout": true,
+    "scene_built_from_current_presentation_config": true,
+    "scene_file_exists": true,
+    "scene_presentation_ready": true,
+    "scene_reopened_during_build": true,
+    "trajectory_completed_steps": true,
+    "trajectory_has_expected_segments": true,
+    "trajectory_has_only_disclosed_control_modes": true,
+    "trajectory_outcome_success": true,
+    "trajectory_trace_nonempty": true,
+    "trajectory_trace_poses_finite": true,
+    "trajectory_trace_steps_monotonic": true,
+    "trajectory_trace_time_monotonic": true,
+    "trajectory_waypoints_completed": true
+  },
+  "motion_contract": "renderer selects recorded wheel-physics pose samples; it does not generate a second route",
+  "passed": true,
+  "render_shot_segments": [
+    [
+      0,
+      1
+    ],
+    [
+      2,
+      3,
+      4
+    ],
+    [
+      5,
+      6,
+      7
+    ],
+    [
+      8,
+      9
+    ],
+    [
+      10,
+      11
+    ]
+  ],
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+  "scene_build_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_build_report.json",
+  "scene_build_report_sha256": "f58bf63a3313fd4f0f2125351d429204234e21c1c444158c23b3ce3fe1464ff3",
+  "scene_sha256": "1128a7fcfe8bd458caf18afd641a59846415399921b9e13fe596dbc4c8a279fc",
+  "status": "passed",
+  "timestamp_utc": "2026-08-21T17:44:37.668843+00:00",
+  "trajectory": {
+    "completed_steps": 5209,
+    "control_mode_records": {
+      "learned_sensor_policy": 1413,
+      "physics_supervisor_turn": 303,
+      "presentation_dwell": 20
+    },
+    "control_steps": {
+      "learned_sensor_policy": 4239,
+      "physics_supervisor_turn": 910,
+      "presentation_dwell": 60
+    },
+    "duration_s": 173.63333333333333,
+    "pose_trace_records": 1736,
+    "seed": 6084,
+    "segment_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "waypoints_completed": 12
+  },
+  "trajectory_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/isaaclab_learned_route_playback_report.json",
+  "trajectory_report_sha256": "e9b03712fc47cf862630ca0e7245c065c68e35afcf46067bb729517f9a39405f",
+  "visual_claim_boundary": "walkthrough-matched presentation environment; visual replay is not live policy execution"
+}

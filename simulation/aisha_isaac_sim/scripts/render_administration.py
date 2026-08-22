@@ -14,12 +14,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--headless", action="store_true")
     parser.add_argument("--width", type=int, default=1600)
     parser.add_argument("--height", type=int, default=900)
+    parser.add_argument(
+        "--renderer",
+        choices=("RaytracedLighting", "PathTracing"),
+        default="PathTracing",
+    )
+    parser.add_argument("--path-tracing-spp", type=int, default=64)
     return parser.parse_args()
 
 
 ARGS = parse_args()
-APP = SimulationApp({"headless": ARGS.headless, "renderer": "RaytracedLighting"})
+APP = SimulationApp({"headless": ARGS.headless, "renderer": ARGS.renderer})
 
+import carb
 import numpy as np
 import omni.replicator.core as rep
 import omni.usd
@@ -29,29 +36,51 @@ from pxr import Gf, UsdGeom
 from aisha_common import PACKAGE_ROOT, SCENES_DIR, ensure_output_dirs
 
 
+if ARGS.renderer == "PathTracing":
+    settings = carb.settings.get_settings()
+    settings.set_int("/rtx/pathtracing/spp", max(1, ARGS.path_tracing_spp))
+    settings.set_int("/rtx/pathtracing/totalSpp", max(1, ARGS.path_tracing_spp))
+
+
 SHOTS = (
     {
         "name": "administration_overview.png",
-        "position": (25.0, -29.0, 18.0),
-        "look_at": (7.0, -3.0, 0.1),
-        "focal_length": 30.0,
+        "position": (22.0, -25.0, 15.0),
+        "look_at": (8.0, -3.5, 0.25),
+        "focal_length": 34.0,
         "robot": (5.0, 0.0, 0.0),
         "hide_ceilings": True,
     },
     {
+        "name": "administration_atrium.png",
+        "position": (-4.35, 0.0, 1.72),
+        "look_at": (0.75, 0.40, 0.82),
+        "focal_length": 22.0,
+        "robot": (0.40, 0.25, 20.0),
+        "hide_ceilings": False,
+    },
+    {
+        "name": "administration_east_hall.png",
+        "position": (6.15, 0.72, 1.55),
+        "look_at": (14.40, -0.05, 0.82),
+        "focal_length": 27.0,
+        "robot": (14.30, 0.0, 0.0),
+        "hide_ceilings": False,
+    },
+    {
         "name": "administration_vice_principal.png",
-        "position": (17.10, -2.75, 1.52),
-        "look_at": (17.10, -6.05, 0.62),
-        "focal_length": 30.0,
-        "robot": (17.10, -5.70, -90.0),
+        "position": (19.55, -7.55, 1.86),
+        "look_at": (16.75, -6.20, 0.70),
+        "focal_length": 16.0,
+        "robot": (17.10, -6.40, -90.0),
         "hide_ceilings": False,
     },
     {
         "name": "administration_principal.png",
-        "position": (5.35, -6.05, 1.52),
-        "look_at": (7.95, -8.55, 0.62),
-        "focal_length": 30.0,
-        "robot": (7.80, -8.30, -45.0),
+        "position": (10.85, -9.78, 1.82),
+        "look_at": (8.25, -9.00, 0.72),
+        "focal_length": 15.0,
+        "robot": (8.01, -8.66, -45.0),
         "hide_ceilings": False,
     },
 )
@@ -93,7 +122,13 @@ def main() -> int:
         set_robot_pose(stage, *shot["robot"])
         set_group_visibility(
             stage,
-            ("/World/Architecture/Ceilings", "/World/Architecture/Walls", "/World/Appearance/TimberSlats"),
+            (
+                "/World/Architecture/Ceilings",
+                "/World/Architecture/Walls",
+                "/World/Appearance/TimberSlats",
+                "/World/Appearance/WallFinishes",
+                "/World/Appearance/WallDisplays",
+            ),
             not bool(shot["hide_ceilings"]),
         )
         for _ in range(10):
@@ -118,7 +153,13 @@ def main() -> int:
 
     set_group_visibility(
         stage,
-        ("/World/Architecture/Ceilings", "/World/Architecture/Walls", "/World/Appearance/TimberSlats"),
+        (
+            "/World/Architecture/Ceilings",
+            "/World/Architecture/Walls",
+            "/World/Appearance/TimberSlats",
+            "/World/Appearance/WallFinishes",
+            "/World/Appearance/WallDisplays",
+        ),
         True,
     )
     return 0

@@ -27,6 +27,7 @@ def ensure_output_dirs() -> None:
         USD_DIR,
         PACKAGE_ROOT / "media" / "screenshots",
         PACKAGE_ROOT / "media" / "route_frames",
+        PACKAGE_ROOT / "media" / "learned_route_replay_frames",
         PACKAGE_ROOT / "media" / "videos",
     ):
         path.mkdir(parents=True, exist_ok=True)

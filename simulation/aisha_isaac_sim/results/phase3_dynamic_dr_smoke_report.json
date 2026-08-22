@@ -1,0 +1,107 @@
+{
+  "active_obstacles_per_env": [
+    0,
+    1,
+    2,
+    0
+  ],
+  "checks": {
+    "action_latency_randomized": true,
+    "dynamic_obstacles_active": true,
+    "dynamic_obstacles_in_lidar_contract": true,
+    "dynamic_obstacles_moved": true,
+    "friction_randomized": true,
+    "mass_randomized": true,
+    "motor_strength_randomized": true,
+    "observation_contract_46": true,
+    "observation_values_finite": true,
+    "task_registered": true,
+    "uncorrupted_collision_ranges_available": true
+  },
+  "claim_boundary": "Bounded simulation smoke evidence only; not trained-policy acceptance, dynamic-person safety validation, or physical release.",
+  "generated_at_utc": "2026-08-22T10:01:43.163591+00:00",
+  "maximum_active_obstacle_displacement_m": 1.4537887573242188,
+  "minimum_true_lidar_range_m": 0.8137797117233276,
+  "num_envs": 4,
+  "observation_shape": [
+    4,
+    46
+  ],
+  "passed": true,
+  "phase3_environment_sha256": "83fcf653ac11d14b1ac265087423c718435e96242f8f5c385abeb6dc86b09fd2",
+  "phase3_environment_source": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/aisha_isaaclab/tasks/office_nav/phase3_dynamic_dr_env.py",
+  "policy_rate_hz": 30,
+  "report_type": "phase3_dynamic_obstacle_domain_randomization_smoke",
+  "reset_events_during_smoke": 0,
+  "sampled_randomization": {
+    "action_latency_steps": [
+      1,
+      2,
+      0,
+      0
+    ],
+    "base_mass_scale": [
+      0.9715433716773987,
+      1.0384299755096436,
+      1.0400655269622803,
+      0.9702582359313965
+    ],
+    "curriculum_strength": 1.0,
+    "dynamic_friction": [
+      0.40096259117126465,
+      0.43496936559677124,
+      0.4520654082298279,
+      0.5854145884513855
+    ],
+    "lidar_bias_m": [
+      -0.001686809933744371,
+      -0.01582811214029789,
+      0.018136803060770035,
+      -0.010838774032890797
+    ],
+    "lidar_scale": [
+      1.0043513774871826,
+      1.0125070810317993,
+      0.9869464635848999,
+      0.9858031272888184
+    ],
+    "motor_strength_scale": [
+      [
+        0.9124767780303955,
+        0.9804323315620422
+      ],
+      [
+        1.0340088605880737,
+        1.0042874813079834
+      ],
+      [
+        1.0450539588928223,
+        0.9378857016563416
+      ],
+      [
+        1.0589371919631958,
+        1.087706446647644
+      ]
+    ],
+    "static_friction": [
+      0.6143966317176819,
+      0.4818156063556671,
+      0.657027006149292,
+      0.5854145884513855
+    ],
+    "wheel_radius_scale": [
+      1.0091097354888916,
+      0.9801483154296875,
+      1.0246107578277588,
+      0.9851973056793213
+    ],
+    "wheel_track_scale": [
+      0.9901584982872009,
+      0.9883176684379578,
+      0.980806291103363,
+      1.0072414875030518
+    ]
+  },
+  "steps": 180,
+  "task": "Isaac-AISHA-BlockA-Phase3-DynamicDR-SensorNav-Direct-v0"
+}

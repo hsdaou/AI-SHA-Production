@@ -1,0 +1,313 @@
+{
+  "report_type": "held_out_phase3_dynamic_randomized_evaluation",
+  "generated_at_utc": "2026-08-22T09:59:50.177798+00:00",
+  "task": "Isaac-AISHA-BlockA-Phase3-DynamicDR-SensorNav-Direct-v0",
+  "training_contract_revision": "TRAINING-ENDTOEND-I",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_11-35-30_phase2b_administration_exploration_seed7092/model_2150_rehearsal.pt",
+    "sha256": "e4c072c61a8f8f65c58c9a4780600c8b81ce713cc546d2eae8f96374980b0a0f"
+  },
+  "protocol": {
+    "policy": "deterministic_inference",
+    "seed": 9101,
+    "training_seed": 7092,
+    "episodes": 48,
+    "episodes_per_segment": 4,
+    "parallel_environments": 24,
+    "physics_rate_hz": 120,
+    "policy_rate_hz": 30,
+    "randomization": "equal quota per route segment; training-declared pose and goal jitter; unseen random sequence",
+    "fixed_segment_id": null
+  },
+  "results": {
+    "success_count": 15,
+    "success_rate": 0.3125,
+    "collision_count": 27,
+    "collision_rate": 0.5625,
+    "dynamic_obstacle_collision_count": 18,
+    "static_collision_count": 9,
+    "time_out_count": 6,
+    "time_out_rate": 0.125,
+    "mean_episode_return": -23.70579570531845,
+    "mean_episode_steps": 655.5833333333334,
+    "mean_episode_duration_s": 21.852777777777778,
+    "mean_final_goal_distance_m": 3.7974979045490422,
+    "mean_abs_final_heading_error_deg": 15.783849580986136,
+    "mean_minimum_lidar_range_m": 0.7664359156042337,
+    "wall_clock_evaluation_s": 52.63349354000093,
+    "per_segment": [
+      {
+        "segment_id": 0,
+        "label": "home -> east_atrium_exit",
+        "episodes": 4,
+        "success": 0,
+        "collision": 4,
+        "time_out": 0,
+        "success_rate": 0.0,
+        "collision_rate": 1.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 1,
+        "label": "east_atrium_exit -> vice_principal_turn",
+        "episodes": 4,
+        "success": 0,
+        "collision": 4,
+        "time_out": 0,
+        "success_rate": 0.0,
+        "collision_rate": 1.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 2,
+        "label": "vice_principal_turn -> vice_principal_approach",
+        "episodes": 4,
+        "success": 0,
+        "collision": 4,
+        "time_out": 0,
+        "success_rate": 0.0,
+        "collision_rate": 1.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 3,
+        "label": "vice_principal_approach -> vice_principal",
+        "episodes": 4,
+        "success": 4,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 4,
+        "label": "vice_principal -> vice_principal_depart",
+        "episodes": 4,
+        "success": 3,
+        "collision": 0,
+        "time_out": 1,
+        "success_rate": 0.75,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.25
+      },
+      {
+        "segment_id": 5,
+        "label": "vice_principal_depart -> hallway_return",
+        "episodes": 4,
+        "success": 0,
+        "collision": 3,
+        "time_out": 1,
+        "success_rate": 0.0,
+        "collision_rate": 0.75,
+        "time_out_rate": 0.25
+      },
+      {
+        "segment_id": 6,
+        "label": "hallway_return -> principal_turn",
+        "episodes": 4,
+        "success": 0,
+        "collision": 2,
+        "time_out": 2,
+        "success_rate": 0.0,
+        "collision_rate": 0.5,
+        "time_out_rate": 0.5
+      },
+      {
+        "segment_id": 7,
+        "label": "principal_turn -> principal_approach",
+        "episodes": 4,
+        "success": 0,
+        "collision": 2,
+        "time_out": 2,
+        "success_rate": 0.0,
+        "collision_rate": 0.5,
+        "time_out_rate": 0.5
+      },
+      {
+        "segment_id": 8,
+        "label": "principal_approach -> principal",
+        "episodes": 4,
+        "success": 4,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 9,
+        "label": "principal -> principal_depart",
+        "episodes": 4,
+        "success": 4,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 10,
+        "label": "principal_depart -> atrium_return",
+        "episodes": 4,
+        "success": 0,
+        "collision": 4,
+        "time_out": 0,
+        "success_rate": 0.0,
+        "collision_rate": 1.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 11,
+        "label": "atrium_return -> home_return",
+        "episodes": 4,
+        "success": 0,
+        "collision": 4,
+        "time_out": 0,
+        "success_rate": 0.0,
+        "collision_rate": 1.0,
+        "time_out_rate": 0.0
+      }
+    ]
+  },
+  "action_diagnostics": {
+    "dimensions": [
+      "normalized_linear_command",
+      "normalized_angular_command"
+    ],
+    "mapping": "linear -1 maps to 0.0 m/s; linear +1 maps to 0.5 m/s; angular \u00b11 maps to \u00b11.0 rad/s",
+    "first_step_mean": [
+      -0.3663175702095032,
+      0.8537536859512329
+    ],
+    "first_step_min": [
+      -9.021644592285156,
+      -3.170325994491577
+    ],
+    "first_step_max": [
+      4.527998447418213,
+      3.9682092666625977
+    ],
+    "first_30_step_mean": [
+      -0.45075666904449463,
+      0.8719407320022583
+    ],
+    "timeline": [
+      {
+        "step": 0,
+        "mean_action": [
+          -0.3663175702095032,
+          0.8537536859512329
+        ]
+      },
+      {
+        "step": 15,
+        "mean_action": [
+          -0.43206870555877686,
+          0.8807207345962524
+        ]
+      },
+      {
+        "step": 30,
+        "mean_action": [
+          -0.2096237987279892,
+          0.7666060328483582
+        ]
+      },
+      {
+        "step": 60,
+        "mean_action": [
+          -0.5545499324798584,
+          0.8951936960220337
+        ]
+      },
+      {
+        "step": 90,
+        "mean_action": [
+          -0.9833585023880005,
+          1.015689730644226
+        ]
+      },
+      {
+        "step": 120,
+        "mean_action": [
+          -0.8073258399963379,
+          0.9466914534568787
+        ]
+      },
+      {
+        "step": 180,
+        "mean_action": [
+          0.2889205813407898,
+          0.49695032835006714
+        ]
+      },
+      {
+        "step": 300,
+        "mean_action": [
+          0.8493677377700806,
+          0.2160138189792633
+        ]
+      },
+      {
+        "step": 600,
+        "mean_action": [
+          -0.19728915393352509,
+          0.9335163831710815
+        ]
+      },
+      {
+        "step": 1200,
+        "mean_action": [
+          -0.6256833076477051,
+          0.9697474241256714
+        ]
+      },
+      {
+        "step": 2000,
+        "mean_action": [
+          0.12740132212638855,
+          0.5326088666915894
+        ]
+      }
+    ]
+  },
+  "acceptance_gate": {
+    "scope": "phase3_randomized_segment_subgate_only",
+    "protocol_satisfied": false,
+    "passed": false,
+    "full_phase3_acceptance": false,
+    "pending_separate_gates": [
+      "Phase 2 static-route regression",
+      "12 live-administration dynamic scenarios"
+    ],
+    "requirements": {
+      "randomized_episodes_per_segment": 64,
+      "overall_success_rate_min": 0.9,
+      "dynamic_obstacle_collision_rate_max": 0.02,
+      "static_collision_rate_max": 0.05,
+      "every_enabled_segment_success_rate_min": 0.8,
+      "phase2_static_route_regression_success_rate_min": 0.9,
+      "live_administration_dynamic_scenarios": 12,
+      "live_administration_collisions_allowed": 0,
+      "physical_safety_claim_allowed": false
+    },
+    "observed": {
+      "overall_success_rate": 0.3125,
+      "dynamic_obstacle_collision_rate": 0.375,
+      "static_collision_rate": 0.1875,
+      "minimum_enabled_segment_success_rate": 0.0
+    }
+  },
+  "claim_boundary": {
+    "supported": "Phase 3 randomized Block A segments with moving ray-visible person proxies",
+    "not_supported": [
+      "RTX-rendered LiDAR or depth-camera policy input",
+      "Nav2 integration",
+      "photoreal administration-office fidelity",
+      "sim-to-real transfer",
+      "physical robot release"
+    ],
+    "doorway_width": "presentation_assumption_not_measured"
+  }
+}

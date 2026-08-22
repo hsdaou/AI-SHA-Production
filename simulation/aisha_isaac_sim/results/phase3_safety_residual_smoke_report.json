@@ -1,0 +1,48 @@
+{
+  "checks": {
+    "frozen_route_actor_has_no_trainable_parameters": true,
+    "frozen_route_checkpoint_hash_matches": true,
+    "full_brake_fraction_is_one": true,
+    "full_brake_maps_forward_command_to_zero_speed": true,
+    "full_domain_randomization_strength": true,
+    "observation_contract_46": true,
+    "observation_values_finite": true,
+    "positive_residual_is_no_op": true,
+    "steering_attenuation_is_bounded": true,
+    "steering_magnitude_never_increases": true,
+    "steering_sign_is_preserved": true,
+    "task_registered": true,
+    "zero_residual_attenuation_is_zero": true,
+    "zero_residual_brake_is_zero": true,
+    "zero_residual_is_exact_pass_through": true
+  },
+  "claim_boundary": "Action-boundary and simulation-runtime evidence only; not a trained-policy acceptance result, human-safety certification, or physical release.",
+  "frozen_route_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-00-21_phase3h_reciprocal_yield_seed8701/model_2225.pt",
+  "frozen_route_checkpoint_sha256": "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8",
+  "generated_at_utc": "2026-08-22T11:57:34.307148+00:00",
+  "maximum_angular_attenuation": 0.25,
+  "num_envs": 4,
+  "passed": true,
+  "policy_rate_hz": 30,
+  "report_type": "phase3_bounded_safety_residual_smoke",
+  "sample_base_actions": [
+    [
+      1.0,
+      1.0
+    ],
+    [
+      0.796088695526123,
+      1.0
+    ],
+    [
+      1.0,
+      -0.9946688413619995
+    ],
+    [
+      1.0,
+      1.0
+    ]
+  ],
+  "steps": 90,
+  "task": "Isaac-AISHA-BlockA-Phase3-SafetyResidual-SensorNav-Direct-v0"
+}

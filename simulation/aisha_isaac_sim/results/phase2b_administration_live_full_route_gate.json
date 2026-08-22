@@ -1,0 +1,6959 @@
+{
+  "report_type": "end_to_end_policy_route_playback",
+  "generated_at_utc": "2026-08-22T07:42:29.019459+00:00",
+  "task": "Isaac-AISHA-Administration-Live-Direct-v0",
+  "execution_mode": "checkpoint_policy_live_in_walkthrough_matched_administration_scene",
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_11-35-30_phase2b_administration_exploration_seed7092/model_2249.pt",
+  "checkpoint_sha256": "d042712e72f3eae8b0474fbfd4b997cd72e52e2aa5199024e84ec775e86ba816",
+  "seed": 7084,
+  "outcome": "collision",
+  "completed_steps": 1284,
+  "duration_s": 42.8,
+  "waypoints_completed": 2,
+  "route_segment_count": 12,
+  "camera": {
+    "mode": "viewer",
+    "eye": [
+      -3.8,
+      0.0,
+      2.4
+    ],
+    "lookat": [
+      0.45,
+      0.0,
+      0.55
+    ]
+  },
+  "camera_tracking": "isaaclab_viewer",
+  "waypoint_events": [
+    {
+      "segment_id": 0,
+      "start": "home",
+      "goal": "east_atrium_exit",
+      "step": 311,
+      "elapsed_s": 10.366666666666667
+    },
+    {
+      "segment_id": 1,
+      "start": "east_atrium_exit",
+      "goal": "vice_principal_turn",
+      "step": 1192,
+      "elapsed_s": 39.733333333333334
+    }
+  ],
+  "pose_trace_interval_steps": 3,
+  "pose_trace": [
+    {
+      "step": 3,
+      "elapsed_s": 0.1,
+      "x_m": 0.00108,
+      "y_m": -1e-05,
+      "yaw_rad": -0.00018,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.08183,
+      "yaw_rate_rad_s": -0.00189,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.23312,
+        -0.23819
+      ]
+    },
+    {
+      "step": 6,
+      "elapsed_s": 0.2,
+      "x_m": 0.01571,
+      "y_m": -2e-05,
+      "yaw_rad": -0.001278,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.20488,
+      "yaw_rate_rad_s": -0.01932,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.53398,
+        -0.24537
+      ]
+    },
+    {
+      "step": 9,
+      "elapsed_s": 0.3,
+      "x_m": 0.04124,
+      "y_m": -0.00012,
+      "yaw_rad": -0.006511,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.30052,
+      "yaw_rate_rad_s": -0.0763,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.80292,
+        -0.22753
+      ]
+    },
+    {
+      "step": 12,
+      "elapsed_s": 0.4,
+      "x_m": 0.07433,
+      "y_m": -0.00053,
+      "yaw_rad": -0.017036,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.35475,
+      "yaw_rate_rad_s": -0.1156,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.1654,
+        -0.23996
+      ]
+    },
+    {
+      "step": 15,
+      "elapsed_s": 0.5,
+      "x_m": 0.11168,
+      "y_m": -0.00141,
+      "yaw_rad": -0.028395,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.38909,
+      "yaw_rate_rad_s": -0.10988,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.20754,
+        -0.19008
+      ]
+    },
+    {
+      "step": 18,
+      "elapsed_s": 0.6,
+      "x_m": 0.15142,
+      "y_m": -0.00269,
+      "yaw_rad": -0.033972,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.40753,
+      "yaw_rate_rad_s": -0.02616,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.00817,
+        -0.01996
+      ]
+    },
+    {
+      "step": 21,
+      "elapsed_s": 0.7,
+      "x_m": 0.19248,
+      "y_m": -0.00411,
+      "yaw_rad": -0.03489,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41566,
+      "yaw_rate_rad_s": -0.00209,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.93643,
+        -0.0121
+      ]
+    },
+    {
+      "step": 24,
+      "elapsed_s": 0.8,
+      "x_m": 0.23406,
+      "y_m": -0.00555,
+      "yaw_rad": -0.034599,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41886,
+      "yaw_rate_rad_s": 0.00266,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.92276,
+        -0.0162
+      ]
+    },
+    {
+      "step": 27,
+      "elapsed_s": 0.9,
+      "x_m": 0.27588,
+      "y_m": -0.00698,
+      "yaw_rad": -0.03422,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42037,
+      "yaw_rate_rad_s": 0.00281,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.90888,
+        -0.02482
+      ]
+    },
+    {
+      "step": 30,
+      "elapsed_s": 1.0,
+      "x_m": 0.31792,
+      "y_m": -0.00841,
+      "yaw_rad": -0.034275,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42312,
+      "yaw_rate_rad_s": -0.00261,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.91802,
+        -0.03216
+      ]
+    },
+    {
+      "step": 33,
+      "elapsed_s": 1.1,
+      "x_m": 0.36045,
+      "y_m": -0.00987,
+      "yaw_rad": -0.034928,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43031,
+      "yaw_rate_rad_s": -0.01098,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.9378,
+        -0.03798
+      ]
+    },
+    {
+      "step": 36,
+      "elapsed_s": 1.2,
+      "x_m": 0.40361,
+      "y_m": -0.01139,
+      "yaw_rad": -0.035582,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43426,
+      "yaw_rate_rad_s": -0.00259,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.08338,
+        -0.01287
+      ]
+    },
+    {
+      "step": 39,
+      "elapsed_s": 1.3,
+      "x_m": 0.44711,
+      "y_m": -0.01292,
+      "yaw_rad": -0.034822,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4381,
+      "yaw_rate_rad_s": 0.01318,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.86316,
+        0.03201
+      ]
+    },
+    {
+      "step": 42,
+      "elapsed_s": 1.4,
+      "x_m": 0.4909,
+      "y_m": -0.01441,
+      "yaw_rad": -0.033478,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43992,
+      "yaw_rate_rad_s": 0.01406,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.85259,
+        0.01917
+      ]
+    },
+    {
+      "step": 45,
+      "elapsed_s": 1.5,
+      "x_m": 0.53481,
+      "y_m": -0.01584,
+      "yaw_rad": -0.032378,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44095,
+      "yaw_rate_rad_s": 0.00896,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.87242,
+        0.00561
+      ]
+    },
+    {
+      "step": 48,
+      "elapsed_s": 1.6,
+      "x_m": 0.57874,
+      "y_m": -0.01726,
+      "yaw_rad": -0.032462,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43967,
+      "yaw_rate_rad_s": -0.00165,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.54184,
+        -0.02436
+      ]
+    },
+    {
+      "step": 51,
+      "elapsed_s": 1.7,
+      "x_m": 0.62245,
+      "y_m": -0.01874,
+      "yaw_rad": -0.036066,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43909,
+      "yaw_rate_rad_s": -0.058,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.83847,
+        -0.16232
+      ]
+    },
+    {
+      "step": 54,
+      "elapsed_s": 1.8,
+      "x_m": 0.66617,
+      "y_m": -0.0205,
+      "yaw_rad": -0.044303,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43793,
+      "yaw_rate_rad_s": -0.09502,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.82721,
+        -0.23167
+      ]
+    },
+    {
+      "step": 57,
+      "elapsed_s": 1.9,
+      "x_m": 0.70986,
+      "y_m": -0.02271,
+      "yaw_rad": -0.056059,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43901,
+      "yaw_rate_rad_s": -0.12932,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.91275,
+        -0.26571
+      ]
+    },
+    {
+      "step": 60,
+      "elapsed_s": 2.0,
+      "x_m": 0.75281,
+      "y_m": -0.02569,
+      "yaw_rad": -0.067177,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41471,
+      "yaw_rate_rad_s": -0.05974,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.16144,
+        -0.20063
+      ]
+    },
+    {
+      "step": 63,
+      "elapsed_s": 2.1,
+      "x_m": 0.79377,
+      "y_m": -0.02904,
+      "yaw_rad": -0.077268,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41395,
+      "yaw_rate_rad_s": -0.10247,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.04907,
+        -0.19379
+      ]
+    },
+    {
+      "step": 66,
+      "elapsed_s": 2.2,
+      "x_m": 0.83496,
+      "y_m": -0.03246,
+      "yaw_rad": -0.087686,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41564,
+      "yaw_rate_rad_s": -0.09642,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.05841,
+        -0.16854
+      ]
+    },
+    {
+      "step": 69,
+      "elapsed_s": 2.3,
+      "x_m": 0.8764,
+      "y_m": -0.03634,
+      "yaw_rad": -0.097016,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41868,
+      "yaw_rate_rad_s": -0.0861,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.06332,
+        -0.14446
+      ]
+    },
+    {
+      "step": 72,
+      "elapsed_s": 2.4,
+      "x_m": 0.91813,
+      "y_m": -0.04057,
+      "yaw_rad": -0.103448,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42206,
+      "yaw_rate_rad_s": -0.0445,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.06445,
+        -0.05691
+      ]
+    },
+    {
+      "step": 75,
+      "elapsed_s": 2.5,
+      "x_m": 0.95993,
+      "y_m": -0.04499,
+      "yaw_rad": -0.106428,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42173,
+      "yaw_rate_rad_s": -0.01342,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.0816,
+        0.00681
+      ]
+    },
+    {
+      "step": 78,
+      "elapsed_s": 2.6,
+      "x_m": 1.00166,
+      "y_m": -0.04948,
+      "yaw_rad": -0.107412,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42113,
+      "yaw_rate_rad_s": -0.00166,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.63905,
+        0.01856
+      ]
+    },
+    {
+      "step": 81,
+      "elapsed_s": 2.7,
+      "x_m": 1.04339,
+      "y_m": -0.05401,
+      "yaw_rad": -0.109056,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42147,
+      "yaw_rate_rad_s": -0.01836,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.73566,
+        -0.02902
+      ]
+    },
+    {
+      "step": 84,
+      "elapsed_s": 2.8,
+      "x_m": 1.08509,
+      "y_m": -0.05863,
+      "yaw_rad": -0.11141,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42109,
+      "yaw_rate_rad_s": -0.02064,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.75069,
+        -0.02674
+      ]
+    },
+    {
+      "step": 87,
+      "elapsed_s": 2.9,
+      "x_m": 1.12678,
+      "y_m": -0.06336,
+      "yaw_rad": -0.113839,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42115,
+      "yaw_rate_rad_s": -0.02036,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.75986,
+        -0.02286
+      ]
+    },
+    {
+      "step": 90,
+      "elapsed_s": 3.0,
+      "x_m": 1.16847,
+      "y_m": -0.06818,
+      "yaw_rad": -0.115843,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42155,
+      "yaw_rate_rad_s": -0.0147,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.03568,
+        -0.00815
+      ]
+    },
+    {
+      "step": 93,
+      "elapsed_s": 3.1,
+      "x_m": 1.21017,
+      "y_m": -0.07306,
+      "yaw_rad": -0.11657,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42193,
+      "yaw_rate_rad_s": 0.00164,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.04867,
+        0.03229
+      ]
+    },
+    {
+      "step": 96,
+      "elapsed_s": 3.2,
+      "x_m": 1.25234,
+      "y_m": -0.07799,
+      "yaw_rad": -0.115993,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42764,
+      "yaw_rate_rad_s": 0.00689,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.04705,
+        0.0305
+      ]
+    },
+    {
+      "step": 99,
+      "elapsed_s": 3.3,
+      "x_m": 1.29499,
+      "y_m": -0.08294,
+      "yaw_rad": -0.115351,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43431,
+      "yaw_rate_rad_s": 0.00934,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.0557,
+        0.02584
+      ]
+    },
+    {
+      "step": 102,
+      "elapsed_s": 3.4,
+      "x_m": 1.33799,
+      "y_m": -0.08791,
+      "yaw_rad": -0.114893,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43403,
+      "yaw_rate_rad_s": 0.00519,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.08469,
+        0.02201
+      ]
+    },
+    {
+      "step": 105,
+      "elapsed_s": 3.5,
+      "x_m": 1.38115,
+      "y_m": -0.0929,
+      "yaw_rad": -0.115097,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4369,
+      "yaw_rate_rad_s": -0.00536,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.48895,
+        -0.00655
+      ]
+    },
+    {
+      "step": 108,
+      "elapsed_s": 3.6,
+      "x_m": 1.42442,
+      "y_m": -0.09792,
+      "yaw_rad": -0.115871,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43833,
+      "yaw_rate_rad_s": -0.00636,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.49534,
+        -0.00435
+      ]
+    },
+    {
+      "step": 111,
+      "elapsed_s": 3.7,
+      "x_m": 1.468,
+      "y_m": -0.10299,
+      "yaw_rad": -0.115274,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44047,
+      "yaw_rate_rad_s": 0.01219,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.41275,
+        0.04052
+      ]
+    },
+    {
+      "step": 114,
+      "elapsed_s": 3.8,
+      "x_m": 1.51157,
+      "y_m": -0.10801,
+      "yaw_rad": -0.114256,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43854,
+      "yaw_rate_rad_s": 0.00856,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.98963,
+        0.03533
+      ]
+    },
+    {
+      "step": 117,
+      "elapsed_s": 3.9,
+      "x_m": 1.55511,
+      "y_m": -0.11295,
+      "yaw_rad": -0.112076,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43906,
+      "yaw_rate_rad_s": 0.02879,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.33288,
+        0.08275
+      ]
+    },
+    {
+      "step": 120,
+      "elapsed_s": 4.0,
+      "x_m": 1.59862,
+      "y_m": -0.11782,
+      "yaw_rad": -0.111152,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43898,
+      "yaw_rate_rad_s": 0.00069,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.917,
+        0.00228
+      ]
+    },
+    {
+      "step": 123,
+      "elapsed_s": 4.1,
+      "x_m": 1.64216,
+      "y_m": -0.12267,
+      "yaw_rad": -0.110512,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43985,
+      "yaw_rate_rad_s": 0.01095,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.19598,
+        0.03888
+      ]
+    },
+    {
+      "step": 126,
+      "elapsed_s": 4.2,
+      "x_m": 1.68574,
+      "y_m": -0.12748,
+      "yaw_rad": -0.10946,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43987,
+      "yaw_rate_rad_s": 0.01134,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.19756,
+        0.03414
+      ]
+    },
+    {
+      "step": 129,
+      "elapsed_s": 4.3,
+      "x_m": 1.72939,
+      "y_m": -0.13226,
+      "yaw_rad": -0.108587,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43882,
+      "yaw_rate_rad_s": -0.00526,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.82943,
+        -0.03605
+      ]
+    },
+    {
+      "step": 132,
+      "elapsed_s": 4.4,
+      "x_m": 1.77307,
+      "y_m": -0.13704,
+      "yaw_rad": -0.109458,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44127,
+      "yaw_rate_rad_s": -0.01148,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.84681,
+        -0.02566
+      ]
+    },
+    {
+      "step": 135,
+      "elapsed_s": 4.5,
+      "x_m": 1.81678,
+      "y_m": -0.14186,
+      "yaw_rad": -0.109954,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44074,
+      "yaw_rate_rad_s": 0.00062,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.87003,
+        0.01668
+      ]
+    },
+    {
+      "step": 138,
+      "elapsed_s": 4.6,
+      "x_m": 1.86052,
+      "y_m": -0.14669,
+      "yaw_rad": -0.109541,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44094,
+      "yaw_rate_rad_s": 0.00837,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.74337,
+        0.0332
+      ]
+    },
+    {
+      "step": 141,
+      "elapsed_s": 4.7,
+      "x_m": 1.90433,
+      "y_m": -0.15148,
+      "yaw_rad": -0.108443,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44157,
+      "yaw_rate_rad_s": 0.01483,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.88219,
+        0.06165
+      ]
+    },
+    {
+      "step": 144,
+      "elapsed_s": 4.8,
+      "x_m": 1.94806,
+      "y_m": -0.1562,
+      "yaw_rad": -0.106582,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44114,
+      "yaw_rate_rad_s": 0.0215,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.87399,
+        0.05675
+      ]
+    },
+    {
+      "step": 147,
+      "elapsed_s": 4.9,
+      "x_m": 1.9919,
+      "y_m": -0.16083,
+      "yaw_rad": -0.104151,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4422,
+      "yaw_rate_rad_s": 0.02516,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.80904,
+        0.06103
+      ]
+    },
+    {
+      "step": 150,
+      "elapsed_s": 5.0,
+      "x_m": 2.03583,
+      "y_m": -0.16534,
+      "yaw_rad": -0.100667,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44285,
+      "yaw_rate_rad_s": 0.04909,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.5275,
+        0.13825
+      ]
+    },
+    {
+      "step": 153,
+      "elapsed_s": 5.1,
+      "x_m": 2.07984,
+      "y_m": -0.16965,
+      "yaw_rad": -0.095333,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44372,
+      "yaw_rate_rad_s": 0.04578,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.36602,
+        0.05797
+      ]
+    },
+    {
+      "step": 156,
+      "elapsed_s": 5.2,
+      "x_m": 2.12397,
+      "y_m": -0.17377,
+      "yaw_rad": -0.091482,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44462,
+      "yaw_rate_rad_s": 0.03164,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.3988,
+        0.05968
+      ]
+    },
+    {
+      "step": 159,
+      "elapsed_s": 5.3,
+      "x_m": 2.16817,
+      "y_m": -0.17775,
+      "yaw_rad": -0.088703,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44471,
+      "yaw_rate_rad_s": 0.02526,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.39531,
+        0.05088
+      ]
+    },
+    {
+      "step": 162,
+      "elapsed_s": 5.4,
+      "x_m": 2.2124,
+      "y_m": -0.18155,
+      "yaw_rad": -0.081424,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44516,
+      "yaw_rate_rad_s": 0.14851,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.75772,
+        0.43975
+      ]
+    },
+    {
+      "step": 165,
+      "elapsed_s": 5.5,
+      "x_m": 2.25658,
+      "y_m": -0.18471,
+      "yaw_rad": -0.062364,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44173,
+      "yaw_rate_rad_s": 0.22137,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.15801,
+        0.44293
+      ]
+    },
+    {
+      "step": 168,
+      "elapsed_s": 5.6,
+      "x_m": 2.3008,
+      "y_m": -0.18689,
+      "yaw_rad": -0.038842,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44326,
+      "yaw_rate_rad_s": 0.23673,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.15942,
+        0.40217
+      ]
+    },
+    {
+      "step": 171,
+      "elapsed_s": 5.7,
+      "x_m": 2.34499,
+      "y_m": -0.18811,
+      "yaw_rad": -0.020326,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44392,
+      "yaw_rate_rad_s": 0.15237,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.97053,
+        0.18508
+      ]
+    },
+    {
+      "step": 174,
+      "elapsed_s": 5.8,
+      "x_m": 2.38917,
+      "y_m": -0.1887,
+      "yaw_rad": -0.009212,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44325,
+      "yaw_rate_rad_s": 0.07958,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.31855,
+        0.10516
+      ]
+    },
+    {
+      "step": 177,
+      "elapsed_s": 5.9,
+      "x_m": 2.43346,
+      "y_m": -0.18894,
+      "yaw_rad": -0.003004,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4443,
+      "yaw_rate_rad_s": 0.04011,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.57102,
+        0.02356
+      ]
+    },
+    {
+      "step": 180,
+      "elapsed_s": 6.0,
+      "x_m": 2.4778,
+      "y_m": -0.18899,
+      "yaw_rad": -0.00035,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44433,
+      "yaw_rate_rad_s": 0.01818,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.63544,
+        0.02717
+      ]
+    },
+    {
+      "step": 183,
+      "elapsed_s": 6.1,
+      "x_m": 2.52219,
+      "y_m": -0.18896,
+      "yaw_rad": 0.001432,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44519,
+      "yaw_rate_rad_s": 0.01718,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.32772,
+        0.0353
+      ]
+    },
+    {
+      "step": 186,
+      "elapsed_s": 6.2,
+      "x_m": 2.5666,
+      "y_m": -0.18886,
+      "yaw_rad": 0.00281,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44509,
+      "yaw_rate_rad_s": 0.00983,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.36925,
+        0.01453
+      ]
+    },
+    {
+      "step": 189,
+      "elapsed_s": 6.3,
+      "x_m": 2.61101,
+      "y_m": -0.18871,
+      "yaw_rad": 0.003543,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44497,
+      "yaw_rate_rad_s": 0.00423,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.40151,
+        -0.00186
+      ]
+    },
+    {
+      "step": 192,
+      "elapsed_s": 6.4,
+      "x_m": 2.65544,
+      "y_m": -0.18854,
+      "yaw_rad": 0.003754,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44551,
+      "yaw_rate_rad_s": 0.00071,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.40684,
+        0.00059
+      ]
+    },
+    {
+      "step": 195,
+      "elapsed_s": 6.5,
+      "x_m": 2.69989,
+      "y_m": -0.18841,
+      "yaw_rad": 0.002184,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44541,
+      "yaw_rate_rad_s": -0.02448,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.01661,
+        -0.06466
+      ]
+    },
+    {
+      "step": 198,
+      "elapsed_s": 6.6,
+      "x_m": 2.74435,
+      "y_m": -0.18838,
+      "yaw_rad": -0.000477,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44556,
+      "yaw_rate_rad_s": -0.0285,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.04432,
+        -0.06198
+      ]
+    },
+    {
+      "step": 201,
+      "elapsed_s": 6.7,
+      "x_m": 2.78883,
+      "y_m": -0.18846,
+      "yaw_rad": -0.003062,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44546,
+      "yaw_rate_rad_s": -0.01525,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.25598,
+        0.00408
+      ]
+    },
+    {
+      "step": 204,
+      "elapsed_s": 6.8,
+      "x_m": 2.83331,
+      "y_m": -0.18863,
+      "yaw_rad": -0.003997,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44585,
+      "yaw_rate_rad_s": -0.00653,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.23705,
+        -0.006
+      ]
+    },
+    {
+      "step": 207,
+      "elapsed_s": 6.9,
+      "x_m": 2.87769,
+      "y_m": -0.18881,
+      "yaw_rad": -0.004626,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43803,
+      "yaw_rate_rad_s": -0.02814,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.24834,
+        -0.0074
+      ]
+    },
+    {
+      "step": 210,
+      "elapsed_s": 7.0,
+      "x_m": 2.92051,
+      "y_m": -0.18884,
+      "yaw_rad": -0.005123,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42169,
+      "yaw_rate_rad_s": -0.00942,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.28138,
+        0.01304
+      ]
+    },
+    {
+      "step": 213,
+      "elapsed_s": 7.1,
+      "x_m": 2.96228,
+      "y_m": -0.18906,
+      "yaw_rad": -0.005091,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41791,
+      "yaw_rate_rad_s": -0.00167,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.2843,
+        0.00559
+      ]
+    },
+    {
+      "step": 216,
+      "elapsed_s": 7.2,
+      "x_m": 3.00393,
+      "y_m": -0.18925,
+      "yaw_rad": -0.004362,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41706,
+      "yaw_rate_rad_s": 0.00597,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.26725,
+        0.00578
+      ]
+    },
+    {
+      "step": 219,
+      "elapsed_s": 7.3,
+      "x_m": 3.04549,
+      "y_m": -0.18944,
+      "yaw_rad": -0.004749,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41637,
+      "yaw_rate_rad_s": -0.01598,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.28089,
+        -0.04072
+      ]
+    },
+    {
+      "step": 222,
+      "elapsed_s": 7.4,
+      "x_m": 3.08704,
+      "y_m": -0.18967,
+      "yaw_rad": -0.005798,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41721,
+      "yaw_rate_rad_s": -0.01317,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.27465,
+        -0.0416
+      ]
+    },
+    {
+      "step": 225,
+      "elapsed_s": 7.5,
+      "x_m": 3.12857,
+      "y_m": -0.18995,
+      "yaw_rad": -0.007201,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41623,
+      "yaw_rate_rad_s": -0.01915,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.00218,
+        -0.05722
+      ]
+    },
+    {
+      "step": 228,
+      "elapsed_s": 7.6,
+      "x_m": 3.17017,
+      "y_m": -0.19029,
+      "yaw_rad": -0.009276,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41732,
+      "yaw_rate_rad_s": -0.01581,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.0072,
+        -0.05068
+      ]
+    },
+    {
+      "step": 231,
+      "elapsed_s": 7.7,
+      "x_m": 3.21197,
+      "y_m": -0.19072,
+      "yaw_rad": -0.010908,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42082,
+      "yaw_rate_rad_s": -0.0187,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.02806,
+        -0.04444
+      ]
+    },
+    {
+      "step": 234,
+      "elapsed_s": 7.8,
+      "x_m": 3.25399,
+      "y_m": -0.19121,
+      "yaw_rad": -0.012408,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42171,
+      "yaw_rate_rad_s": -0.00985,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.09143,
+        -0.03415
+      ]
+    },
+    {
+      "step": 237,
+      "elapsed_s": 7.9,
+      "x_m": 3.29597,
+      "y_m": -0.19174,
+      "yaw_rad": -0.012928,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42032,
+      "yaw_rate_rad_s": -0.0048,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.09137,
+        -0.03362
+      ]
+    },
+    {
+      "step": 240,
+      "elapsed_s": 8.0,
+      "x_m": 3.3379,
+      "y_m": -0.19229,
+      "yaw_rad": -0.013419,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42087,
+      "yaw_rate_rad_s": -0.01271,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.08678,
+        -0.03196
+      ]
+    },
+    {
+      "step": 243,
+      "elapsed_s": 8.1,
+      "x_m": 3.37985,
+      "y_m": -0.19293,
+      "yaw_rad": -0.017164,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42068,
+      "yaw_rate_rad_s": -0.04827,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.08422,
+        -0.10427
+      ]
+    },
+    {
+      "step": 246,
+      "elapsed_s": 8.2,
+      "x_m": 3.42193,
+      "y_m": -0.19379,
+      "yaw_rad": -0.022526,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42312,
+      "yaw_rate_rad_s": -0.05802,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.08641,
+        -0.10571
+      ]
+    },
+    {
+      "step": 249,
+      "elapsed_s": 8.3,
+      "x_m": 3.46427,
+      "y_m": -0.1949,
+      "yaw_rad": -0.028775,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42531,
+      "yaw_rate_rad_s": -0.0634,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.12116,
+        -0.09516
+      ]
+    },
+    {
+      "step": 252,
+      "elapsed_s": 8.4,
+      "x_m": 3.50663,
+      "y_m": -0.19628,
+      "yaw_rad": -0.035076,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42513,
+      "yaw_rate_rad_s": -0.06026,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.12092,
+        -0.08631
+      ]
+    },
+    {
+      "step": 255,
+      "elapsed_s": 8.5,
+      "x_m": 3.54912,
+      "y_m": -0.19794,
+      "yaw_rad": -0.041293,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42748,
+      "yaw_rate_rad_s": -0.06256,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.85912,
+        -0.09903
+      ]
+    },
+    {
+      "step": 258,
+      "elapsed_s": 8.6,
+      "x_m": 3.59152,
+      "y_m": -0.19984,
+      "yaw_rad": -0.048191,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42077,
+      "yaw_rate_rad_s": -0.06089,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.61589,
+        -0.13953
+      ]
+    },
+    {
+      "step": 261,
+      "elapsed_s": 8.7,
+      "x_m": 3.63309,
+      "y_m": -0.20209,
+      "yaw_rad": -0.055375,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41737,
+      "yaw_rate_rad_s": -0.06585,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.63198,
+        -0.10562
+      ]
+    },
+    {
+      "step": 264,
+      "elapsed_s": 8.8,
+      "x_m": 3.6749,
+      "y_m": -0.20456,
+      "yaw_rad": -0.0614,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42057,
+      "yaw_rate_rad_s": -0.05227,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.62677,
+        -0.0997
+      ]
+    },
+    {
+      "step": 267,
+      "elapsed_s": 8.9,
+      "x_m": 3.71655,
+      "y_m": -0.20725,
+      "yaw_rad": -0.066987,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4181,
+      "yaw_rate_rad_s": -0.04748,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.60262,
+        -0.10262
+      ]
+    },
+    {
+      "step": 270,
+      "elapsed_s": 9.0,
+      "x_m": 3.75806,
+      "y_m": -0.21014,
+      "yaw_rad": -0.071059,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41752,
+      "yaw_rate_rad_s": -0.01487,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.51387,
+        0.00342
+      ]
+    },
+    {
+      "step": 273,
+      "elapsed_s": 9.1,
+      "x_m": 3.79958,
+      "y_m": -0.21313,
+      "yaw_rad": -0.072412,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41744,
+      "yaw_rate_rad_s": -0.00444,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.47226,
+        0.01582
+      ]
+    },
+    {
+      "step": 276,
+      "elapsed_s": 9.2,
+      "x_m": 3.84105,
+      "y_m": -0.21615,
+      "yaw_rad": -0.072856,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41698,
+      "yaw_rate_rad_s": 0.00312,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.44958,
+        0.02039
+      ]
+    },
+    {
+      "step": 279,
+      "elapsed_s": 9.3,
+      "x_m": 3.88252,
+      "y_m": -0.21917,
+      "yaw_rad": -0.07276,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41727,
+      "yaw_rate_rad_s": 0.00685,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.44158,
+        0.02975
+      ]
+    },
+    {
+      "step": 282,
+      "elapsed_s": 9.4,
+      "x_m": 3.92404,
+      "y_m": -0.22218,
+      "yaw_rad": -0.072251,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41789,
+      "yaw_rate_rad_s": 0.01093,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.59505,
+        0.04273
+      ]
+    },
+    {
+      "step": 285,
+      "elapsed_s": 9.5,
+      "x_m": 3.96562,
+      "y_m": -0.22517,
+      "yaw_rad": -0.071255,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41857,
+      "yaw_rate_rad_s": 0.01709,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.66985,
+        0.06695
+      ]
+    },
+    {
+      "step": 288,
+      "elapsed_s": 9.6,
+      "x_m": 4.00728,
+      "y_m": -0.22811,
+      "yaw_rad": -0.069506,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41981,
+      "yaw_rate_rad_s": 0.02339,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.64831,
+        0.07309
+      ]
+    },
+    {
+      "step": 291,
+      "elapsed_s": 9.7,
+      "x_m": 4.04901,
+      "y_m": -0.23101,
+      "yaw_rad": -0.069272,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41991,
+      "yaw_rate_rad_s": -0.00416,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.65961,
+        0.0072
+      ]
+    },
+    {
+      "step": 294,
+      "elapsed_s": 9.8,
+      "x_m": 4.09078,
+      "y_m": -0.23392,
+      "yaw_rad": -0.068438,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.421,
+      "yaw_rate_rad_s": 0.03379,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.56928,
+        0.13181
+      ]
+    },
+    {
+      "step": 297,
+      "elapsed_s": 9.9,
+      "x_m": 4.13267,
+      "y_m": -0.2367,
+      "yaw_rad": -0.064261,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42161,
+      "yaw_rate_rad_s": 0.052,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.44197,
+        0.13918
+      ]
+    },
+    {
+      "step": 300,
+      "elapsed_s": 10.0,
+      "x_m": 4.17464,
+      "y_m": -0.2393,
+      "yaw_rad": -0.058845,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42202,
+      "yaw_rate_rad_s": 0.06025,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.38286,
+        0.15531
+      ]
+    },
+    {
+      "step": 303,
+      "elapsed_s": 10.1,
+      "x_m": 4.21667,
+      "y_m": -0.24164,
+      "yaw_rad": -0.052832,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4214,
+      "yaw_rate_rad_s": 0.06186,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.28194,
+        0.16646
+      ]
+    },
+    {
+      "step": 306,
+      "elapsed_s": 10.2,
+      "x_m": 4.25874,
+      "y_m": -0.24373,
+      "yaw_rad": -0.046175,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42123,
+      "yaw_rate_rad_s": 0.07124,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.60952,
+        0.19371
+      ]
+    },
+    {
+      "step": 309,
+      "elapsed_s": 10.3,
+      "x_m": 4.30085,
+      "y_m": -0.24551,
+      "yaw_rad": -0.038388,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42448,
+      "yaw_rate_rad_s": 0.08942,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.4771,
+        0.2172
+      ]
+    },
+    {
+      "step": 312,
+      "elapsed_s": 10.4,
+      "x_m": 4.34306,
+      "y_m": -0.24693,
+      "yaw_rad": -0.028839,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42375,
+      "yaw_rate_rad_s": 0.11986,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.80392,
+        0.35355
+      ]
+    },
+    {
+      "step": 315,
+      "elapsed_s": 10.5,
+      "x_m": 4.38538,
+      "y_m": -0.24783,
+      "yaw_rad": -0.014199,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4251,
+      "yaw_rate_rad_s": 0.163,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.8921,
+        0.36422
+      ]
+    },
+    {
+      "step": 318,
+      "elapsed_s": 10.6,
+      "x_m": 4.42786,
+      "y_m": -0.24806,
+      "yaw_rad": 0.001894,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.426,
+      "yaw_rate_rad_s": 0.15726,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.8701,
+        0.30556
+      ]
+    },
+    {
+      "step": 321,
+      "elapsed_s": 10.7,
+      "x_m": 4.4704,
+      "y_m": -0.24763,
+      "yaw_rad": 0.016869,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42695,
+      "yaw_rate_rad_s": 0.14082,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.92835,
+        0.26003
+      ]
+    },
+    {
+      "step": 324,
+      "elapsed_s": 10.8,
+      "x_m": 4.51299,
+      "y_m": -0.24661,
+      "yaw_rad": 0.029705,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42786,
+      "yaw_rate_rad_s": 0.11895,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.01438,
+        0.23397
+      ]
+    },
+    {
+      "step": 327,
+      "elapsed_s": 10.9,
+      "x_m": 4.55572,
+      "y_m": -0.24511,
+      "yaw_rad": 0.038702,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42875,
+      "yaw_rate_rad_s": 0.07276,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.12055,
+        0.13899
+      ]
+    },
+    {
+      "step": 330,
+      "elapsed_s": 11.0,
+      "x_m": 4.59862,
+      "y_m": -0.24331,
+      "yaw_rad": 0.044567,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42854,
+      "yaw_rate_rad_s": 0.04047,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.28379,
+        0.08091
+      ]
+    },
+    {
+      "step": 333,
+      "elapsed_s": 11.1,
+      "x_m": 4.64079,
+      "y_m": -0.24127,
+      "yaw_rad": 0.048068,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42064,
+      "yaw_rate_rad_s": 0.032,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.46149,
+        0.06977
+      ]
+    },
+    {
+      "step": 336,
+      "elapsed_s": 11.2,
+      "x_m": 4.68263,
+      "y_m": -0.2392,
+      "yaw_rad": 0.050833,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41845,
+      "yaw_rate_rad_s": 0.02056,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.44473,
+        0.06026
+      ]
+    },
+    {
+      "step": 339,
+      "elapsed_s": 11.3,
+      "x_m": 4.72452,
+      "y_m": -0.237,
+      "yaw_rad": 0.053327,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42288,
+      "yaw_rate_rad_s": 0.01829,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.43021,
+        0.03965
+      ]
+    },
+    {
+      "step": 342,
+      "elapsed_s": 11.4,
+      "x_m": 4.76663,
+      "y_m": -0.23472,
+      "yaw_rad": 0.054314,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4229,
+      "yaw_rate_rad_s": -0.0029,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.2633,
+        -0.02831
+      ]
+    },
+    {
+      "step": 345,
+      "elapsed_s": 11.5,
+      "x_m": 4.80878,
+      "y_m": -0.23245,
+      "yaw_rad": 0.053619,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4251,
+      "yaw_rate_rad_s": -0.01621,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.16996,
+        -0.04354
+      ]
+    },
+    {
+      "step": 348,
+      "elapsed_s": 11.6,
+      "x_m": 4.85123,
+      "y_m": -0.23024,
+      "yaw_rad": 0.051306,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42663,
+      "yaw_rate_rad_s": -0.0271,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.19686,
+        -0.03323
+      ]
+    },
+    {
+      "step": 351,
+      "elapsed_s": 11.7,
+      "x_m": 4.89383,
+      "y_m": -0.22812,
+      "yaw_rad": 0.048779,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4285,
+      "yaw_rate_rad_s": -0.02348,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.18563,
+        -0.02218
+      ]
+    },
+    {
+      "step": 354,
+      "elapsed_s": 11.8,
+      "x_m": 4.93663,
+      "y_m": -0.22608,
+      "yaw_rad": 0.04697,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42616,
+      "yaw_rate_rad_s": 0.01192,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.1673,
+        -0.01287
+      ]
+    },
+    {
+      "step": 357,
+      "elapsed_s": 11.9,
+      "x_m": 4.97907,
+      "y_m": -0.22415,
+      "yaw_rad": 0.045693,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42754,
+      "yaw_rate_rad_s": -0.0109,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.14334,
+        -0.00842
+      ]
+    },
+    {
+      "step": 360,
+      "elapsed_s": 12.0,
+      "x_m": 5.02105,
+      "y_m": -0.22233,
+      "yaw_rad": 0.04488,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4202,
+      "yaw_rate_rad_s": 0.00546,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.12883,
+        -0.01004
+      ]
+    },
+    {
+      "step": 363,
+      "elapsed_s": 12.1,
+      "x_m": 5.06294,
+      "y_m": -0.22047,
+      "yaw_rad": 0.044117,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42135,
+      "yaw_rate_rad_s": 0.00196,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.09706,
+        -0.00746
+      ]
+    },
+    {
+      "step": 366,
+      "elapsed_s": 12.2,
+      "x_m": 5.10502,
+      "y_m": -0.21862,
+      "yaw_rad": 0.044016,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4227,
+      "yaw_rate_rad_s": 0.01245,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.12712,
+        0.02593
+      ]
+    },
+    {
+      "step": 369,
+      "elapsed_s": 12.3,
+      "x_m": 5.14712,
+      "y_m": -0.21675,
+      "yaw_rad": 0.044663,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42479,
+      "yaw_rate_rad_s": 0.01267,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.10085,
+        0.02253
+      ]
+    },
+    {
+      "step": 372,
+      "elapsed_s": 12.4,
+      "x_m": 5.1893,
+      "y_m": -0.21484,
+      "yaw_rad": 0.045236,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42306,
+      "yaw_rate_rad_s": 0.00924,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.09791,
+        0.0193
+      ]
+    },
+    {
+      "step": 375,
+      "elapsed_s": 12.5,
+      "x_m": 5.23133,
+      "y_m": -0.21294,
+      "yaw_rad": 0.045284,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42233,
+      "yaw_rate_rad_s": 0.00071,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.10582,
+        0.01853
+      ]
+    },
+    {
+      "step": 378,
+      "elapsed_s": 12.6,
+      "x_m": 5.27336,
+      "y_m": -0.21106,
+      "yaw_rad": 0.044129,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42276,
+      "yaw_rate_rad_s": -0.02124,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.14438,
+        -0.0415
+      ]
+    },
+    {
+      "step": 381,
+      "elapsed_s": 12.7,
+      "x_m": 5.3156,
+      "y_m": -0.20927,
+      "yaw_rad": 0.041501,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42788,
+      "yaw_rate_rad_s": -0.02136,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.18595,
+        -0.03235
+      ]
+    },
+    {
+      "step": 384,
+      "elapsed_s": 12.8,
+      "x_m": 5.3587,
+      "y_m": -0.20752,
+      "yaw_rad": 0.039699,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43613,
+      "yaw_rate_rad_s": -0.01664,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.17274,
+        -0.03485
+      ]
+    },
+    {
+      "step": 387,
+      "elapsed_s": 12.9,
+      "x_m": 5.40242,
+      "y_m": -0.20582,
+      "yaw_rad": 0.038302,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44062,
+      "yaw_rate_rad_s": -0.01391,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.18211,
+        -0.02984
+      ]
+    },
+    {
+      "step": 390,
+      "elapsed_s": 13.0,
+      "x_m": 5.4465,
+      "y_m": -0.20416,
+      "yaw_rad": 0.037087,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44337,
+      "yaw_rate_rad_s": -0.01123,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.21708,
+        -0.02608
+      ]
+    },
+    {
+      "step": 393,
+      "elapsed_s": 13.1,
+      "x_m": 5.49077,
+      "y_m": -0.20254,
+      "yaw_rad": 0.036312,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44492,
+      "yaw_rate_rad_s": 0.0016,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.3673,
+        0.03454
+      ]
+    },
+    {
+      "step": 396,
+      "elapsed_s": 13.2,
+      "x_m": 5.53517,
+      "y_m": -0.20091,
+      "yaw_rad": 0.037095,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44559,
+      "yaw_rate_rad_s": 0.01223,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.34634,
+        0.02027
+      ]
+    },
+    {
+      "step": 399,
+      "elapsed_s": 13.3,
+      "x_m": 5.57861,
+      "y_m": -0.19921,
+      "yaw_rad": 0.040674,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.45276,
+      "yaw_rate_rad_s": 0.0303,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.34919,
+        0.06035
+      ]
+    },
+    {
+      "step": 402,
+      "elapsed_s": 13.4,
+      "x_m": 5.62362,
+      "y_m": -0.1973,
+      "yaw_rad": 0.043532,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.45042,
+      "yaw_rate_rad_s": 0.02498,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.38166,
+        0.04262
+      ]
+    },
+    {
+      "step": 405,
+      "elapsed_s": 13.5,
+      "x_m": 5.66838,
+      "y_m": -0.19529,
+      "yaw_rad": 0.045827,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44832,
+      "yaw_rate_rad_s": 0.01768,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.42109,
+        0.01318
+      ]
+    },
+    {
+      "step": 408,
+      "elapsed_s": 13.6,
+      "x_m": 5.71298,
+      "y_m": -0.1932,
+      "yaw_rad": 0.047236,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4472,
+      "yaw_rate_rad_s": 0.012,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.4345,
+        0.01451
+      ]
+    },
+    {
+      "step": 411,
+      "elapsed_s": 13.7,
+      "x_m": 5.75748,
+      "y_m": -0.19103,
+      "yaw_rad": 0.049737,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44599,
+      "yaw_rate_rad_s": 0.02973,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82108,
+        0.06668
+      ]
+    },
+    {
+      "step": 414,
+      "elapsed_s": 13.8,
+      "x_m": 5.80191,
+      "y_m": -0.18874,
+      "yaw_rad": 0.05275,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44603,
+      "yaw_rate_rad_s": 0.02774,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82777,
+        0.04838
+      ]
+    },
+    {
+      "step": 417,
+      "elapsed_s": 13.9,
+      "x_m": 5.84637,
+      "y_m": -0.18633,
+      "yaw_rad": 0.055304,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4466,
+      "yaw_rate_rad_s": 0.01936,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83346,
+        0.01744
+      ]
+    },
+    {
+      "step": 420,
+      "elapsed_s": 14.0,
+      "x_m": 5.8918,
+      "y_m": -0.18376,
+      "yaw_rad": 0.056771,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44553,
+      "yaw_rate_rad_s": -0.03033,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.84331,
+        0.01783
+      ]
+    },
+    {
+      "step": 423,
+      "elapsed_s": 14.1,
+      "x_m": 5.93563,
+      "y_m": -0.18137,
+      "yaw_rad": 0.05244,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44072,
+      "yaw_rate_rad_s": -0.02237,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.95684,
+        0.04271
+      ]
+    },
+    {
+      "step": 426,
+      "elapsed_s": 14.2,
+      "x_m": 5.97876,
+      "y_m": -0.17916,
+      "yaw_rad": 0.051228,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42775,
+      "yaw_rate_rad_s": -0.00278,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.94133,
+        0.04717
+      ]
+    },
+    {
+      "step": 429,
+      "elapsed_s": 14.3,
+      "x_m": 6.02121,
+      "y_m": -0.17699,
+      "yaw_rad": 0.051656,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42564,
+      "yaw_rate_rad_s": 0.00951,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        5.03301,
+        0.04468
+      ]
+    },
+    {
+      "step": 432,
+      "elapsed_s": 14.4,
+      "x_m": 6.06367,
+      "y_m": -0.17477,
+      "yaw_rad": 0.052947,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4276,
+      "yaw_rate_rad_s": 0.01545,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        5.02153,
+        0.0388
+      ]
+    },
+    {
+      "step": 435,
+      "elapsed_s": 14.5,
+      "x_m": 6.10639,
+      "y_m": -0.17247,
+      "yaw_rad": 0.054488,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43081,
+      "yaw_rate_rad_s": 0.01548,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        5.01932,
+        0.02807
+      ]
+    },
+    {
+      "step": 438,
+      "elapsed_s": 14.6,
+      "x_m": 6.14939,
+      "y_m": -0.17008,
+      "yaw_rad": 0.055891,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43305,
+      "yaw_rate_rad_s": 0.0123,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        5.01499,
+        0.01773
+      ]
+    },
+    {
+      "step": 441,
+      "elapsed_s": 14.7,
+      "x_m": 6.19257,
+      "y_m": -0.16763,
+      "yaw_rad": 0.056998,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43468,
+      "yaw_rate_rad_s": 0.00928,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        5.01219,
+        0.00654
+      ]
+    },
+    {
+      "step": 444,
+      "elapsed_s": 14.8,
+      "x_m": 6.23587,
+      "y_m": -0.16514,
+      "yaw_rad": 0.057817,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43584,
+      "yaw_rate_rad_s": 0.00844,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        5.01574,
+        0.0059
+      ]
+    },
+    {
+      "step": 447,
+      "elapsed_s": 14.9,
+      "x_m": 6.27944,
+      "y_m": -0.16259,
+      "yaw_rad": 0.058501,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43976,
+      "yaw_rate_rad_s": 0.00433,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        5.01138,
+        -0.00368
+      ]
+    },
+    {
+      "step": 450,
+      "elapsed_s": 15.0,
+      "x_m": 6.32339,
+      "y_m": -0.16001,
+      "yaw_rad": 0.058594,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4429,
+      "yaw_rate_rad_s": -0.00292,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        5.03493,
+        -0.01867
+      ]
+    },
+    {
+      "step": 453,
+      "elapsed_s": 15.1,
+      "x_m": 6.36759,
+      "y_m": -0.15743,
+      "yaw_rad": 0.057881,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4446,
+      "yaw_rate_rad_s": -0.02144,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.94604,
+        -0.10384
+      ]
+    },
+    {
+      "step": 456,
+      "elapsed_s": 15.2,
+      "x_m": 6.4119,
+      "y_m": -0.15493,
+      "yaw_rad": 0.054988,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44547,
+      "yaw_rate_rad_s": -0.03358,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.96882,
+        -0.08135
+      ]
+    },
+    {
+      "step": 459,
+      "elapsed_s": 15.3,
+      "x_m": 6.45631,
+      "y_m": -0.15257,
+      "yaw_rad": 0.051397,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44612,
+      "yaw_rate_rad_s": -0.03755,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.97127,
+        -0.08366
+      ]
+    },
+    {
+      "step": 462,
+      "elapsed_s": 15.4,
+      "x_m": 6.50076,
+      "y_m": -0.15039,
+      "yaw_rad": 0.046512,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44659,
+      "yaw_rate_rad_s": -0.06672,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.66261,
+        -0.16404
+      ]
+    },
+    {
+      "step": 465,
+      "elapsed_s": 15.5,
+      "x_m": 6.54526,
+      "y_m": -0.1485,
+      "yaw_rad": 0.039547,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44663,
+      "yaw_rate_rad_s": -0.06961,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.7163,
+        -0.136
+      ]
+    },
+    {
+      "step": 468,
+      "elapsed_s": 15.6,
+      "x_m": 6.58979,
+      "y_m": -0.1469,
+      "yaw_rad": 0.03292,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4467,
+      "yaw_rate_rad_s": -0.06325,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.71391,
+        -0.13001
+      ]
+    },
+    {
+      "step": 471,
+      "elapsed_s": 15.7,
+      "x_m": 6.63431,
+      "y_m": -0.14557,
+      "yaw_rad": 0.027684,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44674,
+      "yaw_rate_rad_s": -0.04591,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.72129,
+        -0.09032
+      ]
+    },
+    {
+      "step": 474,
+      "elapsed_s": 15.8,
+      "x_m": 6.67883,
+      "y_m": -0.14444,
+      "yaw_rad": 0.023604,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44696,
+      "yaw_rate_rad_s": -0.03739,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.72767,
+        -0.07272
+      ]
+    },
+    {
+      "step": 477,
+      "elapsed_s": 15.9,
+      "x_m": 6.72337,
+      "y_m": -0.14348,
+      "yaw_rad": 0.020364,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44665,
+      "yaw_rate_rad_s": -0.02135,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.87163,
+        -0.0141
+      ]
+    },
+    {
+      "step": 480,
+      "elapsed_s": 16.0,
+      "x_m": 6.76792,
+      "y_m": -0.14261,
+      "yaw_rad": 0.018829,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44692,
+      "yaw_rate_rad_s": -0.0118,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.85413,
+        -0.02613
+      ]
+    },
+    {
+      "step": 483,
+      "elapsed_s": 16.1,
+      "x_m": 6.81246,
+      "y_m": -0.14181,
+      "yaw_rad": 0.016825,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44646,
+      "yaw_rate_rad_s": -0.0239,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.72776,
+        -0.06294
+      ]
+    },
+    {
+      "step": 486,
+      "elapsed_s": 16.2,
+      "x_m": 6.85699,
+      "y_m": -0.14113,
+      "yaw_rad": 0.013814,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4467,
+      "yaw_rate_rad_s": -0.03771,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.67382,
+        -0.09504
+      ]
+    },
+    {
+      "step": 489,
+      "elapsed_s": 16.3,
+      "x_m": 6.90152,
+      "y_m": -0.1406,
+      "yaw_rad": 0.010419,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44672,
+      "yaw_rate_rad_s": -0.01124,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.6581,
+        0.06092
+      ]
+    },
+    {
+      "step": 492,
+      "elapsed_s": 16.4,
+      "x_m": 6.94608,
+      "y_m": -0.14014,
+      "yaw_rad": 0.010664,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44679,
+      "yaw_rate_rad_s": 0.01054,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.61104,
+        0.02473
+      ]
+    },
+    {
+      "step": 495,
+      "elapsed_s": 16.5,
+      "x_m": 6.99066,
+      "y_m": -0.13963,
+      "yaw_rad": 0.011847,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44701,
+      "yaw_rate_rad_s": 0.01262,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.60198,
+        0.02082
+      ]
+    },
+    {
+      "step": 498,
+      "elapsed_s": 16.6,
+      "x_m": 7.03525,
+      "y_m": -0.13907,
+      "yaw_rad": 0.012995,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44737,
+      "yaw_rate_rad_s": 0.00983,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.59959,
+        0.01289
+      ]
+    },
+    {
+      "step": 501,
+      "elapsed_s": 16.7,
+      "x_m": 7.07987,
+      "y_m": -0.13846,
+      "yaw_rad": 0.013873,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44733,
+      "yaw_rate_rad_s": 0.00739,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.60012,
+        0.00513
+      ]
+    },
+    {
+      "step": 504,
+      "elapsed_s": 16.8,
+      "x_m": 7.12449,
+      "y_m": -0.13782,
+      "yaw_rad": 0.014493,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44756,
+      "yaw_rate_rad_s": 0.00554,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.60275,
+        0.00473
+      ]
+    },
+    {
+      "step": 507,
+      "elapsed_s": 16.9,
+      "x_m": 7.16913,
+      "y_m": -0.13716,
+      "yaw_rad": 0.014872,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44775,
+      "yaw_rate_rad_s": 0.003,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.60451,
+        0.00015
+      ]
+    },
+    {
+      "step": 510,
+      "elapsed_s": 17.0,
+      "x_m": 7.21379,
+      "y_m": -0.13647,
+      "yaw_rad": 0.01632,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4477,
+      "yaw_rate_rad_s": 0.03148,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.75272,
+        0.0859
+      ]
+    },
+    {
+      "step": 513,
+      "elapsed_s": 17.1,
+      "x_m": 7.25843,
+      "y_m": -0.13565,
+      "yaw_rad": 0.019653,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44764,
+      "yaw_rate_rad_s": 0.03133,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.67303,
+        0.04832
+      ]
+    },
+    {
+      "step": 516,
+      "elapsed_s": 17.2,
+      "x_m": 7.30308,
+      "y_m": -0.1347,
+      "yaw_rad": 0.022423,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4478,
+      "yaw_rate_rad_s": 0.02613,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.67791,
+        0.04919
+      ]
+    },
+    {
+      "step": 519,
+      "elapsed_s": 17.3,
+      "x_m": 7.34772,
+      "y_m": -0.13363,
+      "yaw_rad": 0.024616,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4478,
+      "yaw_rate_rad_s": 0.02036,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.67354,
+        0.03511
+      ]
+    },
+    {
+      "step": 522,
+      "elapsed_s": 17.4,
+      "x_m": 7.39236,
+      "y_m": -0.13249,
+      "yaw_rad": 0.025923,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44767,
+      "yaw_rate_rad_s": 0.00448,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.5299,
+        -0.00888
+      ]
+    },
+    {
+      "step": 525,
+      "elapsed_s": 17.5,
+      "x_m": 7.43698,
+      "y_m": -0.13133,
+      "yaw_rad": 0.025917,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4474,
+      "yaw_rate_rad_s": -0.00851,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.54209,
+        -0.04843
+      ]
+    },
+    {
+      "step": 528,
+      "elapsed_s": 17.6,
+      "x_m": 7.48158,
+      "y_m": -0.1302,
+      "yaw_rad": 0.024742,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44723,
+      "yaw_rate_rad_s": -0.01378,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.55464,
+        -0.03687
+      ]
+    },
+    {
+      "step": 531,
+      "elapsed_s": 17.7,
+      "x_m": 7.52617,
+      "y_m": -0.12912,
+      "yaw_rad": 0.023391,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44708,
+      "yaw_rate_rad_s": -0.01385,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.55857,
+        -0.0349
+      ]
+    },
+    {
+      "step": 534,
+      "elapsed_s": 17.8,
+      "x_m": 7.57073,
+      "y_m": -0.12811,
+      "yaw_rad": 0.022101,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44698,
+      "yaw_rate_rad_s": -0.01324,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.56163,
+        -0.03303
+      ]
+    },
+    {
+      "step": 537,
+      "elapsed_s": 17.9,
+      "x_m": 7.6153,
+      "y_m": -0.12716,
+      "yaw_rad": 0.020865,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44681,
+      "yaw_rate_rad_s": -0.01223,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.56541,
+        -0.03113
+      ]
+    },
+    {
+      "step": 540,
+      "elapsed_s": 18.0,
+      "x_m": 7.65986,
+      "y_m": -0.12626,
+      "yaw_rad": 0.019696,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44688,
+      "yaw_rate_rad_s": -0.01178,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.56451,
+        -0.03039
+      ]
+    },
+    {
+      "step": 543,
+      "elapsed_s": 18.1,
+      "x_m": 7.70442,
+      "y_m": -0.1254,
+      "yaw_rad": 0.018566,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44705,
+      "yaw_rate_rad_s": -0.0115,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.56809,
+        -0.02968
+      ]
+    },
+    {
+      "step": 546,
+      "elapsed_s": 18.2,
+      "x_m": 7.749,
+      "y_m": -0.1246,
+      "yaw_rad": 0.017691,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44711,
+      "yaw_rate_rad_s": -0.00569,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.56469,
+        -0.01152
+      ]
+    },
+    {
+      "step": 549,
+      "elapsed_s": 18.3,
+      "x_m": 7.79359,
+      "y_m": -0.12382,
+      "yaw_rad": 0.017065,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44707,
+      "yaw_rate_rad_s": -0.01266,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.56111,
+        -0.0549
+      ]
+    },
+    {
+      "step": 552,
+      "elapsed_s": 18.4,
+      "x_m": 7.83818,
+      "y_m": -0.1231,
+      "yaw_rad": 0.015498,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44725,
+      "yaw_rate_rad_s": -0.01781,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.57142,
+        -0.04296
+      ]
+    },
+    {
+      "step": 555,
+      "elapsed_s": 18.5,
+      "x_m": 7.8828,
+      "y_m": -0.12243,
+      "yaw_rad": 0.014626,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44758,
+      "yaw_rate_rad_s": -0.0055,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.56953,
+        -0.00492
+      ]
+    },
+    {
+      "step": 558,
+      "elapsed_s": 18.6,
+      "x_m": 7.92746,
+      "y_m": -0.12179,
+      "yaw_rad": 0.014264,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44801,
+      "yaw_rate_rad_s": -0.00324,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.56602,
+        -0.00594
+      ]
+    },
+    {
+      "step": 561,
+      "elapsed_s": 18.7,
+      "x_m": 7.97214,
+      "y_m": -0.12116,
+      "yaw_rad": 0.013852,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44812,
+      "yaw_rate_rad_s": -0.01133,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.56534,
+        -0.05123
+      ]
+    },
+    {
+      "step": 564,
+      "elapsed_s": 18.8,
+      "x_m": 8.01682,
+      "y_m": -0.12057,
+      "yaw_rad": 0.012449,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44814,
+      "yaw_rate_rad_s": -0.01632,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.57644,
+        -0.03898
+      ]
+    },
+    {
+      "step": 567,
+      "elapsed_s": 18.9,
+      "x_m": 8.0615,
+      "y_m": -0.12001,
+      "yaw_rad": 0.013113,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44784,
+      "yaw_rate_rad_s": 0.01706,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.57107,
+        0.04518
+      ]
+    },
+    {
+      "step": 570,
+      "elapsed_s": 19.0,
+      "x_m": 8.10617,
+      "y_m": -0.11937,
+      "yaw_rad": 0.014975,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44785,
+      "yaw_rate_rad_s": 0.01933,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.55273,
+        0.0363
+      ]
+    },
+    {
+      "step": 573,
+      "elapsed_s": 19.1,
+      "x_m": 8.15082,
+      "y_m": -0.11865,
+      "yaw_rad": 0.016894,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44782,
+      "yaw_rate_rad_s": 0.01778,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.543,
+        0.02733
+      ]
+    },
+    {
+      "step": 576,
+      "elapsed_s": 19.2,
+      "x_m": 8.19545,
+      "y_m": -0.11785,
+      "yaw_rad": 0.01859,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44738,
+      "yaw_rate_rad_s": 0.01652,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.54346,
+        0.02491
+      ]
+    },
+    {
+      "step": 579,
+      "elapsed_s": 19.3,
+      "x_m": 8.24005,
+      "y_m": -0.11697,
+      "yaw_rad": 0.020035,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44706,
+      "yaw_rate_rad_s": 0.01372,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.53906,
+        0.01924
+      ]
+    },
+    {
+      "step": 582,
+      "elapsed_s": 19.4,
+      "x_m": 8.28461,
+      "y_m": -0.11605,
+      "yaw_rad": 0.02123,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44714,
+      "yaw_rate_rad_s": 0.01055,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.53474,
+        0.01442
+      ]
+    },
+    {
+      "step": 585,
+      "elapsed_s": 19.5,
+      "x_m": 8.32919,
+      "y_m": -0.11507,
+      "yaw_rad": 0.022173,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44706,
+      "yaw_rate_rad_s": 0.00845,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.53244,
+        0.01041
+      ]
+    },
+    {
+      "step": 588,
+      "elapsed_s": 19.6,
+      "x_m": 8.37376,
+      "y_m": -0.11406,
+      "yaw_rad": 0.022957,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44736,
+      "yaw_rate_rad_s": 0.00677,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.53235,
+        0.00885
+      ]
+    },
+    {
+      "step": 591,
+      "elapsed_s": 19.7,
+      "x_m": 8.41835,
+      "y_m": -0.11301,
+      "yaw_rad": 0.023529,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44708,
+      "yaw_rate_rad_s": 0.00426,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.53077,
+        0.00649
+      ]
+    },
+    {
+      "step": 594,
+      "elapsed_s": 19.8,
+      "x_m": 8.46294,
+      "y_m": -0.11195,
+      "yaw_rad": 0.023904,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44701,
+      "yaw_rate_rad_s": 0.004,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.52977,
+        0.00487
+      ]
+    },
+    {
+      "step": 597,
+      "elapsed_s": 19.9,
+      "x_m": 8.50754,
+      "y_m": -0.11087,
+      "yaw_rad": 0.024199,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44724,
+      "yaw_rate_rad_s": 0.00279,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.52831,
+        0.00355
+      ]
+    },
+    {
+      "step": 600,
+      "elapsed_s": 20.0,
+      "x_m": 8.55216,
+      "y_m": -0.10978,
+      "yaw_rad": 0.024396,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44732,
+      "yaw_rate_rad_s": 0.00282,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.52865,
+        0.00269
+      ]
+    },
+    {
+      "step": 603,
+      "elapsed_s": 20.1,
+      "x_m": 8.59677,
+      "y_m": -0.10872,
+      "yaw_rad": 0.02293,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44759,
+      "yaw_rate_rad_s": -0.02255,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.74089,
+        -0.0599
+      ]
+    },
+    {
+      "step": 606,
+      "elapsed_s": 20.2,
+      "x_m": 8.64138,
+      "y_m": -0.10776,
+      "yaw_rad": 0.020611,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44725,
+      "yaw_rate_rad_s": -0.0233,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.75514,
+        -0.05001
+      ]
+    },
+    {
+      "step": 609,
+      "elapsed_s": 20.3,
+      "x_m": 8.68596,
+      "y_m": -0.10689,
+      "yaw_rad": 0.018438,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44707,
+      "yaw_rate_rad_s": -0.02081,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76014,
+        -0.04011
+      ]
+    },
+    {
+      "step": 612,
+      "elapsed_s": 20.4,
+      "x_m": 8.73052,
+      "y_m": -0.10612,
+      "yaw_rad": 0.016505,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44681,
+      "yaw_rate_rad_s": -0.01924,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.75756,
+        -0.03999
+      ]
+    },
+    {
+      "step": 615,
+      "elapsed_s": 20.5,
+      "x_m": 8.77508,
+      "y_m": -0.10543,
+      "yaw_rad": 0.014904,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44693,
+      "yaw_rate_rad_s": -0.01499,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76002,
+        -0.03336
+      ]
+    },
+    {
+      "step": 618,
+      "elapsed_s": 20.6,
+      "x_m": 8.81965,
+      "y_m": -0.1048,
+      "yaw_rad": 0.013581,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44698,
+      "yaw_rate_rad_s": -0.01292,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76169,
+        -0.02838
+      ]
+    },
+    {
+      "step": 621,
+      "elapsed_s": 20.7,
+      "x_m": 8.86421,
+      "y_m": -0.10422,
+      "yaw_rad": 0.012482,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44659,
+      "yaw_rate_rad_s": -0.01009,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76159,
+        -0.02326
+      ]
+    },
+    {
+      "step": 624,
+      "elapsed_s": 20.8,
+      "x_m": 8.90875,
+      "y_m": -0.10369,
+      "yaw_rad": 0.011507,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4466,
+      "yaw_rate_rad_s": -0.00941,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76118,
+        -0.02341
+      ]
+    },
+    {
+      "step": 627,
+      "elapsed_s": 20.9,
+      "x_m": 8.9533,
+      "y_m": -0.10319,
+      "yaw_rad": 0.010703,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44678,
+      "yaw_rate_rad_s": -0.00817,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76153,
+        -0.02022
+      ]
+    },
+    {
+      "step": 630,
+      "elapsed_s": 21.0,
+      "x_m": 8.99784,
+      "y_m": -0.10273,
+      "yaw_rad": 0.009964,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44647,
+      "yaw_rate_rad_s": -0.00632,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.7618,
+        -0.01742
+      ]
+    },
+    {
+      "step": 633,
+      "elapsed_s": 21.1,
+      "x_m": 9.04235,
+      "y_m": -0.1023,
+      "yaw_rad": 0.009313,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44594,
+      "yaw_rate_rad_s": -0.0057,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76311,
+        -0.01379
+      ]
+    },
+    {
+      "step": 636,
+      "elapsed_s": 21.2,
+      "x_m": 9.08684,
+      "y_m": -0.1019,
+      "yaw_rad": 0.008701,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44643,
+      "yaw_rate_rad_s": -0.00695,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76284,
+        -0.01412
+      ]
+    },
+    {
+      "step": 639,
+      "elapsed_s": 21.3,
+      "x_m": 9.13139,
+      "y_m": -0.10153,
+      "yaw_rad": 0.008108,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44679,
+      "yaw_rate_rad_s": -0.0059,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76401,
+        -0.01167
+      ]
+    },
+    {
+      "step": 642,
+      "elapsed_s": 21.4,
+      "x_m": 9.17594,
+      "y_m": -0.10118,
+      "yaw_rad": 0.007625,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44691,
+      "yaw_rate_rad_s": -0.00527,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76312,
+        -0.00991
+      ]
+    },
+    {
+      "step": 645,
+      "elapsed_s": 21.5,
+      "x_m": 9.22051,
+      "y_m": -0.10085,
+      "yaw_rad": 0.007119,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4466,
+      "yaw_rate_rad_s": -0.00428,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76507,
+        -0.00681
+      ]
+    },
+    {
+      "step": 648,
+      "elapsed_s": 21.6,
+      "x_m": 9.26504,
+      "y_m": -0.10054,
+      "yaw_rad": 0.006748,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44655,
+      "yaw_rate_rad_s": -0.00334,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76204,
+        -0.00804
+      ]
+    },
+    {
+      "step": 651,
+      "elapsed_s": 21.7,
+      "x_m": 9.30959,
+      "y_m": -0.10024,
+      "yaw_rad": 0.006407,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44653,
+      "yaw_rate_rad_s": -0.00259,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.76309,
+        -0.00614
+      ]
+    },
+    {
+      "step": 654,
+      "elapsed_s": 21.8,
+      "x_m": 9.35404,
+      "y_m": -0.09995,
+      "yaw_rad": 0.006564,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44095,
+      "yaw_rate_rad_s": -0.01323,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83151,
+        0.03525
+      ]
+    },
+    {
+      "step": 657,
+      "elapsed_s": 21.9,
+      "x_m": 9.39816,
+      "y_m": -0.09957,
+      "yaw_rad": 0.008288,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44306,
+      "yaw_rate_rad_s": 0.01682,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.8062,
+        0.02757
+      ]
+    },
+    {
+      "step": 660,
+      "elapsed_s": 22.0,
+      "x_m": 9.44244,
+      "y_m": -0.09916,
+      "yaw_rad": 0.009878,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44458,
+      "yaw_rate_rad_s": 0.01582,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.80692,
+        0.02458
+      ]
+    },
+    {
+      "step": 663,
+      "elapsed_s": 22.1,
+      "x_m": 9.48683,
+      "y_m": -0.09866,
+      "yaw_rad": 0.012471,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44533,
+      "yaw_rate_rad_s": 0.03012,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.8651,
+        0.06364
+      ]
+    },
+    {
+      "step": 666,
+      "elapsed_s": 22.2,
+      "x_m": 9.5313,
+      "y_m": -0.09802,
+      "yaw_rad": 0.015477,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44635,
+      "yaw_rate_rad_s": 0.02863,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.84944,
+        0.05088
+      ]
+    },
+    {
+      "step": 669,
+      "elapsed_s": 22.3,
+      "x_m": 9.57574,
+      "y_m": -0.09727,
+      "yaw_rad": 0.018103,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44334,
+      "yaw_rate_rad_s": 0.02372,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.84309,
+        0.03753
+      ]
+    },
+    {
+      "step": 672,
+      "elapsed_s": 22.4,
+      "x_m": 9.61977,
+      "y_m": -0.09642,
+      "yaw_rad": 0.020163,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44301,
+      "yaw_rate_rad_s": 0.01974,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.84796,
+        0.03773
+      ]
+    },
+    {
+      "step": 675,
+      "elapsed_s": 22.5,
+      "x_m": 9.66403,
+      "y_m": -0.09548,
+      "yaw_rad": 0.021894,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44432,
+      "yaw_rate_rad_s": 0.01564,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.84178,
+        0.03001
+      ]
+    },
+    {
+      "step": 678,
+      "elapsed_s": 22.6,
+      "x_m": 9.70824,
+      "y_m": -0.09446,
+      "yaw_rad": 0.023462,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44187,
+      "yaw_rate_rad_s": 0.01733,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.86038,
+        0.03345
+      ]
+    },
+    {
+      "step": 681,
+      "elapsed_s": 22.7,
+      "x_m": 9.75196,
+      "y_m": -0.0934,
+      "yaw_rad": 0.024796,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.436,
+      "yaw_rate_rad_s": 0.01032,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82981,
+        0.01511
+      ]
+    },
+    {
+      "step": 684,
+      "elapsed_s": 22.8,
+      "x_m": 9.7955,
+      "y_m": -0.0923,
+      "yaw_rad": 0.025519,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43567,
+      "yaw_rate_rad_s": -0.0059,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.8357,
+        0.01661
+      ]
+    },
+    {
+      "step": 687,
+      "elapsed_s": 22.9,
+      "x_m": 9.83914,
+      "y_m": -0.09116,
+      "yaw_rad": 0.02631,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43825,
+      "yaw_rate_rad_s": 0.0049,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83151,
+        0.01072
+      ]
+    },
+    {
+      "step": 690,
+      "elapsed_s": 23.0,
+      "x_m": 9.88286,
+      "y_m": -0.08999,
+      "yaw_rad": 0.026863,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43991,
+      "yaw_rate_rad_s": 0.00569,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83009,
+        0.00519
+      ]
+    },
+    {
+      "step": 693,
+      "elapsed_s": 23.1,
+      "x_m": 9.92686,
+      "y_m": -0.08879,
+      "yaw_rad": 0.027352,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44254,
+      "yaw_rate_rad_s": 0.00414,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82734,
+        0.00124
+      ]
+    },
+    {
+      "step": 696,
+      "elapsed_s": 23.2,
+      "x_m": 9.97107,
+      "y_m": -0.08757,
+      "yaw_rad": 0.027619,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44434,
+      "yaw_rate_rad_s": 0.00244,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.8294,
+        0.0012
+      ]
+    },
+    {
+      "step": 699,
+      "elapsed_s": 23.3,
+      "x_m": 10.0154,
+      "y_m": -0.08634,
+      "yaw_rad": 0.027811,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44522,
+      "yaw_rate_rad_s": 0.00118,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82842,
+        -0.00152
+      ]
+    },
+    {
+      "step": 702,
+      "elapsed_s": 23.4,
+      "x_m": 10.05977,
+      "y_m": -0.0851,
+      "yaw_rad": 0.027962,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44333,
+      "yaw_rate_rad_s": 0.00256,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82632,
+        -0.00397
+      ]
+    },
+    {
+      "step": 705,
+      "elapsed_s": 23.5,
+      "x_m": 10.10364,
+      "y_m": -0.08386,
+      "yaw_rad": 0.028184,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43575,
+      "yaw_rate_rad_s": 0.00267,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82159,
+        -0.00746
+      ]
+    },
+    {
+      "step": 708,
+      "elapsed_s": 23.6,
+      "x_m": 10.14691,
+      "y_m": -0.08265,
+      "yaw_rad": 0.028092,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43175,
+      "yaw_rate_rad_s": -0.00836,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82082,
+        -0.00659
+      ]
+    },
+    {
+      "step": 711,
+      "elapsed_s": 23.7,
+      "x_m": 10.18993,
+      "y_m": -0.08144,
+      "yaw_rad": 0.028053,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43164,
+      "yaw_rate_rad_s": -0.00096,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82931,
+        -0.00335
+      ]
+    },
+    {
+      "step": 714,
+      "elapsed_s": 23.8,
+      "x_m": 10.23302,
+      "y_m": -0.08023,
+      "yaw_rad": 0.027887,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43078,
+      "yaw_rate_rad_s": -0.00608,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82104,
+        -0.00758
+      ]
+    },
+    {
+      "step": 717,
+      "elapsed_s": 23.9,
+      "x_m": 10.27623,
+      "y_m": -0.07902,
+      "yaw_rad": 0.027878,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43452,
+      "yaw_rate_rad_s": -0.00161,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82532,
+        -0.00527
+      ]
+    },
+    {
+      "step": 720,
+      "elapsed_s": 24.0,
+      "x_m": 10.31948,
+      "y_m": -0.07782,
+      "yaw_rad": 0.027722,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43515,
+      "yaw_rate_rad_s": -0.00115,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82906,
+        -0.0047
+      ]
+    },
+    {
+      "step": 723,
+      "elapsed_s": 24.1,
+      "x_m": 10.36287,
+      "y_m": -0.07662,
+      "yaw_rad": 0.027491,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43672,
+      "yaw_rate_rad_s": -0.00373,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82574,
+        -0.00642
+      ]
+    },
+    {
+      "step": 726,
+      "elapsed_s": 24.2,
+      "x_m": 10.40665,
+      "y_m": -0.07542,
+      "yaw_rad": 0.027076,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44115,
+      "yaw_rate_rad_s": -0.00395,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82438,
+        -0.00801
+      ]
+    },
+    {
+      "step": 729,
+      "elapsed_s": 24.3,
+      "x_m": 10.45049,
+      "y_m": -0.07424,
+      "yaw_rad": 0.026923,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.438,
+      "yaw_rate_rad_s": -0.0002,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81469,
+        -0.01035
+      ]
+    },
+    {
+      "step": 732,
+      "elapsed_s": 24.4,
+      "x_m": 10.49391,
+      "y_m": -0.07306,
+      "yaw_rad": 0.027099,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43496,
+      "yaw_rate_rad_s": 0.00172,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81623,
+        -0.00994
+      ]
+    },
+    {
+      "step": 735,
+      "elapsed_s": 24.5,
+      "x_m": 10.53748,
+      "y_m": -0.07188,
+      "yaw_rad": 0.027023,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43834,
+      "yaw_rate_rad_s": -0.00178,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82054,
+        -0.00978
+      ]
+    },
+    {
+      "step": 738,
+      "elapsed_s": 24.6,
+      "x_m": 10.58112,
+      "y_m": -0.07071,
+      "yaw_rad": 0.026918,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43667,
+      "yaw_rate_rad_s": -0.00021,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81169,
+        -0.01332
+      ]
+    },
+    {
+      "step": 741,
+      "elapsed_s": 24.7,
+      "x_m": 10.62454,
+      "y_m": -0.06953,
+      "yaw_rad": 0.026917,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43746,
+      "yaw_rate_rad_s": -0.00174,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.80902,
+        -0.01505
+      ]
+    },
+    {
+      "step": 744,
+      "elapsed_s": 24.8,
+      "x_m": 10.66817,
+      "y_m": -0.06836,
+      "yaw_rad": 0.026756,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43888,
+      "yaw_rate_rad_s": -0.00229,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81236,
+        -0.01426
+      ]
+    },
+    {
+      "step": 747,
+      "elapsed_s": 24.9,
+      "x_m": 10.71183,
+      "y_m": -0.06719,
+      "yaw_rad": 0.026671,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43665,
+      "yaw_rate_rad_s": 0.00085,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81404,
+        -0.01403
+      ]
+    },
+    {
+      "step": 750,
+      "elapsed_s": 25.0,
+      "x_m": 10.75534,
+      "y_m": -0.06603,
+      "yaw_rad": 0.026574,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4375,
+      "yaw_rate_rad_s": -0.00325,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81019,
+        -0.01553
+      ]
+    },
+    {
+      "step": 753,
+      "elapsed_s": 25.1,
+      "x_m": 10.79884,
+      "y_m": -0.06487,
+      "yaw_rad": 0.026415,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43462,
+      "yaw_rate_rad_s": 0.01034,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.80888,
+        -0.01587
+      ]
+    },
+    {
+      "step": 756,
+      "elapsed_s": 25.2,
+      "x_m": 10.84211,
+      "y_m": -0.06373,
+      "yaw_rad": 0.026171,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43369,
+      "yaw_rate_rad_s": -0.00142,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.78513,
+        -0.02407
+      ]
+    },
+    {
+      "step": 759,
+      "elapsed_s": 25.3,
+      "x_m": 10.88545,
+      "y_m": -0.06258,
+      "yaw_rad": 0.02609,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43496,
+      "yaw_rate_rad_s": -0.00035,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.80339,
+        -0.01778
+      ]
+    },
+    {
+      "step": 762,
+      "elapsed_s": 25.4,
+      "x_m": 10.92888,
+      "y_m": -0.06145,
+      "yaw_rad": 0.025677,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43565,
+      "yaw_rate_rad_s": -0.00449,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.8122,
+        -0.01405
+      ]
+    },
+    {
+      "step": 765,
+      "elapsed_s": 25.5,
+      "x_m": 10.97247,
+      "y_m": -0.06034,
+      "yaw_rad": 0.025178,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43809,
+      "yaw_rate_rad_s": -0.00687,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81188,
+        -0.01415
+      ]
+    },
+    {
+      "step": 768,
+      "elapsed_s": 25.6,
+      "x_m": 11.0163,
+      "y_m": -0.05925,
+      "yaw_rad": 0.024519,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44057,
+      "yaw_rate_rad_s": -0.00937,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81591,
+        -0.01347
+      ]
+    },
+    {
+      "step": 771,
+      "elapsed_s": 25.7,
+      "x_m": 11.06032,
+      "y_m": -0.05818,
+      "yaw_rad": 0.023964,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4423,
+      "yaw_rate_rad_s": -0.00452,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81204,
+        -0.01365
+      ]
+    },
+    {
+      "step": 774,
+      "elapsed_s": 25.8,
+      "x_m": 11.10437,
+      "y_m": -0.05714,
+      "yaw_rad": 0.023367,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44228,
+      "yaw_rate_rad_s": -0.006,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81535,
+        -0.0104
+      ]
+    },
+    {
+      "step": 777,
+      "elapsed_s": 25.9,
+      "x_m": 11.14846,
+      "y_m": -0.05612,
+      "yaw_rad": 0.022915,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44158,
+      "yaw_rate_rad_s": -0.00573,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81773,
+        -0.00843
+      ]
+    },
+    {
+      "step": 780,
+      "elapsed_s": 26.0,
+      "x_m": 11.19249,
+      "y_m": -0.05512,
+      "yaw_rad": 0.022446,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44033,
+      "yaw_rate_rad_s": -0.0046,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81344,
+        -0.01035
+      ]
+    },
+    {
+      "step": 783,
+      "elapsed_s": 26.1,
+      "x_m": 11.23616,
+      "y_m": -0.05415,
+      "yaw_rad": 0.022063,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43631,
+      "yaw_rate_rad_s": -0.00159,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.80725,
+        -0.01012
+      ]
+    },
+    {
+      "step": 786,
+      "elapsed_s": 26.2,
+      "x_m": 11.27951,
+      "y_m": -0.0532,
+      "yaw_rad": 0.021756,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4341,
+      "yaw_rate_rad_s": -0.01261,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.809,
+        -0.00897
+      ]
+    },
+    {
+      "step": 789,
+      "elapsed_s": 26.3,
+      "x_m": 11.3229,
+      "y_m": -0.05225,
+      "yaw_rad": 0.02149,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43669,
+      "yaw_rate_rad_s": -0.00234,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.8152,
+        -0.00585
+      ]
+    },
+    {
+      "step": 792,
+      "elapsed_s": 26.4,
+      "x_m": 11.3666,
+      "y_m": -0.05132,
+      "yaw_rad": 0.021208,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4377,
+      "yaw_rate_rad_s": -0.00722,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81139,
+        -0.00863
+      ]
+    },
+    {
+      "step": 795,
+      "elapsed_s": 26.5,
+      "x_m": 11.40988,
+      "y_m": -0.05042,
+      "yaw_rad": 0.020611,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43136,
+      "yaw_rate_rad_s": -0.00415,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81851,
+        -0.00369
+      ]
+    },
+    {
+      "step": 798,
+      "elapsed_s": 26.6,
+      "x_m": 11.45295,
+      "y_m": -0.04953,
+      "yaw_rad": 0.020345,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43086,
+      "yaw_rate_rad_s": -0.003,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.80764,
+        -0.00661
+      ]
+    },
+    {
+      "step": 801,
+      "elapsed_s": 26.7,
+      "x_m": 11.49591,
+      "y_m": -0.04865,
+      "yaw_rad": 0.020469,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42993,
+      "yaw_rate_rad_s": 0.00247,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.80489,
+        -0.00708
+      ]
+    },
+    {
+      "step": 804,
+      "elapsed_s": 26.8,
+      "x_m": 11.53882,
+      "y_m": -0.04776,
+      "yaw_rad": 0.020423,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42992,
+      "yaw_rate_rad_s": -0.00159,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.80653,
+        -0.00712
+      ]
+    },
+    {
+      "step": 807,
+      "elapsed_s": 26.9,
+      "x_m": 11.5816,
+      "y_m": -0.04688,
+      "yaw_rad": 0.020507,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42972,
+      "yaw_rate_rad_s": -0.00411,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.80111,
+        -0.00841
+      ]
+    },
+    {
+      "step": 810,
+      "elapsed_s": 27.0,
+      "x_m": 11.6244,
+      "y_m": -0.04603,
+      "yaw_rad": 0.019536,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42925,
+      "yaw_rate_rad_s": -0.00999,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82122,
+        -0.00235
+      ]
+    },
+    {
+      "step": 813,
+      "elapsed_s": 27.1,
+      "x_m": 11.6675,
+      "y_m": -0.04521,
+      "yaw_rad": 0.018819,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43437,
+      "yaw_rate_rad_s": -0.00669,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83057,
+        -0.02682
+      ]
+    },
+    {
+      "step": 816,
+      "elapsed_s": 27.2,
+      "x_m": 11.71073,
+      "y_m": -0.0444,
+      "yaw_rad": 0.01844,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43233,
+      "yaw_rate_rad_s": -0.00257,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82542,
+        -0.02399
+      ]
+    },
+    {
+      "step": 819,
+      "elapsed_s": 27.3,
+      "x_m": 11.75382,
+      "y_m": -0.04361,
+      "yaw_rad": 0.018266,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43103,
+      "yaw_rate_rad_s": -0.00193,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82535,
+        -0.02274
+      ]
+    },
+    {
+      "step": 822,
+      "elapsed_s": 27.4,
+      "x_m": 11.79671,
+      "y_m": -0.04281,
+      "yaw_rad": 0.018323,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43046,
+      "yaw_rate_rad_s": -0.00213,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.8166,
+        -0.0248
+      ]
+    },
+    {
+      "step": 825,
+      "elapsed_s": 27.5,
+      "x_m": 11.83947,
+      "y_m": -0.04202,
+      "yaw_rad": 0.018412,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42784,
+      "yaw_rate_rad_s": -0.00092,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81362,
+        -0.02565
+      ]
+    },
+    {
+      "step": 828,
+      "elapsed_s": 27.6,
+      "x_m": 11.88211,
+      "y_m": -0.04123,
+      "yaw_rad": 0.018544,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42663,
+      "yaw_rate_rad_s": -0.00092,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81204,
+        -0.02588
+      ]
+    },
+    {
+      "step": 831,
+      "elapsed_s": 27.7,
+      "x_m": 11.92472,
+      "y_m": -0.04043,
+      "yaw_rad": 0.018447,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42708,
+      "yaw_rate_rad_s": -0.00014,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81358,
+        -0.02561
+      ]
+    },
+    {
+      "step": 834,
+      "elapsed_s": 27.8,
+      "x_m": 11.96719,
+      "y_m": -0.03964,
+      "yaw_rad": 0.018305,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.425,
+      "yaw_rate_rad_s": -0.00257,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.80141,
+        -0.02911
+      ]
+    },
+    {
+      "step": 837,
+      "elapsed_s": 27.9,
+      "x_m": 12.00957,
+      "y_m": -0.03887,
+      "yaw_rad": 0.017991,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42455,
+      "yaw_rate_rad_s": -0.00176,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81433,
+        -0.02273
+      ]
+    },
+    {
+      "step": 840,
+      "elapsed_s": 28.0,
+      "x_m": 12.05203,
+      "y_m": -0.03812,
+      "yaw_rad": 0.017334,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42599,
+      "yaw_rate_rad_s": -0.00726,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82191,
+        -0.02074
+      ]
+    },
+    {
+      "step": 843,
+      "elapsed_s": 28.1,
+      "x_m": 12.09475,
+      "y_m": -0.03739,
+      "yaw_rad": 0.016742,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42823,
+      "yaw_rate_rad_s": -0.00089,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82044,
+        -0.02013
+      ]
+    },
+    {
+      "step": 846,
+      "elapsed_s": 28.2,
+      "x_m": 12.13754,
+      "y_m": -0.03668,
+      "yaw_rad": 0.015792,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42946,
+      "yaw_rate_rad_s": -0.02295,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.8099,
+        -0.08128
+      ]
+    },
+    {
+      "step": 849,
+      "elapsed_s": 28.3,
+      "x_m": 12.18034,
+      "y_m": -0.03608,
+      "yaw_rad": 0.013101,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42814,
+      "yaw_rate_rad_s": -0.01671,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.85195,
+        0.01545
+      ]
+    },
+    {
+      "step": 852,
+      "elapsed_s": 28.4,
+      "x_m": 12.22289,
+      "y_m": -0.03557,
+      "yaw_rad": 0.01149,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42557,
+      "yaw_rate_rad_s": -0.01353,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83912,
+        -0.00238
+      ]
+    },
+    {
+      "step": 855,
+      "elapsed_s": 28.5,
+      "x_m": 12.26547,
+      "y_m": -0.03511,
+      "yaw_rad": 0.010593,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42636,
+      "yaw_rate_rad_s": -0.00115,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.84518,
+        0.00608
+      ]
+    },
+    {
+      "step": 858,
+      "elapsed_s": 28.6,
+      "x_m": 12.30798,
+      "y_m": -0.03468,
+      "yaw_rad": 0.009824,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42655,
+      "yaw_rate_rad_s": -0.00828,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.84206,
+        0.00789
+      ]
+    },
+    {
+      "step": 861,
+      "elapsed_s": 28.7,
+      "x_m": 12.35044,
+      "y_m": -0.03428,
+      "yaw_rad": 0.009458,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42514,
+      "yaw_rate_rad_s": -0.00268,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83351,
+        0.00852
+      ]
+    },
+    {
+      "step": 864,
+      "elapsed_s": 28.8,
+      "x_m": 12.39301,
+      "y_m": -0.03387,
+      "yaw_rad": 0.009524,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42734,
+      "yaw_rate_rad_s": 6e-05,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82171,
+        0.00353
+      ]
+    },
+    {
+      "step": 867,
+      "elapsed_s": 28.9,
+      "x_m": 12.43545,
+      "y_m": -0.03349,
+      "yaw_rad": 0.008075,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42517,
+      "yaw_rate_rad_s": -0.01886,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.84435,
+        -0.04452
+      ]
+    },
+    {
+      "step": 870,
+      "elapsed_s": 29.0,
+      "x_m": 12.47782,
+      "y_m": -0.0332,
+      "yaw_rad": 0.005983,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42593,
+      "yaw_rate_rad_s": -0.01831,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.85497,
+        -0.03322
+      ]
+    },
+    {
+      "step": 873,
+      "elapsed_s": 29.1,
+      "x_m": 12.52026,
+      "y_m": -0.03297,
+      "yaw_rad": 0.005006,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42621,
+      "yaw_rate_rad_s": 0.00081,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.84798,
+        0.04038
+      ]
+    },
+    {
+      "step": 876,
+      "elapsed_s": 29.2,
+      "x_m": 12.56271,
+      "y_m": -0.03274,
+      "yaw_rad": 0.005767,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4264,
+      "yaw_rate_rad_s": 0.0091,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82511,
+        0.01854
+      ]
+    },
+    {
+      "step": 879,
+      "elapsed_s": 29.3,
+      "x_m": 12.6052,
+      "y_m": -0.0325,
+      "yaw_rad": 0.005181,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42753,
+      "yaw_rate_rad_s": -0.01033,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83563,
+        -0.03379
+      ]
+    },
+    {
+      "step": 882,
+      "elapsed_s": 29.4,
+      "x_m": 12.64781,
+      "y_m": -0.03229,
+      "yaw_rad": 0.004598,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4275,
+      "yaw_rate_rad_s": -0.00842,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83384,
+        -0.03078
+      ]
+    },
+    {
+      "step": 885,
+      "elapsed_s": 29.5,
+      "x_m": 12.69046,
+      "y_m": -0.03212,
+      "yaw_rad": 0.00384,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42732,
+      "yaw_rate_rad_s": -0.00359,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.84402,
+        -0.02269
+      ]
+    },
+    {
+      "step": 888,
+      "elapsed_s": 29.6,
+      "x_m": 12.73298,
+      "y_m": -0.03196,
+      "yaw_rad": 0.003528,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42604,
+      "yaw_rate_rad_s": -0.00656,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83263,
+        -0.02667
+      ]
+    },
+    {
+      "step": 891,
+      "elapsed_s": 29.7,
+      "x_m": 12.77552,
+      "y_m": -0.03182,
+      "yaw_rad": 0.002901,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42884,
+      "yaw_rate_rad_s": -0.00688,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83893,
+        -0.02205
+      ]
+    },
+    {
+      "step": 894,
+      "elapsed_s": 29.8,
+      "x_m": 12.81832,
+      "y_m": -0.03173,
+      "yaw_rad": 0.001898,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42785,
+      "yaw_rate_rad_s": -0.01251,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.84658,
+        -0.01715
+      ]
+    },
+    {
+      "step": 897,
+      "elapsed_s": 29.9,
+      "x_m": 12.86096,
+      "y_m": -0.03166,
+      "yaw_rad": 0.001455,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42723,
+      "yaw_rate_rad_s": 0.00039,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83891,
+        -0.01291
+      ]
+    },
+    {
+      "step": 900,
+      "elapsed_s": 30.0,
+      "x_m": 12.90348,
+      "y_m": -0.0316,
+      "yaw_rad": 0.001499,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42549,
+      "yaw_rate_rad_s": -0.0002,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83299,
+        -0.01538
+      ]
+    },
+    {
+      "step": 903,
+      "elapsed_s": 30.1,
+      "x_m": 12.94599,
+      "y_m": -0.03154,
+      "yaw_rad": 0.001482,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42655,
+      "yaw_rate_rad_s": 0.00166,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83296,
+        -0.01509
+      ]
+    },
+    {
+      "step": 906,
+      "elapsed_s": 30.2,
+      "x_m": 12.98851,
+      "y_m": -0.03146,
+      "yaw_rad": 0.001771,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42692,
+      "yaw_rate_rad_s": 0.00068,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82483,
+        -0.01725
+      ]
+    },
+    {
+      "step": 909,
+      "elapsed_s": 30.3,
+      "x_m": 13.0311,
+      "y_m": -0.03138,
+      "yaw_rad": 0.001893,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42711,
+      "yaw_rate_rad_s": 0.0011,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82804,
+        -0.0163
+      ]
+    },
+    {
+      "step": 912,
+      "elapsed_s": 30.4,
+      "x_m": 13.07374,
+      "y_m": -0.03129,
+      "yaw_rad": 0.002068,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42712,
+      "yaw_rate_rad_s": 0.00258,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82608,
+        -0.01723
+      ]
+    },
+    {
+      "step": 915,
+      "elapsed_s": 30.5,
+      "x_m": 13.11648,
+      "y_m": -0.0312,
+      "yaw_rad": 0.002071,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42802,
+      "yaw_rate_rad_s": 0.00188,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.82602,
+        -0.0176
+      ]
+    },
+    {
+      "step": 918,
+      "elapsed_s": 30.6,
+      "x_m": 13.15924,
+      "y_m": -0.03111,
+      "yaw_rad": 0.001746,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42878,
+      "yaw_rate_rad_s": -0.00846,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83609,
+        -0.01279
+      ]
+    },
+    {
+      "step": 921,
+      "elapsed_s": 30.7,
+      "x_m": 13.20217,
+      "y_m": -0.03107,
+      "yaw_rad": 0.000683,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43068,
+      "yaw_rate_rad_s": -0.01004,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.70594,
+        -0.02225
+      ]
+    },
+    {
+      "step": 924,
+      "elapsed_s": 30.8,
+      "x_m": 13.24516,
+      "y_m": -0.03106,
+      "yaw_rad": -5e-05,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43141,
+      "yaw_rate_rad_s": -0.00625,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.69976,
+        -0.02092
+      ]
+    },
+    {
+      "step": 927,
+      "elapsed_s": 30.9,
+      "x_m": 13.28834,
+      "y_m": -0.03107,
+      "yaw_rad": -0.000557,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43401,
+      "yaw_rate_rad_s": -0.00613,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.699,
+        -0.01373
+      ]
+    },
+    {
+      "step": 930,
+      "elapsed_s": 31.0,
+      "x_m": 13.33168,
+      "y_m": -0.03111,
+      "yaw_rad": -0.0009,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43471,
+      "yaw_rate_rad_s": -0.00116,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.69539,
+        -0.00986
+      ]
+    },
+    {
+      "step": 933,
+      "elapsed_s": 31.1,
+      "x_m": 13.37511,
+      "y_m": -0.03115,
+      "yaw_rad": -0.000947,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43639,
+      "yaw_rate_rad_s": -0.00082,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.69782,
+        -0.00546
+      ]
+    },
+    {
+      "step": 936,
+      "elapsed_s": 31.2,
+      "x_m": 13.41875,
+      "y_m": -0.0312,
+      "yaw_rad": -0.001065,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43732,
+      "yaw_rate_rad_s": -0.00039,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.70068,
+        -0.00533
+      ]
+    },
+    {
+      "step": 939,
+      "elapsed_s": 31.3,
+      "x_m": 13.46248,
+      "y_m": -0.03126,
+      "yaw_rad": -0.001803,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4385,
+      "yaw_rate_rad_s": -0.0099,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.67614,
+        -0.02078
+      ]
+    },
+    {
+      "step": 942,
+      "elapsed_s": 31.4,
+      "x_m": 13.5063,
+      "y_m": -0.03137,
+      "yaw_rad": -0.002859,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43937,
+      "yaw_rate_rad_s": -0.00984,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.67678,
+        -0.01493
+      ]
+    },
+    {
+      "step": 945,
+      "elapsed_s": 31.5,
+      "x_m": 13.55015,
+      "y_m": -0.03153,
+      "yaw_rad": -0.003802,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43945,
+      "yaw_rate_rad_s": -0.00792,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.6726,
+        -0.00766
+      ]
+    },
+    {
+      "step": 948,
+      "elapsed_s": 31.6,
+      "x_m": 13.59396,
+      "y_m": -0.03171,
+      "yaw_rad": -0.004391,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43895,
+      "yaw_rate_rad_s": -0.00553,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.66535,
+        -0.0095
+      ]
+    },
+    {
+      "step": 951,
+      "elapsed_s": 31.7,
+      "x_m": 13.6378,
+      "y_m": -0.03192,
+      "yaw_rad": -0.004869,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43965,
+      "yaw_rate_rad_s": -0.00422,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.66413,
+        -0.00472
+      ]
+    },
+    {
+      "step": 954,
+      "elapsed_s": 31.8,
+      "x_m": 13.68171,
+      "y_m": -0.03215,
+      "yaw_rad": -0.005219,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44029,
+      "yaw_rate_rad_s": -0.00293,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.66124,
+        -0.00158
+      ]
+    },
+    {
+      "step": 957,
+      "elapsed_s": 31.9,
+      "x_m": 13.72567,
+      "y_m": -0.03239,
+      "yaw_rad": -0.005546,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44104,
+      "yaw_rate_rad_s": -0.00241,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.6614,
+        0.00292
+      ]
+    },
+    {
+      "step": 960,
+      "elapsed_s": 32.0,
+      "x_m": 13.76974,
+      "y_m": -0.03264,
+      "yaw_rad": -0.005646,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44212,
+      "yaw_rate_rad_s": -0.00072,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.65543,
+        0.0009
+      ]
+    },
+    {
+      "step": 963,
+      "elapsed_s": 32.1,
+      "x_m": 13.81391,
+      "y_m": -0.03289,
+      "yaw_rad": -0.005629,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44352,
+      "yaw_rate_rad_s": 0.00153,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.65421,
+        0.00318
+      ]
+    },
+    {
+      "step": 966,
+      "elapsed_s": 32.2,
+      "x_m": 13.85823,
+      "y_m": -0.03313,
+      "yaw_rad": -0.005369,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44442,
+      "yaw_rate_rad_s": 0.00513,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.64961,
+        0.00273
+      ]
+    },
+    {
+      "step": 969,
+      "elapsed_s": 32.3,
+      "x_m": 13.90261,
+      "y_m": -0.03335,
+      "yaw_rad": -0.004957,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44518,
+      "yaw_rate_rad_s": 0.00405,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.64545,
+        0.00191
+      ]
+    },
+    {
+      "step": 972,
+      "elapsed_s": 32.4,
+      "x_m": 13.94529,
+      "y_m": -0.03378,
+      "yaw_rad": -0.004084,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41535,
+      "yaw_rate_rad_s": 0.0104,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.47564,
+        0.02974
+      ]
+    },
+    {
+      "step": 975,
+      "elapsed_s": 32.5,
+      "x_m": 13.98736,
+      "y_m": -0.03394,
+      "yaw_rad": -0.003736,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42648,
+      "yaw_rate_rad_s": 0.00248,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.44934,
+        0.01121
+      ]
+    },
+    {
+      "step": 978,
+      "elapsed_s": 32.6,
+      "x_m": 14.03034,
+      "y_m": -0.03409,
+      "yaw_rad": -0.003446,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43438,
+      "yaw_rate_rad_s": 0.00411,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.45348,
+        0.00917
+      ]
+    },
+    {
+      "step": 981,
+      "elapsed_s": 32.7,
+      "x_m": 14.07397,
+      "y_m": -0.03423,
+      "yaw_rad": -0.003083,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43988,
+      "yaw_rate_rad_s": 0.0045,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.45811,
+        0.00809
+      ]
+    },
+    {
+      "step": 984,
+      "elapsed_s": 32.8,
+      "x_m": 14.11793,
+      "y_m": -0.03434,
+      "yaw_rad": -0.0026,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44197,
+      "yaw_rate_rad_s": 0.00414,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.46005,
+        0.00642
+      ]
+    },
+    {
+      "step": 987,
+      "elapsed_s": 32.9,
+      "x_m": 14.16211,
+      "y_m": -0.03445,
+      "yaw_rad": -0.002227,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44383,
+      "yaw_rate_rad_s": 0.00303,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.46599,
+        0.0059
+      ]
+    },
+    {
+      "step": 990,
+      "elapsed_s": 33.0,
+      "x_m": 14.2064,
+      "y_m": -0.03453,
+      "yaw_rad": -0.001882,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44429,
+      "yaw_rate_rad_s": 0.00379,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.46622,
+        0.00433
+      ]
+    },
+    {
+      "step": 993,
+      "elapsed_s": 33.1,
+      "x_m": 14.25075,
+      "y_m": -0.03461,
+      "yaw_rad": -0.001641,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44437,
+      "yaw_rate_rad_s": 0.00387,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.46998,
+        0.00451
+      ]
+    },
+    {
+      "step": 996,
+      "elapsed_s": 33.2,
+      "x_m": 14.29503,
+      "y_m": -0.03467,
+      "yaw_rad": -0.001422,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4435,
+      "yaw_rate_rad_s": 0.00239,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.47501,
+        0.00707
+      ]
+    },
+    {
+      "step": 999,
+      "elapsed_s": 33.3,
+      "x_m": 14.33933,
+      "y_m": -0.03472,
+      "yaw_rad": -0.001125,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44467,
+      "yaw_rate_rad_s": 0.00483,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.47423,
+        0.00725
+      ]
+    },
+    {
+      "step": 1002,
+      "elapsed_s": 33.4,
+      "x_m": 14.38363,
+      "y_m": -0.03479,
+      "yaw_rad": -0.002375,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44326,
+      "yaw_rate_rad_s": -0.02137,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.44974,
+        -0.05522
+      ]
+    },
+    {
+      "step": 1005,
+      "elapsed_s": 33.5,
+      "x_m": 14.42784,
+      "y_m": -0.03495,
+      "yaw_rad": -0.004372,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44267,
+      "yaw_rate_rad_s": -0.02142,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.456,
+        -0.0456
+      ]
+    },
+    {
+      "step": 1008,
+      "elapsed_s": 33.6,
+      "x_m": 14.47196,
+      "y_m": -0.03519,
+      "yaw_rad": -0.006182,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4407,
+      "yaw_rate_rad_s": -0.01763,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.45724,
+        -0.03516
+      ]
+    },
+    {
+      "step": 1011,
+      "elapsed_s": 33.7,
+      "x_m": 14.516,
+      "y_m": -0.03549,
+      "yaw_rad": -0.007451,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44258,
+      "yaw_rate_rad_s": -0.0109,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.45175,
+        -0.02739
+      ]
+    },
+    {
+      "step": 1014,
+      "elapsed_s": 33.8,
+      "x_m": 14.56016,
+      "y_m": -0.03584,
+      "yaw_rad": -0.008373,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44278,
+      "yaw_rate_rad_s": -0.00945,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.45046,
+        -0.02052
+      ]
+    },
+    {
+      "step": 1017,
+      "elapsed_s": 33.9,
+      "x_m": 14.60424,
+      "y_m": -0.03623,
+      "yaw_rad": -0.009154,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4418,
+      "yaw_rate_rad_s": -0.00674,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.45395,
+        -0.01254
+      ]
+    },
+    {
+      "step": 1020,
+      "elapsed_s": 34.0,
+      "x_m": 14.64779,
+      "y_m": -0.03665,
+      "yaw_rad": -0.009741,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43502,
+      "yaw_rate_rad_s": -0.00539,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.45162,
+        -0.00706
+      ]
+    },
+    {
+      "step": 1023,
+      "elapsed_s": 34.1,
+      "x_m": 14.69143,
+      "y_m": -0.03708,
+      "yaw_rad": -0.010006,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43925,
+      "yaw_rate_rad_s": -0.00078,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.45091,
+        -0.00204
+      ]
+    },
+    {
+      "step": 1026,
+      "elapsed_s": 34.2,
+      "x_m": 14.73503,
+      "y_m": -0.03752,
+      "yaw_rad": -0.01004,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43865,
+      "yaw_rate_rad_s": 0.00097,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.44103,
+        -0.00129
+      ]
+    },
+    {
+      "step": 1029,
+      "elapsed_s": 34.3,
+      "x_m": 14.7788,
+      "y_m": -0.03798,
+      "yaw_rad": -0.011044,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43794,
+      "yaw_rate_rad_s": -0.0183,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.13293,
+        -0.03196
+      ]
+    },
+    {
+      "step": 1032,
+      "elapsed_s": 34.4,
+      "x_m": 14.82243,
+      "y_m": -0.0385,
+      "yaw_rad": -0.012595,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43833,
+      "yaw_rate_rad_s": -0.01212,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.13887,
+        -0.02187
+      ]
+    },
+    {
+      "step": 1035,
+      "elapsed_s": 34.5,
+      "x_m": 14.86597,
+      "y_m": -0.03933,
+      "yaw_rad": -0.013158,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42939,
+      "yaw_rate_rad_s": 0.0063,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.1279,
+        -0.01506
+      ]
+    },
+    {
+      "step": 1038,
+      "elapsed_s": 34.6,
+      "x_m": 14.90804,
+      "y_m": -0.0401,
+      "yaw_rad": -0.012957,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42249,
+      "yaw_rate_rad_s": -0.00347,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.09679,
+        -0.0079
+      ]
+    },
+    {
+      "step": 1041,
+      "elapsed_s": 34.7,
+      "x_m": 14.94988,
+      "y_m": -0.04087,
+      "yaw_rad": -0.012815,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42033,
+      "yaw_rate_rad_s": -2e-05,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.10103,
+        -0.00717
+      ]
+    },
+    {
+      "step": 1044,
+      "elapsed_s": 34.8,
+      "x_m": 14.99146,
+      "y_m": -0.04185,
+      "yaw_rad": -0.011744,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41291,
+      "yaw_rate_rad_s": 0.01329,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.0996,
+        -0.00331
+      ]
+    },
+    {
+      "step": 1047,
+      "elapsed_s": 34.9,
+      "x_m": 15.03219,
+      "y_m": -0.04291,
+      "yaw_rad": -0.010196,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4022,
+      "yaw_rate_rad_s": 0.01215,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.02448,
+        -0.02048
+      ]
+    },
+    {
+      "step": 1050,
+      "elapsed_s": 35.0,
+      "x_m": 15.07161,
+      "y_m": -0.04379,
+      "yaw_rad": -0.00551,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.39329,
+      "yaw_rate_rad_s": 0.05411,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.84591,
+        0.05881
+      ]
+    },
+    {
+      "step": 1053,
+      "elapsed_s": 35.1,
+      "x_m": 15.11056,
+      "y_m": -0.04422,
+      "yaw_rad": 0.000446,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.39847,
+      "yaw_rate_rad_s": 0.04562,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.93426,
+        0.05508
+      ]
+    },
+    {
+      "step": 1056,
+      "elapsed_s": 35.2,
+      "x_m": 15.15015,
+      "y_m": -0.04445,
+      "yaw_rad": 0.005443,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.39078,
+      "yaw_rate_rad_s": 0.05096,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.9271,
+        0.02887
+      ]
+    },
+    {
+      "step": 1059,
+      "elapsed_s": 35.3,
+      "x_m": 15.18892,
+      "y_m": -0.04426,
+      "yaw_rad": 0.010948,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.3894,
+      "yaw_rate_rad_s": 0.06849,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.93573,
+        0.01205
+      ]
+    },
+    {
+      "step": 1062,
+      "elapsed_s": 35.4,
+      "x_m": 15.22818,
+      "y_m": -0.04385,
+      "yaw_rad": 0.014722,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.39577,
+      "yaw_rate_rad_s": 0.05012,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.00992,
+        0.00166
+      ]
+    },
+    {
+      "step": 1065,
+      "elapsed_s": 35.5,
+      "x_m": 15.26769,
+      "y_m": -0.04319,
+      "yaw_rad": 0.018903,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.39689,
+      "yaw_rate_rad_s": 0.06195,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.48228,
+        0.05515
+      ]
+    },
+    {
+      "step": 1068,
+      "elapsed_s": 35.6,
+      "x_m": 15.30787,
+      "y_m": -0.04232,
+      "yaw_rad": 0.022937,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.40536,
+      "yaw_rate_rad_s": 0.04854,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.47172,
+        0.03546
+      ]
+    },
+    {
+      "step": 1071,
+      "elapsed_s": 35.7,
+      "x_m": 15.34866,
+      "y_m": -0.04131,
+      "yaw_rad": 0.024343,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.40955,
+      "yaw_rate_rad_s": 0.01096,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.6844,
+        -0.02794
+      ]
+    },
+    {
+      "step": 1074,
+      "elapsed_s": 35.8,
+      "x_m": 15.38942,
+      "y_m": -0.04029,
+      "yaw_rad": 0.02494,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.40972,
+      "yaw_rate_rad_s": 0.01308,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.68035,
+        -0.02877
+      ]
+    },
+    {
+      "step": 1077,
+      "elapsed_s": 35.9,
+      "x_m": 15.43031,
+      "y_m": -0.03927,
+      "yaw_rad": 0.024915,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41108,
+      "yaw_rate_rad_s": 0.01141,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.7278,
+        -0.01525
+      ]
+    },
+    {
+      "step": 1080,
+      "elapsed_s": 36.0,
+      "x_m": 15.47069,
+      "y_m": -0.03795,
+      "yaw_rad": 0.023764,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.40437,
+      "yaw_rate_rad_s": -0.00524,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.78533,
+        0.00746
+      ]
+    },
+    {
+      "step": 1083,
+      "elapsed_s": 36.1,
+      "x_m": 15.51007,
+      "y_m": -0.03652,
+      "yaw_rad": 0.024948,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.38984,
+      "yaw_rate_rad_s": 0.02594,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.72668,
+        0.11381
+      ]
+    },
+    {
+      "step": 1086,
+      "elapsed_s": 36.2,
+      "x_m": 15.54953,
+      "y_m": -0.03545,
+      "yaw_rad": 0.028425,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.3973,
+      "yaw_rate_rad_s": 0.009,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.61975,
+        0.09207
+      ]
+    },
+    {
+      "step": 1089,
+      "elapsed_s": 36.3,
+      "x_m": 15.58965,
+      "y_m": -0.03402,
+      "yaw_rad": 0.032714,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.40877,
+      "yaw_rate_rad_s": 0.0456,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.65557,
+        0.08072
+      ]
+    },
+    {
+      "step": 1092,
+      "elapsed_s": 36.4,
+      "x_m": 15.63011,
+      "y_m": -0.0325,
+      "yaw_rad": 0.033614,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.40655,
+      "yaw_rate_rad_s": -0.03308,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.79312,
+        -0.01498
+      ]
+    },
+    {
+      "step": 1095,
+      "elapsed_s": 36.5,
+      "x_m": 15.67016,
+      "y_m": -0.03083,
+      "yaw_rad": 0.031832,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.39591,
+      "yaw_rate_rad_s": -0.04642,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83527,
+        -0.00285
+      ]
+    },
+    {
+      "step": 1098,
+      "elapsed_s": 36.6,
+      "x_m": 15.70936,
+      "y_m": -0.02945,
+      "yaw_rad": 0.029348,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.39391,
+      "yaw_rate_rad_s": -0.02365,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.83848,
+        0.01565
+      ]
+    },
+    {
+      "step": 1101,
+      "elapsed_s": 36.7,
+      "x_m": 15.749,
+      "y_m": -0.02833,
+      "yaw_rad": 0.027763,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.40792,
+      "yaw_rate_rad_s": -0.00219,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.80513,
+        0.02431
+      ]
+    },
+    {
+      "step": 1104,
+      "elapsed_s": 36.8,
+      "x_m": 15.78931,
+      "y_m": -0.02725,
+      "yaw_rad": 0.026723,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.40407,
+      "yaw_rate_rad_s": -0.02528,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.81689,
+        0.02428
+      ]
+    },
+    {
+      "step": 1107,
+      "elapsed_s": 36.9,
+      "x_m": 15.83021,
+      "y_m": -0.02619,
+      "yaw_rad": 0.025756,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41431,
+      "yaw_rate_rad_s": -0.01218,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.77644,
+        -0.00232
+      ]
+    },
+    {
+      "step": 1110,
+      "elapsed_s": 37.0,
+      "x_m": 15.87144,
+      "y_m": -0.02509,
+      "yaw_rad": 0.028599,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41365,
+      "yaw_rate_rad_s": 0.04391,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.64666,
+        0.16948
+      ]
+    },
+    {
+      "step": 1113,
+      "elapsed_s": 37.1,
+      "x_m": 15.91291,
+      "y_m": -0.02377,
+      "yaw_rad": 0.034631,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.417,
+      "yaw_rate_rad_s": 0.06533,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.57106,
+        0.14253
+      ]
+    },
+    {
+      "step": 1116,
+      "elapsed_s": 37.2,
+      "x_m": 15.95487,
+      "y_m": -0.02216,
+      "yaw_rad": 0.040621,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42396,
+      "yaw_rate_rad_s": 0.05705,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.59143,
+        0.11418
+      ]
+    },
+    {
+      "step": 1119,
+      "elapsed_s": 37.3,
+      "x_m": 15.9972,
+      "y_m": -0.02033,
+      "yaw_rad": 0.045345,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42584,
+      "yaw_rate_rad_s": 0.04259,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.58648,
+        0.08644
+      ]
+    },
+    {
+      "step": 1122,
+      "elapsed_s": 37.4,
+      "x_m": 16.03952,
+      "y_m": -0.01833,
+      "yaw_rad": 0.049001,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42649,
+      "yaw_rate_rad_s": 0.03313,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.54564,
+        0.07108
+      ]
+    },
+    {
+      "step": 1125,
+      "elapsed_s": 37.5,
+      "x_m": 16.08211,
+      "y_m": -0.01615,
+      "yaw_rad": 0.052278,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42925,
+      "yaw_rate_rad_s": 0.03605,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.5039,
+        0.06043
+      ]
+    },
+    {
+      "step": 1128,
+      "elapsed_s": 37.6,
+      "x_m": 16.12494,
+      "y_m": -0.01383,
+      "yaw_rad": 0.055312,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43055,
+      "yaw_rate_rad_s": 0.02425,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.46409,
+        0.05258
+      ]
+    },
+    {
+      "step": 1131,
+      "elapsed_s": 37.7,
+      "x_m": 16.16776,
+      "y_m": -0.0114,
+      "yaw_rad": 0.05743,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43013,
+      "yaw_rate_rad_s": 0.02156,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.20742,
+        0.04242
+      ]
+    },
+    {
+      "step": 1134,
+      "elapsed_s": 37.8,
+      "x_m": 16.21044,
+      "y_m": -0.00888,
+      "yaw_rad": 0.060043,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4273,
+      "yaw_rate_rad_s": 0.03,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.17194,
+        0.04615
+      ]
+    },
+    {
+      "step": 1137,
+      "elapsed_s": 37.9,
+      "x_m": 16.25283,
+      "y_m": -0.00624,
+      "yaw_rad": 0.063439,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42489,
+      "yaw_rate_rad_s": 0.03464,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.1394,
+        0.05055
+      ]
+    },
+    {
+      "step": 1140,
+      "elapsed_s": 38.0,
+      "x_m": 16.29502,
+      "y_m": -0.00347,
+      "yaw_rad": 0.067187,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42341,
+      "yaw_rate_rad_s": 0.03803,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.92812,
+        0.05773
+      ]
+    },
+    {
+      "step": 1143,
+      "elapsed_s": 38.1,
+      "x_m": 16.33716,
+      "y_m": -0.00045,
+      "yaw_rad": 0.075222,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4242,
+      "yaw_rate_rad_s": 0.10173,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.73731,
+        0.21765
+      ]
+    },
+    {
+      "step": 1146,
+      "elapsed_s": 38.2,
+      "x_m": 16.37942,
+      "y_m": 0.003,
+      "yaw_rad": 0.085621,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42492,
+      "yaw_rate_rad_s": 0.10375,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.64159,
+        0.18954
+      ]
+    },
+    {
+      "step": 1149,
+      "elapsed_s": 38.3,
+      "x_m": 16.42164,
+      "y_m": 0.00672,
+      "yaw_rad": 0.0875,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42518,
+      "yaw_rate_rad_s": -0.0252,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.31007,
+        -0.13423
+      ]
+    },
+    {
+      "step": 1152,
+      "elapsed_s": 38.4,
+      "x_m": 16.46387,
+      "y_m": 0.01037,
+      "yaw_rad": 0.084213,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42541,
+      "yaw_rate_rad_s": -0.03846,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.31427,
+        -0.10528
+      ]
+    },
+    {
+      "step": 1155,
+      "elapsed_s": 38.5,
+      "x_m": 16.50611,
+      "y_m": 0.01385,
+      "yaw_rad": 0.080858,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4251,
+      "yaw_rate_rad_s": -0.03079,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.27714,
+        -0.07714
+      ]
+    },
+    {
+      "step": 1158,
+      "elapsed_s": 38.6,
+      "x_m": 16.5484,
+      "y_m": 0.01726,
+      "yaw_rad": 0.080841,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42527,
+      "yaw_rate_rad_s": 0.01808,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.0076,
+        0.04443
+      ]
+    },
+    {
+      "step": 1161,
+      "elapsed_s": 38.7,
+      "x_m": 16.59069,
+      "y_m": 0.0207,
+      "yaw_rad": 0.08076,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42568,
+      "yaw_rate_rad_s": -0.00809,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.12177,
+        -0.03884
+      ]
+    },
+    {
+      "step": 1164,
+      "elapsed_s": 38.8,
+      "x_m": 16.63302,
+      "y_m": 0.0241,
+      "yaw_rad": 0.079751,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42518,
+      "yaw_rate_rad_s": -0.00913,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.05527,
+        -0.01184
+      ]
+    },
+    {
+      "step": 1167,
+      "elapsed_s": 38.9,
+      "x_m": 16.67536,
+      "y_m": 0.02749,
+      "yaw_rad": 0.079795,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4255,
+      "yaw_rate_rad_s": 0.00678,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.95237,
+        0.01329
+      ]
+    },
+    {
+      "step": 1170,
+      "elapsed_s": 39.0,
+      "x_m": 16.71756,
+      "y_m": 0.03091,
+      "yaw_rad": 0.081481,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42354,
+      "yaw_rate_rad_s": 0.02319,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.82273,
+        0.03777
+      ]
+    },
+    {
+      "step": 1173,
+      "elapsed_s": 39.1,
+      "x_m": 16.75959,
+      "y_m": 0.03442,
+      "yaw_rad": 0.084488,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42213,
+      "yaw_rate_rad_s": 0.03601,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.68056,
+        0.0622
+      ]
+    },
+    {
+      "step": 1176,
+      "elapsed_s": 39.2,
+      "x_m": 16.80151,
+      "y_m": 0.03807,
+      "yaw_rad": 0.088627,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42147,
+      "yaw_rate_rad_s": 0.0469,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.50499,
+        0.08573
+      ]
+    },
+    {
+      "step": 1179,
+      "elapsed_s": 39.3,
+      "x_m": 16.84337,
+      "y_m": 0.04192,
+      "yaw_rad": 0.093865,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42144,
+      "yaw_rate_rad_s": 0.05638,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.31293,
+        0.1101
+      ]
+    },
+    {
+      "step": 1182,
+      "elapsed_s": 39.4,
+      "x_m": 16.88523,
+      "y_m": 0.04595,
+      "yaw_rad": 0.096488,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42169,
+      "yaw_rate_rad_s": 0.01276,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.30487,
+        -0.00801
+      ]
+    },
+    {
+      "step": 1185,
+      "elapsed_s": 39.5,
+      "x_m": 16.92708,
+      "y_m": 0.05004,
+      "yaw_rad": 0.097948,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42211,
+      "yaw_rate_rad_s": 0.01714,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.38889,
+        0.02465
+      ]
+    },
+    {
+      "step": 1188,
+      "elapsed_s": 39.6,
+      "x_m": 16.96891,
+      "y_m": 0.05422,
+      "yaw_rad": 0.100502,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42174,
+      "yaw_rate_rad_s": 0.03107,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.16276,
+        0.05841
+      ]
+    },
+    {
+      "step": 1191,
+      "elapsed_s": 39.7,
+      "x_m": 17.01072,
+      "y_m": 0.05853,
+      "yaw_rad": 0.104455,
+      "segment_id": 1,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42217,
+      "yaw_rate_rad_s": 0.04396,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.89705,
+        0.0891
+      ]
+    },
+    {
+      "step": 1194,
+      "elapsed_s": 39.8,
+      "x_m": 17.05189,
+      "y_m": 0.06285,
+      "yaw_rad": 0.098682,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.40319,
+      "yaw_rate_rad_s": -0.23584,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.87048,
+        -2.2885
+      ]
+    },
+    {
+      "step": 1197,
+      "elapsed_s": 39.9,
+      "x_m": 17.09242,
+      "y_m": 0.06612,
+      "yaw_rad": 0.059986,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.41411,
+      "yaw_rate_rad_s": -0.51352,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.09108,
+        -2.13071
+      ]
+    },
+    {
+      "step": 1200,
+      "elapsed_s": 40.0,
+      "x_m": 17.13445,
+      "y_m": 0.06735,
+      "yaw_rad": 0.00149,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42604,
+      "yaw_rate_rad_s": -0.64065,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.22717,
+        -1.95539
+      ]
+    },
+    {
+      "step": 1203,
+      "elapsed_s": 40.1,
+      "x_m": 17.17726,
+      "y_m": 0.0659,
+      "yaw_rad": -0.065126,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43448,
+      "yaw_rate_rad_s": -0.68474,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.58923,
+        -1.5419
+      ]
+    },
+    {
+      "step": 1206,
+      "elapsed_s": 40.2,
+      "x_m": 17.22045,
+      "y_m": 0.06146,
+      "yaw_rad": -0.134842,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43657,
+      "yaw_rate_rad_s": -0.70771,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.81443,
+        -1.25639
+      ]
+    },
+    {
+      "step": 1209,
+      "elapsed_s": 40.3,
+      "x_m": 17.26324,
+      "y_m": 0.05411,
+      "yaw_rad": -0.199441,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43421,
+      "yaw_rate_rad_s": -0.61057,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.5797,
+        -0.78871
+      ]
+    },
+    {
+      "step": 1212,
+      "elapsed_s": 40.4,
+      "x_m": 17.30533,
+      "y_m": 0.04418,
+      "yaw_rad": -0.259179,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43309,
+      "yaw_rate_rad_s": -0.58892,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.58474,
+        -0.80954
+      ]
+    },
+    {
+      "step": 1215,
+      "elapsed_s": 40.5,
+      "x_m": 17.34643,
+      "y_m": 0.03196,
+      "yaw_rad": -0.313359,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4282,
+      "yaw_rate_rad_s": -0.50925,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.08037,
+        -0.65767
+      ]
+    },
+    {
+      "step": 1218,
+      "elapsed_s": 40.6,
+      "x_m": 17.38665,
+      "y_m": 0.01779,
+      "yaw_rad": -0.359607,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42318,
+      "yaw_rate_rad_s": -0.43593,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.31134,
+        -0.55797
+      ]
+    },
+    {
+      "step": 1221,
+      "elapsed_s": 40.7,
+      "x_m": 17.42609,
+      "y_m": 0.00187,
+      "yaw_rad": -0.405013,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42642,
+      "yaw_rate_rad_s": -0.46115,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.11516,
+        -0.67533
+      ]
+    },
+    {
+      "step": 1224,
+      "elapsed_s": 40.8,
+      "x_m": 17.46473,
+      "y_m": -0.01574,
+      "yaw_rad": -0.445067,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42371,
+      "yaw_rate_rad_s": -0.35885,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.21159,
+        -0.43621
+      ]
+    },
+    {
+      "step": 1227,
+      "elapsed_s": 40.9,
+      "x_m": 17.50272,
+      "y_m": -0.03475,
+      "yaw_rad": -0.47892,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42674,
+      "yaw_rate_rad_s": -0.32233,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.21532,
+        -0.45347
+      ]
+    },
+    {
+      "step": 1230,
+      "elapsed_s": 41.0,
+      "x_m": 17.54015,
+      "y_m": -0.05502,
+      "yaw_rad": -0.510935,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.42581,
+      "yaw_rate_rad_s": -0.3158,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        4.22019,
+        -0.4545
+      ]
+    },
+    {
+      "step": 1233,
+      "elapsed_s": 41.1,
+      "x_m": 17.57701,
+      "y_m": -0.07664,
+      "yaw_rad": -0.548321,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43004,
+      "yaw_rate_rad_s": -0.40483,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.47692,
+        -0.63869
+      ]
+    },
+    {
+      "step": 1236,
+      "elapsed_s": 41.2,
+      "x_m": 17.61327,
+      "y_m": -0.09989,
+      "yaw_rad": -0.58852,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43326,
+      "yaw_rate_rad_s": -0.39794,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.41116,
+        -0.5647
+      ]
+    },
+    {
+      "step": 1239,
+      "elapsed_s": 41.3,
+      "x_m": 17.64872,
+      "y_m": -0.12469,
+      "yaw_rad": -0.629379,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43406,
+      "yaw_rate_rad_s": -0.40963,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.25445,
+        -0.61099
+      ]
+    },
+    {
+      "step": 1242,
+      "elapsed_s": 41.4,
+      "x_m": 17.68323,
+      "y_m": -0.15101,
+      "yaw_rad": -0.670879,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43597,
+      "yaw_rate_rad_s": -0.40819,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.23744,
+        -0.57889
+      ]
+    },
+    {
+      "step": 1245,
+      "elapsed_s": 41.5,
+      "x_m": 17.71673,
+      "y_m": -0.17883,
+      "yaw_rad": -0.711409,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43725,
+      "yaw_rate_rad_s": -0.39698,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.76584,
+        -0.5638
+      ]
+    },
+    {
+      "step": 1248,
+      "elapsed_s": 41.6,
+      "x_m": 17.74911,
+      "y_m": -0.20803,
+      "yaw_rad": -0.753721,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43729,
+      "yaw_rate_rad_s": -0.4309,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.598,
+        -0.63243
+      ]
+    },
+    {
+      "step": 1251,
+      "elapsed_s": 41.7,
+      "x_m": 17.78027,
+      "y_m": -0.23871,
+      "yaw_rad": -0.797938,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43914,
+      "yaw_rate_rad_s": -0.44378,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.58877,
+        -0.63243
+      ]
+    },
+    {
+      "step": 1254,
+      "elapsed_s": 41.8,
+      "x_m": 17.80996,
+      "y_m": -0.27067,
+      "yaw_rad": -0.843212,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43649,
+      "yaw_rate_rad_s": -0.45316,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.95512,
+        -0.64205
+      ]
+    },
+    {
+      "step": 1257,
+      "elapsed_s": 41.9,
+      "x_m": 17.8381,
+      "y_m": -0.30376,
+      "yaw_rad": -0.884952,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43567,
+      "yaw_rate_rad_s": -0.39141,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.09835,
+        -0.51138
+      ]
+    },
+    {
+      "step": 1260,
+      "elapsed_s": 42.0,
+      "x_m": 17.86477,
+      "y_m": -0.3378,
+      "yaw_rad": -0.924291,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43214,
+      "yaw_rate_rad_s": -0.39216,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.94859,
+        -0.56042
+      ]
+    },
+    {
+      "step": 1263,
+      "elapsed_s": 42.1,
+      "x_m": 17.89006,
+      "y_m": -0.37289,
+      "yaw_rad": -0.966943,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43592,
+      "yaw_rate_rad_s": -0.44238,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.51933,
+        -0.66923
+      ]
+    },
+    {
+      "step": 1266,
+      "elapsed_s": 42.2,
+      "x_m": 17.91377,
+      "y_m": -0.40936,
+      "yaw_rad": -1.020688,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.43847,
+      "yaw_rate_rad_s": -0.59906,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.96342,
+        -0.93537
+      ]
+    },
+    {
+      "step": 1269,
+      "elapsed_s": 42.3,
+      "x_m": 17.93546,
+      "y_m": -0.44738,
+      "yaw_rad": -1.078929,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4397,
+      "yaw_rate_rad_s": -0.56704,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        3.3617,
+        -0.75071
+      ]
+    },
+    {
+      "step": 1272,
+      "elapsed_s": 42.4,
+      "x_m": 17.95495,
+      "y_m": -0.48678,
+      "yaw_rad": -1.141057,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4428,
+      "yaw_rate_rad_s": -0.66311,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.89663,
+        -1.06566
+      ]
+    },
+    {
+      "step": 1275,
+      "elapsed_s": 42.5,
+      "x_m": 17.97189,
+      "y_m": -0.52757,
+      "yaw_rad": -1.209372,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.4465,
+      "yaw_rate_rad_s": -0.69651,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.53506,
+        -1.30142
+      ]
+    },
+    {
+      "step": 1278,
+      "elapsed_s": 42.6,
+      "x_m": 17.98597,
+      "y_m": -0.56956,
+      "yaw_rad": -1.28029,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44674,
+      "yaw_rate_rad_s": -0.71956,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        2.14495,
+        -1.43558
+      ]
+    },
+    {
+      "step": 1281,
+      "elapsed_s": 42.7,
+      "x_m": 17.9971,
+      "y_m": -0.61276,
+      "yaw_rad": -1.352381,
+      "segment_id": 2,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.44793,
+      "yaw_rate_rad_s": -0.72643,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.99909,
+        -1.5742
+      ]
+    },
+    {
+      "step": 1284,
+      "elapsed_s": 42.8,
+      "x_m": 0.0,
+      "y_m": 0.0,
+      "yaw_rad": 0.0,
+      "segment_id": 0,
+      "control_mode": "learned_sensor_policy",
+      "linear_velocity_mps": 0.0,
+      "yaw_rate_rad_s": 0.0,
+      "minimum_lidar_range_m": NaN,
+      "policy_action": [
+        1.28489,
+        -1.94644
+      ]
+    }
+  ],
+  "control_steps": {
+    "learned_sensor_policy": 1284,
+    "physics_supervisor_turn": 0,
+    "presentation_dwell": 0
+  },
+  "route_control": "policy-only",
+  "route_geometry_assumptions": {},
+  "termination_details": {
+    "segment_id": 2,
+    "position_xy_m": [
+      18.00510025024414,
+      -0.6567937135696411
+    ],
+    "final_goal_distance_m": 3.2709248065948486,
+    "minimum_lidar_range_m": 0.2965139150619507,
+    "minimum_lidar_ray_index": 22,
+    "minimum_lidar_ray_angle_deg": 40.0,
+    "minimum_lidar_hit_world_xyz_m": [
+      18.299999237060547,
+      -1.3517725467681885,
+      1.1694109439849854
+    ]
+  },
+  "control_disclosure": "Every wheel action is emitted by the learned LD19-style policy; no turn or dwell action override and no root-transform animation.",
+  "physics_rate_hz": 120.0,
+  "policy_rate_hz": 30.0,
+  "root_transform_animation": false,
+  "fabric_enabled": true,
+  "claim_boundary": "live checkpoint inference with wheel physics and ray sensing in the walkthrough-matched administration USD; presentation geometry is not an as-built survey, and this is not Nav2, sim-to-real, or physical release",
+  "live_assets": {
+    "administration_scene": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+      "sha256": "c0d84d2ccdced9132a80ef65c9ed0bd5dcb7cea5bad1c0ea5ee28e2925a84b58"
+    },
+    "live_environment": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/administration_live_environment.usda",
+      "sha256": "802d7497b00bfc80d29f418ec908411c4d8ff372e58b0aac0bf2beed3f0f8f2d"
+    },
+    "presentation_shell": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_presentation_shell.usda",
+      "sha256": "24c18681d2d753be43e7ab9a3fa846d5f07c4346db207c766d4e69df252f008e"
+    },
+    "presentation_robot": {
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_loaded_presentation.usda",
+      "sha256": "c186008b6c7f65616072bb97bf320d96ca226f97a46fd93c326d46f0f8503039"
+    }
+  },
+  "live_stage_checks": {
+    "live_shell_body": {
+      "path": "/World/envs/env_0/Robot/base_link/presentation_shell_link/Geometry/Body",
+      "valid": true,
+      "active": true
+    },
+    "excluded_replay_robot": {
+      "path": "/World/envs/env_0/Administration/AISHA",
+      "valid": true,
+      "active": false
+    },
+    "live_robot_base": {
+      "path": "/World/envs/env_0/Robot/base_link",
+      "valid": true,
+      "active": true
+    }
+  }
+}

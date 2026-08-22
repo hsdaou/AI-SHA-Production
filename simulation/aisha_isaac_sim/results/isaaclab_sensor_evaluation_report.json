@@ -1,0 +1,205 @@
+{
+  "report_type": "held_out_sensor_evaluation",
+  "generated_at_utc": "2026-08-20T18:59:33.042474+00:00",
+  "task": "Isaac-AISHA-BlockA-SensorNav-Direct-v0",
+  "training_contract_revision": "TRAINING-SENSOR-G",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-20_22-33-50_ld19_flush_threshold_v9/model_599.pt",
+    "sha256": "3da826c515d0e58a3c0731dd3b72022208eadda3cc2bd2200a78d92f079bfacf"
+  },
+  "protocol": {
+    "policy": "deterministic_inference",
+    "seed": 5084,
+    "training_seed": 144,
+    "episodes": 576,
+    "episodes_per_segment": 48,
+    "parallel_environments": 96,
+    "physics_rate_hz": 120,
+    "policy_rate_hz": 30,
+    "randomization": "equal quota per route segment; training-declared pose and goal jitter; unseen random sequence",
+    "fixed_segment_id": null
+  },
+  "results": {
+    "success_count": 576,
+    "success_rate": 1.0,
+    "collision_count": 0,
+    "collision_rate": 0.0,
+    "time_out_count": 0,
+    "time_out_rate": 0.0,
+    "mean_episode_return": 116.52421626779768,
+    "mean_episode_steps": 349.38194444444446,
+    "mean_episode_duration_s": 11.646064814814816,
+    "mean_final_goal_distance_m": 0.4430113310615222,
+    "mean_minimum_lidar_range_m": 1.6704875875471368,
+    "wall_clock_evaluation_s": 64.90270595300171,
+    "per_segment": [
+      {
+        "segment_id": 0,
+        "label": "home -> east_atrium_exit",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 1,
+        "label": "east_atrium_exit -> vice_principal_turn",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 2,
+        "label": "vice_principal_turn -> vice_principal_approach",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 3,
+        "label": "vice_principal_approach -> vice_principal",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 4,
+        "label": "vice_principal -> vice_principal_depart",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 5,
+        "label": "vice_principal_depart -> hallway_return",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 6,
+        "label": "hallway_return -> principal_turn",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 7,
+        "label": "principal_turn -> principal_approach",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 8,
+        "label": "principal_approach -> principal",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 9,
+        "label": "principal -> principal_depart",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 10,
+        "label": "principal_depart -> atrium_return",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 11,
+        "label": "atrium_return -> home_return",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      }
+    ]
+  },
+  "acceptance_gate": {
+    "protocol_satisfied": true,
+    "passed": true,
+    "requirements": {
+      "episodes_per_segment": 48,
+      "overall_success_rate_min": 0.8,
+      "overall_collision_rate_max": 0.15,
+      "every_segment_success_rate_min": 0.6,
+      "office_threshold_segment_ids": [
+        3,
+        4,
+        8,
+        9
+      ],
+      "office_threshold_success_rate_min": 0.7,
+      "note": "declared before corrected-policy candidate evaluation and unchanged through revision TRAINING-SENSOR-G; passing supports presentation playback only"
+    },
+    "observed": {
+      "overall_success_rate": 1.0,
+      "overall_collision_rate": 0.0,
+      "minimum_segment_success_rate": 1.0,
+      "minimum_office_threshold_success_rate": 1.0
+    }
+  },
+  "claim_boundary": {
+    "supported": "Isaac Lab plan-derived Block A policy with downsampled LD19-style ray observations",
+    "not_supported": [
+      "RTX-rendered LiDAR or depth-camera policy input",
+      "Nav2 integration",
+      "photoreal administration-office fidelity",
+      "sim-to-real transfer",
+      "physical robot release"
+    ],
+    "doorway_width": "presentation_assumption_not_measured"
+  }
+}

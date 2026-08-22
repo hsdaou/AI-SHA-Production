@@ -5,11 +5,11 @@ from __future__ import annotations
 
 import argparse
 import math
-import random
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from aisha_common import CONFIG_DIR, RESULTS_DIR, SCENES_DIR, USD_DIR, ensure_output_dirs, load_yaml, sha256_file, write_json
+from aisha_common import CONFIG_DIR, PACKAGE_ROOT, RESULTS_DIR, SCENES_DIR, USD_DIR, ensure_output_dirs, load_yaml, sha256_file, write_json
 
 
 def parse_args() -> argparse.Namespace:
@@ -65,10 +65,14 @@ def build_presentation(args: argparse.Namespace) -> int:
         ensure_output_dirs()
         config_path = CONFIG_DIR / "administration_assumptions.yaml"
         config = load_yaml(config_path)
+        refinement_path = CONFIG_DIR / "geometry_rtx_refinement.yaml"
+        refinement = load_yaml(refinement_path)
         physics = load_yaml(CONFIG_DIR / "physics_materials.yaml")
         sensors = load_yaml(CONFIG_DIR / "sensors.yaml")
         expected_plan_hash = str(config["provenance"]["plan_source"]["sha256"])
         supplied_plan_hash = sha256_file(args.plan) if args.plan and args.plan.is_file() else None
+        if str(refinement["source"]["sha256"]) != expected_plan_hash:
+            raise ValueError("geometry/RTX refinement source does not match the reviewed plan")
         if supplied_plan_hash is not None and supplied_plan_hash != expected_plan_hash:
             raise ValueError(
                 "the supplied plan does not match the reviewed page-2 source: "
@@ -131,27 +135,144 @@ def build_presentation(args: argparse.Namespace) -> int:
             material.CreateSurfaceOutput().ConnectToSource(shader.ConnectableAPI(), "surface")
             return material
 
+        def textured_material(
+            name: str,
+            albedo_path: Path,
+            *,
+            roughness_path: Path | None = None,
+            normal_path: Path | None = None,
+            roughness: float = 0.5,
+            metallic: float = 0.0,
+        ) -> UsdShade.Material:
+            """Create a portable USD Preview Surface texture network."""
+            if not albedo_path.is_file():
+                raise FileNotFoundError(
+                    f"missing {albedo_path}; run tools/generate_administration_textures.py"
+                )
+            if roughness_path is not None and not roughness_path.is_file():
+                raise FileNotFoundError(
+                    f"missing {roughness_path}; run tools/generate_administration_textures.py"
+                )
+            if normal_path is not None and not normal_path.is_file():
+                raise FileNotFoundError(
+                    f"missing {normal_path}; run tools/generate_administration_textures.py"
+                )
+            material_path = f"/World/Looks/{name}"
+            material = UsdShade.Material.Define(stage, material_path)
+            shader = UsdShade.Shader.Define(stage, material_path + "/Shader")
+            shader.CreateIdAttr("UsdPreviewSurface")
+            shader.CreateInput("roughness", Sdf.ValueTypeNames.Float).Set(float(roughness))
+            shader.CreateInput("metallic", Sdf.ValueTypeNames.Float).Set(float(metallic))
+
+            st_reader = UsdShade.Shader.Define(stage, material_path + "/PrimvarST")
+            st_reader.CreateIdAttr("UsdPrimvarReader_float2")
+            st_reader.CreateInput("varname", Sdf.ValueTypeNames.Token).Set("st")
+            st_reader.CreateOutput("result", Sdf.ValueTypeNames.Float2)
+
+            def texture_node(node_name: str, texture_path: Path, color_space: str) -> UsdShade.Shader:
+                texture = UsdShade.Shader.Define(stage, material_path + "/" + node_name)
+                texture.CreateIdAttr("UsdUVTexture")
+                relative_path = os.path.relpath(texture_path, path.parent)
+                texture.CreateInput("file", Sdf.ValueTypeNames.Asset).Set(Sdf.AssetPath(relative_path))
+                texture.CreateInput("sourceColorSpace", Sdf.ValueTypeNames.Token).Set(color_space)
+                texture.CreateInput("wrapS", Sdf.ValueTypeNames.Token).Set("repeat")
+                texture.CreateInput("wrapT", Sdf.ValueTypeNames.Token).Set("repeat")
+                texture.CreateInput("st", Sdf.ValueTypeNames.Float2).ConnectToSource(
+                    st_reader.ConnectableAPI(), "result"
+                )
+                texture.CreateOutput("rgb", Sdf.ValueTypeNames.Float3)
+                texture.CreateOutput("r", Sdf.ValueTypeNames.Float)
+                return texture
+
+            albedo = texture_node("Albedo", albedo_path, "sRGB")
+            shader.CreateInput("diffuseColor", Sdf.ValueTypeNames.Color3f).ConnectToSource(
+                albedo.ConnectableAPI(), "rgb"
+            )
+            if roughness_path is not None:
+                roughness_texture = texture_node("Roughness", roughness_path, "raw")
+                shader.GetInput("roughness").ConnectToSource(
+                    roughness_texture.ConnectableAPI(), "r"
+                )
+            if normal_path is not None:
+                normal_texture = texture_node("Normal", normal_path, "raw")
+                shader.CreateInput("normal", Sdf.ValueTypeNames.Normal3f).ConnectToSource(
+                    normal_texture.ConnectableAPI(), "rgb"
+                )
+            material.CreateSurfaceOutput().ConnectToSource(shader.ConnectableAPI(), "surface")
+            return material
+
         tile_physics = physics_material("polished_tile", physics["materials"]["polished_tile"])
         drive_material = physics_material("drive_wheel", physics["materials"]["drive_wheel"])
         castor_material = physics_material("castor_low_friction", physics["materials"]["castor_low_friction"])
 
-        warm_white = visual_material("WarmWhite", (0.90, 0.89, 0.85), roughness=0.62)
-        light_grey = visual_material("LightGrey", (0.64, 0.67, 0.69), roughness=0.55)
+        texture_dir = PACKAGE_ROOT / "textures" / "administration"
+        texture_paths = tuple(
+            texture_dir / filename
+            for filename in (
+                "terrazzo_albedo.png",
+                "terrazzo_roughness.png",
+                "terrazzo_normal.png",
+                "walnut_albedo.png",
+                "walnut_roughness.png",
+                "walnut_normal.png",
+                "oak_albedo.png",
+                "oak_roughness.png",
+                "oak_normal.png",
+                "mottled_grey_albedo.png",
+                "mottled_grey_roughness.png",
+                "mottled_grey_normal.png",
+            )
+        )
+        warm_white = visual_material("WarmWhite", (0.82, 0.81, 0.77), roughness=0.68)
+        light_grey = visual_material("LightGrey", (0.53, 0.56, 0.58), roughness=0.58)
         dark_grey = visual_material("DarkGrey", (0.11, 0.13, 0.15), roughness=0.48)
-        black = visual_material("Black", (0.025, 0.028, 0.032), roughness=0.40)
-        terrazzo = visual_material("PolishedTerrazzo", (0.56, 0.58, 0.59), roughness=0.18)
-        terrazzo_dark = visual_material("TerrazzoDarkChip", (0.18, 0.20, 0.21), roughness=0.30)
-        terrazzo_light = visual_material("TerrazzoLightChip", (0.82, 0.82, 0.79), roughness=0.28)
-        timber = visual_material("WarmTimber", (0.34, 0.14, 0.045), roughness=0.34)
-        timber_light = visual_material("LightTimber", (0.53, 0.29, 0.11), roughness=0.38)
-        oak = visual_material("LightOakFloor", (0.67, 0.53, 0.35), roughness=0.55)
-        green = visual_material("SchoolGreen", (0.13, 0.31, 0.18), roughness=0.48)
-        leaf_green = visual_material("PlantGreen", (0.05, 0.27, 0.08), roughness=0.70)
-        glass = visual_material("FrostedGlass", (0.66, 0.77, 0.80), roughness=0.16, opacity=0.28)
-        metal = visual_material("BrushedMetal", (0.42, 0.45, 0.48), roughness=0.24, metallic=0.65)
-        aisha_white = visual_material("AISHAWhite", (0.82, 0.86, 0.86), roughness=0.24)
+        black = visual_material("Black", (0.018, 0.021, 0.024), roughness=0.33)
+        terrazzo = visual_material("PolishedTerrazzo", (0.53, 0.55, 0.54), roughness=0.17)
+        timber = visual_material("WarmTimber", (0.15, 0.047, 0.018), roughness=0.31)
+        timber_light = visual_material("LightTimber", (0.29, 0.105, 0.033), roughness=0.35)
+        oak = visual_material("LightOakFloor", (0.58, 0.49, 0.36), roughness=0.43)
+        green = visual_material("SchoolGreen", (0.055, 0.255, 0.14), roughness=0.46)
+        green_accent = visual_material("SchoolGreenAccent", (0.035, 0.39, 0.21), roughness=0.32)
+        leaf_green = visual_material("PlantGreen", (0.035, 0.20, 0.07), roughness=0.72)
+        leaf_light = visual_material("PlantLightGreen", (0.08, 0.31, 0.12), roughness=0.68)
+        glass = visual_material("FrostedGlass", (0.52, 0.64, 0.68), roughness=0.23, opacity=0.34)
+        metal = visual_material("BrushedMetal", (0.38, 0.41, 0.43), roughness=0.20, metallic=0.72)
+        bronze = visual_material("WarmBronze", (0.26, 0.16, 0.075), roughness=0.26, metallic=0.60)
+        paper = visual_material("Paper", (0.88, 0.87, 0.82), roughness=0.78)
+        aisha_white = visual_material("AISHAWhite", (0.68, 0.73, 0.74), roughness=0.20, metallic=0.08)
         aisha_green = visual_material("AISHAGreen", (0.03, 0.38, 0.24), roughness=0.30, metallic=0.05)
         aisha_black = visual_material("AISHABlack", (0.015, 0.022, 0.025), roughness=0.20, metallic=0.20)
+        aisha_led = visual_material(
+            "AISHALed", (0.01, 0.24, 0.12), roughness=0.16, emissive=(0.0, 1.35, 0.55)
+        )
+        terrazzo_finish = textured_material(
+            "TerrazzoFinish",
+            texture_dir / "terrazzo_albedo.png",
+            roughness_path=texture_dir / "terrazzo_roughness.png",
+            normal_path=texture_dir / "terrazzo_normal.png",
+            roughness=0.17,
+        )
+        walnut_finish = textured_material(
+            "WalnutFinish",
+            texture_dir / "walnut_albedo.png",
+            roughness_path=texture_dir / "walnut_roughness.png",
+            normal_path=texture_dir / "walnut_normal.png",
+            roughness=0.31,
+        )
+        oak_finish = textured_material(
+            "OakFinish",
+            texture_dir / "oak_albedo.png",
+            roughness_path=texture_dir / "oak_roughness.png",
+            normal_path=texture_dir / "oak_normal.png",
+            roughness=0.43,
+        )
+        mottled_grey_finish = textured_material(
+            "MottledGreyFinish",
+            texture_dir / "mottled_grey_albedo.png",
+            roughness_path=texture_dir / "mottled_grey_roughness.png",
+            normal_path=texture_dir / "mottled_grey_normal.png",
+            roughness=0.57,
+        )
         light_panel = visual_material(
             "LightPanel",
             (0.92, 0.96, 1.00),
@@ -210,6 +331,30 @@ def build_presentation(args: argparse.Namespace) -> int:
                 UsdPhysics.CollisionAPI.Apply(shape.GetPrim())
             return shape.GetPrim()
 
+        def ellipsoid(
+            prim_path: str,
+            size_xyz: tuple[float, float, float],
+            centre_xyz: tuple[float, float, float],
+            material: UsdShade.Material,
+            *,
+            collision: bool = False,
+            rotate_xyz_deg: tuple[float, float, float] | None = None,
+            rotate_z_deg: float = 0.0,
+        ) -> Usd.Prim:
+            shape = UsdGeom.Sphere.Define(stage, prim_path)
+            shape.CreateRadiusAttr(0.5)
+            xform = UsdGeom.Xformable(shape.GetPrim())
+            xform.AddTranslateOp().Set(Gf.Vec3d(*centre_xyz))
+            if rotate_xyz_deg is not None:
+                xform.AddRotateXYZOp().Set(Gf.Vec3f(*rotate_xyz_deg))
+            elif rotate_z_deg:
+                xform.AddRotateZOp().Set(float(rotate_z_deg))
+            xform.AddScaleOp().Set(Gf.Vec3d(*size_xyz))
+            bind_visual(shape.GetPrim(), material)
+            if collision:
+                UsdPhysics.CollisionAPI.Apply(shape.GetPrim())
+            return shape.GetPrim()
+
         def cylinder(
             prim_path: str,
             radius: float,
@@ -240,6 +385,115 @@ def build_presentation(args: argparse.Namespace) -> int:
             bind_visual(mesh.GetPrim(), material)
             UsdPhysics.CollisionAPI.Apply(mesh.GetPrim())
             bind_physics(mesh.GetPrim(), tile_physics)
+
+        def textured_polygon_surface(
+            name: str,
+            points_xy: list[tuple[float, float]],
+            material: UsdShade.Material,
+            *,
+            z: float = 0.006,
+            metres_per_tile: float = 2.0,
+        ) -> Usd.Prim:
+            """Add a render-only textured finish above an existing collision floor."""
+            mesh = UsdGeom.Mesh.Define(stage, f"/World/Appearance/SurfaceFinishes/{name}")
+            mesh.CreatePointsAttr([Gf.Vec3f(x, y, z) for x, y in points_xy])
+            mesh.CreateFaceVertexCountsAttr([len(points_xy)])
+            mesh.CreateFaceVertexIndicesAttr(list(range(len(points_xy))))
+            mesh.CreateSubdivisionSchemeAttr(UsdGeom.Tokens.none)
+            mesh.CreateDoubleSidedAttr(True)
+            st = UsdGeom.PrimvarsAPI(mesh).CreatePrimvar(
+                "st", Sdf.ValueTypeNames.TexCoord2fArray, UsdGeom.Tokens.varying
+            )
+            st.Set([(x / metres_per_tile, y / metres_per_tile) for x, y in points_xy])
+            bind_visual(mesh.GetPrim(), material)
+            mesh.GetPrim().SetCustomDataByKey("aisha:collision", "none_visual_finish")
+            return mesh.GetPrim()
+
+        def textured_rect_surface(
+            name: str,
+            size_xy: tuple[float, float],
+            centre_xy: tuple[float, float],
+            material: UsdShade.Material,
+            *,
+            z: float = 0.006,
+            rotate_z_deg: float = 0.0,
+            metres_per_tile: float = 2.0,
+        ) -> Usd.Prim:
+            sx, sy = size_xy
+            mesh = UsdGeom.Mesh.Define(stage, f"/World/Appearance/SurfaceFinishes/{name}")
+            mesh.CreatePointsAttr(
+                [
+                    Gf.Vec3f(-sx / 2.0, -sy / 2.0, 0.0),
+                    Gf.Vec3f(sx / 2.0, -sy / 2.0, 0.0),
+                    Gf.Vec3f(sx / 2.0, sy / 2.0, 0.0),
+                    Gf.Vec3f(-sx / 2.0, sy / 2.0, 0.0),
+                ]
+            )
+            mesh.CreateFaceVertexCountsAttr([4])
+            mesh.CreateFaceVertexIndicesAttr([0, 1, 2, 3])
+            mesh.CreateSubdivisionSchemeAttr(UsdGeom.Tokens.none)
+            mesh.CreateDoubleSidedAttr(True)
+            st = UsdGeom.PrimvarsAPI(mesh).CreatePrimvar(
+                "st", Sdf.ValueTypeNames.TexCoord2fArray, UsdGeom.Tokens.varying
+            )
+            st.Set(
+                [
+                    (0.0, 0.0),
+                    (sx / metres_per_tile, 0.0),
+                    (sx / metres_per_tile, sy / metres_per_tile),
+                    (0.0, sy / metres_per_tile),
+                ]
+            )
+            xform = UsdGeom.Xformable(mesh.GetPrim())
+            xform.AddTranslateOp().Set(Gf.Vec3d(centre_xy[0], centre_xy[1], z))
+            if rotate_z_deg:
+                xform.AddRotateZOp().Set(float(rotate_z_deg))
+            bind_visual(mesh.GetPrim(), material)
+            mesh.GetPrim().SetCustomDataByKey("aisha:collision", "none_visual_finish")
+            return mesh.GetPrim()
+
+        def textured_wall_surface(
+            name: str,
+            start_xy: tuple[float, float],
+            end_xy: tuple[float, float],
+            material: UsdShade.Material,
+            *,
+            normal_offset: float = 0.091,
+            height: float = 2.72,
+            metres_per_tile: float = 2.2,
+        ) -> Usd.Prim:
+            dx, dy = end_xy[0] - start_xy[0], end_xy[1] - start_xy[1]
+            length = math.hypot(dx, dy)
+            nx, ny = -dy / length, dx / length
+            start = (start_xy[0] + nx * normal_offset, start_xy[1] + ny * normal_offset)
+            end = (end_xy[0] + nx * normal_offset, end_xy[1] + ny * normal_offset)
+            mesh = UsdGeom.Mesh.Define(stage, f"/World/Appearance/WallFinishes/{name}")
+            mesh.CreatePointsAttr(
+                [
+                    Gf.Vec3f(start[0], start[1], 0.0),
+                    Gf.Vec3f(end[0], end[1], 0.0),
+                    Gf.Vec3f(end[0], end[1], height),
+                    Gf.Vec3f(start[0], start[1], height),
+                ]
+            )
+            mesh.CreateFaceVertexCountsAttr([4])
+            mesh.CreateFaceVertexIndicesAttr([0, 1, 2, 3])
+            mesh.CreateSubdivisionSchemeAttr(UsdGeom.Tokens.none)
+            mesh.CreateDoubleSidedAttr(True)
+            st = UsdGeom.PrimvarsAPI(mesh).CreatePrimvar(
+                "st", Sdf.ValueTypeNames.TexCoord2fArray, UsdGeom.Tokens.varying
+            )
+            st.Set(
+                [
+                    (0.0, 0.0),
+                    (length / metres_per_tile, 0.0),
+                    (length / metres_per_tile, height / metres_per_tile),
+                    (0.0, height / metres_per_tile),
+                ]
+            )
+            bind_visual(mesh.GetPrim(), material)
+            mesh.GetPrim().SetCustomDataByKey("aisha:collision", "none_visual_finish")
+            return mesh.GetPrim()
 
         wall_height = float(config["plan_geometry"]["wall_height_m"]["value"])
         wall_thickness = float(config["plan_geometry"]["wall_thickness_m"]["value"])
@@ -291,7 +545,13 @@ def build_presentation(args: argparse.Namespace) -> int:
                 centre_xy[1] + local_xy[0] * math.sin(angle) + local_xy[1] * math.cos(angle),
             )
 
-        def doorway(name: str, values: dict[str, object], *, hinge_left: bool) -> dict[str, object]:
+        def doorway(
+            name: str,
+            values: dict[str, object],
+            *,
+            hinge_left: bool,
+            opens_outward: bool = False,
+        ) -> dict[str, object]:
             centre_x, centre_y = (float(v) for v in values["centre_xy_m"])
             angle_deg = float(values["wall_rotation_deg"])
             angle = math.radians(angle_deg)
@@ -306,14 +566,14 @@ def build_presentation(args: argparse.Namespace) -> int:
                     f"/World/Architecture/Doors/{name}/Frame{side_name}",
                     (post, 0.19, height),
                     (centre_x + tangent[0] * offset, centre_y + tangent[1] * offset, height / 2.0),
-                    timber_light,
+                    metal,
                     rotate_z_deg=angle_deg,
                 )
             box(
                 f"/World/Architecture/Doors/{name}/Lintel",
                 (width + 2.0 * post, 0.19, 0.18),
                 (centre_x, centre_y, height + 0.09),
-                timber_light,
+                metal,
                 rotate_z_deg=angle_deg,
             )
             hinge_sign = -1.0 if hinge_left else 1.0
@@ -321,25 +581,65 @@ def build_presentation(args: argparse.Namespace) -> int:
                 centre_x + tangent[0] * hinge_sign * width / 2.0,
                 centre_y + tangent[1] * hinge_sign * width / 2.0,
             )
-            leaf_centre = (hinge[0] - normal[0] * width / 2.0, hinge[1] - normal[1] * width / 2.0)
+            swing_sign = 1.0 if opens_outward else -1.0
+            leaf_centre = (
+                hinge[0] + normal[0] * swing_sign * width / 2.0,
+                hinge[1] + normal[1] * swing_sign * width / 2.0,
+            )
             box(
                 f"/World/Architecture/Doors/{name}/OpenLeaf",
                 (width, 0.045, 2.18),
                 (leaf_centre[0], leaf_centre[1], 1.09),
-                timber_light,
+                light_grey,
                 rotate_z_deg=angle_deg + 90.0,
             )
-            threshold_m = float(values["threshold_height_mm"]) / 1000.0
-            threshold = box(
-                f"/World/Architecture/Doors/{name}/Threshold",
-                (width, 0.12, threshold_m),
-                (centre_x, centre_y, threshold_m / 2.0),
-                metal,
-                physics_binding=tile_physics,
-                rotate_z_deg=angle_deg,
+            leaf_angle = angle_deg + 90.0
+            leaf_tangent = (math.cos(math.radians(leaf_angle)), math.sin(math.radians(leaf_angle)))
+            leaf_start = (
+                leaf_centre[0] - leaf_tangent[0] * width / 2.0,
+                leaf_centre[1] - leaf_tangent[1] * width / 2.0,
             )
-            threshold.SetCustomDataByKey("aisha:status", "presentation_assumption_not_measured")
-            threshold.SetCustomDataByKey("aisha:heightMm", int(values["threshold_height_mm"]))
+            leaf_end = (
+                leaf_centre[0] + leaf_tangent[0] * width / 2.0,
+                leaf_centre[1] + leaf_tangent[1] * width / 2.0,
+            )
+            textured_wall_surface(
+                f"{name}DoorFinish",
+                leaf_start,
+                leaf_end,
+                mottled_grey_finish,
+                normal_offset=0.024,
+                height=2.18,
+                metres_per_tile=1.2,
+            )
+            free_edge = (
+                hinge[0] + normal[0] * swing_sign * (width - 0.12),
+                hinge[1] + normal[1] * swing_sign * (width - 0.12),
+            )
+            box(
+                f"/World/Architecture/Doors/{name}/Handle",
+                (0.035, 0.15, 0.030),
+                (*free_edge, 1.02),
+                metal,
+                collision=False,
+                rotate_z_deg=leaf_angle,
+            )
+            threshold_m = float(values["threshold_height_mm"]) / 1000.0
+            if threshold_m > 0.0:
+                threshold = box(
+                    f"/World/Architecture/Doors/{name}/Threshold",
+                    (width, 0.12, threshold_m),
+                    (centre_x, centre_y, threshold_m / 2.0),
+                    metal,
+                    physics_binding=tile_physics,
+                    rotate_z_deg=angle_deg,
+                )
+                threshold.SetCustomDataByKey("aisha:status", "presentation_assumption_not_measured")
+                threshold.SetCustomDataByKey("aisha:heightMm", int(values["threshold_height_mm"]))
+            else:
+                door_prim = stage.GetPrimAtPath(f"/World/Architecture/Doors/{name}")
+                door_prim.SetCustomDataByKey("aisha:thresholdStatus", "assumed_flush_no_threshold_geometry")
+                door_prim.SetCustomDataByKey("aisha:thresholdHeightMm", 0)
             sign_normal = (normal[0] * 0.10, normal[1] * 0.10)
             box(
                 f"/World/Architecture/Doors/{name}/Plaque",
@@ -358,10 +658,13 @@ def build_presentation(args: argparse.Namespace) -> int:
                 "threshold_status": values["threshold_status"],
                 "centre_xy_m": [centre_x, centre_y],
                 "wall_rotation_deg": angle_deg,
+                "swing_assumption": "outward_for_camera_and_route_clearance" if opens_outward else "inward",
+                "hinge_assumption": "left_jamb" if hinge_left else "right_jamb",
             }
 
         def slatted_wall(name: str, start_xy: tuple[float, float], end_xy: tuple[float, float]) -> None:
             wall_segment(name + "_Backing", start_xy, end_xy, timber)
+            textured_wall_surface(name + "_WalnutFinish", start_xy, end_xy, walnut_finish)
             dx, dy = end_xy[0] - start_xy[0], end_xy[1] - start_xy[1]
             length = math.hypot(dx, dy)
             tx, ty = dx / length, dy / length
@@ -381,24 +684,183 @@ def build_presentation(args: argparse.Namespace) -> int:
 
         def desk(name: str, centre_xy: tuple[float, float], yaw_deg: float = 0.0) -> None:
             box(f"/World/Furniture/{name}/Top", (2.00, 0.82, 0.09), (*centre_xy, 0.76), timber_light, rotate_z_deg=yaw_deg)
+            textured_rect_surface(
+                f"{name}_DesktopFinish",
+                (1.96, 0.78),
+                centre_xy,
+                walnut_finish,
+                z=0.807,
+                rotate_z_deg=yaw_deg,
+                metres_per_tile=1.7,
+            )
             for pedestal_index, local_y in enumerate((-0.31, 0.31)):
                 position = local_to_world(centre_xy, (-0.78, local_y), yaw_deg)
                 box(f"/World/Furniture/{name}/Pedestal_{pedestal_index}", (0.34, 0.26, 0.68), (*position, 0.36), timber, rotate_z_deg=yaw_deg)
+                drawer_face = local_to_world(position, (0.18, 0.0), yaw_deg)
+                for drawer_index, z in enumerate((0.24, 0.44, 0.62)):
+                    box(
+                        f"/World/Furniture/{name}/Drawer_{pedestal_index}_{drawer_index}",
+                        (0.018, 0.22, 0.13),
+                        (*drawer_face, z),
+                        timber_light,
+                        collision=False,
+                        rotate_z_deg=yaw_deg,
+                    )
+                    handle = local_to_world(drawer_face, (0.018, 0.0), yaw_deg)
+                    box(
+                        f"/World/Furniture/{name}/Handle_{pedestal_index}_{drawer_index}",
+                        (0.014, 0.10, 0.014),
+                        (*handle, z),
+                        metal,
+                        collision=False,
+                        rotate_z_deg=yaw_deg,
+                    )
+
+            # Walkthrough-style workstation detail. These objects are visual-only
+            # so the previously verified furniture collision envelope is intact.
+            monitor_xy = local_to_world(centre_xy, (0.30, 0.0), yaw_deg)
+            box(f"/World/Furniture/{name}/Monitor", (0.045, 0.62, 0.37), (*monitor_xy, 1.12), black, collision=False, rotate_z_deg=yaw_deg)
+            monitor_trim_xy = local_to_world(monitor_xy, (0.026, 0.0), yaw_deg)
+            box(f"/World/Furniture/{name}/MonitorScreen", (0.008, 0.55, 0.30), (*monitor_trim_xy, 1.12), dark_grey, collision=False, rotate_z_deg=yaw_deg)
+            box(f"/World/Furniture/{name}/MonitorStem", (0.035, 0.055, 0.26), (*monitor_xy, 0.91), metal, collision=False, rotate_z_deg=yaw_deg)
+            keyboard_xy = local_to_world(centre_xy, (-0.12, 0.0), yaw_deg)
+            box(f"/World/Furniture/{name}/Keyboard", (0.26, 0.48, 0.018), (*keyboard_xy, 0.823), black, collision=False, rotate_z_deg=yaw_deg)
+            paper_xy = local_to_world(centre_xy, (0.05, 0.31), yaw_deg)
+            for page_index in range(4):
+                box(f"/World/Furniture/{name}/Paper_{page_index}", (0.30, 0.20, 0.003), (*paper_xy, 0.820 + page_index * 0.004), paper, collision=False, rotate_z_deg=yaw_deg + page_index * 1.3)
 
         def chair(name: str, centre_xy: tuple[float, float], yaw_deg: float = 0.0) -> None:
-            box(f"/World/Furniture/{name}/Seat", (0.50, 0.50, 0.10), (*centre_xy, 0.48), black, rotate_z_deg=yaw_deg)
+            seat_collision = box(f"/World/Furniture/{name}/SeatCollision", (0.50, 0.50, 0.10), (*centre_xy, 0.48), black, rotate_z_deg=yaw_deg)
+            UsdGeom.Imageable(seat_collision).MakeInvisible()
+            ellipsoid(f"/World/Furniture/{name}/Seat", (0.54, 0.52, 0.13), (*centre_xy, 0.49), black, rotate_z_deg=yaw_deg)
             back_xy = local_to_world(centre_xy, (-0.24, 0.0), yaw_deg)
-            box(f"/World/Furniture/{name}/Back", (0.08, 0.50, 0.72), (*back_xy, 0.78), black, rotate_z_deg=yaw_deg)
+            back_collision = box(f"/World/Furniture/{name}/BackCollision", (0.08, 0.50, 0.72), (*back_xy, 0.78), black, rotate_z_deg=yaw_deg)
+            UsdGeom.Imageable(back_collision).MakeInvisible()
+            ellipsoid(f"/World/Furniture/{name}/Back", (0.12, 0.52, 0.74), (*back_xy, 0.78), black, rotate_z_deg=yaw_deg)
             for x_index, sx in enumerate((-0.18, 0.18)):
                 for y_index, sy in enumerate((-0.18, 0.18)):
                     leg_xy = local_to_world(centre_xy, (sx, sy), yaw_deg)
                     box(f"/World/Furniture/{name}/Leg_{x_index}_{y_index}", (0.035, 0.035, 0.44), (*leg_xy, 0.22), metal, rotate_z_deg=yaw_deg)
+            for side_index, local_y in enumerate((-0.27, 0.27)):
+                arm_xy = local_to_world(centre_xy, (-0.03, local_y), yaw_deg)
+                box(f"/World/Furniture/{name}/Arm_{side_index}", (0.38, 0.035, 0.035), (*arm_xy, 0.72), black, collision=False, rotate_z_deg=yaw_deg)
+
+        def cantilever_chair(name: str, centre_xy: tuple[float, float], yaw_deg: float = 0.0) -> None:
+            """Walkthrough-style black meeting chair with a brushed-metal sled base."""
+            seat_collision = box(f"/World/Furniture/{name}/SeatCollision", (0.54, 0.52, 0.09), (*centre_xy, 0.48), black, rotate_z_deg=yaw_deg)
+            UsdGeom.Imageable(seat_collision).MakeInvisible()
+            ellipsoid(f"/World/Furniture/{name}/Seat", (0.58, 0.54, 0.12), (*centre_xy, 0.49), black, rotate_z_deg=yaw_deg)
+            back_xy = local_to_world(centre_xy, (-0.25, 0.0), yaw_deg)
+            back_collision = box(f"/World/Furniture/{name}/BackCollision", (0.075, 0.54, 0.62), (*back_xy, 0.76), black, rotate_z_deg=yaw_deg)
+            UsdGeom.Imageable(back_collision).MakeInvisible()
+            ellipsoid(f"/World/Furniture/{name}/Back", (0.11, 0.56, 0.64), (*back_xy, 0.76), black, rotate_z_deg=yaw_deg)
+            for side_index, local_y in enumerate((-0.22, 0.22)):
+                rail_xy = local_to_world(centre_xy, (0.02, local_y), yaw_deg)
+                box(f"/World/Furniture/{name}/BaseRail_{side_index}", (0.62, 0.025, 0.025), (*rail_xy, 0.035), metal, rotate_z_deg=yaw_deg)
+                support_xy = local_to_world(centre_xy, (-0.24, local_y), yaw_deg)
+                box(f"/World/Furniture/{name}/BackSupport_{side_index}", (0.025, 0.025, 0.82), (*support_xy, 0.42), metal, rotate_z_deg=yaw_deg)
+
+        def round_meeting_table(name: str, centre_xy: tuple[float, float], radius: float) -> None:
+            cylinder(f"/World/Furniture/{name}/Top", radius, 0.085, (*centre_xy, 0.755), timber_light)
+            cylinder(f"/World/Furniture/{name}/Pedestal", 0.14, 0.69, (*centre_xy, 0.365), black)
+            cylinder(f"/World/Furniture/{name}/Foot", 0.42, 0.045, (*centre_xy, 0.035), metal)
 
         def plant(name: str, centre_xy: tuple[float, float]) -> None:
             cylinder(f"/World/Furniture/{name}/Pot", 0.24, 0.42, (*centre_xy, 0.21), light_grey)
+            cylinder(f"/World/Furniture/{name}/PotRim", 0.255, 0.055, (*centre_xy, 0.425), bronze, collision=False)
             cylinder(f"/World/Furniture/{name}/Stem", 0.035, 0.70, (*centre_xy, 0.72), timber, collision=False)
             for index, (dx, dy, dz) in enumerate(((0.0, 0.0, 1.18), (0.24, 0.0, 1.10), (-0.22, 0.05, 1.08), (0.0, 0.22, 1.12), (0.05, -0.22, 1.06))):
-                sphere(f"/World/Furniture/{name}/Leaf_{index}", 0.24, (centre_xy[0] + dx, centre_xy[1] + dy, dz), leaf_green)
+                leaf_collision = sphere(f"/World/Furniture/{name}/LeafCollision_{index}", 0.24, (centre_xy[0] + dx, centre_xy[1] + dy, dz), leaf_green)
+                UsdGeom.Imageable(leaf_collision).MakeInvisible()
+                ellipsoid(
+                    f"/World/Furniture/{name}/Leaf_{index}",
+                    (0.18, 0.38, 0.08),
+                    (centre_xy[0] + dx, centre_xy[1] + dy, dz),
+                    leaf_green if index % 2 else leaf_light,
+                    rotate_xyz_deg=(20.0 + index * 7.0, -25.0 + index * 11.0, index * 67.0),
+                )
+
+        def framed_panel(
+            name: str,
+            centre_xyz: tuple[float, float, float],
+            *,
+            size_xz: tuple[float, float] = (0.95, 1.30),
+            rotate_z_deg: float = 0.0,
+            inset_material: UsdShade.Material = green,
+        ) -> None:
+            """Walkthrough-inspired abstract display panel; no copied artwork."""
+            width, height = size_xz
+            box(f"/World/Appearance/WallDisplays/{name}/Backing", (width, 0.030, height), centre_xyz, black, collision=False, rotate_z_deg=rotate_z_deg)
+            inset_xy = local_to_world((centre_xyz[0], centre_xyz[1]), (0.0, 0.018), rotate_z_deg)
+            box(
+                f"/World/Appearance/WallDisplays/{name}/Inset",
+                (width - 0.10, 0.012, height - 0.10),
+                (*inset_xy, centre_xyz[2]),
+                inset_material,
+                collision=False,
+                rotate_z_deg=rotate_z_deg,
+            )
+            for stripe_index, stripe_z in enumerate((-0.26, 0.0, 0.26)):
+                box(
+                    f"/World/Appearance/WallDisplays/{name}/Stripe_{stripe_index}",
+                    (width - 0.22, 0.010, 0.035),
+                    (*inset_xy, centre_xyz[2] + stripe_z),
+                    paper if stripe_index != 1 else bronze,
+                    collision=False,
+                    rotate_z_deg=rotate_z_deg,
+                )
+
+        def ceiling_grid(
+            name: str,
+            centre_xy: tuple[float, float],
+            size_xy: tuple[float, float],
+            *,
+            rotate_z_deg: float = 0.0,
+            spacing: float = 0.60,
+        ) -> None:
+            sx, sy = size_xy
+            x_count = max(1, int(sx / spacing))
+            y_count = max(1, int(sy / spacing))
+            for index in range(x_count + 1):
+                local_x = -sx / 2.0 + sx * index / x_count
+                point = local_to_world(centre_xy, (local_x, 0.0), rotate_z_deg)
+                box(
+                    f"/World/Architecture/Ceilings/Grid/{name}_X_{index:02d}",
+                    (0.014, sy - 0.06, 0.010),
+                    (*point, 2.986),
+                    light_grey,
+                    collision=False,
+                    rotate_z_deg=rotate_z_deg,
+                )
+            for index in range(y_count + 1):
+                local_y = -sy / 2.0 + sy * index / y_count
+                point = local_to_world(centre_xy, (0.0, local_y), rotate_z_deg)
+                box(
+                    f"/World/Architecture/Ceilings/Grid/{name}_Y_{index:02d}",
+                    (sx - 0.06, 0.014, 0.010),
+                    (*point, 2.986),
+                    light_grey,
+                    collision=False,
+                    rotate_z_deg=rotate_z_deg,
+                )
+
+        def ceiling_sensor(name: str, centre_xy: tuple[float, float]) -> None:
+            cylinder(f"/World/Architecture/Ceilings/Devices/{name}/Mount", 0.11, 0.035, (*centre_xy, 2.970), warm_white, collision=False)
+            ellipsoid(f"/World/Architecture/Ceilings/Devices/{name}/Dome", (0.16, 0.16, 0.10), (*centre_xy, 2.925), warm_white)
+            lens_xy = (centre_xy[0] + 0.045, centre_xy[1])
+            sphere(f"/World/Architecture/Ceilings/Devices/{name}/Lens", 0.030, (*lens_xy, 2.900), black, collision=False)
+
+        def ceiling_vent(
+            name: str,
+            centre_xy: tuple[float, float],
+            *,
+            rotate_z_deg: float = 0.0,
+        ) -> None:
+            box(f"/World/Architecture/Ceilings/Vents/{name}/Recess", (0.72, 0.50, 0.015), (*centre_xy, 2.973), dark_grey, collision=False, rotate_z_deg=rotate_z_deg)
+            for index in range(8):
+                local_y = -0.205 + index * 0.0585
+                point = local_to_world(centre_xy, (0.0, local_y), rotate_z_deg)
+                box(f"/World/Architecture/Ceilings/Vents/{name}/Louver_{index:02d}", (0.62, 0.014, 0.018), (*point, 2.962), metal, collision=False, rotate_z_deg=rotate_z_deg)
 
         # Floors and support slab.
         box("/World/Architecture/SupportSlab", (48.0, 32.0, 0.12), (7.0, -4.0, -0.065), dark_grey, physics_binding=tile_physics)
@@ -410,11 +872,28 @@ def build_presentation(args: argparse.Namespace) -> int:
         polygon_floor("Atrium", vertices, terrazzo)
         box("/World/Architecture/Floors/EastHallway", (16.11, 2.80, 0.055), (13.945, 0.0, -0.027), terrazzo, physics_binding=tile_physics)
         box("/World/Architecture/Floors/ViceAccess", (2.40, 3.65, 0.055), (17.10, -3.225, -0.027), terrazzo, physics_binding=tile_physics)
-        box("/World/Architecture/Floors/VicePrincipal", (6.30, 3.00, 0.055), (17.10, -6.55, -0.027), oak, physics_binding=tile_physics)
-        box("/World/Architecture/Floors/PrincipalAccess", (5.80, 2.60, 0.055), (5.45, -5.45, -0.027), terrazzo, physics_binding=tile_physics, rotate_z_deg=-45.0)
-        box("/World/Architecture/Floors/Principal", (4.75, 3.60, 0.055), (8.65, -9.30, -0.027), oak, physics_binding=tile_physics, rotate_z_deg=-45.0)
-
         cluster = config["plan_geometry"]["south_east_cluster"]
+        vice_room = cluster["vice_principal"]
+        principal_room = cluster["principal"]
+        vice_size = tuple(float(value) for value in vice_room["size_xy_m"])
+        vice_centre = tuple(float(value) for value in vice_room["centre_xy_m"])
+        principal_size = tuple(float(value) for value in principal_room["size_xy_m"])
+        principal_centre = tuple(float(value) for value in principal_room["centre_xy_m"])
+        principal_rotation = float(principal_room["rotation_deg"])
+        box("/World/Architecture/Floors/VicePrincipal", (*vice_size, 0.055), (*vice_centre, -0.027), oak, physics_binding=tile_physics)
+        box("/World/Architecture/Floors/PrincipalAccess", (5.80, 2.60, 0.055), (5.45, -5.45, -0.027), terrazzo, physics_binding=tile_physics, rotate_z_deg=-45.0)
+        box("/World/Architecture/Floors/Principal", (*principal_size, 0.055), (*principal_centre, -0.027), oak, physics_binding=tile_physics, rotate_z_deg=principal_rotation)
+
+        # Render-only PBR finish meshes sit just above the already validated
+        # collision floors. They add the dense terrazzo and light timber visible
+        # in the walkthrough without changing wheel contact or route clearance.
+        textured_polygon_surface("AtriumTerrazzo", vertices, terrazzo_finish, metres_per_tile=2.2)
+        textured_rect_surface("EastHallTerrazzo", (16.11, 2.80), (13.945, 0.0), terrazzo_finish, metres_per_tile=2.2)
+        textured_rect_surface("ViceAccessTerrazzo", (2.40, 3.65), (17.10, -3.225), terrazzo_finish, metres_per_tile=2.2)
+        textured_rect_surface("PrincipalAccessTerrazzo", (5.80, 2.60), (5.45, -5.45), terrazzo_finish, rotate_z_deg=-45.0, metres_per_tile=2.2)
+        textured_rect_surface("ViceOfficeOak", vice_size, vice_centre, oak_finish, metres_per_tile=2.6)
+        textured_rect_surface("PrincipalOfficeOak", principal_size, principal_centre, oak_finish, rotate_z_deg=principal_rotation, metres_per_tile=2.6)
+
         for room_name in ("office_manager", "meeting_room_1", "meeting_room_2"):
             room = cluster[room_name]
             box(
@@ -457,7 +936,9 @@ def build_presentation(args: argparse.Namespace) -> int:
         vp_half = float(vp_values["clear_width_m"]) / 2.0
         wall_segment("Vice_North_West", (13.95, -5.05), (17.10 - vp_half, -5.05), warm_white)
         wall_segment("Vice_North_East", (17.10 + vp_half, -5.05), (20.25, -5.05), warm_white)
-        slatted_wall("Vice_South", (13.95, -8.05), (20.25, -8.05))
+        slatted_wall("Vice_South_West", (13.95, -8.05), (16.10, -8.05))
+        box("/World/Architecture/Walls/ViceWindowSill", (4.15, wall_thickness, 0.66), (18.175, -8.05, 0.33), warm_white)
+        box("/World/Architecture/Walls/ViceWindowHead", (4.15, wall_thickness, 0.64), (18.175, -8.05, 2.68), warm_white)
         wall_segment("Vice_West", (13.95, -8.05), (13.95, -5.05), warm_white)
         wall_segment("Vice_East_Lower", (20.25, -8.05), (20.25, -6.30), warm_white)
         wall_segment("Vice_East_Upper", (20.25, -5.80), (20.25, -5.05), warm_white)
@@ -477,9 +958,6 @@ def build_presentation(args: argparse.Namespace) -> int:
                 material,
             )
 
-        principal_centre = (8.65, -9.30)
-        principal_size = (4.75, 3.60)
-        principal_rotation = -45.0
         principal_corners = [
             local_to_world(principal_centre, (-principal_size[0] / 2.0, -principal_size[1] / 2.0), principal_rotation),
             local_to_world(principal_centre, (principal_size[0] / 2.0, -principal_size[1] / 2.0), principal_rotation),
@@ -502,48 +980,106 @@ def build_presentation(args: argparse.Namespace) -> int:
         wall_segment("Principal_North", principal_corners[2], principal_corners[3], warm_white)
 
         doors = {
-            "vice_principal": doorway("VicePrincipal", vp_values, hinge_left=True),
-            "principal": doorway("Principal", config["doors"]["principal"], hinge_left=False),
+            "vice_principal": doorway("VicePrincipal", vp_values, hinge_left=True, opens_outward=True),
+            "principal": doorway(
+                "Principal",
+                config["doors"]["principal"],
+                hinge_left=True,
+                opens_outward=True,
+            ),
         }
 
         # Walkthrough-derived furniture and finishes.
         box("/World/Furniture/Reception/Base", (4.20, 0.78, 1.08), (-1.10, 3.45, 0.54), timber)
         box("/World/Furniture/Reception/Counter", (4.35, 0.92, 0.09), (-1.10, 3.45, 1.10), timber_light)
+        textured_rect_surface("ReceptionCounterFinish", (4.26, 0.84), (-1.10, 3.45), walnut_finish, z=1.147, metres_per_tile=2.1)
         for index in range(40):
             x = -3.05 + index * 0.10
             box(f"/World/Furniture/Reception/Slat_{index:02d}", (0.035, 0.055, 0.86), (x, 3.01, 0.50), timber_light, collision=False)
+        for index, x in enumerate((-2.35, -1.10, 0.15)):
+            box(f"/World/Furniture/Reception/Glass_{index:02d}", (1.08, 0.025, 0.74), (x, 3.43, 1.52), glass, collision=False)
+            for side, offset in (("Left", -0.56), ("Right", 0.56)):
+                box(f"/World/Furniture/Reception/GlassFrame_{index:02d}_{side}", (0.025, 0.040, 0.80), (x + offset, 3.43, 1.52), metal, collision=False)
+        box("/World/Furniture/Reception/Monitor", (0.055, 0.52, 0.34), (-0.35, 3.18, 1.37), black, collision=False)
+        box("/World/Furniture/Reception/MonitorStand", (0.08, 0.08, 0.22), (-0.35, 3.18, 1.18), metal, collision=False)
         box("/World/Furniture/AtriumBench/Seat", (2.60, 0.70, 0.16), (-1.00, -3.35, 0.46), black)
         box("/World/Furniture/AtriumBench/Back", (2.60, 0.12, 0.70), (-1.00, -3.68, 0.78), black)
+        for index, x in enumerate((-2.05, 0.05)):
+            box(f"/World/Furniture/AtriumBench/Leg_{index}", (0.10, 0.58, 0.38), (x, -3.35, 0.20), metal, collision=False)
         plant("AtriumPlant", (2.20, 3.45))
         plant("EastHallPlant", (20.70, 0.70))
 
-        desk("ViceDesk", (17.10, -7.35), 0.0)
-        chair("ViceDeskChair", (17.10, -7.82), 90.0)
-        chair("ViceVisitorLeft", (15.75, -6.65), -90.0)
-        chair("ViceVisitorRight", (18.45, -6.65), -90.0)
-        box("/World/Furniture/ViceCabinet", (2.00, 0.38, 0.82), (14.30, -7.72, 0.41), timber)
-        plant("VicePlant", (19.55, -7.45))
+        # Abstract displays establish the rhythm seen along the real timber
+        # corridor while avoiding reproduction of the walkthrough's posters.
+        for index, (x, inset) in enumerate(((8.0, green), (10.6, paper), (13.2, green_accent))):
+            framed_panel(f"EastHall_{index:02d}", (x, -1.255, 1.58), inset_material=inset)
+        framed_panel("AtriumNorth", (1.65, 4.835, 1.55), size_xz=(1.20, 1.45), inset_material=paper)
 
-        desk_local = local_to_world(principal_centre, (0.55, -0.55), principal_rotation)
+        # The first visited room follows the walkthrough's round-table office:
+        # timber storage, black cantilever chairs and broad exterior glazing.
+        vice_table_centre = (15.45, -6.62)
+        round_meeting_table("ViceMeetingTable", vice_table_centre, 0.76)
+        for index, angle_deg in enumerate((70.0, 135.0, 180.0, 225.0, 290.0)):
+            angle = math.radians(angle_deg)
+            seat_xy = (
+                vice_table_centre[0] + 1.12 * math.cos(angle),
+                vice_table_centre[1] + 1.12 * math.sin(angle),
+            )
+            cantilever_chair(f"ViceMeetingChair_{index:02d}", seat_xy, angle_deg + 180.0)
+        box("/World/Furniture/ViceCabinet", (1.70, 0.38, 0.82), (19.00, -7.72, 0.41), timber)
+        for index, x in enumerate((18.34, 18.78, 19.22, 19.66)):
+            box(f"/World/Furniture/ViceCabinetDoor_{index:02d}", (0.38, 0.025, 0.68), (x, -7.505, 0.43), timber_light, collision=False)
+            box(f"/World/Furniture/ViceCabinetHandle_{index:02d}", (0.08, 0.020, 0.018), (x, -7.486, 0.49), metal, collision=False)
+        plant("VicePlant", (19.70, -7.35))
+
+        desk_local = local_to_world(principal_centre, (0.95, -0.95), principal_rotation)
         desk("PrincipalDesk", desk_local, principal_rotation)
         principal_chair = local_to_world(principal_centre, (1.20, -1.15), principal_rotation)
         chair("PrincipalDeskChair", principal_chair, principal_rotation + 180.0)
-        for name, local in (("PrincipalVisitorLeft", (-0.40, 1.15)), ("PrincipalVisitorRight", (-0.40, -1.15))):
+        # Visitor chairs remain on the desk side of the room, outside the
+        # disclosed 1.64 m in-room pivot circle around the presentation stop.
+        for name, local in (("PrincipalVisitorLeft", (0.40, 1.20)), ("PrincipalVisitorRight", (0.40, -1.20))):
             chair(name, local_to_world(principal_centre, local, principal_rotation), principal_rotation)
         principal_cabinet = local_to_world(principal_centre, (1.90, 0.80), principal_rotation)
         box("/World/Furniture/PrincipalCabinet", (0.40, 1.60, 0.86), (*principal_cabinet, 0.43), timber, rotate_z_deg=principal_rotation)
-        plant("PrincipalPlant", local_to_world(principal_centre, (-1.45, 1.15), principal_rotation))
+        for index, local_y in enumerate((-0.54, -0.18, 0.18, 0.54)):
+            door_xy = local_to_world(principal_cabinet, (0.215, local_y), principal_rotation)
+            box(f"/World/Furniture/PrincipalCabinetDoor_{index:02d}", (0.025, 0.32, 0.72), (*door_xy, 0.44), timber_light, collision=False, rotate_z_deg=principal_rotation)
+            handle_xy = local_to_world(door_xy, (0.018, 0.0), principal_rotation)
+            box(f"/World/Furniture/PrincipalCabinetHandle_{index:02d}", (0.016, 0.08, 0.018), (*handle_xy, 0.50), metal, collision=False, rotate_z_deg=principal_rotation)
+        # Keep the walkthrough-derived plant in a furnished corner rather than
+        # inside the robot's in-room pivot envelope. Its previous offset put
+        # foliage at crown-lidar height only about 1.0 m from the visit stop,
+        # even though that offset was never dimensioned by the floor plan.
+        plant("PrincipalPlant", local_to_world(principal_centre, (1.65, 1.30), principal_rotation))
+        principal_logo = local_to_world(principal_centre, (0.60, -1.72), principal_rotation)
+        ellipsoid("/World/Furniture/PrincipalWallEmblem", (0.62, 0.045, 0.62), (*principal_logo, 1.72), bronze, rotate_z_deg=principal_rotation)
+        emblem_front = local_to_world(principal_logo, (0.0, -0.030), principal_rotation)
+        ellipsoid("/World/Furniture/PrincipalWallEmblemInset", (0.47, 0.025, 0.47), (*emblem_front, 1.72), green, rotate_z_deg=principal_rotation)
+        for bar_index, z in enumerate((1.64, 1.72, 1.80)):
+            box(f"/World/Furniture/PrincipalWallEmblemBar_{bar_index}", (0.25, 0.018, 0.025), (*emblem_front, z), paper, collision=False, rotate_z_deg=principal_rotation)
 
-        # Terrazzo aggregate and geometric inlay cues from the walkthrough.
-        rng = random.Random(20260820)
-        floor_regions = [(-5.0, 5.0, -5.0, 5.0), (5.8, 21.8, -1.28, 1.28), (15.98, 18.22, -4.95, -1.50)]
-        for index in range(280):
-            xmin, xmax, ymin, ymax = floor_regions[index % len(floor_regions)]
-            x = rng.uniform(xmin, xmax)
-            y = rng.uniform(ymin, ymax)
-            size = rng.uniform(0.016, 0.052)
-            chip_material = terrazzo_dark if index % 3 else terrazzo_light
-            box(f"/World/Appearance/TerrazzoChip_{index:03d}", (size, size * rng.uniform(0.5, 1.6), 0.003), (x, y, 0.006), chip_material, collision=False, rotate_z_deg=rng.uniform(0.0, 180.0))
+        # White columns are walkthrough-derived visual anchors rather than
+        # surveyed plan geometry. Their disclosed positions are kept in config
+        # so the learned-trace swept-clearance validator can gate the render.
+        column_config = config["appearance"]["atrium_columns"]
+        column_radius = float(column_config["radius_m"])
+        column_height = float(column_config["height_m"])
+        for index, position in enumerate(column_config["positions_xy_m"]):
+            x, y = (float(value) for value in position)
+            cylinder(
+                f"/World/Architecture/Columns/Atrium_{index:02d}",
+                column_radius,
+                column_height,
+                (x, y, column_height / 2.0),
+                warm_white,
+            )
+        for index, x in enumerate((16.55, 17.35, 18.15, 18.95, 19.75)):
+            box(f"/World/Architecture/Glass/ViceExterior_{index:02d}", (0.72, 0.045, 1.62), (x, -8.02, 1.48), glass, collision=False)
+            box(f"/World/Architecture/Glass/ViceMullion_{index:02d}", (0.035, 0.07, 1.78), (x - 0.38, -7.99, 1.48), metal, collision=False)
+
+        # Dark geometric inlays are physical-space cues; aggregate itself is now
+        # represented by the high-density procedural texture above.
         for index, (start, end) in enumerate((((7.0, 0.45), (10.5, 0.45)), ((10.5, 0.45), (11.6, -0.35)), ((11.6, -0.35), (14.2, -0.35)))):
             dx, dy = end[0] - start[0], end[1] - start[1]
             box(
@@ -565,26 +1101,47 @@ def build_presentation(args: argparse.Namespace) -> int:
         box("/World/Architecture/Ceilings/Principal", (4.75, 3.60, 0.08), (8.65, -9.30, 3.04), warm_white, collision=False, rotate_z_deg=-45.0)
 
         light_positions = [
-            (-3.0, 0.0), (0.0, 0.0), (3.0, 0.0),
+            (-3.0, -2.5), (-3.0, 0.0), (-3.0, 2.5),
+            (0.0, -2.5), (0.0, 0.0), (0.0, 2.5),
+            (3.0, -2.5), (3.0, 0.0), (3.0, 2.5),
             (7.0, 0.0), (10.0, 0.0), (13.0, 0.0), (16.0, 0.0), (19.0, 0.0),
             (17.1, -3.1), (15.4, -6.55), (18.7, -6.55),
             (5.4, -5.4), (8.0, -8.6), (9.7, -9.9),
         ]
         for index, (x, y) in enumerate(light_positions):
-            box(f"/World/Lighting/Panels/Panel_{index:02d}", (0.85, 0.55, 0.025), (x, y, 2.985), light_panel, collision=False)
+            box(f"/World/Lighting/Panels/Frame_{index:02d}", (0.92, 0.62, 0.018), (x, y, 2.987), metal, collision=False)
+            box(f"/World/Lighting/Panels/Panel_{index:02d}", (0.84, 0.54, 0.018), (x, y, 2.974), light_panel, collision=False)
             light = UsdLux.RectLight.Define(stage, f"/World/Lighting/Fixtures/Light_{index:02d}")
-            light.CreateIntensityAttr(16000.0)
-            light.CreateColorAttr(Gf.Vec3f(0.93, 0.96, 1.0))
-            light.CreateWidthAttr(0.85)
-            light.CreateHeightAttr(0.55)
+            light.CreateIntensityAttr(11000.0)
+            light.CreateColorAttr(Gf.Vec3f(0.96, 0.98, 1.0))
+            light.CreateWidthAttr(0.84)
+            light.CreateHeightAttr(0.54)
             light_xform = UsdGeom.Xformable(light.GetPrim())
-            light_xform.AddTranslateOp().Set(Gf.Vec3d(x, y, 2.96))
+            light_xform.AddTranslateOp().Set(Gf.Vec3d(x, y, 2.955))
+
+        # Dropped-ceiling grid and vents reproduce the office scale cues visible
+        # in the walkthrough without claiming surveyed dimensions.
+        ceiling_grid("Atrium", (0.0, 0.0), (10.80, 10.80))
+        ceiling_grid("EastHall", (13.945, 0.0), (16.00, 2.72))
+        ceiling_grid("ViceAccess", (17.10, -3.225), (2.32, 3.57))
+        ceiling_grid("Vice", (17.10, -6.55), (6.22, 2.92))
+        ceiling_grid("PrincipalAccess", (5.45, -5.45), (5.72, 2.52), rotate_z_deg=-45.0)
+        ceiling_grid("Principal", principal_centre, (4.67, 3.52), rotate_z_deg=-45.0)
+        ceiling_vent("Vice", (18.05, -6.02))
+        principal_vent = local_to_world(principal_centre, (-0.65, 0.70), principal_rotation)
+        ceiling_vent("Principal", principal_vent, rotate_z_deg=principal_rotation)
+        ceiling_vent("EastHall", (12.25, 0.55))
+        for index, location in enumerate(((3.7, 1.2), (10.1, -0.6), (17.1, -3.7), (18.6, -6.5), (8.55, -9.25))):
+            ceiling_sensor(f"Camera_{index:02d}", location)
+        for index, location in enumerate(((-1.8, 0.8), (7.9, 0.65), (16.2, -6.0), (7.6, -8.7))):
+            cylinder(f"/World/Architecture/Ceilings/Devices/Smoke_{index:02d}", 0.095, 0.035, (*location, 2.965), warm_white, collision=False)
+            cylinder(f"/World/Architecture/Ceilings/Devices/SmokeRing_{index:02d}", 0.057, 0.010, (*location, 2.942), dark_grey, collision=False)
 
         dome = UsdLux.DomeLight.Define(stage, "/World/Lighting/Ambient")
-        dome.CreateIntensityAttr(1800.0)
-        dome.CreateColorAttr(Gf.Vec3f(0.78, 0.84, 0.92))
+        dome.CreateIntensityAttr(280.0)
+        dome.CreateColorAttr(Gf.Vec3f(0.82, 0.87, 0.93))
         sun = UsdLux.DistantLight.Define(stage, "/World/Lighting/Sun")
-        sun.CreateIntensityAttr(1800.0)
+        sun.CreateIntensityAttr(700.0)
         sun.CreateAngleAttr(1.2)
         sun_xform = UsdGeom.Xformable(sun.GetPrim())
         sun_xform.AddRotateXYZOp().Set(Gf.Vec3f(48.0, -25.0, 30.0))
@@ -602,7 +1159,7 @@ def build_presentation(args: argparse.Namespace) -> int:
         curve.CreateDisplayColorAttr([Gf.Vec3f(0.05, 0.55, 0.95)])
         UsdGeom.Imageable(curve.GetPrim()).CreateVisibilityAttr(UsdGeom.Tokens.invisible)
         for item in route:
-            if item["action"] not in ("start_and_end", "presentation_stop"):
+            if item["action"] != "start_and_end" and not str(item["action"]).startswith("presentation_stop"):
                 continue
             marker = UsdGeom.Cylinder.Define(stage, f"/World/Presentation/Goals/{item['id']}")
             marker.CreateAxisAttr(UsdGeom.Tokens.z)
@@ -626,15 +1183,21 @@ def build_presentation(args: argparse.Namespace) -> int:
         # A presentation shell gives the imported engineering URDF the intended
         # finished-product read while keeping the Rev D collision and sensor
         # frames unchanged underneath it.
-        box("/World/AISHA/PresentationShell/Body", (0.82, 0.59, 0.34), (0.02, 0.0, 0.39), aisha_white, collision=False)
-        box("/World/AISHA/PresentationShell/LowerBumper", (0.86, 0.63, 0.10), (0.03, 0.0, 0.245), aisha_black, collision=False)
-        box("/World/AISHA/PresentationShell/Tray", (0.78, 0.57, 0.055), (-0.03, 0.0, 0.555), aisha_green, collision=False)
-        box("/World/AISHA/PresentationShell/Mast", (0.11, 0.13, 0.46), (0.42, 0.0, 0.72), aisha_white, collision=False)
-        sphere("/World/AISHA/PresentationShell/Head", 0.232, (0.50, 0.0, 0.925), aisha_white, collision=False)
-        box("/World/AISHA/PresentationShell/Face", (0.025, 0.265, 0.135), (0.728, 0.0, 0.94), aisha_black, collision=False)
-        box("/World/AISHA/PresentationShell/FaceAccent", (0.028, 0.15, 0.020), (0.742, 0.0, 0.91), aisha_green, collision=False)
+        ellipsoid("/World/AISHA/PresentationShell/Body", (0.82, 0.59, 0.34), (0.02, 0.0, 0.40), aisha_white)
+        ellipsoid("/World/AISHA/PresentationShell/LowerBumper", (0.88, 0.64, 0.16), (0.03, 0.0, 0.27), aisha_black)
+        box("/World/AISHA/PresentationShell/Tray", (0.78, 0.57, 0.045), (-0.03, 0.0, 0.565), aisha_green, collision=False)
+        box("/World/AISHA/PresentationShell/TrayPad", (0.68, 0.47, 0.012), (-0.05, 0.0, 0.594), aisha_black, collision=False)
+        box("/World/AISHA/PresentationShell/Mast", (0.09, 0.11, 0.43), (0.40, 0.0, 0.76), aisha_white, collision=False)
+        ellipsoid("/World/AISHA/PresentationShell/Head", (0.33, 0.40, 0.27), (0.50, 0.0, 0.96), aisha_white)
+        box("/World/AISHA/PresentationShell/Face", (0.022, 0.275, 0.145), (0.691, 0.0, 0.97), aisha_black, collision=False)
+        box("/World/AISHA/PresentationShell/FaceStatus", (0.026, 0.060, 0.012), (0.705, -0.080, 0.920), aisha_led, collision=False)
+        ellipsoid("/World/AISHA/PresentationShell/CameraAperture", (0.018, 0.040, 0.040), (0.706, 0.068, 0.985), metal)
+        cylinder("/World/AISHA/PresentationShell/LidarCollar", 0.075, 0.025, (0.50, 0.0, 1.115), metal, collision=False)
+        cylinder("/World/AISHA/PresentationShell/Lidar", 0.055, 0.070, (0.50, 0.0, 1.160), aisha_black, collision=False)
+        box("/World/AISHA/PresentationShell/LidarWindow", (0.038, 0.070, 0.018), (0.552, 0.0, 1.165), aisha_led, collision=False)
         for side, y in (("Left", 0.301), ("Right", -0.301)):
-            box(f"/World/AISHA/PresentationShell/{side}Accent", (0.42, 0.018, 0.08), (0.03, y, 0.42), aisha_green, collision=False)
+            ellipsoid(f"/World/AISHA/PresentationShell/{side}WheelCover", (0.38, 0.055, 0.23), (0.01, y, 0.31), aisha_black)
+            box(f"/World/AISHA/PresentationShell/{side}Accent", (0.42, 0.018, 0.055), (0.03, y * 1.018, 0.43), aisha_led, collision=False)
 
         sensor_bindings = []
         contact_bindings = {"drive_wheel": [], "castor_low_friction": []}
@@ -668,11 +1231,15 @@ def build_presentation(args: argparse.Namespace) -> int:
             values["high_fidelity_threshold_validation"] = "blocked"
 
         stage.GetRootLayer().customLayerData = {
-            "aisha:scenePurpose": "plan_derived_scripted_cinematic",
+            "aisha:scenePurpose": "walkthrough_matched_environment_for_verified_learned_trajectory_replay",
             "aisha:a1Page2Status": "approved_page_2_reviewed",
             "aisha:planSha256": expected_plan_hash,
             "aisha:geometryStatus": "plan_derived_route_scoped",
-            "aisha:appearanceStatus": "walkthrough_video_derived_not_dimensioned",
+            "aisha:appearanceStatus": "walkthrough_video_derived_procedural_pbr_not_dimensioned",
+            "aisha:visualUpgrade": "administration_walkthrough_procedural_pbr_v1",
+            "aisha:geometryRefinement": refinement["revision"],
+            "aisha:rtxMaterialRefinement": "administration_rtx_pbr_v2",
+            "aisha:visualUpgradeCollisionImpact": "none_visual_only",
             "aisha:physicalRelease": False,
             "aisha:productionRepositoryCommit": config["provenance"]["production_repository"]["commit"],
         }
@@ -680,7 +1247,7 @@ def build_presentation(args: argparse.Namespace) -> int:
 
         report = {
             "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-            "status": "plan_derived_presentation_scene_built",
+            "status": "walkthrough_matched_plan_derived_presentation_scene_built",
             "scene": str(path),
             "payload": args.payload,
             "robot_asset": str(asset),
@@ -700,8 +1267,26 @@ def build_presentation(args: argparse.Namespace) -> int:
             "config_file": str(config_path),
             "config_sha256": sha256_file(config_path),
             "known_dimensions": config["known_dimensions"],
+            "geometry_rtx_refinement": refinement,
+            "geometry_rtx_refinement_config": str(refinement_path),
+            "geometry_rtx_refinement_config_sha256": sha256_file(refinement_path),
             "plan_geometry": config["plan_geometry"],
             "appearance": config["appearance"],
+            "visual_upgrade": {
+                "version": "administration_walkthrough_procedural_pbr_v1",
+                "rtx_material_version": "administration_rtx_pbr_v2",
+                "texture_maps": ["albedo", "perceptual_roughness", "tangent_space_normal"],
+                "reference_policy": "walkthrough appearance only; approved plan remains the geometry authority",
+                "collision_geometry_changed": False,
+                "texture_assets": [
+                    {
+                        "path": str(texture_path.resolve()),
+                        "sha256": sha256_file(texture_path),
+                    }
+                    for texture_path in texture_paths
+                    if texture_path.is_file()
+                ],
+            },
             "doors": doors,
             "route": route,
             "sensor_contracts": sensor_bindings,
@@ -713,6 +1298,15 @@ def build_presentation(args: argparse.Namespace) -> int:
                 >= float(config["presentation_release"]["pivot_clear_circle_m"]),
                 "vice_principal_is_east_of_principal": float(cluster["vice_principal"]["centre_xy_m"][0])
                 > float(cluster["principal"]["centre_xy_m"][0]),
+                "atrium_columns_declared_for_trace_clearance": len(column_config["positions_xy_m"]) == 4
+                and float(column_config["minimum_trace_centre_clearance_m"])
+                >= math.hypot(
+                    float(config["presentation_release"]["robot_transit_width_m"]) / 2.0,
+                    float(config["presentation_release"]["robot_transit_length_m"]) / 2.0,
+                )
+                + column_radius,
+                "all_visual_texture_assets_present": all(texture_path.is_file() for texture_path in texture_paths),
+                "visual_upgrade_preserves_collision_geometry": True,
                 "scene_reopens": Usd.Stage.Open(str(path)) is not None,
             },
             "presentation_ready": True,

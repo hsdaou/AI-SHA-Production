@@ -1,0 +1,93 @@
+{
+  "camera": {
+    "configuration": {
+      "actual_distance_range_m": [
+        0.9,
+        2.0
+      ],
+      "clearance_adaptation": "rear_lidar_range_with_0.15_m_buffer",
+      "eye": [
+        -2.0,
+        0.0,
+        1.45
+      ],
+      "lookat": [
+        0.3,
+        0.0,
+        0.55
+      ]
+    },
+    "non_initial_uniform_occlusion_intervals_s": [],
+    "tracking": "manual_body_frame_follow",
+    "uniform_occlusion_intervals_s": [
+      [
+        0.0,
+        0.0
+      ]
+    ]
+  },
+  "checkpoint_sha256": "3da826c515d0e58a3c0731dd3b72022208eadda3cc2bd2200a78d92f079bfacf",
+  "checks": {
+    "all_route_segments_completed": true,
+    "checkpoint_exists": true,
+    "checkpoint_hash_matches": true,
+    "control_accounting_complete": true,
+    "learned_policy_is_majority_control": true,
+    "live_administration_task": true,
+    "live_asset_build_passed": true,
+    "live_asset_source_scene_current": true,
+    "live_execution_mode": true,
+    "live_robot_and_shell_present": true,
+    "no_noninitial_uniform_camera_occlusion": true,
+    "physics_and_policy_rates_declared": true,
+    "pose_trace_finite": true,
+    "presentation_doors_disclosed_and_clear": true,
+    "presentation_motion_unchanged": true,
+    "presentation_robot_current": true,
+    "presentation_video_hash_matches": true,
+    "presentation_video_passed": true,
+    "raw_video_complete": true,
+    "replay_robot_excluded": true,
+    "root_transform_animation_disabled": true,
+    "route_segment_ids_complete": true,
+    "route_success": true
+  },
+  "claim_boundary": "live checkpoint inference with wheel physics and ray sensing in the walkthrough-matched administration USD; presentation geometry is not an as-built survey, and this is not Nav2, sim-to-real, or physical release",
+  "generated_at_utc": "2026-08-22T03:08:50.228214+00:00",
+  "passed": true,
+  "physical_release": false,
+  "presentation_video": {
+    "duration_s": 59.733333333333334,
+    "fps": 30.0,
+    "frame_count": 1792,
+    "resolution": [
+      1280,
+      720
+    ],
+    "sha256": "081ef268872cffc50d64f606946ec7aeea0e9032ba93dde38b654ed7284fefd3",
+    "size_bytes": 13432409
+  },
+  "raw_video": {
+    "duration_s": 179.56666666666666,
+    "fps": 30.0,
+    "frame_count": 5387,
+    "resolution": [
+      1280,
+      720
+    ],
+    "sha256": "4d5148425725f4d600a4beef788700d320368c42cc39b2069c7330f9f02b0f17",
+    "size_bytes": 16277706
+  },
+  "report_type": "administration_live_policy_validation",
+  "route": {
+    "completed_steps": 5388,
+    "control_steps": {
+      "learned_sensor_policy": 4378,
+      "physics_supervisor_turn": 950,
+      "presentation_dwell": 60
+    },
+    "duration_s": 179.6,
+    "outcome": "success",
+    "waypoints_completed": 12
+  }
+}

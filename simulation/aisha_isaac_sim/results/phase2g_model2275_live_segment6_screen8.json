@@ -1,0 +1,157 @@
+{
+  "report_type": "held_out_foundation_evaluation",
+  "generated_at_utc": "2026-08-22T08:09:21.198566+00:00",
+  "task": "Isaac-AISHA-Administration-Live-PrincipalTurn-Direct-v0",
+  "training_contract_revision": "TRAINING-ENDTOEND-I",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_12-07-00_phase2g_administration_principal_resume_seed7097/model_2275.pt",
+    "sha256": "721585b853c5952d525d757420bd38be117a2533cb9957c64a1c636eb7a8dd89"
+  },
+  "protocol": {
+    "policy": "deterministic_inference",
+    "seed": 8191,
+    "training_seed": 7097,
+    "episodes": 8,
+    "episodes_per_segment": null,
+    "parallel_environments": 8,
+    "physics_rate_hz": 120,
+    "policy_rate_hz": 30,
+    "randomization": "same declared distribution as training; unseen random sequence",
+    "fixed_segment_id": 6
+  },
+  "results": {
+    "success_count": 0,
+    "success_rate": 0.0,
+    "collision_count": 0,
+    "collision_rate": 0.0,
+    "time_out_count": 8,
+    "time_out_rate": 1.0,
+    "mean_episode_return": 18.34104561805725,
+    "mean_episode_steps": 1649.0,
+    "mean_episode_duration_s": 54.96666666666667,
+    "mean_final_goal_distance_m": 1.9198124557733536,
+    "mean_abs_final_heading_error_deg": 48.90064758203932,
+    "mean_minimum_lidar_range_m": 1.9717479795217514,
+    "wall_clock_evaluation_s": 19.889549956998962,
+    "per_segment": [
+      {
+        "segment_id": 6,
+        "label": "hallway_return -> principal_turn",
+        "episodes": 8,
+        "success": 0,
+        "collision": 0,
+        "time_out": 8,
+        "success_rate": 0.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 1.0
+      }
+    ]
+  },
+  "action_diagnostics": {
+    "dimensions": [
+      "normalized_linear_command",
+      "normalized_angular_command"
+    ],
+    "mapping": "linear -1 maps to 0.0 m/s; linear +1 maps to 0.5 m/s; angular \u00b11 maps to \u00b11.0 rad/s",
+    "first_step_mean": [
+      1.0053991079330444,
+      1.2385190725326538
+    ],
+    "first_step_min": [
+      -0.7057859301567078,
+      0.9965898990631104
+    ],
+    "first_step_max": [
+      1.8559274673461914,
+      1.836262822151184
+    ],
+    "first_30_step_mean": [
+      1.6283485889434814,
+      0.8899415135383606
+    ],
+    "timeline": [
+      {
+        "step": 0,
+        "mean_action": [
+          1.0053991079330444,
+          1.2385190725326538
+        ]
+      },
+      {
+        "step": 15,
+        "mean_action": [
+          1.6792443990707397,
+          0.817734956741333
+        ]
+      },
+      {
+        "step": 30,
+        "mean_action": [
+          2.2552356719970703,
+          0.4271466135978699
+        ]
+      },
+      {
+        "step": 60,
+        "mean_action": [
+          2.5469002723693848,
+          0.15320798754692078
+        ]
+      },
+      {
+        "step": 90,
+        "mean_action": [
+          2.297476291656494,
+          0.03600814938545227
+        ]
+      },
+      {
+        "step": 120,
+        "mean_action": [
+          2.3261704444885254,
+          -0.14933696389198303
+        ]
+      },
+      {
+        "step": 180,
+        "mean_action": [
+          0.2505636513233185,
+          0.2825772166252136
+        ]
+      },
+      {
+        "step": 300,
+        "mean_action": [
+          -1.6797151565551758,
+          0.003459526225924492
+        ]
+      },
+      {
+        "step": 600,
+        "mean_action": [
+          -2.0121865272521973,
+          0.06179759278893471
+        ]
+      },
+      {
+        "step": 1200,
+        "mean_action": [
+          -2.477639675140381,
+          0.17634601891040802
+        ]
+      }
+    ]
+  },
+  "acceptance_gate": null,
+  "claim_boundary": {
+    "supported": "state-observation Isaac Lab doorway-foundation policy evaluation",
+    "not_supported": [
+      "RTX-rendered LiDAR or depth-camera policy input",
+      "Nav2 integration",
+      "photoreal administration-office fidelity",
+      "sim-to-real transfer",
+      "physical robot release"
+    ],
+    "doorway_width": "presentation_assumption_not_measured"
+  }
+}

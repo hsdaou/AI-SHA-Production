@@ -1,0 +1,15 @@
+{
+  "report_type": "block_a_training_course_build",
+  "generated_at_utc": "2026-08-22T05:01:51.687651+00:00",
+  "output": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/block_a_training_course.usda",
+  "output_sha256": "d605f6731ad871d1476500dfbc7bb25fc7c96bd67c6b92ddb11cf9194a9e93a4",
+  "source_config": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
+  "source_config_sha256": "3a5a8bc3b5dc83bd35c7bfa7e39bd83ff90eecf7a755d755db478b7a183e230c",
+  "source_plan_page": 2,
+  "source_plan_sha256": "4d8698f868c296442ebd6e667d4700f2e9bc7f27b4787639395a370d76779112",
+  "authored_static_colliders": 32,
+  "course_reopens": true,
+  "geometry_status": "plan_derived_training_proxy",
+  "door_width_status": "presentation_assumption_not_measured",
+  "physical_release": false
+}

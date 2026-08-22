@@ -1,0 +1,307 @@
+{
+  "report_type": "held_out_phase2_turn_evaluation",
+  "generated_at_utc": "2026-08-22T05:19:17.917362+00:00",
+  "task": "Isaac-AISHA-BlockA-Phase2-Turn-SensorNav-Direct-v0",
+  "training_contract_revision": "TRAINING-ENDTOEND-I",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt",
+    "sha256": "3ab596c61259784657b36fe4ee937da8495ce9621a43bd04e2c8a0bf6e0b1880"
+  },
+  "protocol": {
+    "policy": "deterministic_inference",
+    "seed": 8085,
+    "training_seed": 256,
+    "episodes": 576,
+    "episodes_per_segment": 48,
+    "parallel_environments": 96,
+    "physics_rate_hz": 120,
+    "policy_rate_hz": 30,
+    "randomization": "equal quota per route segment; training-declared pose and goal jitter; unseen random sequence",
+    "fixed_segment_id": null
+  },
+  "results": {
+    "success_count": 570,
+    "success_rate": 0.9895833333333334,
+    "collision_count": 6,
+    "collision_rate": 0.010416666666666666,
+    "time_out_count": 0,
+    "time_out_rate": 0.0,
+    "mean_episode_return": 129.40862648685774,
+    "mean_episode_steps": 383.96180555555554,
+    "mean_episode_duration_s": 12.798726851851852,
+    "mean_final_goal_distance_m": 0.4168248870927427,
+    "mean_abs_final_heading_error_deg": 9.606416335968742,
+    "mean_minimum_lidar_range_m": 1.64495089608762,
+    "wall_clock_evaluation_s": 61.513021203999415,
+    "per_segment": [
+      {
+        "segment_id": 0,
+        "label": "home -> east_atrium_exit",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 1,
+        "label": "east_atrium_exit -> vice_principal_turn",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 2,
+        "label": "vice_principal_turn -> vice_principal_approach",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 3,
+        "label": "vice_principal_approach -> vice_principal",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 4,
+        "label": "vice_principal -> vice_principal_depart",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 5,
+        "label": "vice_principal_depart -> hallway_return",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 6,
+        "label": "hallway_return -> principal_turn",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 7,
+        "label": "principal_turn -> principal_approach",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 8,
+        "label": "principal_approach -> principal",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 9,
+        "label": "principal -> principal_depart",
+        "episodes": 48,
+        "success": 42,
+        "collision": 6,
+        "time_out": 0,
+        "success_rate": 0.875,
+        "collision_rate": 0.125,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 10,
+        "label": "principal_depart -> atrium_return",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      },
+      {
+        "segment_id": 11,
+        "label": "atrium_return -> home_return",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0
+      }
+    ]
+  },
+  "action_diagnostics": {
+    "dimensions": [
+      "normalized_linear_command",
+      "normalized_angular_command"
+    ],
+    "mapping": "linear -1 maps to 0.0 m/s; linear +1 maps to 0.5 m/s; angular \u00b11 maps to \u00b11.0 rad/s",
+    "first_step_mean": [
+      1.3758821487426758,
+      0.8247146606445312
+    ],
+    "first_step_min": [
+      -1.482032060623169,
+      -2.3218021392822266
+    ],
+    "first_step_max": [
+      2.886946439743042,
+      3.2880752086639404
+    ],
+    "first_30_step_mean": [
+      1.0551868677139282,
+      0.5793389081954956
+    ],
+    "timeline": [
+      {
+        "step": 0,
+        "mean_action": [
+          1.3758821487426758,
+          0.8247146606445312
+        ]
+      },
+      {
+        "step": 15,
+        "mean_action": [
+          0.9225184917449951,
+          0.4916491210460663
+        ]
+      },
+      {
+        "step": 30,
+        "mean_action": [
+          1.0589096546173096,
+          0.5447128415107727
+        ]
+      },
+      {
+        "step": 60,
+        "mean_action": [
+          1.4622900485992432,
+          0.3871447741985321
+        ]
+      },
+      {
+        "step": 90,
+        "mean_action": [
+          1.6860971450805664,
+          0.3183971345424652
+        ]
+      },
+      {
+        "step": 120,
+        "mean_action": [
+          1.7193682193756104,
+          0.3646396994590759
+        ]
+      },
+      {
+        "step": 180,
+        "mean_action": [
+          2.0535898208618164,
+          0.09947597980499268
+        ]
+      },
+      {
+        "step": 300,
+        "mean_action": [
+          2.061566114425659,
+          -0.10924877226352692
+        ]
+      },
+      {
+        "step": 600,
+        "mean_action": [
+          1.6636064052581787,
+          -0.031991276890039444
+        ]
+      },
+      {
+        "step": 1200,
+        "mean_action": [
+          1.6521787643432617,
+          0.14560705423355103
+        ]
+      },
+      {
+        "step": 2000,
+        "mean_action": [
+          1.9788141250610352,
+          0.12889203429222107
+        ]
+      }
+    ]
+  },
+  "acceptance_gate": {
+    "protocol_satisfied": true,
+    "passed": true,
+    "requirements": {
+      "episodes_per_segment": 48,
+      "overall_success_rate_min": 0.9,
+      "overall_collision_rate_max": 0.05,
+      "every_segment_success_rate_min": 0.8,
+      "office_threshold_segment_ids": [
+        3,
+        4,
+        8,
+        9
+      ],
+      "office_threshold_success_rate_min": 0.85
+    },
+    "observed": {
+      "overall_success_rate": 0.9895833333333334,
+      "overall_collision_rate": 0.010416666666666666,
+      "minimum_segment_success_rate": 0.875,
+      "minimum_office_threshold_success_rate": 0.875
+    }
+  },
+  "claim_boundary": {
+    "supported": "Phase 2 arbitrary-heading turn-acquisition curriculum",
+    "not_supported": [
+      "RTX-rendered LiDAR or depth-camera policy input",
+      "Nav2 integration",
+      "photoreal administration-office fidelity",
+      "sim-to-real transfer",
+      "physical robot release"
+    ],
+    "doorway_width": "presentation_assumption_not_measured"
+  }
+}

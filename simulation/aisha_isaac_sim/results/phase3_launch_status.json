@@ -1,0 +1,119 @@
+{
+  "report_type": "phase3_dynamic_obstacle_domain_randomization_launch_status",
+  "generated_at_utc": "2026-08-22T11:41:00Z",
+  "platform": {
+    "kernel": "6.17.0-35-generic",
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "driver": "580.159.03",
+    "isaac_sim": "5.1.0",
+    "isaac_lab_commit": "80094be3245"
+  },
+  "evaluator_correction": {
+    "change": "Fresh Phase 3 evaluation now forces curriculum strength 1.0.",
+    "impact": "The earlier model_2525 43/48 screen began at strength zero and is retained only as a static diagnostic, not full-strength dynamic-obstacle evidence."
+  },
+  "interaction_model": {
+    "dynamic_crossing_segments": [0, 1, 2, 5, 7, 10, 11],
+    "excluded_tight_turn_segment": 6,
+    "pedestrian_yield_radius_m": 1.1,
+    "policy_observation_count": 46,
+    "privileged_obstacle_state_used": false
+  },
+  "initialization": {
+    "checkpoint": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt",
+    "sha256": "3ab596c61259784657b36fe4ee937da8495ce9621a43bd04e2c8a0bf6e0b1880"
+  },
+  "runtime_smoke": {
+    "report": "results/phase3_dynamic_yielding_smoke_report.json",
+    "checks_passed": 11,
+    "checks_total": 11,
+    "passed": true
+  },
+  "training_runs": [
+    {
+      "run": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_14-30-31_phase3c_segment6_retention_seed8201",
+      "iterations": 300,
+      "transitions": 307200,
+      "outcome": "rejected_deterministic_actor_collapse",
+      "screened_checkpoints": [2575, 2750, 2824],
+      "segment6_screen_result_each": "0/32 successes, 0 collisions, 32 timeouts"
+    },
+    {
+      "run": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_14-41-17_phase3e_proxy_foundation_seed8401",
+      "iterations": 600,
+      "transitions": 614400,
+      "outcome": "rejected_after_full_strength_screening"
+    },
+    {
+      "run": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-00-21_phase3h_reciprocal_yield_seed8701",
+      "iterations": 600,
+      "transitions": 614400,
+      "outcome": "completed_screening_candidate_not_accepted",
+      "training_report": "results/phase3h_reciprocal_yield_training_report.json",
+      "training_progress_plot": "results/phase3h_reciprocal_yield_training_progress.png"
+    },
+    {
+      "run": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-18-36_phase3i_recurrent_distillation_seed8801",
+      "iterations": 200,
+      "transitions": 204800,
+      "outcome": "recurrent_student_distilled",
+      "final_behavior_loss": 0.00458107003942132,
+      "report": "results/phase3i_recurrent_distillation_report.json"
+    },
+    {
+      "run": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-22-56_phase3j_recurrent_ppo_seed8901",
+      "iterations": 800,
+      "transitions": 1638400,
+      "outcome": "completed_screening_candidate_not_accepted",
+      "training_report": "results/phase3j_recurrent_ppo_training_report.json",
+      "training_progress_plot": "results/phase3j_recurrent_ppo_training_progress.png"
+    }
+  ],
+  "segment6_full_dr_baseline": {
+    "checkpoint": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt",
+    "report": "results/phase3_proxy_model1850_segment6_full_dr_no_crossing_baseline32.json",
+    "episodes": 32,
+    "successes": 32,
+    "collisions": 0,
+    "timeouts": 0
+  },
+  "feed_forward_screening_candidate": {
+    "checkpoint": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-00-21_phase3h_reciprocal_yield_seed8701/model_2225.pt",
+    "sha256": "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8",
+    "report": "results/phase3h_model2225_balanced_full_strength_screen4.json",
+    "protocol": "4 deterministic unseen-seed full-strength episodes per segment; screening only",
+    "successes": 24,
+    "episodes": 48,
+    "success_rate": 0.5,
+    "dynamic_obstacle_collisions": 4,
+    "static_collisions": 8,
+    "timeouts": 12,
+    "segment6_successes": 4,
+    "segment6_episodes": 4,
+    "accepted": false
+  },
+  "recurrent_screening_candidate": {
+    "checkpoint": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_15-22-56_phase3j_recurrent_ppo_seed8901/model_700.pt",
+    "sha256": "85a6938157d3a27aa1f21679c9aac3d538a5f56f93e71d3f2fe8061b6bd17adb",
+    "report": "results/phase3j_model700_balanced_full_strength_screen4.json",
+    "protocol": "4 deterministic unseen-seed full-strength episodes per segment; screening only",
+    "successes": 26,
+    "episodes": 48,
+    "success_rate": 0.5416666666666666,
+    "dynamic_obstacle_collisions": 6,
+    "static_collisions": 9,
+    "timeouts": 7,
+    "segment6_successes": 4,
+    "segment6_episodes": 4,
+    "accepted": false
+  },
+  "same_seed_9403_comparison": {
+    "feed_forward": {"successes": 23, "dynamic_collisions": 3, "static_collisions": 10, "timeouts": 12},
+    "recurrent": {"successes": 26, "dynamic_collisions": 6, "static_collisions": 9, "timeouts": 7},
+    "decision": "Recurrent memory reduced hesitation but increased dynamic collision exposure; no promotion."
+  },
+  "status": "training_completed_screening_candidate_not_accepted",
+  "accepted_checkpoint": null,
+  "next_gate": "Freeze the proven route actor and train a bounded recurrent residual/safety policy that may slow or stop near motion but cannot overwrite nominal steering; then repeat the randomized, static-regression and live-scene gates.",
+  "claim_boundary": "Simulation training evidence only. No human-safety, measured-site, sim-to-real or physical deployment claim."
+}

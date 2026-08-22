@@ -1,0 +1,20 @@
+{
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-22_09-12-57_phase2_moving_transition_seed256/model_1850.pt",
+  "checkpoint_sha256": "3ab596c61259784657b36fe4ee937da8495ce9621a43bd04e2c8a0bf6e0b1880",
+  "disclosure": "Temporally sampled and labeled from the complete successful live-policy capture; robot motion is unchanged. Door geometry remains a disclosed presentation assumption, and this video is not evidence of physical deployment readiness.",
+  "motion_changed": false,
+  "output_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase2_Administration_Policy_Only_3x.mp4",
+  "output_video_sha256": "8c927b7078b3c2a332aa88bf093ef5c951bf07fea2bfeb898ca85962c81eadc3",
+  "passed": true,
+  "policy_only_control": true,
+  "presentation_duration_s": 54.13333333333333,
+  "presentation_frame_count": 1624,
+  "report_type": "administration_live_policy_presentation_video",
+  "source_duration_s": 162.8,
+  "source_frame_count": 4884,
+  "source_run_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase2_administration_policy_only_video_report.json",
+  "source_run_report_sha256": "e0c713497922048955a9bea4a087827e0371dfd50b70583b3bdb7382f5e325f2",
+  "source_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/phase2_administration_policy_only/aisha-block-a-learned-route-step-0.mp4",
+  "source_video_sha256": "3716f42e68e42f8f750192c7befe21416f339c7d07eff1f6d64a9a05ac3fa9ed",
+  "speed_multiplier": 3
+}
