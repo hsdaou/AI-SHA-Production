@@ -36,6 +36,14 @@ PHASE3_FROZEN_ROUTE_CHECKPOINT = (
 PHASE3_FROZEN_ROUTE_CHECKPOINT_SHA256 = (
     "52f0094674dea901b4b7f3d7717bc9c2b014a6dc2d8e22cca768f783f4a9c0c8"
 )
+PHASE3M_FROZEN_RECOVERY_CHECKPOINT = (
+    Path(__file__).resolve().parents[3]
+    / "checkpoints"
+    / "aisha_phase3m_hybrid_recovery_model_125.pt"
+)
+PHASE3M_FROZEN_RECOVERY_CHECKPOINT_SHA256 = (
+    "bc8727e3ea42c8b29ca74fa5a535fd37b1600633ffd8bf606b02220a557c1a0d"
+)
 
 
 def _sha256(path: Path) -> str:
@@ -217,6 +225,10 @@ class AishaPhase3DynamicDREnvCfg(AishaBlockASensorEnvCfg):
     dynamic_obstacle_path_half_span_range_m = (0.85, 1.25)
     dynamic_obstacle_route_fractions = (0.32, 0.56, 0.76)
     dynamic_obstacle_yield_radius_m = 1.10
+    # Optional social-navigation assumption. Zero preserves the original
+    # pause-in-place proxy; Phase 3N enables a slow lateral step-away response.
+    dynamic_obstacle_social_retreat_speed_mps = 0.0
+    dynamic_obstacle_social_retreat_maximum_m = 0.60
 
     reward_progress = 14.0
     reward_heading_alignment = 0.02
@@ -272,6 +284,7 @@ class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
         self._obstacle_angular_speeds = torch.zeros(obstacle_shape, device=self.device)
         self._obstacle_phases = torch.zeros(obstacle_shape, device=self.device)
         self._obstacle_pause_phase = torch.zeros(obstacle_shape, device=self.device)
+        self._obstacle_yield_offsets = torch.zeros(obstacle_shape, device=self.device)
 
         base_ids, _ = self._robot.find_bodies("base_link")
         if len(base_ids) != 1:
@@ -430,6 +443,7 @@ class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
                 + torch.empty(count, device=self.device).uniform_(-0.12, 0.12)
             )
             self._obstacle_pause_phase[obstacle_index, env_ids] = 0.0
+            self._obstacle_yield_offsets[obstacle_index, env_ids] = 0.0
 
     def _update_dynamic_obstacles(self, env_ids: torch.Tensor | None = None) -> None:
         if env_ids is None:
@@ -442,7 +456,10 @@ class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
                 + elapsed * self._obstacle_angular_speeds[obstacle_index, env_ids]
                 - self._obstacle_pause_phase[obstacle_index, env_ids]
             )
-            lateral = self._obstacle_half_spans[obstacle_index, env_ids] * torch.sin(phase)
+            lateral = (
+                self._obstacle_half_spans[obstacle_index, env_ids] * torch.sin(phase)
+                + self._obstacle_yield_offsets[obstacle_index, env_ids]
+            )
             local_xy = (
                 self._obstacle_centres[obstacle_index, env_ids]
                 + self._obstacle_axes[obstacle_index, env_ids] * lateral.unsqueeze(-1)
@@ -453,6 +470,42 @@ class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
                 torch.linalg.norm(local_xy - robot_local_xy, dim=1)
                 < self.cfg.dynamic_obstacle_yield_radius_m
             )
+            social_retreat_velocity = torch.zeros_like(local_xy)
+            if self.cfg.dynamic_obstacle_social_retreat_speed_mps > 0.0:
+                robot_axis_position = torch.sum(
+                    (robot_local_xy - self._obstacle_centres[obstacle_index, env_ids])
+                    * self._obstacle_axes[obstacle_index, env_ids],
+                    dim=1,
+                )
+                away_sign = torch.sign(lateral - robot_axis_position)
+                away_sign = torch.where(
+                    away_sign == 0.0, torch.ones_like(away_sign), away_sign
+                )
+                self._obstacle_yield_offsets[obstacle_index, env_ids] += (
+                    yielding.float()
+                    * away_sign
+                    * self.cfg.dynamic_obstacle_social_retreat_speed_mps
+                    * self.step_dt
+                )
+                self._obstacle_yield_offsets[obstacle_index, env_ids].clamp_(
+                    -self.cfg.dynamic_obstacle_social_retreat_maximum_m,
+                    self.cfg.dynamic_obstacle_social_retreat_maximum_m,
+                )
+                lateral = (
+                    self._obstacle_half_spans[obstacle_index, env_ids]
+                    * torch.sin(phase)
+                    + self._obstacle_yield_offsets[obstacle_index, env_ids]
+                )
+                local_xy = (
+                    self._obstacle_centres[obstacle_index, env_ids]
+                    + self._obstacle_axes[obstacle_index, env_ids]
+                    * lateral.unsqueeze(-1)
+                )
+                social_retreat_velocity = (
+                    self._obstacle_axes[obstacle_index, env_ids]
+                    * away_sign.unsqueeze(-1)
+                    * self.cfg.dynamic_obstacle_social_retreat_speed_mps
+                )
             # Kinematic people pause instead of walking into a stopped robot.
             # This is environment behaviour only; the policy observes ordinary
             # LiDAR ranges and receives no pedestrian position/velocity state.
@@ -480,7 +533,8 @@ class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
                 self._obstacle_axes[obstacle_index, env_ids]
                 * lateral_velocity.unsqueeze(-1)
             )
-            velocity[~active | yielding] = 0.0
+            velocity[~active] = 0.0
+            velocity[yielding, :2] = social_retreat_velocity[yielding]
             obstacle.write_root_pose_to_sim(root_pose, env_ids=env_ids)
             obstacle.write_root_velocity_to_sim(velocity, env_ids=env_ids)
 
@@ -576,6 +630,18 @@ class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
         dynamic_collision = collision & self._dynamic_obstacle_overlap()
         outcomes["dynamic_obstacle_collision"] = dynamic_collision
         outcomes["static_collision"] = collision & ~dynamic_collision
+        # A continuous presentation mission advances the route segment without
+        # resetting the environment. Re-sample the crossing population at that
+        # hand-off so every eligible leg receives its own seeded live scenario.
+        route_chain = self.extras.get("route_chain")
+        if self.cfg.route_chain_mode and route_chain:
+            advance = route_chain["waypoint_reached"] & (
+                route_chain["reached_segment_id"] < len(ROUTE_SEGMENTS) - 1
+            )
+            advance_ids = torch.nonzero(advance, as_tuple=False).squeeze(-1)
+            if len(advance_ids) > 0:
+                self._sample_dynamic_obstacles(advance_ids)
+                self._update_dynamic_obstacles(advance_ids)
         return terminated, time_out
 
     def _reset_idx(self, env_ids: Sequence[int] | torch.Tensor | None) -> None:
@@ -2125,6 +2191,530 @@ class AishaPhase3TargetedRecoveryEnv(AishaPhase3ClearancePlannerEnv):
                         "castor_dynamic_friction": self._castor_dynamic_friction.clone(),
                     }
                 )
+
+
+@configclass
+class AishaPhase3DynamicSafetyEnvCfg(AishaPhase3TargetedRecoveryEnvCfg):
+    """Train a 360-degree slow/stop layer outside the frozen Phase 3M stack."""
+
+    frozen_recovery_checkpoint = str(PHASE3M_FROZEN_RECOVERY_CHECKPOINT)
+    frozen_recovery_checkpoint_sha256 = PHASE3M_FROZEN_RECOVERY_CHECKPOINT_SHA256
+    action_space = 1
+
+    # A safety intervention is allowed to wait for a person. Keep the Phase 3M
+    # controller untouched but add a 20-second evaluation/training patience
+    # budget so a collision avoided near the end of a long return leg is not
+    # automatically reclassified as a navigation failure.
+    episode_length_s = 120.0
+    dynamic_obstacle_social_retreat_speed_mps = 0.30
+
+    # The complete Phase 3M runtime stack stays active and immutable. The new
+    # policy receives the same 36-bin 360-degree LiDAR observation and may only
+    # remove translation after Phase 3M has acted.
+    recovery_supervisor_enabled = True
+    safety_dynamic_segment_ids = (0, 1, 2, 5, 7, 10, 11)
+    segment_sampling_weights = (
+        16.0,
+        16.0,
+        16.0,
+        4.0,
+        4.0,
+        16.0,
+        4.0,
+        16.0,
+        4.0,
+        4.0,
+        16.0,
+        16.0,
+    )
+
+    # The recurrent learner infers closing motion from successive full-ring
+    # scans. Shaping is sensor-derived; pedestrian identity/velocity remains
+    # evaluation truth and is never appended to the policy observation.
+    safety_ring_closing_distance_m = 1.20
+    safety_ring_clear_distance_m = 1.60
+    safety_ring_closing_delta_m = 0.005
+    safety_ring_low_clearance_m = 0.35
+    reward_ring_brake_while_closing = 0.20
+    penalty_ring_unmitigated_closing = -0.45
+    penalty_ring_low_clearance = -0.10
+    penalty_ring_unnecessary_brake = -0.015
+
+    # The outer guard can be enabled for threshold experiments, but remains
+    # disabled in the accepted training/runtime contract. A zero-output outer
+    # actor must reproduce Phase 3M exactly, including its existing projected
+    # footprint gate and independent front protective stop. The learned policy
+    # still observes and is rewarded from the complete 360-degree ring.
+    safety_emergency_guard_enabled = False
+    safety_emergency_front_half_angle_rad = math.radians(90.0)
+    safety_emergency_forward_trigger_clearance_m = 0.08
+    safety_emergency_rotation_trigger_clearance_m = 0.04
+
+
+@configclass
+class AishaPhase3DynamicSafetyStaticRegressionEnvCfg(
+    AishaPhase3DynamicSafetyEnvCfg
+):
+    """Exercise the frozen stack with full DR but no pedestrian crossings."""
+
+    dynamic_obstacle_activation_probability = 0.0
+    dynamic_obstacle_social_retreat_speed_mps = 0.0
+
+
+class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
+    """Frozen Phase 3M navigation plus a trainable 360-degree safety residual."""
+
+    cfg: AishaPhase3DynamicSafetyEnvCfg
+
+    def _ensure_frozen_command_buffers(self) -> None:
+        """Keep the one-action Gym API separate from the two-wheel command state."""
+        if hasattr(self, "_actions") and self._actions.shape[-1] == 1:
+            self._actions = torch.zeros((self.num_envs, 2), device=self.device)
+        if hasattr(self, "_previous_actions") and self._previous_actions.shape[-1] == 1:
+            self._previous_actions = torch.zeros(
+                (self.num_envs, 2), device=self.device
+            )
+
+    def _get_observations(self) -> dict[str, torch.Tensor]:
+        # DirectRLEnv sizes its generic action history from the one-dimensional
+        # outer API before the frozen two-command stack is constructed.
+        self._ensure_frozen_command_buffers()
+        return super()._get_observations()
+
+    def __init__(
+        self,
+        cfg: AishaPhase3DynamicSafetyEnvCfg,
+        render_mode: str | None = None,
+        **kwargs,
+    ):
+        super().__init__(cfg, render_mode, **kwargs)
+        self._ensure_frozen_command_buffers()
+        checkpoint_path = Path(self.cfg.frozen_recovery_checkpoint).expanduser().resolve()
+        if not checkpoint_path.is_file():
+            raise FileNotFoundError(
+                f"missing frozen Phase 3M recovery checkpoint: {checkpoint_path}"
+            )
+        checkpoint_sha256 = _sha256(checkpoint_path)
+        if checkpoint_sha256 != self.cfg.frozen_recovery_checkpoint_sha256:
+            raise RuntimeError(
+                "frozen Phase 3M recovery checkpoint hash mismatch: "
+                f"{checkpoint_sha256} != {self.cfg.frozen_recovery_checkpoint_sha256}"
+            )
+        state = torch.load(
+            checkpoint_path, map_location=self.device, weights_only=False
+        )["model_state_dict"]
+        # Module constructors initialize weights before the frozen state is
+        # loaded. Preserve the environment RNG stream so adding this wrapper
+        # does not silently change the matched domain-randomization sequence.
+        torch_device = torch.device(self.device)
+        rng_devices = (
+            [torch_device.index if torch_device.index is not None else 0]
+            if torch_device.type == "cuda"
+            else []
+        )
+        with torch.random.fork_rng(devices=rng_devices):
+            frozen_recovery_memory = nn.GRU(
+                input_size=46,
+                hidden_size=64,
+                num_layers=1,
+            ).to(self.device)
+            frozen_recovery_actor = nn.Sequential(
+                nn.Linear(64, 128),
+                nn.ELU(),
+                nn.Linear(128, 64),
+                nn.ELU(),
+                nn.Linear(64, 2),
+            ).to(self.device)
+        self._frozen_recovery_memory = frozen_recovery_memory
+        memory_state = {
+            key.removeprefix("memory_a.rnn."): value
+            for key, value in state.items()
+            if key.startswith("memory_a.rnn.")
+        }
+        self._frozen_recovery_memory.load_state_dict(memory_state, strict=True)
+        self._frozen_recovery_actor = frozen_recovery_actor
+        actor_state = {
+            key.removeprefix("actor."): value
+            for key, value in state.items()
+            if key.startswith("actor.")
+        }
+        self._frozen_recovery_actor.load_state_dict(actor_state, strict=True)
+        for module in (self._frozen_recovery_memory, self._frozen_recovery_actor):
+            module.eval()
+            module.requires_grad_(False)
+        self._frozen_recovery_obs_mean = state["actor_obs_normalizer._mean"].to(
+            self.device
+        )
+        self._frozen_recovery_obs_std = state["actor_obs_normalizer._std"].to(
+            self.device
+        )
+        self._frozen_recovery_hidden = torch.zeros(
+            (1, self.num_envs, 64), device=self.device
+        )
+        self._frozen_recovery_checkpoint_path = checkpoint_path
+        self._frozen_recovery_checkpoint_actual_sha256 = checkpoint_sha256
+
+        dynamic_ids = tuple(int(value) for value in self.cfg.safety_dynamic_segment_ids)
+        if dynamic_ids != tuple(int(value) for value in self.cfg.dynamic_obstacle_segment_ids):
+            raise ValueError(
+                "360-degree safety authority must match the declared pedestrian segments"
+            )
+        self._safety_dynamic_segment_ids = torch.tensor(
+            dynamic_ids, dtype=torch.long, device=self.device
+        )
+        self._safety_ray_angles = torch.deg2rad(
+            torch.arange(-180.0, 180.0, 10.0, device=self.device)
+        )
+        self._safety_front_ray_mask = (
+            torch.abs(self._safety_ray_angles)
+            <= self.cfg.safety_emergency_front_half_angle_rad
+        )
+        self._safety_action_history = torch.zeros(
+            (self.num_envs, 3, 1), device=self.device
+        )
+        self._safety_actions = torch.zeros((self.num_envs, 1), device=self.device)
+        self._applied_safety_actions = torch.zeros_like(self._safety_actions)
+        self._frozen_recovery_actions = torch.zeros(
+            (self.num_envs, 2), device=self.device
+        )
+        self._frozen_stack_actions = torch.zeros_like(
+            self._frozen_recovery_actions
+        )
+        self._safety_brake_fraction = torch.zeros(self.num_envs, device=self.device)
+        self._safety_angular_attenuation = torch.zeros(
+            self.num_envs, device=self.device
+        )
+        self._safety_authority_active = torch.zeros(
+            self.num_envs, dtype=torch.bool, device=self.device
+        )
+        self._safety_segment_scope = torch.zeros_like(
+            self._safety_authority_active
+        )
+        self._safety_emergency_forward = torch.zeros_like(
+            self._safety_authority_active
+        )
+        self._safety_emergency_rotation = torch.zeros_like(
+            self._safety_authority_active
+        )
+        self._previous_ring_clearance = torch.full(
+            (self.num_envs,), self.cfg.lidar_max_range_m, device=self.device
+        )
+        self._previous_safety_scan_clearance = torch.full(
+            (self.num_envs,), self.cfg.lidar_max_range_m, device=self.device
+        )
+        self._episode_safety_steps = torch.zeros(
+            self.num_envs, dtype=torch.long, device=self.device
+        )
+        self._episode_safety_authority_steps = torch.zeros_like(
+            self._episode_safety_steps
+        )
+        self._episode_safety_brake_sum = torch.zeros(
+            self.num_envs, device=self.device
+        )
+        self._episode_safety_emergency_forward_steps = torch.zeros_like(
+            self._episode_safety_steps
+        )
+        self._episode_safety_emergency_rotation_steps = torch.zeros_like(
+            self._episode_safety_steps
+        )
+        self._episode_minimum_ring_clearance = torch.full(
+            (self.num_envs,), self.cfg.lidar_max_range_m, device=self.device
+        )
+        for name in (
+            "ring_brake_while_closing",
+            "ring_unmitigated_closing",
+            "ring_low_clearance",
+            "ring_unnecessary_brake",
+        ):
+            self._episode_sums[name] = torch.zeros(
+                self.num_envs, dtype=torch.float32, device=self.device
+            )
+
+    def _frozen_phase3m_actions(self) -> torch.Tensor:
+        if not hasattr(self, "_last_policy_observation"):
+            self._last_policy_observation = super()._get_observations()[
+                "policy"
+            ].detach()
+        normalized = (
+            self._last_policy_observation - self._frozen_recovery_obs_mean
+        ) / (self._frozen_recovery_obs_std + 1.0e-2)
+        with torch.inference_mode():
+            memory_output, hidden = self._frozen_recovery_memory(
+                normalized.unsqueeze(0), self._frozen_recovery_hidden
+            )
+            self._frozen_recovery_hidden.copy_(hidden)
+            return self._frozen_recovery_actor(memory_output.squeeze(0)).clamp(
+                -1.0, 1.0
+            )
+
+    def _compose_dynamic_safety(
+        self,
+        frozen_actions: torch.Tensor,
+        safety_actions: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        """Remove motion authority without changing route or steering sign."""
+        safety_actions = safety_actions.clamp(-1.0, 1.0)
+        brake_fraction = torch.relu(-safety_actions[:, 0])
+        angular_attenuation = torch.zeros_like(brake_fraction)
+        forward_fraction = ((frozen_actions[:, 0] + 1.0) * 0.5).clamp(0.0, 1.0)
+        combined = torch.stack(
+            (
+                forward_fraction * (1.0 - brake_fraction) * 2.0 - 1.0,
+                frozen_actions[:, 1],
+            ),
+            dim=1,
+        )
+        return combined, brake_fraction, angular_attenuation
+
+    def _write_safety_wheel_targets(self) -> None:
+        minimum, maximum = self.cfg.linear_velocity_range_mps
+        linear = minimum + (self._actions[:, 0] + 1.0) * 0.5 * (maximum - minimum)
+        angular = self._actions[:, 1] * self.cfg.angular_velocity_max_rad_s
+        half_track = self.cfg.wheel_track_m * self._wheel_track_scale / 2.0
+        wheel_radius = self.cfg.wheel_radius_m * self._wheel_radius_scale
+        self._wheel_targets[:, 0] = (linear - angular * half_track) / wheel_radius
+        self._wheel_targets[:, 1] = (linear + angular * half_track) / wheel_radius
+        self._wheel_targets *= self._motor_strength
+        self._wheel_targets.clamp_(
+            -self.cfg.wheel_speed_limit_rad_s,
+            self.cfg.wheel_speed_limit_rad_s,
+        )
+
+    def _pre_physics_step(self, actions: torch.Tensor) -> None:
+        self._safety_actions = actions.clone().clamp(-1.0, 1.0)
+        self._frozen_recovery_actions = self._frozen_phase3m_actions()
+        # This call executes the hash-locked route actor, Phase 3M residual,
+        # rectangular projection, stop latch, office-pivot supervisor, and
+        # torque schedule without exposing any of them to the new optimizer.
+        super()._pre_physics_step(self._frozen_recovery_actions)
+        self._frozen_stack_actions.copy_(self._actions)
+
+        self._safety_action_history[:, 2] = self._safety_action_history[:, 1]
+        self._safety_action_history[:, 1] = self._safety_action_history[:, 0]
+        self._safety_action_history[:, 0] = self._safety_actions
+        gather_index = self._action_latency_steps.view(-1, 1, 1).expand(-1, 1, 1)
+        self._applied_safety_actions = torch.gather(
+            self._safety_action_history, 1, gather_index
+        ).squeeze(1)
+        self._safety_segment_scope = torch.any(
+            self._segment_ids.unsqueeze(1)
+            == self._safety_dynamic_segment_ids.unsqueeze(0),
+            dim=1,
+        )
+        requested, brake_fraction, angular_attenuation = self._compose_dynamic_safety(
+            self._actions, self._applied_safety_actions
+        )
+        exact_ranges = self._lidar_ranges()
+        clearances = exact_ranges - self._lidar_envelope_ranges.unsqueeze(0)
+        front_clearance = torch.amin(
+            clearances[:, self._safety_front_ray_mask], dim=1
+        )
+        ring_clearance = torch.amin(clearances, dim=1)
+        safety_scan_closing_delta = (
+            self._previous_safety_scan_clearance - ring_clearance
+        ).clamp_min(0.0)
+        self._safety_authority_active = (
+            self._safety_segment_scope
+            & (ring_clearance < self.cfg.safety_ring_closing_distance_m)
+            & (
+                safety_scan_closing_delta
+                > self.cfg.safety_ring_closing_delta_m
+            )
+        )
+        self._previous_safety_scan_clearance.copy_(ring_clearance)
+        self._safety_brake_fraction = torch.where(
+            self._safety_authority_active,
+            brake_fraction,
+            torch.zeros_like(brake_fraction),
+        )
+        self._safety_angular_attenuation = torch.where(
+            self._safety_authority_active,
+            angular_attenuation,
+            torch.zeros_like(angular_attenuation),
+        )
+        applied = torch.where(
+            self._safety_authority_active.unsqueeze(1), requested, self._actions
+        )
+        moving_forward = applied[:, 0] > -1.0 + 1.0e-6
+        rotating = torch.abs(applied[:, 1]) > 1.0e-6
+        self._safety_emergency_forward = (
+            self.cfg.safety_emergency_guard_enabled
+            & moving_forward
+            & (
+                front_clearance
+                <= self.cfg.safety_emergency_forward_trigger_clearance_m
+            )
+        )
+        self._safety_emergency_rotation = (
+            self.cfg.safety_emergency_guard_enabled
+            & rotating
+            & (
+                ring_clearance
+                <= self.cfg.safety_emergency_rotation_trigger_clearance_m
+            )
+        )
+        applied[:, 0] = torch.where(
+            self._safety_emergency_forward,
+            torch.full_like(applied[:, 0], -1.0),
+            applied[:, 0],
+        )
+        applied[:, 1] = torch.where(
+            self._safety_emergency_rotation,
+            torch.zeros_like(applied[:, 1]),
+            applied[:, 1],
+        )
+        self._actions = applied.clamp(-1.0, 1.0)
+        self._write_safety_wheel_targets()
+
+        self._episode_safety_steps += 1
+        self._episode_safety_authority_steps += self._safety_authority_active.long()
+        self._episode_safety_brake_sum += self._safety_brake_fraction
+        self._episode_safety_emergency_forward_steps += (
+            self._safety_emergency_forward.long()
+        )
+        self._episode_safety_emergency_rotation_steps += (
+            self._safety_emergency_rotation.long()
+        )
+        self._episode_minimum_ring_clearance.copy_(
+            torch.minimum(self._episode_minimum_ring_clearance, ring_clearance)
+        )
+
+    def _get_rewards(self) -> torch.Tensor:
+        rewards = super()._get_rewards()
+        ring_clearance = torch.amin(
+            self._lidar_ranges() - self._lidar_envelope_ranges.unsqueeze(0), dim=1
+        )
+        closing_delta = (
+            self._previous_ring_clearance - ring_clearance
+        ).clamp_min(0.0)
+        scope = self._safety_segment_scope.float()
+        closing = (
+            (ring_clearance < self.cfg.safety_ring_closing_distance_m)
+            & (closing_delta > self.cfg.safety_ring_closing_delta_m)
+        ).float() * scope
+        clear = (
+            ring_clearance > self.cfg.safety_ring_clear_distance_m
+        ).float() * scope
+        normalized_forward = ((self._actions[:, 0] + 1.0) * 0.5).clamp(0.0, 1.0)
+        low_clearance_fraction = (
+            torch.relu(self.cfg.safety_ring_low_clearance_m - ring_clearance)
+            / self.cfg.safety_ring_low_clearance_m
+        ).clamp(0.0, 1.0) * scope
+
+        shaped_rewards = (
+            (
+                "ring_brake_while_closing",
+                closing
+                * self._safety_brake_fraction
+                * self.cfg.reward_ring_brake_while_closing,
+            ),
+            (
+                "ring_unmitigated_closing",
+                closing
+                * (1.0 - self._safety_brake_fraction)
+                * normalized_forward
+                * self.cfg.penalty_ring_unmitigated_closing,
+            ),
+            (
+                "ring_low_clearance",
+                low_clearance_fraction * self.cfg.penalty_ring_low_clearance,
+            ),
+            (
+                "ring_unnecessary_brake",
+                clear
+                * self._safety_brake_fraction
+                * self.cfg.penalty_ring_unnecessary_brake,
+            ),
+        )
+        for name, value in shaped_rewards:
+            self._episode_sums[name] += value
+            rewards += value
+        self._previous_ring_clearance.copy_(ring_clearance)
+        return rewards
+
+    def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
+        terminated, time_out = super()._get_dones()
+        if hasattr(self, "_episode_safety_steps"):
+            self.extras["episode_outcomes"].update(
+                {
+                    "safety_steps": self._episode_safety_steps.clone(),
+                    "safety_authority_steps": (
+                        self._episode_safety_authority_steps.clone()
+                    ),
+                    "safety_brake_fraction_sum": (
+                        self._episode_safety_brake_sum.clone()
+                    ),
+                    "safety_emergency_forward_steps": (
+                        self._episode_safety_emergency_forward_steps.clone()
+                    ),
+                    "safety_emergency_rotation_steps": (
+                        self._episode_safety_emergency_rotation_steps.clone()
+                    ),
+                    "minimum_ring_clearance_m": (
+                        self._episode_minimum_ring_clearance.clone()
+                    ),
+                }
+            )
+        return terminated, time_out
+
+    def _reset_idx(self, env_ids: Sequence[int] | torch.Tensor | None) -> None:
+        if env_ids is None:
+            env_ids = self._robot._ALL_INDICES
+        if not isinstance(env_ids, torch.Tensor):
+            env_ids = torch.as_tensor(env_ids, device=self.device, dtype=torch.long)
+        super()._reset_idx(env_ids)
+        if not hasattr(self, "_safety_action_history"):
+            return
+        self._frozen_recovery_hidden[:, env_ids] = 0.0
+        self._safety_action_history[env_ids] = 0.0
+        self._safety_actions[env_ids] = 0.0
+        self._applied_safety_actions[env_ids] = 0.0
+        self._frozen_recovery_actions[env_ids] = 0.0
+        self._frozen_stack_actions[env_ids] = 0.0
+        self._safety_brake_fraction[env_ids] = 0.0
+        self._safety_angular_attenuation[env_ids] = 0.0
+        self._safety_authority_active[env_ids] = False
+        self._safety_segment_scope[env_ids] = False
+        self._safety_emergency_forward[env_ids] = False
+        self._safety_emergency_rotation[env_ids] = False
+        ring_clearance = torch.amin(
+            self._lidar_ranges()[env_ids]
+            - self._lidar_envelope_ranges.unsqueeze(0),
+            dim=1,
+        )
+        self._previous_ring_clearance[env_ids] = ring_clearance
+        self._previous_safety_scan_clearance[env_ids] = ring_clearance
+        self._episode_safety_steps[env_ids] = 0
+        self._episode_safety_authority_steps[env_ids] = 0
+        self._episode_safety_brake_sum[env_ids] = 0.0
+        self._episode_safety_emergency_forward_steps[env_ids] = 0
+        self._episode_safety_emergency_rotation_steps[env_ids] = 0
+        self._episode_minimum_ring_clearance[env_ids] = self.cfg.lidar_max_range_m
+        self.extras["dynamic_safety"] = {
+            "architecture": "outer_recurrent_360_degree_lidar_safety_residual",
+            "frozen_recovery_checkpoint": str(
+                self._frozen_recovery_checkpoint_path
+            ),
+            "frozen_recovery_checkpoint_sha256": (
+                self._frozen_recovery_checkpoint_actual_sha256
+            ),
+            "frozen_route_checkpoint": str(self._frozen_route_checkpoint_path),
+            "frozen_route_checkpoint_sha256": (
+                self._frozen_route_checkpoint_actual_sha256
+            ),
+            "policy_authority": (
+                "braking only while 360-degree LiDAR clearance is closing on "
+                "declared pedestrian segments"
+            ),
+            "lidar_horizontal_field_of_view_deg": 360.0,
+            "lidar_bins": self.cfg.lidar_training_bins,
+            "may_increase_speed": False,
+            "may_reverse": False,
+            "may_flip_steering_sign": False,
+            "duplicate_outer_emergency_guard_enabled": (
+                self.cfg.safety_emergency_guard_enabled
+            ),
+        }
 
 
 @configclass

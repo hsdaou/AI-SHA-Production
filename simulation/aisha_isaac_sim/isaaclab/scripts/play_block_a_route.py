@@ -26,6 +26,8 @@ parser.add_argument(
         "Isaac-AISHA-BlockA-SensorNav-Direct-v0",
         "Isaac-AISHA-BlockA-Phase2-EndToEnd-SensorNav-Direct-v0",
         "Isaac-AISHA-Administration-Live-Direct-v0",
+        "Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Direct-v0",
+        "Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Presentation-Direct-v0",
     ),
     default="Isaac-AISHA-BlockA-SensorNav-Direct-v0",
 )
@@ -61,8 +63,22 @@ parser.add_argument(
     help="Use the adaptive route-leg follow camera or six fixed administration cameras.",
 )
 parser.add_argument("--seed", type=int, default=6084)
+parser.add_argument(
+    "--dynamic-obstacle-probability",
+    type=float,
+    default=None,
+    help=(
+        "Optional presentation-scenario override for Phase 3 dynamic tasks. "
+        "Use zero for the clean final architecture run; formal dynamic gates "
+        "must retain the task default."
+    ),
+)
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
+if args.dynamic_obstacle_probability is not None and not (
+    0.0 <= args.dynamic_obstacle_probability <= 1.0
+):
+    parser.error("--dynamic-obstacle-probability must be in [0, 1]")
 if args.video_folder is not None:
     args.enable_cameras = True
 
@@ -121,7 +137,6 @@ CINEMATIC_SHOTS = (
     },
 )
 
-
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -144,6 +159,14 @@ def main() -> int:
     env_cfg.start_lateral_jitter_m = 0.0
     env_cfg.start_yaw_jitter_rad = 0.0
     env_cfg.goal_jitter_m = 0.0
+    if args.dynamic_obstacle_probability is not None:
+        if not hasattr(env_cfg, "dynamic_obstacle_activation_probability"):
+            raise ValueError(
+                "--dynamic-obstacle-probability requires a Phase 3 dynamic task"
+            )
+        env_cfg.dynamic_obstacle_activation_probability = (
+            args.dynamic_obstacle_probability
+        )
     manual_administration_camera = (
         "Administration-Live" in args.task and args.video_folder is not None
     )
@@ -379,6 +402,11 @@ def main() -> int:
             actions = active_policy(observations)
             heading_error = env.unwrapped._goal_geometry()[3]
             control_mode = "learned_sensor_policy"
+            if args.route_control == "hybrid" and actions.shape[1] != 2:
+                raise RuntimeError(
+                    "hybrid route overrides require a two-action wheel policy; "
+                    "run the Phase 3N safety task with --route-control policy-only"
+                )
             if args.route_control == "hybrid" and dwell_remaining > 0:
                 actions[0, 0] = -1.0
                 actions[0, 1] = 0.0
@@ -418,9 +446,37 @@ def main() -> int:
                 learned_policy_steps_by_source[active_policy_source] += 1
 
             observations, _, dones, extras = env.step(actions)
+            applied_commands = env.unwrapped._actions.clone()
             policy_nn.reset(dones)
             for specialist_network in segment_policy_networks.values():
                 specialist_network.reset(dones)
+
+        if args.debug_interval > 0 and (step + 1) % args.debug_interval == 0:
+            _, _, debug_distance, debug_heading = env.unwrapped._goal_geometry()
+            debug_state = {
+                "step": step + 1,
+                "segment_id": int(env.unwrapped._segment_ids[0].item()),
+                "goal_distance_m": float(debug_distance[0].item()),
+                "heading_error_deg": math.degrees(float(debug_heading[0].item())),
+                "linear_velocity_mps": float(
+                    env.unwrapped._robot.data.root_lin_vel_b[0, 0].item()
+                ),
+                "safety_action": [float(value.item()) for value in actions[0]],
+                "applied_command": [
+                    float(value.item()) for value in applied_commands[0]
+                ],
+            }
+            for name in (
+                "_protective_stop_latched",
+                "_predictive_stop_latched",
+                "_pivot_supervisor_latched",
+                "_safety_authority_active",
+            ):
+                if hasattr(env.unwrapped, name):
+                    debug_state[name.removeprefix("_")] = bool(
+                        getattr(env.unwrapped, name)[0].item()
+                    )
+            print("ROUTE_DEBUG=" + json.dumps(debug_state, sort_keys=True), flush=True)
 
         if args.trace_interval > 0 and (step + 1) % args.trace_interval == 0:
             local_xy = env.unwrapped._local_xy()[0]
@@ -449,8 +505,11 @@ def main() -> int:
                         latest_lidar_min_m, 5
                     ),
                     "policy_action": [
-                        round(float(actions[0, 0].item()), 5),
-                        round(float(actions[0, 1].item()), 5),
+                        round(float(value.item()), 5) for value in actions[0]
+                    ],
+                    "applied_frozen_stack_command": [
+                        round(float(value.item()), 5)
+                        for value in applied_commands[0]
                     ],
                 }
             )
@@ -492,6 +551,21 @@ def main() -> int:
                 "minimum_lidar_ray_angle_deg": -180.0 + 10.0 * minimum_ray_index,
                 "minimum_lidar_hit_world_xyz_m": [float(value.item()) for value in lidar_hit_world],
             }
+            for key in (
+                "dynamic_obstacle_collision",
+                "static_collision",
+                "safety_steps",
+                "safety_authority_steps",
+                "safety_brake_fraction_sum",
+                "minimum_ring_clearance_m",
+            ):
+                if key in outcomes:
+                    value = outcomes[key][0]
+                    termination_details[key] = (
+                        bool(value.item())
+                        if value.dtype == torch.bool
+                        else float(value.item())
+                    )
             completed_steps = step + 1
             break
     else:
@@ -541,7 +615,9 @@ def main() -> int:
         },
         "route_control": args.route_control,
         "policy_architecture": (
-            "route_planner_selected_learned_skill_ensemble"
+            "frozen_phase3m_recovery_stack_plus_outer_recurrent_360_degree_brake_layer"
+            if hasattr(env.unwrapped, "_frozen_recovery_actor")
+            else "route_planner_selected_learned_skill_ensemble"
             if segment_policies
             else "single_learned_policy"
         ),
@@ -557,7 +633,11 @@ def main() -> int:
         ),
         "termination_details": termination_details,
         "control_disclosure": (
-            "Every wheel action is emitted by a learned LD19-style policy; the route planner selects a declared "
+            "The outer recurrent policy may only reduce translation while full-ring LiDAR clearance is closing; "
+            "the hash-locked Phase 3M route, clearance, protective-stop, pivot and torque stack supplies every "
+            "steering command. There is no turn or dwell action override and no root-transform animation."
+            if hasattr(env.unwrapped, "_frozen_recovery_actor")
+            else "Every wheel action is emitted by a learned LD19-style policy; the route planner selects a declared "
             "learned specialist on configured segments. There is no turn or dwell action override and no "
             "root-transform animation."
             if args.route_control == "policy-only"
@@ -567,6 +647,10 @@ def main() -> int:
         "physics_rate_hz": 120.0,
         "policy_rate_hz": 30.0,
         "root_transform_animation": False,
+        "route_transition_state": "continuous recurrent state preserved across all route legs",
+        "presentation_dynamic_obstacle_probability": (
+            args.dynamic_obstacle_probability
+        ),
         "fabric_enabled": use_fabric,
         "claim_boundary": (
             "live checkpoint inference with wheel physics and ray sensing in the walkthrough-matched "

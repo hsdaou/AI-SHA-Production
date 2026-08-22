@@ -88,6 +88,8 @@ for the complete rationale and benchmarks.
 
 The [simulation package](simulation/README.md) contains the separate Rev D
 differential-drive Isaac Sim 5.1 model, deterministic validation evidence, and a
-route-scoped Administration presentation proxy. The A1 page-2 plan is not in
-this repository, so all assumed office geometry and door/threshold values remain
-explicitly labelled and are not a physical-route or safety release.
+route-scoped Administration presentation proxy. Phase 3N freezes the successful
+office pivot/clearance controller and adds an accepted simulation-only,
+360-degree brake layer for moving-obstacle encounters. The source A1 page-2 plan
+is not redistributed in this repository, so all assumed door/threshold values
+remain explicitly labelled and are not a physical-route or safety release.

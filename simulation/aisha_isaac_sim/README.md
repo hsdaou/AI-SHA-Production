@@ -557,6 +557,39 @@ seed-sensitive, and the declared 64-episode-per-segment, Phase 2 regression and
 dynamic-obstacle safety layer while freezing the successful pivot/clearance
 stack.
 
+Phase 3N has completed that gate. The Phase 3M recurrent controller and its
+underlying route actor are loaded from SHA-256-locked checkpoints and kept
+non-trainable. A separate 64-unit GRU receives the unchanged 46-value sensor
+observation and emits one action: a negative request may only reduce forward
+motion when full-ring LiDAR clearance is closing on a declared pedestrian leg.
+It cannot steer, accelerate, reverse, or move the robot root, and the duplicate
+outer emergency override is disabled. PPO ran for 200 iterations across 32
+environments, totaling 409,600 transitions; checkpoint 50 is packaged at
+`isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt` (SHA-256
+`11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b`).
+
+The two-seed matched screen improved the frozen stack from 95/96 successful
+episodes with one dynamic collision to 96/96 with none. The declared full gate
+then passed: 744/768 successes (96.875%), 8 dynamic contacts (1.042%), 12 static
+contacts (1.563%), four timeouts, and a 92.188% minimum success rate on every
+pedestrian-enabled segment. The separate full-randomization/no-pedestrian
+regression passed 48/48 with zero contacts, and the walkthrough-matched live
+administration gate passed 12/12 dynamic scenarios with zero contacts or
+timeouts. This accepts the checkpoint for the declared Phase 3 simulation
+scope; it is not a physical human-safety claim or deployment release.
+
+The final seed-10201 Omniverse run uses the same packaged checkpoint in the
+walkthrough-matched administration USD. It completes all 12 waypoints and both
+office visits in 4,941 learned-policy steps / 164.7 simulated seconds, with no
+turn supervisor, dwell override, recurrent-state reset, collision, or root
+animation. The clean presentation scenario intentionally disables stochastic
+person proxies; dynamic safety is evidenced by the separate accepted 768-episode
+and 12-live-scenario gates. For film continuity it uses disclosed 0.22 m office
+visit stops, a 0.20 m Principal-departure stop, and omits the redundant
+segment-10 predictive-creep guard. The 54.77 s 3x cut changes temporal sampling
+and labels only; it is available at
+`media/videos/AI-SHA_Phase3N_Administration_Final_Omniverse_3x.mp4`.
+
 The administration USD was rebuilt with page-2 Block A printed-dimension anchors
 (12.75 m atrium, 2.80 m hall, 7.80 x 6.30 m conference room and 4.73 m
 Principal frontage) and tagged `GEOMETRY-RTX-PHASE3-A`. Four procedural finish
@@ -607,6 +640,17 @@ TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p isaaclab/scripts/evaluate.py 
   --output results/phase3m_hybrid_model125_balanced_seed9701.json \
   --episodes 48 --episodes-per-segment 4 --num_envs 48 --seed 9701 --headless
 TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p \
+  isaaclab/scripts/smoke_phase3_dynamic_safety.py \
+  --num-envs 4 --steps 120 --headless \
+  --output-report results/phase3n_dynamic_safety_smoke_report.json
+PHASE3N_ITERATIONS=200 isaaclab/scripts/run_phase3_dynamic_safety.sh
+TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p isaaclab/scripts/evaluate.py \
+  --task Isaac-AISHA-BlockA-Phase3-DynamicSafety-SensorNav-Direct-v0 \
+  --checkpoint isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt \
+  --output results/phase3n_model50_full_acceptance_seed10101.json \
+  --episodes 768 --episodes-per-segment 64 --num_envs 768 --seed 10101 \
+  --require-acceptance --headless
+TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p \
   isaaclab/scripts/smoke_phase3_dynamic.py --num-envs 4 --steps 180 --headless
 TERM=xterm /home/robot-wst/isaacsim/python.sh \
   isaaclab/tools/validate_phase3_geometry_rtx.py
@@ -634,6 +678,19 @@ python3 tools/encode_route_video.py --fps 20 --crf 18 --preset slow \
   --validation results/phase2_administration_visual_replay_validation.json \
   --output media/videos/AI-SHA_Phase2_Administration_Visual_Upgrade.mp4 \
   --report results/phase2_administration_visual_upgrade_render_report.json
+TERM=xterm /home/robot-wst/IsaacLab/isaaclab.sh -p \
+  isaaclab/scripts/play_block_a_route.py \
+  --task Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Presentation-Direct-v0 \
+  --checkpoint isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt \
+  --output-report results/phase3n_administration_final_omniverse_report.json \
+  --video-folder media/videos/phase3n_administration_final_omniverse \
+  --route-control policy-only --camera-mode cinematic --seed 10201 --headless
+python3 isaaclab/tools/make_administration_live_policy_presentation_video.py \
+  --input media/videos/phase3n_administration_final_omniverse/\
+aisha-block-a-learned-route-step-0.mp4 \
+  --run-report results/phase3n_administration_final_omniverse_report.json \
+  --output media/videos/AI-SHA_Phase3N_Administration_Final_Omniverse_3x.mp4 \
+  --report results/phase3n_administration_final_omniverse_3x_report.json --speed 3
 ```
 
 ## Navigation and doorway fit

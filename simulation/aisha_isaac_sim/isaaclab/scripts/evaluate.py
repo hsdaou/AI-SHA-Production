@@ -92,10 +92,12 @@ def _relative_or_absolute(path: Path) -> str:
 def main() -> int:
     device = args.device or "cuda:0"
     is_phase3_task = "Phase3-" in args.task
+    is_phase3_dynamic_safety_task = "Phase3-DynamicSafety" in args.task
     is_phase3_safety_residual_task = "Phase3-SafetyResidual" in args.task
     is_phase3_clearance_planner_task = (
         "Phase3-ClearancePlanner" in args.task
         or "Phase3-TargetedRecovery" in args.task
+        or is_phase3_dynamic_safety_task
     )
     torch.manual_seed(args.seed)
     if torch.cuda.is_available():
@@ -160,7 +162,9 @@ def main() -> int:
     collision_classes = {"dynamic_obstacle": 0, "static": 0}
     segment_counts: dict[int, dict[str, int]] = {}
     first_step_actions: torch.Tensor | None = None
-    diagnostic_action_sum = torch.zeros(2, device=env.device)
+    diagnostic_action_sum = torch.zeros(
+        raw_env.action_space.shape[-1], device=env.device
+    )
     diagnostic_action_samples = 0
     diagnostic_steps_remaining = 30
     diagnostic_step = 0
@@ -308,6 +312,48 @@ def main() -> int:
                             outcomes.get(
                                 "final_recovery_supervisor_brake_active",
                                 torch.zeros_like(outcomes["planner_steps"], dtype=torch.bool),
+                            )[env_id].item()
+                        ),
+                        "safety_steps": int(
+                            outcomes.get(
+                                "safety_steps",
+                                torch.zeros_like(outcomes["planner_steps"]),
+                            )[env_id].item()
+                        ),
+                        "safety_authority_steps": int(
+                            outcomes.get(
+                                "safety_authority_steps",
+                                torch.zeros_like(outcomes["planner_steps"]),
+                            )[env_id].item()
+                        ),
+                        "safety_brake_fraction_sum": float(
+                            outcomes.get(
+                                "safety_brake_fraction_sum",
+                                torch.zeros_like(outcomes["minimum_applied_clearance_m"]),
+                            )[env_id].item()
+                        ),
+                        "safety_angular_attenuation_sum": float(
+                            outcomes.get(
+                                "safety_angular_attenuation_sum",
+                                torch.zeros_like(outcomes["minimum_applied_clearance_m"]),
+                            )[env_id].item()
+                        ),
+                        "safety_emergency_forward_steps": int(
+                            outcomes.get(
+                                "safety_emergency_forward_steps",
+                                torch.zeros_like(outcomes["planner_steps"]),
+                            )[env_id].item()
+                        ),
+                        "safety_emergency_rotation_steps": int(
+                            outcomes.get(
+                                "safety_emergency_rotation_steps",
+                                torch.zeros_like(outcomes["planner_steps"]),
+                            )[env_id].item()
+                        ),
+                        "minimum_ring_clearance_m": float(
+                            outcomes.get(
+                                "minimum_ring_clearance_m",
+                                outcomes["minimum_applied_clearance_m"],
                             )[env_id].item()
                         ),
                         "final_distance_m": float(
@@ -467,6 +513,39 @@ def main() -> int:
                 ),
                 "episodes_ending_with_recovery_supervisor_brake_active": sum(
                     bool(record["final_recovery_supervisor_brake_active"])
+                    for record in records
+                ),
+                "safety_authority_step_fraction": (
+                    sum(int(record["safety_authority_steps"]) for record in records)
+                    / max(sum(int(record["safety_steps"]) for record in records), 1)
+                ),
+                "mean_safety_brake_fraction_when_authorized": (
+                    sum(float(record["safety_brake_fraction_sum"]) for record in records)
+                    / max(
+                        sum(int(record["safety_authority_steps"]) for record in records),
+                        1,
+                    )
+                ),
+                "mean_safety_angular_attenuation_when_authorized": (
+                    sum(
+                        float(record["safety_angular_attenuation_sum"])
+                        for record in records
+                    )
+                    / max(
+                        sum(int(record["safety_authority_steps"]) for record in records),
+                        1,
+                    )
+                ),
+                "safety_emergency_forward_steps": sum(
+                    int(record["safety_emergency_forward_steps"])
+                    for record in records
+                ),
+                "safety_emergency_rotation_steps": sum(
+                    int(record["safety_emergency_rotation_steps"])
+                    for record in records
+                ),
+                "minimum_360_ring_clearance_m": min(
+                    float(record["minimum_ring_clearance_m"])
                     for record in records
                 ),
             }
@@ -661,6 +740,9 @@ def main() -> int:
         },
         "action_diagnostics": {
             "dimensions": (
+                ["360_degree_brake_request"]
+                if is_phase3_dynamic_safety_task
+                else
                 ["brake_request", "signed_clearance_projected_steering_request"]
                 if is_phase3_clearance_planner_task
                 else ["brake_request", "steering_attenuation_request"]
@@ -668,6 +750,10 @@ def main() -> int:
                 else ["normalized_linear_command", "normalized_angular_command"]
             ),
             "mapping": (
+                "action 0 negative may only brake the frozen Phase 3M stack while 360-degree "
+                "LiDAR clearance is closing; positive values are no-ops and steering is immutable"
+                if is_phase3_dynamic_safety_task
+                else
                 "action 0 negative requests braking and positive is a no-op; action 1 requests "
                 f"up to ±{env_cfg.maximum_lateral_correction_rad_s} rad/s around the frozen "
                 "route actor, subject to clearance projection and the independent protective stop"

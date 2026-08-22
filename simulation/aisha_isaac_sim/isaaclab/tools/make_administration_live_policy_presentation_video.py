@@ -91,7 +91,13 @@ def main() -> int:
     learned_skill_ensemble = (
         run.get("policy_architecture") == "route_planner_selected_learned_skill_ensemble"
     )
+    phase3n_dynamic_safety = run.get("policy_architecture") == (
+        "frozen_phase3m_recovery_stack_plus_outer_recurrent_360_degree_brake_layer"
+    )
     control_label = (
+        "Wheel physics | 360-degree rays | frozen Phase 3M + learned brake safety | no supervisor"
+        if policy_only and phase3n_dynamic_safety
+        else
         "Wheel physics | LD19-style rays | PPO base + imitation specialist | no supervisor"
         if policy_only and learned_skill_ensemble
         else "Wheel physics | LD19-style rays | PPO policy-only control | no turn supervisor"
@@ -148,6 +154,20 @@ def main() -> int:
             linear_velocity = float(telemetry.get("linear_velocity_mps", 0.0))
             yaw_rate = float(telemetry.get("yaw_rate_rad_s", 0.0))
             action = telemetry.get("policy_action", [0.0, 0.0])
+            applied_command = telemetry.get(
+                "applied_frozen_stack_command", action
+            )
+            if len(action) == 1 and len(applied_command) >= 2:
+                action_label = (
+                    f"safety {float(action[0]):+.2f} | stack "
+                    f"[{float(applied_command[0]):+.2f}, "
+                    f"{float(applied_command[1]):+.2f}]"
+                )
+            else:
+                action_label = (
+                    f"action [{float(action[0]):+.2f}, "
+                    f"{float(action[1]):+.2f}]"
+                )
             waypoint_count = completed_waypoints_at(elapsed_s, waypoint_events)
             overlay = frame.copy()
             cv2.rectangle(overlay, (0, 0), (1280, 96), (10, 22, 28), -1)
@@ -185,7 +205,7 @@ def main() -> int:
             )
             cv2.putText(
                 frame,
-                f"v {linear_velocity:+.2f} m/s | yaw {yaw_rate:+.2f} rad/s | action [{float(action[0]):+.2f}, {float(action[1]):+.2f}]",
+                f"v {linear_velocity:+.2f} m/s | yaw {yaw_rate:+.2f} rad/s | {action_label}",
                 (700, 76),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.43,
@@ -262,6 +282,7 @@ def main() -> int:
         "checkpoint": run["checkpoint"],
         "checkpoint_sha256": run["checkpoint_sha256"],
         "policy_architecture": run.get("policy_architecture"),
+        "phase3n_dynamic_safety_overlay": phase3n_dynamic_safety,
         "segment_policy_checkpoints": run.get("segment_policy_checkpoints", {}),
         "output_video": str(args.output.resolve()),
         "output_video_sha256": sha256_file(args.output),

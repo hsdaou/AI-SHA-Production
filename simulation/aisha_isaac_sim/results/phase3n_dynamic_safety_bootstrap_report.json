@@ -1,0 +1,30 @@
+{
+  "report_type": "phase3_safety_residual_ppo_bootstrap",
+  "generated_at_utc": "2026-08-22T17:34:54.356208+00:00",
+  "output_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/phase3n_brake_only_bootstrap_seed10017/model_0.pt",
+  "output_checkpoint_sha256": "ab4fd52ce15d796d641daaea9c98f153525b443627482f3aea2d35701ba07e3f",
+  "policy": {
+    "class": "ActorCriticRecurrent",
+    "rnn_type": "gru",
+    "rnn_hidden_dim": 64,
+    "rnn_num_layers": 1,
+    "observation_count": 46,
+    "action_count": 1,
+    "actor_hidden_dims": [
+      128,
+      64
+    ],
+    "deterministic_initial_action": [
+      0.0,
+      0.0
+    ],
+    "stochastic_initial_std": 0.12
+  },
+  "action_semantics": {
+    "action_0_negative": "brake_fraction; positive values are a no-op",
+    "can_increase_speed": false,
+    "can_reverse": false,
+    "can_flip_steering_sign": false
+  },
+  "optimizer_initialized_fresh": true
+}
