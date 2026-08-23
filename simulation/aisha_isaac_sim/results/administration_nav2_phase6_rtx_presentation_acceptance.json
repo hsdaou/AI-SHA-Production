@@ -1,0 +1,52 @@
+{
+  "report_type": "administration_nav2_phase6_rtx_presentation_acceptance",
+  "generated_at_utc": "2026-08-23T21:26:18.830968+00:00",
+  "passed": true,
+  "status": "accepted_presentation_simulation",
+  "checks": {
+    "phase6_live_integration_passed_28_of_28": true,
+    "trace_source_is_successful_12_leg_live_mission": true,
+    "trace_covers_all_segments_with_finite_poses": true,
+    "render_uses_current_trace_by_hash": true,
+    "trace_clearance_validation_passed": true,
+    "path_tracing_profile_is_presentation_quality": true,
+    "six_shots_cover_all_route_segments": true,
+    "encoded_video_matches_render_contract": true,
+    "encoded_video_hash_and_size_match": true,
+    "visual_qa_contact_sheet_packaged": true,
+    "both_offices_and_doorways_exercised": true,
+    "learned_safety_was_live_in_source_run": true,
+    "ground_truth_localization_limitation_disclosed": true,
+    "presentation_remains_simulation_only": true
+  },
+  "checks_passed": 14,
+  "checks_total": 14,
+  "video": {
+    "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase6_Nav2_LearnedSafety_RTX_Presentation.mp4",
+    "sha256": "34da79912934b1454a6f6a6b3592c172eadb7d089d6fdec3dda785b6d17c5d07",
+    "size_bytes": 1433570,
+    "frames": 240,
+    "fps": 20.0,
+    "resolution": [
+      1280,
+      720
+    ],
+    "duration_s": 12.0
+  },
+  "source_evidence": {
+    "integration_gate": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase6_high_speed_integration_gate.json",
+    "mission_trace": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase6_high_speed_mission.json",
+    "bridge": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase6_high_speed_bridge.json",
+    "replay_validation": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase6_rtx_replay_validation.json",
+    "render_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase6_rtx_render_report.json",
+    "trace_records": 4760
+  },
+  "claim_boundary": {
+    "supported": "Presentation of the accepted Isaac Sim/Nav2 mission using the Phase 6 actor on 0.8 m/s hallway legs and the accepted Phase 3N actor elsewhere, replayed from its recorded wheel-physics poses in the measured-presentation Omniverse PathTracing scene.",
+    "visual_replay_is_live_policy_execution": false,
+    "source_motion_was_live_policy_execution": true,
+    "vice_principal_interior_assumed_because_locked": true,
+    "physical_localization_credit": false,
+    "physical_release": false
+  }
+}

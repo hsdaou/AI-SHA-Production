@@ -189,11 +189,28 @@ the 0.10 m/s limit. The accepted learned Phase 3N layer had authority for 689
 steps and applied braking on 192. The aggregate report
 `results/administration_nav2_measured_integration_gate.json` passes 27/27.
 
-The hallway command ceiling remains 0.30 m/s, with 0.08 m/s targeted through
-the tight openings. A future 0.80 m/s hallway tier will retain the current
-geometry and doorway limit, but it needs its own staged training, stopping and
-dynamic-obstacle acceptance. The existing accepted policies are not represented
-as validated at 0.80 m/s.
+The baseline hallway command ceiling remains 0.30 m/s, with 0.08 m/s targeted
+through the tight openings. The separately trained Phase 6 tier retains the
+same geometry and doorway limit and is now accepted for simulation presentation
+on straight segments 1 and 5. Reproduce its complete live gate with:
+
+```bash
+tools/run_administration_nav2_phase6_integration.sh
+```
+
+The accepted run completed all 12 legs and reached 0.74339 m/s or more on both
+high-speed legs. `results/administration_nav2_phase6_high_speed_integration_gate.json`
+passes 28/28. The Phase 6 bridge publishes an identity map-to-odom transform
+from Isaac ground-truth odometry and disables AMCL TF output; this isolates the
+navigation/safety presentation from scan-matching errors in assumed furniture
+and is not physical localisation evidence.
+
+The final six-shot PathTracing replay uses only the recorded accepted pose
+trace and is available at
+`media/videos/AI-SHA_Phase6_Nav2_LearnedSafety_RTX_Presentation.mp4`.
+`results/administration_nav2_phase6_rtx_presentation_acceptance.json` passes
+14/14. It is a cinematic replay of live source motion, not a second live-policy
+execution.
 
 ## 5. Architecture and claim boundary
 

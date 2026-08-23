@@ -30,11 +30,24 @@ parser.add_argument(
     action="store_true",
     help="inject a short 0.05 m/s command without requiring Nav2",
 )
+parser.add_argument(
+    "--fallback-learned-safety-checkpoint",
+    type=Path,
+    help=(
+        "optional accepted Phase 3N checkpoint used outside declared Phase 6 "
+        "high-speed route segments"
+    ),
+)
 parser.add_argument("--output-report", type=Path)
 parser.add_argument(
     "--phase3n-safety-checkpoint",
+    "--learned-safety-checkpoint",
+    dest="learned_safety_checkpoint",
     type=Path,
-    help="load a Phase 3N checkpoint and arbitrate every Nav2 command through it",
+    help=(
+        "load a compatible Phase 3N/Phase 6 checkpoint and arbitrate every "
+        "Nav2 command through it"
+    ),
 )
 parser.add_argument(
     "--mapped-safety-overlay",
@@ -75,14 +88,24 @@ PHASE3N_PRESENTATION_TASK = (
 PHASE3N_MEASURED_NAV2_TASK = (
     "Isaac-AISHA-Administration-Live-Measured-Nav2-DynamicSafety-Direct-v0"
 )
+PHASE6_MEASURED_NAV2_TASK = (
+    "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase6-"
+    "HighSpeed80-DynamicSafety-Direct-v0"
+)
 PHASE3N_COMPATIBLE_TASKS = {
     PHASE3N_PRESENTATION_TASK,
     PHASE3N_MEASURED_NAV2_TASK,
+    PHASE6_MEASURED_NAV2_TASK,
 }
 ACCEPTED_PHASE3N_CHECKPOINT = "aisha_phase3n_dynamic_safety_model_50.pt"
 ACCEPTED_PHASE3N_SHA256 = (
     "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b"
 )
+ACCEPTED_PHASE6_CHECKPOINT = "aisha_phase6_high_speed_080_model_223.pt"
+ACCEPTED_PHASE6_SHA256 = (
+    "e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318"
+)
+MEASURED_NAV2_TASKS = {PHASE3N_MEASURED_NAV2_TASK, PHASE6_MEASURED_NAV2_TASK}
 
 
 def sha256_file(path: Path) -> str:
@@ -114,6 +137,9 @@ class AishaSimulationBridge:
         control_period_s: float,
         sensor_positions: dict[str, list[float]],
         mapped_guard: MappedNav2SafetyGuard | None = None,
+        maximum_forward_mps: float = 0.30,
+        non_high_speed_navigation_maximum_mps: float = 0.30,
+        publish_ground_truth_map_to_odom: bool = False,
     ):
         import rclpy
         from geometry_msgs.msg import Twist
@@ -121,7 +147,7 @@ class AishaSimulationBridge:
         from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
         from rosgraph_msgs.msg import Clock
         from sensor_msgs.msg import LaserScan
-        from std_msgs.msg import Bool
+        from std_msgs.msg import Bool, UInt32
         from tf2_ros import StaticTransformBroadcaster, TransformBroadcaster
 
         self.rclpy = rclpy
@@ -152,6 +178,12 @@ class AishaSimulationBridge:
         self.mission_complete_subscription = self.node.create_subscription(
             Bool, "/aisha/mission_complete", self._mission_complete_callback, 10
         )
+        self.route_segment_subscription = self.node.create_subscription(
+            UInt32,
+            "/aisha/route_segment_id",
+            self._route_segment_callback,
+            10,
+        )
         self.command_linear_mps = 0.0
         self.command_angular_rad_s = 0.0
         self.command_received_at_s = -math.inf
@@ -161,7 +193,11 @@ class AishaSimulationBridge:
         self.front_stop_release_m = 0.75
         self.front_stop_half_angle_deg = 10.0
         self.command_watchdog_s = 0.30
-        self.maximum_forward_mps = 0.30
+        self.maximum_forward_mps = maximum_forward_mps
+        self.non_high_speed_navigation_maximum_mps = (
+            non_high_speed_navigation_maximum_mps
+        )
+        self.publish_ground_truth_map_to_odom = publish_ground_truth_map_to_odom
         self.maximum_angular_rad_s = 0.55
         self.minimum_in_place_angular_rad_s = 0.30
         self.minimum_rotation_clearance_m = 0.08
@@ -184,11 +220,33 @@ class AishaSimulationBridge:
         self.minimum_front_range_m = math.inf
         self.minimum_central_front_range_m = math.inf
         self.minimum_ring_clearance_m = math.inf
+        self.current_route_segment_id = 0
+        self.route_segment_messages = 0
+        self.invalid_route_segment_messages = 0
+        self.maximum_requested_linear_mps_by_segment: dict[int, float] = {}
+        self.maximum_guarded_linear_mps_by_segment: dict[int, float] = {}
+        self.maximum_observed_linear_mps_by_segment: dict[int, float] = {}
         self.publish_static_transforms(sensor_positions)
 
     def _mission_complete_callback(self, message) -> None:
         if bool(message.data):
             self.exit_requested = True
+
+    def _route_segment_callback(self, message) -> None:
+        segment_id = int(message.data)
+        segment_count = int(self.raw_env._segment_goals.shape[0])
+        if not 0 <= segment_id < segment_count:
+            self.invalid_route_segment_messages += 1
+            return
+        self.current_route_segment_id = segment_id
+        self.route_segment_messages += 1
+        self.raw_env._segment_ids[0] = segment_id
+        self.raw_env._goal_w[0] = (
+            self.raw_env.scene.env_origins[0, :2]
+            + self.raw_env._segment_goals[segment_id]
+        )
+        if hasattr(self.raw_env, "_apply_segment_speed_envelope"):
+            self.raw_env._apply_segment_speed_envelope()
 
     def publish_static_transforms(self, sensor_positions: dict[str, list[float]]) -> None:
         from geometry_msgs.msg import TransformStamped
@@ -237,6 +295,15 @@ class AishaSimulationBridge:
             0.12, 10.0
         )
 
+    def route_navigation_maximum_mps(self) -> float:
+        high_speed_ids = tuple(int(value) for value in self.raw_env.cfg.high_speed_segment_ids)
+        if self.current_route_segment_id in high_speed_ids:
+            return self.maximum_forward_mps
+        return min(
+            self.maximum_forward_mps,
+            self.non_high_speed_navigation_maximum_mps,
+        )
+
     def command_action(self) -> torch.Tensor:
         front_ranges = self.front_ranges()[0]
         front_min = float(torch.amin(front_ranges).item())
@@ -268,7 +335,16 @@ class AishaSimulationBridge:
             self.stop_latched = True
             self.obstacle_stops += 1
 
-        linear = self.command_linear_mps
+        requested_linear = min(
+            self.command_linear_mps, self.route_navigation_maximum_mps()
+        )
+        previous_requested = self.maximum_requested_linear_mps_by_segment.get(
+            self.current_route_segment_id, 0.0
+        )
+        self.maximum_requested_linear_mps_by_segment[self.current_route_segment_id] = max(
+            previous_requested, requested_linear
+        )
+        linear = requested_linear
         angular = self.command_angular_rad_s
         if self.mapped_guard is not None:
             local_xy = self.raw_env._local_xy()[0]
@@ -302,6 +378,13 @@ class AishaSimulationBridge:
             linear = guard_result.linear_mps
             angular = guard_result.angular_rad_s
 
+        previous_guarded = self.maximum_guarded_linear_mps_by_segment.get(
+            self.current_route_segment_id, 0.0
+        )
+        self.maximum_guarded_linear_mps_by_segment[self.current_route_segment_id] = max(
+            previous_guarded, linear
+        )
+
         stale = self.simulation_time_s - self.command_received_at_s > self.command_watchdog_s
         if stale and (self.command_linear_mps != 0.0 or self.command_angular_rad_s != 0.0):
             self.watchdog_stops += 1
@@ -330,9 +413,21 @@ class AishaSimulationBridge:
             self.in_place_deadband_compensations += 1
 
         action = torch.zeros((1, 2), device=self.raw_env.device)
-        # The frozen environment maps [-1,+1] to [0,0.50] m/s and angular
-        # action directly to [-1,+1] rad/s. Keep that established contract.
-        action[0, 0] = 2.0 * linear / self.raw_env.cfg.linear_velocity_range_mps[1] - 1.0
+        # External Nav2 commands are physical m/s. Convert them against the
+        # route-scoped final wheel mapping so a 0.30 m/s request remains 0.30
+        # on a Phase 6 leg rather than being unintentionally expanded. The
+        # learned actor still sees and brakes the same normalized command.
+        if hasattr(self.raw_env, "_apply_segment_speed_envelope"):
+            self.raw_env._apply_segment_speed_envelope()
+        if hasattr(self.raw_env, "_route_scoped_maximum_speed"):
+            route_mapping_maximum = float(
+                self.raw_env._route_scoped_maximum_speed()[0].item()
+            )
+        else:
+            route_mapping_maximum = float(
+                self.raw_env.cfg.linear_velocity_range_mps[1]
+            )
+        action[0, 0] = 2.0 * linear / route_mapping_maximum - 1.0
         action[0, 1] = angular / self.raw_env.cfg.angular_velocity_max_rad_s
         return action.clamp(-1.0, 1.0)
 
@@ -380,6 +475,13 @@ class AishaSimulationBridge:
         quaternion = robot.data.root_quat_w[0]
         linear = robot.data.root_lin_vel_b[0]
         angular = robot.data.root_ang_vel_b[0]
+        observed_linear_mps = abs(float(linear[0].item()))
+        previous_observed = self.maximum_observed_linear_mps_by_segment.get(
+            self.current_route_segment_id, 0.0
+        )
+        self.maximum_observed_linear_mps_by_segment[self.current_route_segment_id] = max(
+            previous_observed, observed_linear_mps
+        )
 
         odom = Odometry()
         odom.header.stamp = stamp
@@ -406,8 +508,21 @@ class AishaSimulationBridge:
         transform.transform.translation.y = odom.pose.pose.position.y
         transform.transform.translation.z = odom.pose.pose.position.z
         transform.transform.rotation = odom.pose.pose.orientation
-        self.tf_broadcaster.sendTransform(transform)
-        self.messages["tf"] += 1
+        transforms = [transform]
+        if self.publish_ground_truth_map_to_odom:
+            # The measured Phase 6 gate evaluates navigation and safety, not
+            # scan-matching. At 0.8 m/s the presentation scene's assumed
+            # furniture can make AMCL diverge from the exact Isaac pose. Keep
+            # map and odom coincident so Nav2 consumes deterministic simulator
+            # ground truth, with the limitation explicitly reported.
+            map_to_odom = TransformStamped()
+            map_to_odom.header.stamp = stamp
+            map_to_odom.header.frame_id = "map"
+            map_to_odom.child_frame_id = "odom"
+            map_to_odom.transform.rotation.w = 1.0
+            transforms.append(map_to_odom)
+        self.tf_broadcaster.sendTransform(transforms)
+        self.messages["tf"] += len(transforms)
 
         if step_index % max(1, round(0.10 / self.control_period_s)) == 0:
             self._publish_scan(
@@ -447,7 +562,7 @@ def main() -> int:
 
     if not rclpy.ok():
         rclpy.init()
-    learned_safety_enabled = args.phase3n_safety_checkpoint is not None
+    learned_safety_enabled = args.learned_safety_checkpoint is not None
     mapped_guard = None
     mapped_overlay_path = None
     mapped_site_config_path = None
@@ -469,8 +584,11 @@ def main() -> int:
     task = args.task
     checkpoint = None
     checkpoint_sha256 = None
+    accepted_checkpoint_profile = None
+    fallback_checkpoint = None
+    fallback_checkpoint_sha256 = None
     if learned_safety_enabled:
-        checkpoint = args.phase3n_safety_checkpoint.expanduser().resolve()
+        checkpoint = args.learned_safety_checkpoint.expanduser().resolve()
         if not checkpoint.is_file():
             raise FileNotFoundError(checkpoint)
         checkpoint_sha256 = sha256_file(checkpoint)
@@ -478,8 +596,43 @@ def main() -> int:
             task = PHASE3N_PRESENTATION_TASK
         if task not in PHASE3N_COMPATIBLE_TASKS:
             raise ValueError(
-                "--phase3n-safety-checkpoint requires a deterministic compatible "
-                f"Phase 3N task: {sorted(PHASE3N_COMPATIBLE_TASKS)}"
+                "--learned-safety-checkpoint requires a deterministic compatible "
+                f"learned-safety task: {sorted(PHASE3N_COMPATIBLE_TASKS)}"
+            )
+        if (
+            checkpoint.name == ACCEPTED_PHASE3N_CHECKPOINT
+            and checkpoint_sha256 == ACCEPTED_PHASE3N_SHA256
+        ):
+            accepted_checkpoint_profile = "phase3n_dynamic_safety"
+        elif (
+            checkpoint.name == ACCEPTED_PHASE6_CHECKPOINT
+            and checkpoint_sha256 == ACCEPTED_PHASE6_SHA256
+        ):
+            accepted_checkpoint_profile = "phase6_high_speed_080"
+        if task == PHASE6_MEASURED_NAV2_TASK and accepted_checkpoint_profile != (
+            "phase6_high_speed_080"
+        ):
+            raise ValueError(
+                "Phase 6 measured Nav2 task requires the accepted Phase 6 checkpoint"
+            )
+    if args.fallback_learned_safety_checkpoint is not None:
+        fallback_checkpoint = (
+            args.fallback_learned_safety_checkpoint.expanduser().resolve()
+        )
+        if not fallback_checkpoint.is_file():
+            raise FileNotFoundError(fallback_checkpoint)
+        fallback_checkpoint_sha256 = sha256_file(fallback_checkpoint)
+        if task != PHASE6_MEASURED_NAV2_TASK:
+            raise ValueError(
+                "fallback learned safety is supported only by the Phase 6 "
+                "measured Nav2 task"
+            )
+        if not (
+            fallback_checkpoint.name == ACCEPTED_PHASE3N_CHECKPOINT
+            and fallback_checkpoint_sha256 == ACCEPTED_PHASE3N_SHA256
+        ):
+            raise ValueError(
+                "Phase 6 measured fallback must be the accepted Phase 3N checkpoint"
             )
 
     cfg = parse_env_cfg(task, device=args.device, num_envs=1, use_fabric=True)
@@ -533,6 +686,8 @@ def main() -> int:
     observations = None
     policy = None
     policy_network = None
+    fallback_policy = None
+    fallback_policy_network = None
     if learned_safety_enabled:
         if not hasattr(raw_env, "set_external_navigation_actions"):
             raise TypeError(f"task {task} does not expose learned safety arbitration")
@@ -548,7 +703,19 @@ def main() -> int:
             policy_network = runner.alg.policy
         except AttributeError:
             policy_network = runner.alg.actor_critic
-        observations = env.get_observations()
+        if fallback_checkpoint is not None:
+            fallback_runner = OnPolicyRunner(
+                env, agent_cfg.to_dict(), log_dir=None, device=device
+            )
+            fallback_runner.load(str(fallback_checkpoint))
+            fallback_policy = fallback_runner.get_inference_policy(
+                device=raw_env.device
+            )
+            try:
+                fallback_policy_network = fallback_runner.alg.policy
+            except AttributeError:
+                fallback_policy_network = fallback_runner.alg.actor_critic
+        observations, _ = env.reset()
 
     control_period_s = float(cfg.sim.dt * cfg.decimation)
     sensor_config = yaml.safe_load(
@@ -560,11 +727,20 @@ def main() -> int:
         ]
         for name in ("crown_lidar", "front_lidar", "imu")
     }
+    phase6_high_speed_replay = task == PHASE6_MEASURED_NAV2_TASK
+    if phase6_high_speed_replay and mapped_guard is not None:
+        # The furnished wheel contacts need the same proven 0.42 rad/s
+        # breakaway command used by the office pivots. Translation remains
+        # held at zero while this open-approach alignment is active.
+        mapped_guard.breakaway_angular_rad_s = 0.42
     bridge = AishaSimulationBridge(
         raw_env,
         control_period_s,
         sensor_positions,
         mapped_guard=mapped_guard,
+        maximum_forward_mps=0.80 if phase6_high_speed_replay else 0.30,
+        non_high_speed_navigation_maximum_mps=0.30,
+        publish_ground_truth_map_to_odom=phase6_high_speed_replay,
     )
     steps_completed = 0
     reset_detected = False
@@ -573,6 +749,8 @@ def main() -> int:
     safety_brake_sum = 0.0
     maximum_safety_brake_fraction = 0.0
     minimum_ring_clearance_m = math.inf
+    primary_policy_steps = 0
+    fallback_policy_steps = 0
     last_pre_step_position_xy_m = None
     last_pre_step_minimum_ring_clearance_m = None
     try:
@@ -605,9 +783,26 @@ def main() -> int:
             if learned_safety_enabled:
                 raw_env.set_external_navigation_actions(navigation_action)
                 with torch.inference_mode():
-                    safety_action = policy(observations)
+                    primary_safety_action = policy(observations)
+                    if fallback_policy is not None:
+                        fallback_safety_action = fallback_policy(observations)
+                        use_primary = bridge.current_route_segment_id in tuple(
+                            int(value) for value in raw_env.cfg.high_speed_segment_ids
+                        )
+                        safety_action = (
+                            primary_safety_action
+                            if use_primary
+                            else fallback_safety_action
+                        )
+                        primary_policy_steps += int(use_primary)
+                        fallback_policy_steps += int(not use_primary)
+                    else:
+                        safety_action = primary_safety_action
+                        primary_policy_steps += 1
                     observations, _, dones, _ = env.step(safety_action)
                     policy_network.reset(dones)
+                    if fallback_policy_network is not None:
+                        fallback_policy_network.reset(dones)
                 terminated_or_truncated = dones
                 authority = bool(raw_env._safety_authority_active[0].item())
                 brake_fraction = float(raw_env._safety_brake_fraction[0].item())
@@ -672,7 +867,7 @@ def main() -> int:
             "steps_completed": steps_completed,
             "control_period_s": control_period_s,
             "topics": {
-                "subscribed": ["/cmd_vel"],
+                "subscribed": ["/cmd_vel", "/aisha/route_segment_id"],
                 "published": [
                     "/clock",
                     "/odom",
@@ -683,8 +878,32 @@ def main() -> int:
                 ],
                 "message_counts": bridge.messages,
             },
+            "localization": {
+                "nav2_global_pose_source": (
+                    "isaac_ground_truth_odom_with_identity_map_to_odom"
+                    if bridge.publish_ground_truth_map_to_odom
+                    else "amcl_map_to_odom"
+                ),
+                "bridge_publishes_map_to_odom": (
+                    bridge.publish_ground_truth_map_to_odom
+                ),
+                "amcl_tf_broadcast_required": (
+                    not bridge.publish_ground_truth_map_to_odom
+                ),
+                "presentation_simulation_only": True,
+                "physical_localization_credit": False,
+            },
             "command_constraints": {
                 "maximum_forward_mps": bridge.maximum_forward_mps,
+                "non_high_speed_navigation_maximum_mps": (
+                    bridge.non_high_speed_navigation_maximum_mps
+                ),
+                "high_speed_route_segment_ids": list(
+                    raw_env.cfg.high_speed_segment_ids
+                ),
+                "route_scoped_phase3n_thresholds_enabled": bool(
+                    raw_env.cfg.measured_route_scoped_phase3n_thresholds_enabled
+                ),
                 "reverse_allowed": False,
                 "lateral_motion_allowed": False,
                 "maximum_angular_rad_s": bridge.maximum_angular_rad_s,
@@ -705,6 +924,31 @@ def main() -> int:
                 "rotation_guard_stops": bridge.rotation_guard_stops,
                 "mission_complete_signal_received": bridge.exit_requested,
                 "episode_reset_gate_detected": reset_detected,
+                "route_segment_messages": bridge.route_segment_messages,
+                "invalid_route_segment_messages": (
+                    bridge.invalid_route_segment_messages
+                ),
+            },
+            "route_scoped_speed_evidence": {
+                "maximum_requested_linear_mps_by_segment": {
+                    str(key): value
+                    for key, value in sorted(
+                        bridge.maximum_requested_linear_mps_by_segment.items()
+                    )
+                },
+                "maximum_guarded_linear_mps_by_segment": {
+                    str(key): value
+                    for key, value in sorted(
+                        bridge.maximum_guarded_linear_mps_by_segment.items()
+                    )
+                },
+                "maximum_observed_linear_mps_by_segment": {
+                    str(key): value
+                    for key, value in sorted(
+                        bridge.maximum_observed_linear_mps_by_segment.items()
+                    )
+                },
+                "mission_segment_source": "/aisha/route_segment_id",
             },
             "termination_diagnostics": termination_diagnostics,
             "last_pre_step_snapshot": {
@@ -716,10 +960,29 @@ def main() -> int:
                 "checkpoint": str(checkpoint) if checkpoint is not None else None,
                 "checkpoint_sha256": checkpoint_sha256,
                 "checkpoint_is_accepted_phase3n": bool(
-                    checkpoint is not None
-                    and checkpoint.name == ACCEPTED_PHASE3N_CHECKPOINT
-                    and checkpoint_sha256 == ACCEPTED_PHASE3N_SHA256
+                    accepted_checkpoint_profile == "phase3n_dynamic_safety"
                 ),
+                "checkpoint_is_accepted_phase6": bool(
+                    accepted_checkpoint_profile == "phase6_high_speed_080"
+                ),
+                "accepted_checkpoint_profile": accepted_checkpoint_profile,
+                "fallback_checkpoint": (
+                    str(fallback_checkpoint)
+                    if fallback_checkpoint is not None
+                    else None
+                ),
+                "fallback_checkpoint_sha256": fallback_checkpoint_sha256,
+                "fallback_checkpoint_is_accepted_phase3n": bool(
+                    fallback_checkpoint is not None
+                    and fallback_checkpoint_sha256 == ACCEPTED_PHASE3N_SHA256
+                ),
+                "policy_selection": (
+                    "phase6_on_declared_high_speed_segments_phase3n_elsewhere"
+                    if fallback_checkpoint is not None
+                    else "single_checkpoint"
+                ),
+                "primary_policy_steps": primary_policy_steps,
+                "fallback_policy_steps": fallback_policy_steps,
                 "base_command_source": "nav2_cmd_vel" if learned_safety_enabled else None,
                 "authority_steps": safety_authority_steps,
                 "brake_steps": safety_brake_steps,
@@ -767,12 +1030,12 @@ def main() -> int:
             "learned_360_safety_coupled": learned_safety_enabled,
             "central_drop_safety_routing": {
                 "learned_crown_scan_excludes_navigation_barrier": (
-                    task == PHASE3N_MEASURED_NAV2_TASK
+                    task in MEASURED_NAV2_TASKS
                 ),
                 "occupancy_map_keeps_navigation_barrier": True,
                 "physics_collider_kept": True,
                 "mapped_full_footprint_guard_required": (
-                    task == PHASE3N_MEASURED_NAV2_TASK
+                    task in MEASURED_NAV2_TASKS
                 ),
             },
             "measured_nav2_termination_envelope": {
@@ -798,11 +1061,11 @@ def main() -> int:
             and all(count > 0 for count in bridge.messages.values())
             and not reset_detected
             and (
-                task != PHASE3N_MEASURED_NAV2_TASK or mapped_guard is not None
+                task not in MEASURED_NAV2_TASKS or mapped_guard is not None
             )
             and (
                 not learned_safety_enabled
-                or report["learned_safety"]["checkpoint_is_accepted_phase3n"]
+                or accepted_checkpoint_profile is not None
             )
         )
         output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

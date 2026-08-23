@@ -19,10 +19,14 @@ from nav2_msgs.action import ComputePathToPose, FollowPath
 from nav_msgs.msg import Odometry, OccupancyGrid
 from rclpy.action import ActionClient
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, UInt32
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+PHASE6_CHECKPOINT = (
+    PACKAGE_ROOT
+    / "isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt"
+)
 OFFICE_STAGING_OFFSETS_M = {
     # DWB hands a position-only waypoint back near the edge of its 0.40 m
     # tolerance.  These interior staging offsets make that accepted pose land
@@ -32,6 +36,14 @@ OFFICE_STAGING_OFFSETS_M = {
     "principal": (0.17, -0.19),
 }
 POST_VISIT_PIVOTS = {"vice_principal", "principal"}
+PHASE6_PRE_DOOR_ALIGNMENT_WAYPOINTS = {
+    "vice_principal_approach",
+    "principal_approach",
+}
+APPROACH_DOOR_BY_WAYPOINT = {
+    "vice_principal_approach": "vice_principal",
+    "principal_approach": "principal",
+}
 
 
 def yaw_quaternion(yaw_radians: float) -> tuple[float, float]:
@@ -71,6 +83,9 @@ class MissionNode:
         self.completion_publisher = self.node.create_publisher(
             Bool, "/aisha/mission_complete", 10
         )
+        self.route_segment_publisher = self.node.create_publisher(
+            UInt32, "/aisha/route_segment_id", 10
+        )
         map_qos = QoSProfile(
             depth=1,
             durability=DurabilityPolicy.TRANSIENT_LOCAL,
@@ -86,6 +101,12 @@ class MissionNode:
         self.odom_samples: list[tuple[float, float, float, float, float]] = []
         self.command_samples: list[tuple[float, float]] = []
         self.follow_feedback_count = 0
+        self.current_route_segment_id = 0
+        self.trace_enabled = False
+        self.trace_control_mode = "nav2"
+        self.pose_trace: list[dict[str, object]] = []
+        self._trace_odom_count = 0
+        self._trace_start_sim_s: float | None = None
         self.node.create_subscription(Twist, "/cmd_vel", self._command, 10)
 
     def _map(self, _message: OccupancyGrid) -> None:
@@ -108,6 +129,36 @@ class MissionNode:
                 yaw,
                 message.twist.twist.angular.z,
             )
+        )
+        if not self.trace_enabled:
+            return
+        simulation_time_s = (
+            float(message.header.stamp.sec)
+            + float(message.header.stamp.nanosec) / 1_000_000_000.0
+        )
+        if self._trace_start_sim_s is None:
+            self._trace_start_sim_s = simulation_time_s
+        self._trace_odom_count += 1
+        if self._trace_odom_count % 3 != 0:
+            return
+        self.pose_trace.append(
+            {
+                "step": self._trace_odom_count,
+                "elapsed_s": round(
+                    simulation_time_s - self._trace_start_sim_s, 6
+                ),
+                "x_m": round(float(message.pose.pose.position.x), 6),
+                "y_m": round(float(message.pose.pose.position.y), 6),
+                "yaw_rad": round(yaw, 7),
+                "segment_id": self.current_route_segment_id,
+                "control_mode": self.trace_control_mode,
+                "linear_velocity_mps": round(
+                    float(message.twist.twist.linear.x), 6
+                ),
+                "yaw_rate_rad_s": round(
+                    float(message.twist.twist.angular.z), 6
+                ),
+            }
         )
 
     def _command(self, message: Twist) -> None:
@@ -253,6 +304,20 @@ class MissionNode:
             self.completion_publisher.publish(message)
             rclpy.spin_once(self.node, timeout_sec=0.05)
 
+    def publish_route_segment(self, segment_id: int) -> None:
+        self.current_route_segment_id = segment_id
+        message = UInt32()
+        message.data = segment_id
+        discovery_deadline = time.monotonic() + 2.0
+        while (
+            self.route_segment_publisher.get_subscription_count() == 0
+            and time.monotonic() < discovery_deadline
+        ):
+            rclpy.spin_once(self.node, timeout_sec=0.05)
+        for _ in range(3):
+            self.route_segment_publisher.publish(message)
+            rclpy.spin_once(self.node, timeout_sec=0.05)
+
     def pivot_in_place(
         self,
         direction: float = 1.0,
@@ -291,6 +356,118 @@ class MissionNode:
             "elapsed_wall_s": round(time.monotonic() - started, 3),
         }
 
+    def align_to_yaw(
+        self,
+        target_yaw_deg: float,
+        tolerance_deg: float = 2.9,
+        angular_rad_s: float = 0.42,
+        timeout_s: float = 20.0,
+    ) -> dict:
+        """Align in the open approach corridor before a straight door crossing."""
+        if not self.odom_samples:
+            return {"passed": False, "status": "no_odometry"}
+        started = time.monotonic()
+        target = math.radians(target_yaw_deg)
+        tolerance = math.radians(tolerance_deg)
+        final_error = math.inf
+        while time.monotonic() - started < timeout_s:
+            current_yaw = self.odom_samples[-1][3]
+            final_error = math.atan2(
+                math.sin(target - current_yaw), math.cos(target - current_yaw)
+            )
+            if abs(final_error) <= tolerance:
+                self.stop()
+                return {
+                    "passed": True,
+                    "status": "succeeded",
+                    "target_yaw_deg": target_yaw_deg,
+                    "tolerance_deg": tolerance_deg,
+                    "final_error_deg": math.degrees(final_error),
+                    "elapsed_wall_s": round(time.monotonic() - started, 3),
+                    "rotation_location": "open_approach_corridor_before_doorway",
+                }
+            command = Twist()
+            command.angular.z = math.copysign(abs(angular_rad_s), final_error)
+            self.stop_publisher.publish(command)
+            rclpy.spin_once(self.node, timeout_sec=0.05)
+        self.stop()
+        return {
+            "passed": False,
+            "status": "timeout",
+            "target_yaw_deg": target_yaw_deg,
+            "tolerance_deg": tolerance_deg,
+            "final_error_deg": math.degrees(final_error),
+            "elapsed_wall_s": round(time.monotonic() - started, 3),
+            "rotation_location": "open_approach_corridor_before_doorway",
+        }
+
+    def converge_to_stage(
+        self,
+        target_x_m: float,
+        target_y_m: float,
+        tolerance_m: float = 0.015,
+        linear_mps: float = 0.18,
+        angular_rad_s: float = 0.42,
+        heading_tolerance_deg: float = 2.5,
+        timeout_s: float = 30.0,
+    ) -> dict:
+        """Close the coarse Nav2 handoff onto the measured pre-door centre."""
+        if not self.odom_samples:
+            return {"passed": False, "status": "no_odometry"}
+        started = time.monotonic()
+        heading_tolerance = math.radians(heading_tolerance_deg)
+        final_distance = math.inf
+        maximum_linear_command = 0.0
+        maximum_angular_command = 0.0
+        while time.monotonic() - started < timeout_s:
+            x_m, y_m, _, yaw_rad, _ = self.odom_samples[-1]
+            dx = target_x_m - x_m
+            dy = target_y_m - y_m
+            final_distance = math.hypot(dx, dy)
+            if final_distance <= tolerance_m:
+                self.stop()
+                return {
+                    "passed": True,
+                    "status": "succeeded",
+                    "target_xy_m": [target_x_m, target_y_m],
+                    "tolerance_m": tolerance_m,
+                    "final_distance_m": final_distance,
+                    "maximum_linear_command_mps": maximum_linear_command,
+                    "maximum_angular_command_rad_s": maximum_angular_command,
+                    "elapsed_wall_s": round(time.monotonic() - started, 3),
+                }
+            desired_yaw = math.atan2(dy, dx)
+            heading_error = math.atan2(
+                math.sin(desired_yaw - yaw_rad),
+                math.cos(desired_yaw - yaw_rad),
+            )
+            command = Twist()
+            if abs(heading_error) <= heading_tolerance:
+                # The furnished USD needs the mapped guard's established
+                # traction ceiling to overcome translational static friction.
+                # The guard closes the loop on actual speed and retains its
+                # independent 0.095 m/s doorway overspeed stop.
+                command.linear.x = linear_mps
+            else:
+                command.angular.z = math.copysign(abs(angular_rad_s), heading_error)
+            maximum_linear_command = max(maximum_linear_command, command.linear.x)
+            maximum_angular_command = max(
+                maximum_angular_command, abs(command.angular.z)
+            )
+            self.stop_publisher.publish(command)
+            rclpy.spin_once(self.node, timeout_sec=0.05)
+        self.stop()
+        return {
+            "passed": False,
+            "status": "timeout",
+            "target_xy_m": [target_x_m, target_y_m],
+            "tolerance_m": tolerance_m,
+            "final_distance_m": final_distance,
+            "maximum_linear_command_mps": maximum_linear_command,
+            "maximum_angular_command_rad_s": maximum_angular_command,
+            "elapsed_wall_s": round(time.monotonic() - started, 3),
+        }
+
     def close(self) -> None:
         self.stop()
         self.node.destroy_node()
@@ -318,6 +495,7 @@ def main() -> int:
             "nav2",
             "nav2_phase3n_safety",
             "nav2_mapped_doorway_phase3n_safety",
+            "nav2_mapped_doorway_phase6_high_speed_safety",
         ),
         default="nav2",
         help="declare the independently launched bridge command-arbitration mode",
@@ -359,19 +537,63 @@ def main() -> int:
             )
             if not actions_ready:
                 failure = "nav2_action_servers_not_ready_after_initial_pose"
+            mission.trace_enabled = failure is None
+            mission.trace_control_mode = (
+                "nav2_phase6_and_phase3n_learned_safety"
+                if args.control_stack
+                == "nav2_mapped_doorway_phase6_high_speed_safety"
+                else args.control_stack
+            )
             for index, waypoint in enumerate(waypoints[1:], start=1):
                 if failure is not None:
                     break
                 leg_started = time.monotonic()
+                route_segment_id = index - 1
+                mission.publish_route_segment(route_segment_id)
                 navigation_waypoint = dict(waypoint)
                 offset = OFFICE_STAGING_OFFSETS_M.get(waypoint["id"], (0.0, 0.0))
                 navigation_waypoint["x_m"] = float(waypoint["x_m"]) + offset[0]
                 navigation_waypoint["y_m"] = float(waypoint["y_m"]) + offset[1]
+                mapped_stage = None
+                if (
+                    args.control_stack
+                    == "nav2_mapped_doorway_phase6_high_speed_safety"
+                    and waypoint["id"] in PHASE6_PRE_DOOR_ALIGNMENT_WAYPOINTS
+                ):
+                    door_name = APPROACH_DOOR_BY_WAYPOINT[waypoint["id"]]
+                    door = config["doors"][door_name]
+                    wall_angle = math.radians(float(door["wall_rotation_deg"]))
+                    normal_x = -math.sin(wall_angle)
+                    normal_y = math.cos(wall_angle)
+                    centre_x, centre_y = (
+                        float(value) for value in door["centre_xy_m"]
+                    )
+                    waypoint_normal_coordinate = (
+                        (float(waypoint["x_m"]) - centre_x) * normal_x
+                        + (float(waypoint["y_m"]) - centre_y) * normal_y
+                    )
+                    crossing_sign = -math.copysign(
+                        1.0, waypoint_normal_coordinate
+                    )
+                    stage_x = centre_x - crossing_sign * normal_x
+                    stage_y = centre_y - crossing_sign * normal_y
+                    mapped_stage = {
+                        "door": door_name,
+                        "xy_m": [stage_x, stage_y],
+                        "distance_before_door_m": 1.0,
+                    }
+                    navigation_waypoint["x_m"] = stage_x
+                    navigation_waypoint["y_m"] = stage_y
+                    offset = (
+                        stage_x - float(waypoint["x_m"]),
+                        stage_y - float(waypoint["y_m"]),
+                    )
                 path, planning_status = mission.compute_path(
                     navigation_waypoint, args.planning_timeout_s
                 )
                 record = {
                     "index": index,
+                    "route_segment_id": route_segment_id,
                     "waypoint_id": waypoint["id"],
                     "goal_xy_yaw": [
                         float(waypoint["x_m"]),
@@ -384,6 +606,7 @@ def main() -> int:
                         float(navigation_waypoint["yaw_deg"]),
                     ],
                     "simulation_staging_offset_xy_m": list(offset),
+                    "mapped_pre_door_stage": mapped_stage,
                     "planning_status": planning_status,
                     "path_pose_count": len(path.poses) if path is not None else 0,
                     "path_length_m": round(path_length(path), 4) if path is not None else None,
@@ -394,7 +617,11 @@ def main() -> int:
                     legs.append(record)
                     failure = f"{waypoint['id']}:{planning_status}"
                     break
-                goal_checker_id = "position_goal_checker"
+                goal_checker_id = (
+                    "predoor_goal_checker"
+                    if mapped_stage is not None
+                    else "position_goal_checker"
+                )
                 executed, execution_status = mission.follow_path(
                     path, args.waypoint_timeout_s, goal_checker_id
                 )
@@ -410,6 +637,42 @@ def main() -> int:
                 if not executed:
                     failure = f"{waypoint['id']}:{execution_status}"
                     break
+                if (
+                    args.control_stack
+                    == "nav2_mapped_doorway_phase6_high_speed_safety"
+                    and waypoint["id"] in PHASE6_PRE_DOOR_ALIGNMENT_WAYPOINTS
+                ):
+                    stage_convergence = mission.converge_to_stage(
+                        float(mapped_stage["xy_m"][0]),
+                        float(mapped_stage["xy_m"][1]),
+                    )
+                    record["pre_door_stage_convergence"] = stage_convergence
+                    print(
+                        f"AISHA_NAV2_STAGE waypoint={waypoint['id']} "
+                        f"status={stage_convergence['status']} "
+                        f"distance_m={stage_convergence.get('final_distance_m', float('nan')):.4f}"
+                    )
+                    if not stage_convergence["passed"]:
+                        failure = (
+                            f"{waypoint['id']}:pre_door_stage_"
+                            f"{stage_convergence['status']}"
+                        )
+                        break
+                    alignment = mission.align_to_yaw(float(waypoint["yaw_deg"]))
+                    alignment["mapped_door"] = mapped_stage["door"]
+                    alignment["mapped_stage_xy_m"] = mapped_stage["xy_m"]
+                    record["pre_door_alignment"] = alignment
+                    print(
+                        f"AISHA_NAV2_ALIGNMENT waypoint={waypoint['id']} "
+                        f"status={alignment['status']} "
+                        f"error_deg={alignment.get('final_error_deg', float('nan')):.3f}"
+                    )
+                    if not alignment["passed"]:
+                        failure = (
+                            f"{waypoint['id']}:pre_door_alignment_"
+                            f"{alignment['status']}"
+                        )
+                        break
                 if waypoint["id"] in POST_VISIT_PIVOTS:
                     pivot = mission.pivot_in_place()
                     record["post_visit_pivot"] = pivot
@@ -433,6 +696,10 @@ def main() -> int:
             else None
         )
         expected_legs = max(0, len(waypoints) - 1)
+        completed_legs = sum(
+            item["execution_status"] == "succeeded" for item in legs
+        )
+        mission_passed = failure is None and len(legs) == expected_legs
         report = {
             "report_type": (
                 "administration_nav2_measured_presentation_mission"
@@ -447,14 +714,19 @@ def main() -> int:
                     key: list(value) for key, value in OFFICE_STAGING_OFFSETS_M.items()
                 },
                 "post_visit_pivots": sorted(POST_VISIT_PIVOTS),
+                "phase6_pre_door_alignment_waypoints": sorted(
+                    PHASE6_PRE_DOOR_ALIGNMENT_WAYPOINTS
+                ),
+                "pre_door_rotation_location": (
+                    "open_approach_corridor_before_doorway"
+                ),
+                "pre_door_stage_position_tolerance_m": 0.015,
                 "pivot_direction": "counterclockwise",
                 "reverse_motion_used": False,
             },
             "legs": legs,
             "expected_legs": expected_legs,
-            "completed_legs": sum(
-                item["execution_status"] == "succeeded" for item in legs
-            ),
+            "completed_legs": completed_legs,
             "failure": failure,
             "elapsed_wall_s": round(time.monotonic() - started_at, 3),
             "odometry_samples": len(mission.odom_samples),
@@ -480,6 +752,32 @@ def main() -> int:
                 ),
                 "last_20": [list(sample) for sample in mission.command_samples[-20:]],
             },
+            "outcome": "success" if mission_passed else "failed",
+            "waypoints_completed": completed_legs,
+            "completed_steps": mission._trace_odom_count,
+            "duration_s": (
+                mission.pose_trace[-1]["elapsed_s"] if mission.pose_trace else 0.0
+            ),
+            "pose_trace_interval_steps": 3,
+            "pose_trace": mission.pose_trace,
+            "control_steps": {
+                mission.trace_control_mode: mission._trace_odom_count,
+            },
+            "route_control": mission.trace_control_mode,
+            "checkpoint": (
+                str(PHASE6_CHECKPOINT.resolve())
+                if args.control_stack
+                == "nav2_mapped_doorway_phase6_high_speed_safety"
+                else None
+            ),
+            "seed": 6084,
+            "root_transform_animation": False,
+            "policy_architecture": (
+                "nav2_global_and_dwb_plus_phase6_phase3n_learned_brake_safety"
+                if args.control_stack
+                == "nav2_mapped_doorway_phase6_high_speed_safety"
+                else args.control_stack
+            ),
             "map_status": (
                 "measured_site_presentation_candidate"
                 if args.site_profile == "measured_presentation"
@@ -491,16 +789,26 @@ def main() -> int:
             in {
                 "nav2_phase3n_safety",
                 "nav2_mapped_doorway_phase3n_safety",
+                "nav2_mapped_doorway_phase6_high_speed_safety",
             },
             "learned_360_safety_coupled": (
                 args.control_stack
                 in {
                     "nav2_phase3n_safety",
                     "nav2_mapped_doorway_phase3n_safety",
+                    "nav2_mapped_doorway_phase6_high_speed_safety",
                 }
             ),
             "mapped_doorway_safety_coupled": (
-                args.control_stack == "nav2_mapped_doorway_phase3n_safety"
+                args.control_stack
+                in {
+                    "nav2_mapped_doorway_phase3n_safety",
+                    "nav2_mapped_doorway_phase6_high_speed_safety",
+                }
+            ),
+            "phase6_high_speed_safety_coupled": (
+                args.control_stack
+                == "nav2_mapped_doorway_phase6_high_speed_safety"
             ),
             "frozen_phase3m_local_navigation_coupled": False,
             "physical_release": False,
@@ -513,7 +821,7 @@ def main() -> int:
                 "physical safety."
             ),
         }
-        report["passed"] = failure is None and len(legs) == expected_legs
+        report["passed"] = mission_passed
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
         print(

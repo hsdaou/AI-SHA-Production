@@ -1,6 +1,6 @@
 schema_version: 1
 phase: "PHASE6-HIGH-SPEED-SAFETY"
-status: "accepted_simulation_hallway_tier_pending_measured_nav2_replay"
+status: "accepted_simulation_hallway_tier_with_measured_nav2_and_rtx_presentation"
 objective: >
   Adapt the accepted brake-only 360-degree safety layer to an unchanged Rev D
   robot at a 0.80 m/s open-hall simulation target while preserving the measured
@@ -112,8 +112,19 @@ accepted_output:
   formal_static_collision_rate: 0.0078125
   minimum_segment_success_rate: 0.96875
   minimum_observed_peak_high_speed_mps: 0.8283237218856812
-  measured_nav2_replay_completed: false
-  final_omniverse_presentation_completed: false
+  measured_nav2_replay_completed: true
+  measured_nav2_integration_report: "results/administration_nav2_phase6_high_speed_integration_gate.json"
+  measured_nav2_checks_passed: 28
+  measured_nav2_checks_total: 28
+  measured_nav2_minimum_observed_high_speed_mps: 0.7433907985687256
+  measured_nav2_maximum_doorway_speed_mps: 0.05952982231974602
+  final_omniverse_presentation_completed: true
+  final_omniverse_presentation_video: "media/videos/AI-SHA_Phase6_Nav2_LearnedSafety_RTX_Presentation.mp4"
+  final_omniverse_presentation_video_sha256: "34da79912934b1454a6f6a6b3592c172eadb7d089d6fdec3dda785b6d17c5d07"
+  final_omniverse_presentation_acceptance: "results/administration_nav2_phase6_rtx_presentation_acceptance.json"
+  final_omniverse_presentation_checks_passed: 14
+  final_omniverse_presentation_checks_total: 14
+  localization_boundary: "Isaac ground-truth odometry with identity map-to-odom is used for the presentation integration; no physical localisation credit"
 
 claim_boundary: >
   Passing this curriculum can establish only a simulated high-speed hallway
