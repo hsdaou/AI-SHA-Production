@@ -1,0 +1,255 @@
+{
+  "report_type": "administration_measured_presentation_occupancy_map",
+  "generated_at_utc": "2026-08-23T14:03:55.292460+00:00",
+  "status": "measured_site_presentation_candidate_map_generated",
+  "source": {
+    "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+    "scene_sha256": "d1ff03c21a65293f3488e3b9a9b59c83461a6b569e32543fc156a7929230c1f2",
+    "configuration": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
+    "configuration_sha256": "c06e1941e873ae88012844ee27be9e7614342412d5c51cccfe9358a9559ffe47",
+    "geometry_status": "measured_site_presentation_candidate",
+    "overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
+    "overlay_sha256": "5ba7085bbb3668d21eec2e14555957919847393fb079f533d0b7974ddab71182"
+  },
+  "map": {
+    "yaml": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/maps/administration_measured_presentation/administration_measured_presentation.yaml",
+    "image": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/maps/administration_measured_presentation/administration_measured_presentation.pgm",
+    "preview": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/maps/administration_measured_presentation/administration_measured_presentation_preview.png",
+    "resolution_m_per_pixel": 0.05,
+    "origin_xy_m": [
+      -6.9,
+      -13.25
+    ],
+    "bounds_xy_m": [
+      -6.9,
+      -13.25,
+      23.05,
+      6.9
+    ],
+    "dimensions_pixels": [
+      600,
+      404
+    ],
+    "walkable_floor_primitives": [
+      "/World/Architecture/Floors/Atrium/WalkableRing_00",
+      "/World/Architecture/Floors/Atrium/WalkableRing_01",
+      "/World/Architecture/Floors/Atrium/WalkableRing_02",
+      "/World/Architecture/Floors/Atrium/WalkableRing_03",
+      "/World/Architecture/Floors/Atrium/WalkableRing_04",
+      "/World/Architecture/Floors/Atrium/WalkableRing_05",
+      "/World/Architecture/Floors/Atrium/WalkableRing_06",
+      "/World/Architecture/Floors/Atrium/WalkableRing_07",
+      "/World/Architecture/Floors/EastHallway",
+      "/World/Architecture/Floors/ViceAccess",
+      "/World/Architecture/Floors/VicePrincipal",
+      "/World/Architecture/Floors/PrincipalAccess",
+      "/World/Architecture/Floors/Principal"
+    ],
+    "walkable_floor_groups": [
+      "Atrium",
+      "EastHallway",
+      "Principal",
+      "PrincipalAccess",
+      "ViceAccess",
+      "VicePrincipal"
+    ],
+    "obstacle_primitives": 123,
+    "collision_primitives_inspected": 155,
+    "collision_primitives_ignored": 19
+  },
+  "route": {
+    "waypoints": [
+      {
+        "id": "home",
+        "xy_m": [
+          3.4,
+          0.0
+        ],
+        "pixel": [
+          206,
+          138
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "east_atrium_exit",
+        "xy_m": [
+          4.7,
+          0.0
+        ],
+        "pixel": [
+          232,
+          138
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "vice_principal_turn",
+        "xy_m": [
+          17.1,
+          0.5
+        ],
+        "pixel": [
+          480,
+          128
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "vice_principal_approach",
+        "xy_m": [
+          17.1,
+          -3.8
+        ],
+        "pixel": [
+          480,
+          214
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "vice_principal",
+        "xy_m": [
+          17.1,
+          -6.4
+        ],
+        "pixel": [
+          480,
+          266
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "vice_principal_depart",
+        "xy_m": [
+          17.1,
+          0.0
+        ],
+        "pixel": [
+          480,
+          138
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "hallway_return",
+        "xy_m": [
+          4.7,
+          0.0
+        ],
+        "pixel": [
+          232,
+          138
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "principal_turn",
+        "xy_m": [
+          3.45,
+          -3.45
+        ],
+        "pixel": [
+          207,
+          207
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "principal_approach",
+        "xy_m": [
+          6.45,
+          -6.95
+        ],
+        "pixel": [
+          267,
+          277
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "principal",
+        "xy_m": [
+          8.01,
+          -8.66
+        ],
+        "pixel": [
+          298,
+          311
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "principal_depart",
+        "xy_m": [
+          6.53,
+          -6.9
+        ],
+        "pixel": [
+          269,
+          276
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "atrium_return",
+        "xy_m": [
+          3.45,
+          -3.45
+        ],
+        "pixel": [
+          207,
+          207
+        ],
+        "occupancy_value": 254,
+        "free": true
+      },
+      {
+        "id": "home_return",
+        "xy_m": [
+          3.4,
+          0.0
+        ],
+        "pixel": [
+          206,
+          138
+        ],
+        "occupancy_value": 254,
+        "free": true
+      }
+    ],
+    "all_waypoint_centres_free": true
+  },
+  "central_atrium_drop": {
+    "centre_pixel": [
+      138,
+      138
+    ],
+    "occupancy_value": 205,
+    "step_down_m": 0.2,
+    "robot_access": "prohibited",
+    "mapped_as_no_go": true
+  },
+  "checks": {
+    "all_expected_walkable_floor_groups_present": true,
+    "obstacles_rasterized": true,
+    "all_route_waypoint_centres_free": true,
+    "central_atrium_drop_is_not_free_space": true,
+    "map_is_explicitly_non_physical": true,
+    "physical_release_disabled": true
+  },
+  "physical_release": false,
+  "replacement_gate": "Complete native-scan-to-plan registration, identify both destination doors, measure thresholds, and rerun the full mission, contact, and stopping validation before any physical-release claim.",
+  "passed": true
+}

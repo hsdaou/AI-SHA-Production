@@ -1,0 +1,433 @@
+{
+  "report_type": "held_out_sensor_evaluation",
+  "generated_at_utc": "2026-08-23T16:28:57.593221+00:00",
+  "task": "Isaac-AISHA-BlockA-MeasuredTightDoor-SensorNav-Direct-v0",
+  "training_contract_revision": "TRAINING-ENDTOEND-N",
+  "checkpoint": {
+    "path": "simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-23_18-36-41_measured_tight_door_stage2_materialfix_seed10628/model_2350.pt",
+    "sha256": "6bf032350d36539d6e18651d8c3344c17951ff33dfade17a7910a694933d2d5f"
+  },
+  "protocol": {
+    "policy": "deterministic_inference",
+    "seed": 10640,
+    "training_seed": 10628,
+    "episodes": 576,
+    "episodes_per_segment": 48,
+    "parallel_environments": 192,
+    "physics_rate_hz": 120,
+    "policy_rate_hz": 30,
+    "randomization": "equal quota per route segment; training-declared pose and goal jitter; unseen random sequence",
+    "phase3_curriculum_strength": null,
+    "fixed_segment_id": null
+  },
+  "results": {
+    "success_count": 557,
+    "success_rate": 0.9670138888888888,
+    "collision_count": 0,
+    "collision_rate": 0.0,
+    "dynamic_obstacle_collision_count": 0,
+    "static_collision_count": 0,
+    "time_out_count": 19,
+    "time_out_rate": 0.03298611111111111,
+    "mean_episode_return": 128.74064244826636,
+    "mean_episode_steps": 974.0815972222222,
+    "mean_episode_duration_s": 32.46938657407407,
+    "mean_final_goal_distance_m": 0.4927504343860265,
+    "mean_abs_final_heading_error_deg": 12.051444591902618,
+    "mean_minimum_lidar_range_m": 1.2263976879831817,
+    "wall_clock_evaluation_s": 162.64444382800139,
+    "per_segment": [
+      {
+        "segment_id": 0,
+        "label": "home -> east_atrium_exit",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "final_distance_sum_m": 21.235875368118286,
+        "abs_final_heading_error_sum_rad": 4.715985652059317,
+        "final_x_sum_m": 204.4140419960022,
+        "final_y_sum_m": -1.1352651696652174,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0,
+        "mean_final_distance_m": 0.442414070169131,
+        "mean_abs_final_heading_error_deg": 5.629293210567716,
+        "mean_final_position_xy_m": [
+          4.258625874916713,
+          -0.023651357701358695
+        ]
+      },
+      {
+        "segment_id": 1,
+        "label": "east_atrium_exit -> vice_principal_turn",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "final_distance_sum_m": 21.248052030801773,
+        "abs_final_heading_error_sum_rad": 16.263495042920113,
+        "final_x_sum_m": 800.9250793457031,
+        "final_y_sum_m": 16.3938989341259,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0,
+        "mean_final_distance_m": 0.4426677506417036,
+        "mean_abs_final_heading_error_deg": 19.413117210234542,
+        "mean_final_position_xy_m": [
+          16.68593915303548,
+          0.3415395611276229
+        ]
+      },
+      {
+        "segment_id": 2,
+        "label": "vice_principal_turn -> vice_principal_approach",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "final_distance_sum_m": 21.227813839912415,
+        "abs_final_heading_error_sum_rad": 4.576857578009367,
+        "final_x_sum_m": 821.9088287353516,
+        "final_y_sum_m": -161.30482840538025,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0,
+        "mean_final_distance_m": 0.44224612166484195,
+        "mean_abs_final_heading_error_deg": 5.463221305258431,
+        "mean_final_position_xy_m": [
+          17.123100598653156,
+          -3.3605172584454217
+        ]
+      },
+      {
+        "segment_id": 3,
+        "label": "vice_principal_approach -> vice_principal",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "final_distance_sum_m": 9.235250502824783,
+        "abs_final_heading_error_sum_rad": 2.0324623994529247,
+        "final_x_sum_m": 820.8896408081055,
+        "final_y_sum_m": -297.8863034248352,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0,
+        "mean_final_distance_m": 0.19240105214218298,
+        "mean_abs_final_heading_error_deg": 2.4260732814101047,
+        "mean_final_position_xy_m": [
+          17.10186751683553,
+          -6.205964654684067
+        ]
+      },
+      {
+        "segment_id": 4,
+        "label": "vice_principal -> vice_principal_depart",
+        "episodes": 48,
+        "success": 35,
+        "collision": 0,
+        "time_out": 13,
+        "final_distance_sum_m": 62.37979879975319,
+        "abs_final_heading_error_sum_rad": 3.050635141786188,
+        "final_x_sum_m": 819.7009143829346,
+        "final_y_sum_m": -62.41077345609665,
+        "success_rate": 0.7291666666666666,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.2708333333333333,
+        "mean_final_distance_m": 1.2995791416615248,
+        "mean_abs_final_heading_error_deg": 3.6414274678883762,
+        "mean_final_position_xy_m": [
+          17.077102382977802,
+          -1.3002244470020135
+        ]
+      },
+      {
+        "segment_id": 5,
+        "label": "vice_principal_depart -> hallway_return",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "final_distance_sum_m": 21.321192532777786,
+        "abs_final_heading_error_sum_rad": 26.068063408136368,
+        "final_x_sum_m": 243.06698608398438,
+        "final_y_sum_m": -12.100364968180656,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0,
+        "mean_final_distance_m": 0.4441915110995372,
+        "mean_abs_final_heading_error_deg": 31.116458611783973,
+        "mean_final_position_xy_m": [
+          5.063895543416341,
+          -0.252090936837097
+        ]
+      },
+      {
+        "segment_id": 6,
+        "label": "hallway_return -> principal_turn",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "final_distance_sum_m": 21.22806289792061,
+        "abs_final_heading_error_sum_rad": 2.895790421869606,
+        "final_x_sum_m": 168.60484433174133,
+        "final_y_sum_m": -144.57136964797974,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0,
+        "mean_final_distance_m": 0.44225131037334603,
+        "mean_abs_final_heading_error_deg": 3.456595198490345,
+        "mean_final_position_xy_m": [
+          3.5126009235779443,
+          -3.011903534332911
+        ]
+      },
+      {
+        "segment_id": 7,
+        "label": "principal_turn -> principal_approach",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "final_distance_sum_m": 21.251144409179688,
+        "abs_final_heading_error_sum_rad": 5.113602973520756,
+        "final_x_sum_m": 295.25456380844116,
+        "final_y_sum_m": -317.912645816803,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0,
+        "mean_final_distance_m": 0.44273217519124347,
+        "mean_abs_final_heading_error_deg": 6.10391392683932,
+        "mean_final_position_xy_m": [
+          6.151136746009191,
+          -6.623180121183395
+        ]
+      },
+      {
+        "segment_id": 8,
+        "label": "principal_approach -> principal",
+        "episodes": 48,
+        "success": 45,
+        "collision": 0,
+        "time_out": 3,
+        "final_distance_sum_m": 16.245626911520958,
+        "abs_final_heading_error_sum_rad": 6.138283736072481,
+        "final_x_sum_m": 373.75503873825073,
+        "final_y_sum_m": -403.58740425109863,
+        "success_rate": 0.9375,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0625,
+        "mean_final_distance_m": 0.3384505606566866,
+        "mean_abs_final_heading_error_deg": 7.327036490223918,
+        "mean_final_position_xy_m": [
+          7.78656330704689,
+          -8.408070921897888
+        ]
+      },
+      {
+        "segment_id": 9,
+        "label": "principal -> principal_depart",
+        "episodes": 48,
+        "success": 45,
+        "collision": 0,
+        "time_out": 3,
+        "final_distance_sum_m": 25.908834010362625,
+        "abs_final_heading_error_sum_rad": 22.43500092625618,
+        "final_x_sum_m": 322.97641801834106,
+        "final_y_sum_m": -354.86037254333496,
+        "success_rate": 0.9375,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0625,
+        "mean_final_distance_m": 0.539767375215888,
+        "mean_abs_final_heading_error_deg": 26.779809717636912,
+        "mean_final_position_xy_m": [
+          6.728675375382106,
+          -7.392924427986145
+        ]
+      },
+      {
+        "segment_id": 10,
+        "label": "principal_depart -> atrium_return",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "final_distance_sum_m": 21.28168836236,
+        "abs_final_heading_error_sum_rad": 19.799296110868454,
+        "final_x_sum_m": 173.5010850429535,
+        "final_y_sum_m": -185.31534481048584,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0,
+        "mean_final_distance_m": 0.4433685075491667,
+        "mean_abs_final_heading_error_deg": 23.633668843386403,
+        "mean_final_position_xy_m": [
+          3.6146059383948645,
+          -3.860736350218455
+        ]
+      },
+      {
+        "segment_id": 11,
+        "label": "atrium_return -> home_return",
+        "episodes": 48,
+        "success": 48,
+        "collision": 0,
+        "time_out": 0,
+        "final_distance_sum_m": 21.260910540819168,
+        "abs_final_heading_error_sum_rad": 8.064861953258514,
+        "final_x_sum_m": 158.40570545196533,
+        "final_y_sum_m": -20.620955795049667,
+        "success_rate": 1.0,
+        "collision_rate": 0.0,
+        "time_out_rate": 0.0,
+        "mean_final_distance_m": 0.442935636267066,
+        "mean_abs_final_heading_error_deg": 9.62671983911138,
+        "mean_final_position_xy_m": [
+          3.300118863582611,
+          -0.4296032457302014
+        ]
+      }
+    ]
+  },
+  "action_diagnostics": {
+    "dimensions": [
+      "normalized_linear_command",
+      "normalized_angular_command"
+    ],
+    "mapping": "linear -1 maps to 0.0 m/s; linear +1 maps to 0.5 m/s; angular \u00b11 maps to \u00b11.0 rad/s",
+    "first_step_mean": [
+      0.7866334319114685,
+      0.13298135995864868
+    ],
+    "first_step_min": [
+      -2.1591858863830566,
+      -2.02504825592041
+    ],
+    "first_step_max": [
+      2.266531229019165,
+      2.519041061401367
+    ],
+    "first_30_step_mean": [
+      0.797806978225708,
+      0.17190320789813995
+    ],
+    "timeline": [
+      {
+        "step": 0,
+        "mean_action": [
+          0.7866334319114685,
+          0.13298135995864868
+        ]
+      },
+      {
+        "step": 15,
+        "mean_action": [
+          0.7997567057609558,
+          0.1625870317220688
+        ]
+      },
+      {
+        "step": 30,
+        "mean_action": [
+          0.8371213674545288,
+          0.20845411717891693
+        ]
+      },
+      {
+        "step": 60,
+        "mean_action": [
+          1.3605897426605225,
+          0.11184414476156235
+        ]
+      },
+      {
+        "step": 90,
+        "mean_action": [
+          1.4881700277328491,
+          0.01847699284553528
+        ]
+      },
+      {
+        "step": 120,
+        "mean_action": [
+          1.6156829595565796,
+          0.057487957179546356
+        ]
+      },
+      {
+        "step": 180,
+        "mean_action": [
+          1.4298102855682373,
+          0.18467015027999878
+        ]
+      },
+      {
+        "step": 300,
+        "mean_action": [
+          1.2062302827835083,
+          0.24917614459991455
+        ]
+      },
+      {
+        "step": 600,
+        "mean_action": [
+          1.7531780004501343,
+          -0.2735089659690857
+        ]
+      },
+      {
+        "step": 1200,
+        "mean_action": [
+          1.8864802122116089,
+          -0.14137139916419983
+        ]
+      },
+      {
+        "step": 2000,
+        "mean_action": [
+          1.8171700239181519,
+          -0.08239337801933289
+        ]
+      }
+    ]
+  },
+  "planner_diagnostics": null,
+  "planner_episode_diagnostics": [],
+  "acceptance_gate": {
+    "protocol_satisfied": true,
+    "passed": true,
+    "requirements": {
+      "episodes_per_segment": 48,
+      "overall_success_rate_min": 0.8,
+      "overall_collision_rate_max": 0.15,
+      "every_segment_success_rate_min": 0.6,
+      "office_threshold_segment_ids": [
+        3,
+        4,
+        8,
+        9
+      ],
+      "office_threshold_success_rate_min": 0.7,
+      "note": "declared before corrected-policy candidate evaluation and unchanged through revision TRAINING-SENSOR-G; passing supports presentation playback only"
+    },
+    "observed": {
+      "overall_success_rate": 0.9670138888888888,
+      "overall_collision_rate": 0.0,
+      "minimum_segment_success_rate": 0.7291666666666666,
+      "minimum_office_threshold_success_rate": 0.7291666666666666
+    }
+  },
+  "claim_boundary": {
+    "supported": "Isaac Lab plan-derived Block A policy with downsampled LD19-style ray observations",
+    "not_supported": [
+      "RTX-rendered LiDAR or depth-camera policy input",
+      "Nav2 integration",
+      "photoreal administration-office fidelity",
+      "sim-to-real transfer",
+      "physical robot release"
+    ],
+    "doorway_width": "presentation_assumption_not_measured"
+  }
+}

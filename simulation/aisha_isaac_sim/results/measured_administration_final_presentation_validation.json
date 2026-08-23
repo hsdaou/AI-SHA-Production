@@ -1,0 +1,208 @@
+{
+  "camera": {
+    "mode": "cinematic",
+    "non_initial_uniform_occlusion_intervals_s": [],
+    "shot_events": [
+      {
+        "elapsed_s": 0.0,
+        "eye": [
+          -4.35,
+          0.0,
+          1.72
+        ],
+        "name": "Departure - central atrium",
+        "segment_id": 0,
+        "shot_index": 1,
+        "step": 0,
+        "target": [
+          2.0,
+          0.0,
+          0.72
+        ]
+      },
+      {
+        "elapsed_s": 2.2666666666666666,
+        "eye": [
+          6.0,
+          1.08,
+          1.75
+        ],
+        "name": "East administration hall - Vice-Principal approach",
+        "segment_id": 1,
+        "shot_index": 2,
+        "step": 68,
+        "target": [
+          15.0,
+          -0.4,
+          0.72
+        ]
+      },
+      {
+        "elapsed_s": 41.5,
+        "eye": [
+          19.55,
+          -7.55,
+          1.86
+        ],
+        "name": "Visit 1 - Vice-Principal office",
+        "segment_id": 3,
+        "shot_index": 3,
+        "step": 1245,
+        "target": [
+          16.75,
+          -6.2,
+          0.7
+        ]
+      },
+      {
+        "elapsed_s": 227.66666666666666,
+        "eye": [
+          3.0,
+          1.0,
+          1.85
+        ],
+        "name": "Return through the hall - Principal suite turn",
+        "segment_id": 5,
+        "shot_index": 4,
+        "step": 6830,
+        "target": [
+          9.0,
+          -0.45,
+          0.68
+        ]
+      },
+      {
+        "elapsed_s": 265.8333333333333,
+        "eye": [
+          10.85,
+          -9.78,
+          1.82
+        ],
+        "name": "Visit 2 - Principal office",
+        "segment_id": 7,
+        "shot_index": 5,
+        "step": 7975,
+        "target": [
+          8.25,
+          -9.0,
+          0.72
+        ]
+      },
+      {
+        "elapsed_s": 424.03333333333336,
+        "eye": [
+          -4.35,
+          0.0,
+          1.72
+        ],
+        "name": "Mission complete - return to the atrium",
+        "segment_id": 10,
+        "shot_index": 6,
+        "step": 12721,
+        "target": [
+          2.5,
+          -2.0,
+          0.72
+        ]
+      }
+    ],
+    "uniform_occlusion_intervals_s": [
+      [
+        0.0,
+        0.0
+      ]
+    ]
+  },
+  "central_polygon_no_go_gate": {
+    "body_circumscribed_radius_m": 0.8204151388169284,
+    "minimum_footprint_clearance_m": 0.23619811190171836,
+    "minimum_robot_centre_distance_m": 3.3566132507186466,
+    "outer_radius_m": 2.3,
+    "passed": true,
+    "step_down_m": 0.2
+  },
+  "checkpoint_sha256": "6bf032350d36539d6e18651d8c3344c17951ff33dfade17a7910a694933d2d5f",
+  "checks": {
+    "all_12_segments_completed": true,
+    "build_and_asset_gates_pass": true,
+    "central_drop_is_020m_mapped_no_go": true,
+    "checkpoint_hash_matches": true,
+    "cinematic_camera_has_six_shots": true,
+    "doorway_speed_limit_passed": true,
+    "live_asset_scene_current": true,
+    "measured_live_task": true,
+    "no_noninitial_uniform_camera_occlusion": true,
+    "no_turn_or_dwell_supervisor": true,
+    "policy_plus_doorway_safety_disclosed": true,
+    "pose_trace_finite": true,
+    "presentation_disclosures_present": true,
+    "presentation_motion_unchanged": true,
+    "presentation_video_hash_matches": true,
+    "raw_video_matches_run": true,
+    "reported_door_dimensions_applied": true,
+    "robot_footprint_stays_outside_polygon": true,
+    "root_transform_animation_disabled": true,
+    "route_success": true,
+    "secured_open_leaves_are_visual_only": true,
+    "vp_locked_capture_limitation_disclosed": true,
+    "zero_collisions": true
+  },
+  "claim_boundary": "live PPO checkpoint inference plus a disclosed deterministic doorway safety layer, with wheel physics and ray sensing in the administration USD; the VP interior is an appearance assumption because it was locked, the central 0.20 m drop is a mapped no-go, and this is not as-built, Nav2, sim-to-real, or physical-release evidence",
+  "contact_sheet": {
+    "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/AI-SHA_Measured_Administration_Live_Policy_3x_contact_sheet.jpg",
+    "sha256": "526938b27459e4ce4c56a73406992abe782df5e01a6c91744b01da1f0c798ea2"
+  },
+  "doorway_speed_gate": {
+    "limit_mps": 0.1,
+    "maximum_abs_speed_mps": 0.05671,
+    "maximum_sample": {
+      "normal_distance_m": 0.6928090820709554,
+      "segment": "principal_exit",
+      "speed_mps": 0.05671,
+      "step": 11928,
+      "tangent_distance_m": 0.0020930360723120933
+    },
+    "passed": true,
+    "sample_count": 1563
+  },
+  "generated_at_utc": "2026-08-23T17:16:34.442881+00:00",
+  "passed": true,
+  "physical_release": false,
+  "presentation_video": {
+    "duration_s": 147.73333333333332,
+    "fps": 30.0,
+    "frame_count": 4432,
+    "resolution": [
+      1280,
+      720
+    ],
+    "sha256": "8edc5ce42a9f4a5f6a8d808826efa407d2856a1b6714d9641abc979b047cdf7f",
+    "size_bytes": 16833113
+  },
+  "raw_video": {
+    "duration_s": 443.56666666666666,
+    "fps": 30.0,
+    "frame_count": 13307,
+    "resolution": [
+      1280,
+      720
+    ],
+    "sha256": "7c1d1a480e6e4a48e64c551c7370c2c7ee153e9a1ec7e46beb2ebd2aedc3c833",
+    "size_bytes": 15885600
+  },
+  "report_type": "measured_administration_final_presentation_validation",
+  "route": {
+    "completed_steps": 13307,
+    "control_steps": {
+      "learned_sensor_policy": 13307,
+      "learned_sensor_policy_by_source": {
+        "base": 13307
+      },
+      "physics_supervisor_turn": 0,
+      "presentation_dwell": 0
+    },
+    "duration_s": 443.56666666666666,
+    "outcome": "success",
+    "waypoints_completed": 12
+  }
+}

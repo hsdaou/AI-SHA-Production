@@ -1,0 +1,51 @@
+{
+  "report_type": "measured_tight_door_runtime_smoke",
+  "generated_at_utc": "2026-08-23T14:16:09.324974+00:00",
+  "task": "Isaac-AISHA-BlockA-MeasuredTightDoor-SensorNav-Direct-v0",
+  "steps": 180,
+  "num_envs": 4,
+  "checks": {
+    "task_registered": true,
+    "observation_contract_46": true,
+    "action_contract_2": true,
+    "observation_values_finite": true,
+    "measured_course_loaded": true,
+    "physical_doors_are_0_85m": true,
+    "padded_training_apertures_are_0_79m": true,
+    "central_drop_no_go_proxy_present": true,
+    "slow_zone_exercised": true,
+    "no_rotation_zone_exercised": true,
+    "rotation_suppressed_at_frame": true,
+    "physical_release_disabled": true
+  },
+  "checks_passed": 12,
+  "checks_total": 12,
+  "passed": true,
+  "metrics": {
+    "slow_zone_env_steps": 290,
+    "no_rotation_zone_env_steps": 290,
+    "maximum_speed_in_no_rotation_zone_mps": 0.19406230747699738,
+    "maximum_applied_yaw_action_in_no_rotation_zone": 0.0,
+    "reset_events": 0,
+    "final_local_xy_m": [
+      [
+        17.12424087524414,
+        -4.072597503662109
+      ],
+      [
+        17.118427276611328,
+        -4.068897247314453
+      ],
+      [
+        17.125974655151367,
+        -4.073696136474609
+      ],
+      [
+        17.12784767150879,
+        -4.070379257202148
+      ]
+    ]
+  },
+  "physical_release": false,
+  "claim_boundary": "Simulation-only task smoke; this is not learned-policy acceptance or a physical doorway safety release."
+}

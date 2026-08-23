@@ -1,0 +1,89 @@
+{
+  "camera_mode": "cinematic",
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-23_18-36-41_measured_tight_door_stage2_materialfix_seed10628/model_2350.pt",
+  "checkpoint_sha256": "6bf032350d36539d6e18651d8c3344c17951ff33dfade17a7910a694933d2d5f",
+  "disclosure": "Temporally sampled and labeled from the complete successful live-policy capture; robot motion is unchanged. The VP interior appearance is assumed because it was locked; the 0.85 m VP door uses the reported administration minimum, the 0.90 m Principal door is a presentation assumption, and the 0.20 m central drop is a mapped no-go. This is not evidence of physical deployment readiness.",
+  "geometry_disclosure": {
+    "capture_limitations": {
+      "vice_principal_office_interior": {
+        "presentation_treatment": "plan_envelope_and_walkthrough_consistent_material_assumption_only",
+        "status": "not_captured_locked_during_site_visit"
+      }
+    },
+    "central_atrium_drop": {
+      "navigation_boundary": "mapped_no_go_with_invisible_lidar_collision_proxy",
+      "radius_m": 2.3,
+      "radius_status": "presentation_estimate_from_approved_page_2_plan",
+      "robot_access": "prohibited",
+      "step_down_m": 0.2,
+      "vice_principal_interior_capture": "not_captured_locked_during_site_visit"
+    },
+    "doors": {
+      "principal": {
+        "centre_xy_m": [
+          6.978,
+          -7.628
+        ],
+        "clear_height_m": 2.12,
+        "clear_width_m": 0.9,
+        "frame_depth_m": 0.16,
+        "high_fidelity_threshold_validation": "blocked",
+        "hinge": "left",
+        "minimum_required_m": 0.828,
+        "nominal_padded_side_clearance_m": 0.036000000000000004,
+        "nominal_physical_side_clearance_m": 0.066,
+        "open_leaf_collision": "visual_only_secured_fully_open",
+        "presentation_width_gate_passed": true,
+        "swing": "outward_for_camera_and_route_clearance",
+        "threshold_height_mm": 0,
+        "threshold_status": "flush_presentation_assumption_from_walkthrough_not_measured",
+        "wall_rotation_deg": 45.0,
+        "width_status": "reasonable_presentation_assumption_above_reported_0.85m_administration_minimum_not_individually_measured"
+      },
+      "vice_principal": {
+        "centre_xy_m": [
+          17.1,
+          -5.05
+        ],
+        "clear_height_m": 2.12,
+        "clear_width_m": 0.85,
+        "frame_depth_m": 0.16,
+        "high_fidelity_threshold_validation": "blocked",
+        "hinge": "left",
+        "minimum_required_m": 0.828,
+        "nominal_padded_side_clearance_m": 0.010999999999999982,
+        "nominal_physical_side_clearance_m": 0.04099999999999998,
+        "open_leaf_collision": "visual_only_secured_fully_open",
+        "presentation_width_gate_passed": true,
+        "swing": "outward_for_camera_and_route_clearance",
+        "threshold_height_mm": 0,
+        "threshold_status": "flush_presentation_assumption_from_walkthrough_not_measured",
+        "wall_rotation_deg": 0.0,
+        "width_status": "user_reported_administration_minimum_conservative_destination_assumption"
+      }
+    }
+  },
+  "measured_doorway_safety_layer": true,
+  "motion_changed": false,
+  "output_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Measured_Administration_Live_Policy_3x.mp4",
+  "output_video_sha256": "8edc5ce42a9f4a5f6a8d808826efa407d2856a1b6714d9641abc979b047cdf7f",
+  "passed": true,
+  "phase3n_dynamic_safety_overlay": false,
+  "policy_architecture": "ppo_route_policy_plus_deterministic_mapped_doorway_safety",
+  "policy_only_control": true,
+  "presentation_duration_s": 147.73333333333332,
+  "presentation_frame_count": 4432,
+  "report_type": "administration_live_policy_presentation_video",
+  "segment_policy_checkpoints": {},
+  "source_build_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_build_report.json",
+  "source_build_report_sha256": "f74a849d9f10f2f0b3ccea998d712f09eae804c3d92ddbbe8b4787ebabd1f490",
+  "source_duration_s": 443.56666666666666,
+  "source_frame_count": 13307,
+  "source_run_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/measured_administration_final_cinematic_policy_only_seed10643.json",
+  "source_run_report_sha256": "fd47ca7a048f447a924f08cff630b0b8c932c36efe62fcd18a691867cdf5ddb6",
+  "source_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/outputs/measured_administration_final_speedgate_cinematic_seed10643/aisha-block-a-learned-route-step-0.mp4",
+  "source_video_sha256": "7c1d1a480e6e4a48e64c551c7370c2c7ee153e9a1ec7e46beb2ebd2aedc3c833",
+  "speed_multiplier": 3,
+  "telemetry_overlay": true,
+  "telemetry_source_trace_records": 4435
+}

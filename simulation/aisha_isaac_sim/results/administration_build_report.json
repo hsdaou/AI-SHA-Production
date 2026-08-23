@@ -48,15 +48,30 @@
     "supplied_plan_sha256": "4d8698f868c296442ebd6e667d4700f2e9bc7f27b4787639395a370d76779112"
   },
   "blocked_for_physical_release": [
-    "both door clear widths and thresholds remain unmeasured",
-    "ceiling, wall thickness, office furniture offsets and some traced PDF offsets are presentation assumptions",
+    "measured-site candidate has not completed threshold contact and stopping-distance validation",
+    "wall thickness, office furniture offsets and some traced PDF offsets remain presentation assumptions",
     "threshold contact requires the articulated compliant carrier and measured caster/spring properties",
     "sensors are not a protective safety system"
   ],
+  "capture_limitations": {
+    "vice_principal_office_interior": {
+      "presentation_treatment": "plan_envelope_and_walkthrough_consistent_material_assumption_only",
+      "status": "not_captured_locked_during_site_visit"
+    }
+  },
+  "central_atrium_drop": {
+    "navigation_boundary": "mapped_no_go_with_invisible_lidar_collision_proxy",
+    "radius_m": 2.3,
+    "radius_status": "presentation_estimate_from_approved_page_2_plan",
+    "robot_access": "prohibited",
+    "step_down_m": 0.2,
+    "vice_principal_interior_capture": "not_captured_locked_during_site_visit"
+  },
   "checks": {
     "all_presentation_door_widths_pass": true,
     "all_visual_texture_assets_present": true,
     "atrium_columns_declared_for_trace_clearance": true,
+    "central_atrium_drop_is_mapped_no_go": true,
     "hallway_supports_pivot_circle": true,
     "plan_hash_matches_reviewed_source": true,
     "scene_reopens": true,
@@ -64,7 +79,7 @@
     "visual_upgrade_preserves_collision_geometry": true
   },
   "config_file": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
-  "config_sha256": "f7ca8bfb79850640334715665fe329c70e0ddb45816c38da7f6a9dd4c538ad06",
+  "config_sha256": "c06e1941e873ae88012844ee27be9e7614342412d5c51cccfe9358a9559ffe47",
   "contact_material_bindings": {
     "castor_low_friction": [
       "/World/AISHA/base_link/castor_fl_link",
@@ -78,7 +93,7 @@
     ]
   },
   "door_survey": {
-    "status": "not_supplied_assumptions_used",
+    "status": "administration_minimum_applied_to_locked_vp_door; principal_door_0.90m_presentation_assumption",
     "survey_argument": null
   },
   "doors": {
@@ -87,34 +102,42 @@
         6.978,
         -7.628
       ],
-      "clear_width_m": 1.4,
+      "clear_height_m": 2.12,
+      "clear_width_m": 0.9,
+      "frame_depth_m": 0.16,
       "high_fidelity_threshold_validation": "blocked",
-      "hinge_assumption": "left_jamb",
-      "minimum_required_m": 1.4,
-      "nominal_side_clearance_m": 0.31599999999999995,
+      "hinge": "left",
+      "minimum_required_m": 0.828,
+      "nominal_padded_side_clearance_m": 0.036000000000000004,
+      "nominal_physical_side_clearance_m": 0.066,
+      "open_leaf_collision": "visual_only_secured_fully_open",
       "presentation_width_gate_passed": true,
-      "swing_assumption": "outward_for_camera_and_route_clearance",
+      "swing": "outward_for_camera_and_route_clearance",
       "threshold_height_mm": 0,
-      "threshold_status": "flush_presentation_assumption_not_measured",
+      "threshold_status": "flush_presentation_assumption_from_walkthrough_not_measured",
       "wall_rotation_deg": 45.0,
-      "width_status": "presentation_assumption_not_measured"
+      "width_status": "reasonable_presentation_assumption_above_reported_0.85m_administration_minimum_not_individually_measured"
     },
     "vice_principal": {
       "centre_xy_m": [
         17.1,
         -5.05
       ],
-      "clear_width_m": 1.4,
+      "clear_height_m": 2.12,
+      "clear_width_m": 0.85,
+      "frame_depth_m": 0.16,
       "high_fidelity_threshold_validation": "blocked",
-      "hinge_assumption": "left_jamb",
-      "minimum_required_m": 1.4,
-      "nominal_side_clearance_m": 0.31599999999999995,
+      "hinge": "left",
+      "minimum_required_m": 0.828,
+      "nominal_padded_side_clearance_m": 0.010999999999999982,
+      "nominal_physical_side_clearance_m": 0.04099999999999998,
+      "open_leaf_collision": "visual_only_secured_fully_open",
       "presentation_width_gate_passed": true,
-      "swing_assumption": "outward_for_camera_and_route_clearance",
+      "swing": "outward_for_camera_and_route_clearance",
       "threshold_height_mm": 0,
-      "threshold_status": "flush_presentation_assumption_not_measured",
+      "threshold_status": "flush_presentation_assumption_from_walkthrough_not_measured",
       "wall_rotation_deg": 0.0,
-      "width_status": "presentation_assumption_not_measured"
+      "width_status": "user_reported_administration_minimum_conservative_destination_assumption"
     }
   },
   "geometry_rtx_refinement": {
@@ -281,6 +304,13 @@
       "status": "approved_plan_page_2_dimension",
       "value": 2.8
     },
+    "narrowest_administration_door_m": {
+      "status": "user_supplied_clear_width_and_height",
+      "value": [
+        0.85,
+        2.12
+      ]
+    },
     "principal_diagonal_frontage_m": {
       "status": "approved_plan_page_2_dimension",
       "value": 4.73
@@ -293,11 +323,52 @@
       ]
     }
   },
+  "measured_geometry": {
+    "overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
+    "overlay_sha256": "e5b60981b6771158434fb160beac97b2d197643ab0520d198174c9846992298b",
+    "physical_release": false,
+    "presentation_clearance_profile": {
+      "footprint_padding_per_side_m": 0.03,
+      "id": "measured_tight_door_v1",
+      "maximum_doorway_speed_mps": 0.1,
+      "measured_narrowest_clear_width_m": 0.85,
+      "nominal_margin_per_side_m": 0.011,
+      "nominal_total_margin_m": 0.022,
+      "padded_transit_width_m": 0.828,
+      "physical_body_width_m": 0.768,
+      "physical_release": false,
+      "rotation_in_doorway_forbidden": true,
+      "simulation_only": true,
+      "straight_centreline_approach_required": true
+    },
+    "registration_status": "approved_page_2_topology_with_roomplan_scale_and_appearance_evidence; native_scan_alignment_pending",
+    "source_capture_hashes": [
+      "d12576bf72c1a5ccf51706501bc8d65f16ea2a22353a9cf7cf287c3f58f9e13b",
+      "d94287e3562344e634889a94aba1ea39d359e29666dd6389673bd8a12599d6cb",
+      "791920a0abe6ea7c055ffdcfa91955c772db38c8f54e3165169dbf2696c31f3b",
+      "9e83e1325bf96afbe467b91c5c660e567a4d233486c0a6c08f40851a0decf3c8"
+    ],
+    "status": "measured_site_presentation_candidate"
+  },
   "passed": true,
   "payload": "loaded",
   "physical_route_released": false,
   "plan_geometry": {
     "atrium": {
+      "central_polygon": {
+        "access_status": "user_supplied_site_observation_2026_08_23",
+        "centre_xy_m": [
+          0.0,
+          0.0
+        ],
+        "orientation_deg": 22.5,
+        "outer_vertex_radius_m": 2.3,
+        "radius_status": "presentation_estimate_from_approved_page_2_plan",
+        "robot_access": "prohibited",
+        "simulation_boundary": "mapped_no_go_with_invisible_lidar_collision_proxy",
+        "step_down_m": 0.2,
+        "step_status": "user_supplied_site_observation_2026_08_23"
+      },
       "centre_xy_m": [
         0.0,
         0.0
@@ -419,9 +490,9 @@
   "robot_asset": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_loaded.usd",
   "route": [
     {
-      "action": "start_and_end",
+      "action": "start_and_end_on_east_atrium_ring",
       "id": "home",
-      "x_m": 0.0,
+      "x_m": 3.4,
       "y_m": 0.0,
       "yaw_deg": 0.0
     },
@@ -503,9 +574,9 @@
       "yaw_deg": 135.0
     },
     {
-      "action": "end",
+      "action": "end_on_east_atrium_ring",
       "id": "home_return",
-      "x_m": 0.0,
+      "x_m": 3.4,
       "y_m": 0.0,
       "yaw_deg": 180.0
     }
@@ -525,8 +596,8 @@
       "prim": "/World/AISHA/base_link/imu_link"
     }
   ],
-  "status": "walkthrough_matched_plan_derived_presentation_scene_built",
-  "timestamp_utc": "2026-08-22T09:43:29.977778+00:00",
+  "status": "measured_site_presentation_candidate_scene_built",
+  "timestamp_utc": "2026-08-23T16:53:01.137034+00:00",
   "visual_upgrade": {
     "collision_geometry_changed": false,
     "reference_policy": "walkthrough appearance only; approved plan remains the geometry authority",

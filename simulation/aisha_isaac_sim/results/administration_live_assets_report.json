@@ -12,17 +12,17 @@
     "shell_reopens": true
   },
   "environment_usd": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/administration_live_environment.usda",
-  "environment_usd_sha256": "83e36be8e3f27baffb65752103e637f4eef61b5218a5fc13eb80d24a79d328ca",
-  "generated_at_utc": "2026-08-22T09:43:44.432875+00:00",
+  "environment_usd_sha256": "b6efd588f5ee2d7c5e60245d47dcaa738012364805ba50516a6c4ad9231a9a8d",
+  "generated_at_utc": "2026-08-23T16:44:10.265675+00:00",
   "passed": true,
   "physical_release": false,
   "presentation_robot_usd": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_loaded_presentation.usda",
-  "presentation_robot_usd_sha256": "21456174ed71ba17180ed5b0eb12f7c381ad3e97639c50113aec754c2b2a705e",
+  "presentation_robot_usd_sha256": "cf69216d437c21f6109b2bc4b89c9730d2778dfdbc4c858fd0650a80f630b8ae",
   "presentation_shell_usd": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/aisha_presentation_shell.usda",
   "presentation_shell_usd_sha256": "24c18681d2d753be43e7ab9a3fa846d5f07c4346db207c766d4e69df252f008e",
   "report_type": "administration_live_assets_build",
   "source_scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
-  "source_scene_sha256": "6e48fa71ff29f9f08cfc35e55e9b65eb394444c1d4fa461fd71cd5a75fe167e7",
+  "source_scene_sha256": "40414d9841e384afb06394382a2688f540aeb61395644070d1781175a7cad011",
   "visual_upgrade": "administration_walkthrough_procedural_pbr_v1",
   "visual_upgrade_collision_impact": "none_visual_only"
 }

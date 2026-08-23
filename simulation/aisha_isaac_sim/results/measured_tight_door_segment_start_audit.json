@@ -1,0 +1,163 @@
+{
+  "task": "Isaac-AISHA-BlockA-MeasuredTightDoor-SensorNav-Direct-v0",
+  "segment_count": 12,
+  "all_starts_clear": true,
+  "segments": [
+    {
+      "segment_id": 0,
+      "start": "home",
+      "goal": "east_atrium_exit",
+      "start_xy_m": [
+        3.4051480293273926,
+        1.3325270886710427e-09
+      ],
+      "goal_distance_m": 1.2948517799377441,
+      "minimum_lidar_range_m": 1.7550773620605469,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    },
+    {
+      "segment_id": 1,
+      "start": "east_atrium_exit",
+      "goal": "vice_principal_turn",
+      "start_xy_m": [
+        4.2556538581848145,
+        6.465603163974265e-09
+      ],
+      "goal_distance_m": 12.85407543182373,
+      "minimum_lidar_range_m": 1.7731081247329712,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    },
+    {
+      "segment_id": 2,
+      "start": "vice_principal_turn",
+      "goal": "vice_principal_approach",
+      "start_xy_m": [
+        16.655763626098633,
+        0.4820868968963623
+      ],
+      "goal_distance_m": 4.305068492889404,
+      "minimum_lidar_range_m": 0.823654294013977,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    },
+    {
+      "segment_id": 3,
+      "start": "vice_principal_approach",
+      "goal": "vice_principal",
+      "start_xy_m": [
+        17.100000381469727,
+        -3.351649522781372
+      ],
+      "goal_distance_m": 3.0483505725860596,
+      "minimum_lidar_range_m": 1.1249980926513672,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    },
+    {
+      "segment_id": 4,
+      "start": "vice_principal",
+      "goal": "vice_principal_depart",
+      "start_xy_m": [
+        17.100000381469727,
+        -6.205080986022949
+      ],
+      "goal_distance_m": 6.205080986022949,
+      "minimum_lidar_range_m": 1.2750000953674316,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    },
+    {
+      "segment_id": 5,
+      "start": "vice_principal_depart",
+      "goal": "hallway_return",
+      "start_xy_m": [
+        17.100000381469727,
+        -0.4482779800891876
+      ],
+      "goal_distance_m": 12.408101081848145,
+      "minimum_lidar_range_m": 1.2749998569488525,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    },
+    {
+      "segment_id": 6,
+      "start": "hallway_return",
+      "goal": "principal_turn",
+      "start_xy_m": [
+        5.144746780395508,
+        3.3469866878022e-08
+      ],
+      "goal_distance_m": 3.843782901763916,
+      "minimum_lidar_range_m": 1.8275701999664307,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    },
+    {
+      "segment_id": 7,
+      "start": "principal_turn",
+      "goal": "principal_approach",
+      "start_xy_m": [
+        3.602877616882324,
+        -3.0280587673187256
+      ],
+      "goal_distance_m": 4.846413612365723,
+      "minimum_lidar_range_m": 1.184374213218689,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    },
+    {
+      "segment_id": 8,
+      "start": "principal_approach",
+      "goal": "principal",
+      "start_xy_m": [
+        6.159707546234131,
+        -6.611325740814209
+      ],
+      "goal_distance_m": 2.760552167892456,
+      "minimum_lidar_range_m": 0.7955928444862366,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    },
+    {
+      "segment_id": 9,
+      "start": "principal",
+      "goal": "principal_depart",
+      "start_xy_m": [
+        7.877051830291748,
+        -8.51427173614502
+      ],
+      "goal_distance_m": 2.1024796962738037,
+      "minimum_lidar_range_m": 1.71305251121521,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    },
+    {
+      "segment_id": 10,
+      "start": "principal_depart",
+      "goal": "atrium_return",
+      "start_xy_m": [
+        6.528069019317627,
+        -6.897704124450684
+      ],
+      "goal_distance_m": 4.621814727783203,
+      "minimum_lidar_range_m": 1.0101710557937622,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    },
+    {
+      "segment_id": 11,
+      "start": "atrium_return",
+      "goal": "home_return",
+      "start_xy_m": [
+        3.7465550899505615,
+        -3.7821810245513916
+      ],
+      "goal_distance_m": 3.798024892807007,
+      "minimum_lidar_range_m": 1.2241318225860596,
+      "collision_at_start": false,
+      "invalid_at_start": false
+    }
+  ]
+}

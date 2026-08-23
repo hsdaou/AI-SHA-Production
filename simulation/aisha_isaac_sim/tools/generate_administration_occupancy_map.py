@@ -26,7 +26,7 @@ DEFAULT_CONFIG = PACKAGE_ROOT / "config" / "administration_assumptions.yaml"
 DEFAULT_OUTPUT_DIR = PACKAGE_ROOT / "maps" / "administration_provisional"
 DEFAULT_REPORT = PACKAGE_ROOT / "results" / "administration_provisional_map_report.json"
 
-WALKABLE_FLOORS = {
+WALKABLE_FLOOR_GROUPS = {
     "Atrium",
     "EastHallway",
     "ViceAccess",
@@ -34,6 +34,14 @@ WALKABLE_FLOORS = {
     "PrincipalAccess",
     "Principal",
 }
+
+
+def walkable_floor_group(path: str, name: str) -> str | None:
+    if path.startswith("/World/Architecture/Floors/Atrium/WalkableRing_"):
+        return "Atrium"
+    if "/Architecture/Floors/" in path and name in WALKABLE_FLOOR_GROUPS:
+        return name
+    return None
 
 
 def sha256(path: Path) -> str:
@@ -136,6 +144,12 @@ def main() -> int:
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
+    parser.add_argument("--map-name", default="administration_provisional")
+    parser.add_argument(
+        "--source-overlay",
+        type=Path,
+        help="measured/presentation overlay used to build the supplied scene",
+    )
     parser.add_argument("--resolution", type=float, default=0.05)
     parser.add_argument("--margin", type=float, default=1.0)
     parser.add_argument("--obstacle-min-z", type=float, default=0.10)
@@ -150,6 +164,11 @@ def main() -> int:
     if stage is None:
         raise RuntimeError(f"could not open USD stage: {scene}")
     config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    source_overlay = None
+    if args.source_overlay is not None:
+        source_overlay = yaml.safe_load(args.source_overlay.read_text(encoding="utf-8"))
+        if source_overlay.get("physical_release") is not False:
+            raise ValueError("source overlay must preserve physical_release: false")
 
     floors: list[dict] = []
     obstacles: list[dict] = []
@@ -170,8 +189,9 @@ def main() -> int:
         path = str(prim.GetPath())
         name = prim.GetName()
         polygon = convex_hull([(float(point[0]), float(point[1])) for point in points])
-        if "/Architecture/Floors/" in path and name in WALKABLE_FLOORS:
-            floors.append({"path": path, "polygon": polygon})
+        floor_group = walkable_floor_group(path, name)
+        if floor_group is not None:
+            floors.append({"path": path, "polygon": polygon, "group": floor_group})
             continue
         if "/Architecture/Floors/" in path or path.endswith("/SupportSlab"):
             ignored_collision_prims.append(path)
@@ -191,8 +211,9 @@ def main() -> int:
                 }
             )
 
-    if {Path(item["path"]).name for item in floors} != WALKABLE_FLOORS:
-        found = sorted(Path(item["path"]).name for item in floors)
+    found_floor_groups = {item["group"] for item in floors}
+    if found_floor_groups != WALKABLE_FLOOR_GROUPS:
+        found = sorted(found_floor_groups)
         raise RuntimeError(f"walkable-floor set mismatch: found {found}")
 
     floor_points = [point for item in floors for point in item["polygon"]]
@@ -217,9 +238,9 @@ def main() -> int:
         )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    map_path = args.output_dir / "administration_provisional.pgm"
-    yaml_path = args.output_dir / "administration_provisional.yaml"
-    preview_path = args.output_dir / "administration_provisional_preview.png"
+    map_path = args.output_dir / f"{args.map_name}.pgm"
+    yaml_path = args.output_dir / f"{args.map_name}.yaml"
+    preview_path = args.output_dir / f"{args.map_name}_preview.png"
     occupancy.save(map_path)
     yaml_path.write_text(
         yaml.safe_dump(
@@ -261,6 +282,16 @@ def main() -> int:
             }
         )
 
+    central_polygon = config["plan_geometry"]["atrium"]["central_polygon"]
+    central_pixel = world_to_pixel(
+        tuple(float(value) for value in central_polygon["centre_xy_m"]),
+        min_x,
+        max_y,
+        args.resolution,
+    )
+    central_value = occupancy.getpixel(central_pixel)
+    central_polygon_is_no_go = central_value != 254
+
     preview = occupancy.convert("RGB")
     preview_draw = ImageDraw.Draw(preview)
     route_pixels = [tuple(item["pixel"]) for item in waypoint_checks]
@@ -272,15 +303,33 @@ def main() -> int:
     preview.save(preview_path)
 
     report = {
-        "report_type": "administration_provisional_occupancy_map",
+        "report_type": (
+            "administration_measured_presentation_occupancy_map"
+            if source_overlay is not None
+            else "administration_provisional_occupancy_map"
+        ),
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
-        "status": "provisional_plan_derived_map_generated",
+        "status": (
+            "measured_site_presentation_candidate_map_generated"
+            if source_overlay is not None
+            else "provisional_plan_derived_map_generated"
+        ),
         "source": {
             "scene": str(scene),
             "scene_sha256": sha256(scene),
             "configuration": str(config_path),
             "configuration_sha256": sha256(config_path),
-            "geometry_status": config["provenance"]["geometry_status"],
+            "geometry_status": (
+                source_overlay.get("status")
+                if source_overlay is not None
+                else config["provenance"]["geometry_status"]
+            ),
+            "overlay": (
+                str(args.source_overlay.resolve()) if args.source_overlay is not None else None
+            ),
+            "overlay_sha256": (
+                sha256(args.source_overlay) if args.source_overlay is not None else None
+            ),
         },
         "map": {
             "yaml": str(yaml_path.resolve()),
@@ -291,6 +340,7 @@ def main() -> int:
             "bounds_xy_m": [min_x, min_y, max_x, max_y],
             "dimensions_pixels": [width, height],
             "walkable_floor_primitives": [item["path"] for item in floors],
+            "walkable_floor_groups": sorted(found_floor_groups),
             "obstacle_primitives": len(obstacles),
             "collision_primitives_inspected": collision_count,
             "collision_primitives_ignored": len(ignored_collision_prims),
@@ -299,17 +349,27 @@ def main() -> int:
             "waypoints": waypoint_checks,
             "all_waypoint_centres_free": all_waypoints_free,
         },
+        "central_atrium_drop": {
+            "centre_pixel": list(central_pixel),
+            "occupancy_value": central_value,
+            "step_down_m": float(central_polygon["step_down_m"]),
+            "robot_access": central_polygon["robot_access"],
+            "mapped_as_no_go": central_polygon_is_no_go,
+        },
         "checks": {
-            "all_expected_walkable_floors_present": len(floors) == len(WALKABLE_FLOORS),
+            "all_expected_walkable_floor_groups_present": found_floor_groups
+            == WALKABLE_FLOOR_GROUPS,
             "obstacles_rasterized": bool(obstacles),
             "all_route_waypoint_centres_free": all_waypoints_free,
-            "map_is_explicitly_provisional": True,
+            "central_atrium_drop_is_not_free_space": central_polygon_is_no_go,
+            "map_is_explicitly_non_physical": True,
             "physical_release_disabled": True,
         },
         "physical_release": False,
         "replacement_gate": (
-            "Replace this map with a LiDAR/site-measured occupancy map and rerun the full mission, "
-            "clearance, contact, and stopping validation before any physical-release claim."
+            "Complete native-scan-to-plan registration, identify both destination doors, measure "
+            "thresholds, and rerun the full mission, contact, and stopping validation before any "
+            "physical-release claim."
         ),
     }
     report["passed"] = all(report["checks"].values())

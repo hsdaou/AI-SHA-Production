@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev M - 2026-08-23 - final Omniverse administration presentation reel accepted**
+**Rev N - 2026-08-23 - measured administration live-policy presentation accepted**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -10,6 +10,43 @@ reinforcement spine. It supersedes every earlier 4-wheel skid-steer model.
 It is a coherent simulation/design baseline, not a fabrication release or a
 safety certification. The unresolved hold points are listed below and in
 `config/aisha_drive.yaml`.
+
+## Latest presentation deliverable
+
+The latest accepted deliverable is a live Isaac Sim/Isaac Lab run in the
+plan- and capture-informed administration scene. The PPO checkpoint provides
+the route action at every one of 13,307 policy steps; a deterministic mapped
+doorway layer limits and aligns the wheel command through the tight openings.
+There is no turn/dwell supervisor, scripted trajectory, or robot-root animation.
+
+The seed-10643 mission completed all 12 Principal/Vice-Principal waypoints in
+443.57 simulated seconds with zero static or dynamic collisions. Across 1,563
+in-door samples, maximum speed was 0.05671 m/s against the declared 0.10 m/s
+presentation limit. The full robot footprint remained at least 0.236 m outside
+the central polygon boundary.
+
+Site facts and assumptions remain visible in both the video and reports:
+
+- The Vice-Principal office was locked during capture. Its interior appearance
+  is an explicit plan-envelope and adjacent-material assumption.
+- The user-reported administration minimum of 0.85 m is conservatively applied
+  to the VP door. The Principal door uses a disclosed 0.90 m presentation
+  assumption. Both use the reported 2.12 m height.
+- The central polygon is modeled as a 0.20 m step-down and a hard mapped no-go
+  zone. The robot never enters it.
+- Thresholds are assumed flush because they were not measured. The result is an
+  Omniverse RTX procedural presentation scene, not a photogrammetric/as-built
+  digital twin or a physical-deployment release.
+
+Presentation video (3x, motion unchanged):
+`media/videos/AI-SHA_Measured_Administration_Live_Policy_3x.mp4` — 147.73 s,
+1280 x 720 at 30 fps, SHA-256
+`8edc5ce42a9f4a5f6a8d808826efa407d2856a1b6714d9641abc979b047cdf7f`.
+The acceptance evidence is
+`results/measured_administration_final_presentation_validation.json` (23/23
+checks passed). The accepted checkpoint is packaged as
+`isaaclab/checkpoints/aisha_measured_tight_door_model2350.pt`, SHA-256
+`6bf032350d36539d6e18651d8c3344c17951ff33dfade17a7910a694933d2d5f`.
 
 ## Architecture decision
 
@@ -48,6 +85,7 @@ isaaclab/scripts/play_block_a_route.py  checkpoint-driven live administration ru
 isaaclab/tools/validate_administration_live_policy.py  live evidence validator
 isaaclab/tools/make_final_omniverse_presentation_reel.py  final evidence-reel assembler
 isaaclab/tools/validate_final_omniverse_presentation_reel.py  final reel validator
+isaaclab/tools/validate_measured_administration_presentation.py  measured-scene final gate
 tools/encode_route_video.py             verified MP4 encoder for rendered frames
 tools/validate_administration_replay.py evidence-chain validation before rendering
 tools/generate_aisha_urdf.py  canonical source for both URDFs
@@ -623,6 +661,10 @@ stop-wait-resume safety insert. Geometry and door clearances remain disclosed
 presentation assumptions; this film is not a physical safety or deployment
 release.
 
+That Phase 3N/4A reel remains historical accepted evidence for the original
+wide-door scene. The Rev N measured-administration deliverable at the top of
+this README supersedes it for the current 0.85/0.90 m presentation geometry.
+
 The administration USD was rebuilt with page-2 Block A printed-dimension anchors
 (12.75 m atrium, 2.80 m hall, 7.80 x 6.30 m conference room and 4.73 m
 Principal frontage) and tagged `GEOMETRY-RTX-PHASE3-A`. Four procedural finish
@@ -780,10 +822,17 @@ in. **Plan every rotation in the hallway (2.80 m) or atrium; traverse doorways
 on a straight, pre-aligned approach.** Rear corners sweep 0.595 m, so a pivot
 also needs that much clearance behind the axle.
 
+For presentation-only simulation, the measured-doorway profile permits the
+reported 0.85 m minimum with a padded 0.828 m transit envelope, a straight
+centreline approach, no doorway rotation, and a 0.10 m/s speed limit. Its
+nominal padded margin is only 11 mm per side, so this acceptance must not be
+used as physical clearance approval.
+
 A nominal 900 mm door leaf commonly has less
 clear width after stops, hinges and hardware; only an on-site clear measurement
-can release the route. If clear width is below 0.920 m, change the route or
-narrow the mechanical design instead of tuning Nav2 to squeeze through.
+can release the route. For physical operation, if clear width is below 0.920 m,
+change the route or narrow the mechanical design instead of tuning Nav2 to
+squeeze through.
 
 Start at 0.30 m/s. The controlled demo target is 0.50 m/s. Treat 0.80 m/s as a
 design ceiling only after measured stopping-distance and protective-field tests.

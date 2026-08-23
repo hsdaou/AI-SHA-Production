@@ -21,6 +21,7 @@ from aisha_isaaclab.tasks.office_nav.block_a_sensor_env import (
     AishaBlockASensorSceneCfg,
     COURSE_USD,
     ROUTE_SEGMENTS,
+    _ADMIN,
 )
 from aisha_isaaclab.tasks.office_nav.phase2_end_to_end_env import (
     PHASE2_GOAL_TOLERANCES,
@@ -205,6 +206,7 @@ class AishaPhase3DynamicDREnvCfg(AishaBlockASensorEnvCfg):
     base_mass_scale_range = (0.88, 1.12)
     robot_static_friction_range = (0.45, 0.75)
     robot_dynamic_friction_range = (0.35, 0.65)
+    randomize_contact_materials = True
 
     # Preserve the accepted static-route skill before progressively exposing
     # the policy to the full perturbation distribution. At 32 steps/iteration,
@@ -239,6 +241,109 @@ class AishaPhase3DynamicDREnvCfg(AishaBlockASensorEnvCfg):
     penalty_forward_near_obstacle = -0.12
     forward_near_obstacle_distance_m = 1.20
     penalty_collision = -100.0
+
+    # Site-measured presentation constraint. These deterministic bounds are a
+    # simulation-only motion envelope around the two 0.85 m apertures; PPO must
+    # align before entering because rotation is suppressed only at the frame.
+    tight_door_segment_ids = (3, 4, 8, 9)
+    tight_door_maximum_speed_mps = 0.10
+    tight_door_slow_zone_normal_half_extent_m = 1.00
+    tight_door_zone_tangent_half_extent_m = 1.10
+    # Begin the straight-through constraint before the 0.725 m forward body
+    # extent reaches the frame, including a conservative contact allowance.
+    tight_door_no_rotation_normal_half_extent_m = 0.80
+    tight_door_no_rotation_tangent_half_extent_m = 1.10
+    tight_door_alignment_hold_normal_half_extent_m = 1.60
+    tight_door_alignment_hold_heading_error_rad = math.radians(3.0)
+    tight_door_alignment_hold_maximum_yaw_rate_rad_s = 0.05
+    tight_door_alignment_breakaway_angular_action = 0.0
+    tight_door_alignment_breakaway_maximum_yaw_rate_rad_s = 0.01
+    tight_door_alignment_release_depth_m = 0.75
+    tight_door_alignment_minimum_speed_mps = 0.0
+    tight_door_traction_compensation_enabled = False
+    tight_door_traction_target_speed_mps = 0.08
+    tight_door_traction_command_ceiling_mps = 0.24
+    tight_door_traction_gain = 2.0
+    tight_door_traction_overspeed_stop_mps = 0.11
+    tight_door_straight_heading_gain = 4.0
+    tight_door_straight_yaw_damping_gain = 2.0
+    tight_door_straight_maximum_angular_action = 0.35
+
+
+@configclass
+class AishaMeasuredTightDoorEnvCfg(AishaPhase3DynamicDREnvCfg):
+    """Focused first-stage adaptation to padded 0.85 m office apertures."""
+
+    # Allow the heavy platform time to align, settle its yaw rate, and traverse
+    # the doorway at the conservative 0.10 m/s safety cap.  This changes only
+    # the episode time allowance; it does not relax geometry or collision gates.
+    episode_length_s = 100.0
+    dynamic_obstacle_activation_probability = 0.0
+    dynamic_obstacle_social_retreat_speed_mps = 0.0
+    # At 0.90 m normal distance the 0.725 m chassis end has cleared the wall
+    # plane by 175 mm. Release the 0.10 m/s cap there so the 171 kg platform
+    # does not static-lock immediately after a safe crossing.
+    tight_door_slow_zone_normal_half_extent_m = 0.90
+    # Begin mapped centreline convergence upstream of either office frame,
+    # then enforce the final straight-through heading over the last 0.80 m.
+    tight_door_alignment_hold_normal_half_extent_m = 2.00
+    # The 0.85 m VP aperture leaves only millimetres of corner clearance for
+    # the long rectangular chassis.  Require near-square entry and provide a
+    # finite in-place turn request to overcome fixed-castor static friction.
+    tight_door_alignment_hold_heading_error_rad = math.radians(0.5)
+    tight_door_alignment_breakaway_angular_action = 0.55
+    # Keep the mapped centreline handoff active until the full body is clear
+    # and bridge the low-speed dead zone that previously caused safe timeouts.
+    tight_door_alignment_release_depth_m = 2.00
+    tight_door_alignment_minimum_speed_mps = 0.10
+    segment_sampling_weights = (
+        1.0,
+        1.0,
+        2.0,
+        30.0,
+        30.0,
+        2.0,
+        2.0,
+        2.0,
+        30.0,
+        30.0,
+        2.0,
+        1.0,
+    )
+    start_lateral_jitter_m = 0.025
+    start_yaw_jitter_rad = math.radians(5.0)
+    start_linear_velocity_range_mps = (0.0, 0.10)
+    # Segment 10's historical 0.45 m incoming-handoff backoff lands the
+    # corrected Principal departure pose inside the diagonal jamb.  Start at
+    # the audited clear waypoint instead; all other handoffs retain Phase 3.
+    start_transition_backoff_m_by_segment = (
+        0.00,
+        0.45,
+        0.45,
+        0.45,
+        0.00,
+        0.45,
+        0.45,
+        0.45,
+        0.45,
+        0.00,
+        0.00,
+        0.45,
+    )
+    goal_jitter_m = 0.015
+    observation_lidar_noise_std_m = 0.005
+    observation_lidar_dropout_probability = 0.0
+    lidar_episode_bias_range_m = (-0.005, 0.005)
+    lidar_episode_scale_range = (0.998, 1.002)
+    curriculum_warmup_policy_steps = 0
+    curriculum_ramp_policy_steps = 6_400
+    curriculum_minimum_strength = 0.25
+    # The imported robot intentionally gives the fixed-sphere castors much
+    # lower friction than the drive wheels.  The original Phase 3 scalar
+    # randomizer writes one coefficient to every shape, erases that split and
+    # static-locks the 171 kg proxy at the 0.10 m/s doorway command.  Preserve
+    # the imported heterogeneous materials until per-shape ranges are added.
+    randomize_contact_materials = False
 
 
 class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
@@ -293,6 +398,273 @@ class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
         self._episode_sums["forward_near_obstacle"] = torch.zeros(
             self.num_envs, dtype=torch.float32, device=self.device
         )
+        door_order = ("vice_principal", "principal")
+        self._tight_door_centres = torch.tensor(
+            [_ADMIN["doors"][name]["centre_xy_m"] for name in door_order],
+            dtype=torch.float32,
+            device=self.device,
+        )
+        angles = torch.deg2rad(
+            torch.tensor(
+                [_ADMIN["doors"][name]["wall_rotation_deg"] for name in door_order],
+                dtype=torch.float32,
+                device=self.device,
+            )
+        )
+        self._tight_door_tangents = torch.stack(
+            (torch.cos(angles), torch.sin(angles)), dim=1
+        )
+        self._tight_door_normals = torch.stack(
+            (-torch.sin(angles), torch.cos(angles)), dim=1
+        )
+        self._tight_door_slow_zone_active = torch.zeros(
+            self.num_envs, dtype=torch.bool, device=self.device
+        )
+        self._tight_door_no_rotation_active = torch.zeros_like(
+            self._tight_door_slow_zone_active
+        )
+        self._tight_door_alignment_hold_active = torch.zeros_like(
+            self._tight_door_slow_zone_active
+        )
+
+    def _apply_tight_door_motion_envelope(self) -> None:
+        local_xy = self._local_xy()
+        slow = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        no_rotation = torch.zeros_like(slow)
+        alignment_scope = torch.zeros_like(slow)
+        straight_heading_action = torch.zeros(self.num_envs, device=self.device)
+        straight_heading_error = torch.zeros(self.num_envs, device=self.device)
+        quaternion = self._robot.data.root_quat_w
+        yaw = torch.atan2(
+            2.0
+            * (
+                quaternion[:, 0] * quaternion[:, 3]
+                + quaternion[:, 1] * quaternion[:, 2]
+            ),
+            1.0
+            - 2.0
+            * (quaternion[:, 2].square() + quaternion[:, 3].square()),
+        )
+        yaw_rate = self._robot.data.root_ang_vel_b[:, 2]
+        for door_index, segment_ids in enumerate(((3, 4), (8, 9))):
+            segment_scope = torch.zeros_like(slow)
+            for segment_id in segment_ids:
+                segment_scope |= self._segment_ids == segment_id
+            relative = local_xy - self._tight_door_centres[door_index]
+            tangent_distance = torch.abs(
+                torch.sum(relative * self._tight_door_tangents[door_index], dim=1)
+            )
+            normal_distance = torch.abs(
+                torch.sum(relative * self._tight_door_normals[door_index], dim=1)
+            )
+            in_tangent_zone = (
+                tangent_distance
+                <= self.cfg.tight_door_zone_tangent_half_extent_m
+            )
+            slow |= (
+                segment_scope
+                & in_tangent_zone
+                & (
+                    normal_distance
+                    <= self.cfg.tight_door_slow_zone_normal_half_extent_m
+                )
+            )
+            no_rotation |= (
+                segment_scope
+                & in_tangent_zone
+                & (
+                    normal_distance
+                    <= self.cfg.tight_door_no_rotation_normal_half_extent_m
+                )
+                & (
+                    tangent_distance
+                    <= self.cfg.tight_door_no_rotation_tangent_half_extent_m
+                )
+            )
+            for segment_id, direction_sign in zip(
+                segment_ids, (-1.0, 1.0), strict=True
+            ):
+                exact_segment = self._segment_ids == segment_id
+                signed_normal = torch.sum(
+                    relative * self._tight_door_normals[door_index], dim=1
+                )
+                goal_side_depth = direction_sign * signed_normal
+                exact_alignment_scope = (
+                    exact_segment
+                    & in_tangent_zone
+                    & (
+                        normal_distance
+                        <= self.cfg.tight_door_alignment_hold_normal_half_extent_m
+                    )
+                    & (
+                        goal_side_depth
+                        < self.cfg.tight_door_alignment_release_depth_m
+                    )
+                )
+                alignment_scope |= exact_alignment_scope
+                desired_direction = direction_sign * self._tight_door_normals[door_index]
+                normal_yaw = torch.atan2(desired_direction[1], desired_direction[0])
+                approach_stage = (
+                    self._tight_door_centres[door_index]
+                    - direction_sign * self._tight_door_normals[door_index]
+                )
+                crossing_stage = (
+                    self._tight_door_centres[door_index]
+                    + direction_sign * self._tight_door_normals[door_index]
+                )
+                approach_depth = -direction_sign * signed_normal
+                selected_stage = torch.where(
+                    (approach_depth > 1.05).unsqueeze(1),
+                    approach_stage.unsqueeze(0),
+                    crossing_stage.unsqueeze(0),
+                )
+                stage_delta = selected_stage - local_xy
+                stage_yaw = torch.atan2(stage_delta[:, 1], stage_delta[:, 0])
+                use_stage_yaw = (
+                    goal_side_depth < 0.75
+                ) & (
+                    normal_distance
+                    > self.cfg.tight_door_no_rotation_normal_half_extent_m
+                )
+                desired_yaw = torch.where(
+                    use_stage_yaw,
+                    stage_yaw,
+                    normal_yaw,
+                )
+                yaw_error = torch.atan2(
+                    torch.sin(desired_yaw - yaw), torch.cos(desired_yaw - yaw)
+                )
+                correction = (
+                    self.cfg.tight_door_straight_heading_gain * yaw_error
+                    - self.cfg.tight_door_straight_yaw_damping_gain * yaw_rate
+                ).clamp(
+                    -self.cfg.tight_door_straight_maximum_angular_action,
+                    self.cfg.tight_door_straight_maximum_angular_action,
+                )
+                needs_breakaway = (
+                    torch.abs(yaw_error)
+                    > self.cfg.tight_door_alignment_hold_heading_error_rad
+                ) & (
+                    torch.abs(correction)
+                    < self.cfg.tight_door_alignment_breakaway_angular_action
+                ) & (
+                    torch.abs(yaw_rate)
+                    < self.cfg.tight_door_alignment_breakaway_maximum_yaw_rate_rad_s
+                )
+                correction = torch.where(
+                    needs_breakaway,
+                    torch.sign(yaw_error)
+                    * self.cfg.tight_door_alignment_breakaway_angular_action,
+                    correction,
+                )
+                straight_heading_action = torch.where(
+                    exact_segment, correction, straight_heading_action
+                )
+                straight_heading_error = torch.where(
+                    exact_segment, yaw_error, straight_heading_error
+                )
+
+        minimum, maximum = self.cfg.linear_velocity_range_mps
+        maximum_action = (
+            2.0
+            * (self.cfg.tight_door_maximum_speed_mps - minimum)
+            / (maximum - minimum)
+            - 1.0
+        )
+        self._actions[slow, 0] = torch.minimum(
+            self._actions[slow, 0],
+            torch.full_like(self._actions[slow, 0], maximum_action),
+        )
+        heading_alignment_hold = alignment_scope & (
+            torch.abs(straight_heading_error)
+            > self.cfg.tight_door_alignment_hold_heading_error_rad
+        )
+        yaw_settling_hold = (
+            alignment_scope
+            & ~heading_alignment_hold
+            & (
+                torch.abs(self._robot.data.root_ang_vel_b[:, 2])
+                > self.cfg.tight_door_alignment_hold_maximum_yaw_rate_rad_s
+            )
+        )
+        alignment_hold = heading_alignment_hold | yaw_settling_hold
+        # Door-normal heading is a low-level safety invariant throughout the
+        # alignment envelope, including the short pre-frame stopping region.
+        # Leaving angular control to the policy there can rotate the long body
+        # toward a jamb while its centre is still outside the aperture.
+        controller_scope = alignment_scope | no_rotation
+        self._actions[controller_scope, 1] = straight_heading_action[controller_scope]
+        minimum_alignment_action = (
+            2.0
+            * (self.cfg.tight_door_alignment_minimum_speed_mps - minimum)
+            / (maximum - minimum)
+            - 1.0
+        )
+        alignment_drive = alignment_scope & ~alignment_hold
+        self._actions[alignment_drive, 0] = torch.maximum(
+            self._actions[alignment_drive, 0],
+            torch.full_like(
+                self._actions[alignment_drive, 0], minimum_alignment_action
+            ),
+        )
+        # The full presentation USD has materially more floor/contact load than
+        # the lightweight training course. A live-only closed-loop feedforward
+        # option can request extra wheel speed while regulating measured chassis
+        # speed below the unchanged doorway limit. It is disabled for training
+        # and evaluation and never changes collision or acceptance geometry.
+        if self.cfg.tight_door_traction_compensation_enabled:
+            forward_speed = self._robot.data.root_lin_vel_b[:, 0].clamp_min(0.0)
+            speed_error = (
+                self.cfg.tight_door_traction_target_speed_mps - forward_speed
+            ).clamp_min(0.0)
+            compensated_speed = (
+                self.cfg.tight_door_alignment_minimum_speed_mps
+                + self.cfg.tight_door_traction_gain * speed_error
+            ).clamp(max=self.cfg.tight_door_traction_command_ceiling_mps)
+            compensated_action = (
+                2.0 * (compensated_speed - minimum) / (maximum - minimum) - 1.0
+            )
+            self._actions[alignment_drive, 0] = torch.maximum(
+                self._actions[alignment_drive, 0],
+                compensated_action[alignment_drive],
+            )
+            overspeed = alignment_drive & (
+                forward_speed > self.cfg.tight_door_traction_overspeed_stop_mps
+            )
+            self._actions[overspeed, 0] = -1.0
+        self._actions[alignment_hold, 0] = -1.0
+        # Apply this after the straight-heading controller: once aligned, the
+        # platform must coast its residual yaw rate below the release limit
+        # instead of immediately receiving another proportional correction.
+        self._actions[yaw_settling_hold, 1] = 0.0
+        self._tight_door_slow_zone_active.copy_(slow)
+        self._tight_door_no_rotation_active.copy_(no_rotation)
+        self._tight_door_alignment_hold_active.copy_(alignment_hold)
+        self.extras["tight_door_motion_envelope"] = {
+            "simulation_only": True,
+            "maximum_doorway_speed_mps": self.cfg.tight_door_maximum_speed_mps,
+            "minimum_alignment_speed_mps": (
+                self.cfg.tight_door_alignment_minimum_speed_mps
+            ),
+            "slow_zone_active": slow.clone(),
+            "no_rotation_zone_active": no_rotation.clone(),
+            "alignment_hold_active": alignment_hold.clone(),
+            "yaw_settling_hold_active": yaw_settling_hold.clone(),
+            "straight_heading_stabilization_active": controller_scope.clone(),
+            "live_traction_compensation_enabled": bool(
+                self.cfg.tight_door_traction_compensation_enabled
+            ),
+            "live_traction_target_speed_mps": (
+                self.cfg.tight_door_traction_target_speed_mps
+                if self.cfg.tight_door_traction_compensation_enabled
+                else None
+            ),
+            "live_traction_overspeed_stop_mps": (
+                self.cfg.tight_door_traction_overspeed_stop_mps
+                if self.cfg.tight_door_traction_compensation_enabled
+                else None
+            ),
+        }
 
     @staticmethod
     def _uniform(
@@ -383,11 +755,12 @@ class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
         )
         self._robot.root_physx_view.set_inertias(inertias, cpu_ids)
 
-        materials = self._robot.root_physx_view.get_material_properties()
-        materials[cpu_ids, :, 0] = self._static_friction[env_ids].cpu().unsqueeze(-1)
-        materials[cpu_ids, :, 1] = self._dynamic_friction[env_ids].cpu().unsqueeze(-1)
-        materials[cpu_ids, :, 2] = 0.0
-        self._robot.root_physx_view.set_material_properties(materials, cpu_ids)
+        if self.cfg.randomize_contact_materials:
+            materials = self._robot.root_physx_view.get_material_properties()
+            materials[cpu_ids, :, 0] = self._static_friction[env_ids].cpu().unsqueeze(-1)
+            materials[cpu_ids, :, 1] = self._dynamic_friction[env_ids].cpu().unsqueeze(-1)
+            materials[cpu_ids, :, 2] = 0.0
+            self._robot.root_physx_view.set_material_properties(materials, cpu_ids)
 
     def _sample_dynamic_obstacles(self, env_ids: torch.Tensor) -> None:
         count = len(env_ids)
@@ -571,6 +944,7 @@ class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
 
         self._previous_actions.copy_(self._actions)
         self._actions = delayed.clone().clamp(-1.0, 1.0)
+        self._apply_tight_door_motion_envelope()
         minimum, maximum = self.cfg.linear_velocity_range_mps
         linear = minimum + (self._actions[:, 0] + 1.0) * 0.5 * (maximum - minimum)
         angular = self._actions[:, 1] * self.cfg.angular_velocity_max_rad_s
@@ -659,6 +1033,9 @@ class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
         self._sample_dynamic_obstacles(env_ids)
         self._action_history[env_ids] = self._actions[env_ids].unsqueeze(1).expand(-1, 3, -1)
         self._update_dynamic_obstacles(env_ids)
+        self._tight_door_slow_zone_active[env_ids] = False
+        self._tight_door_no_rotation_active[env_ids] = False
+        self._tight_door_alignment_hold_active[env_ids] = False
         self.extras["domain_randomization"] = {
             "curriculum_strength": self._curriculum_strength(),
             "action_latency_steps": self._action_latency_steps.clone(),
@@ -668,6 +1045,7 @@ class AishaPhase3DynamicDREnv(AishaBlockASensorEnv):
             "base_mass_scale": self._mass_scale.clone(),
             "static_friction": self._static_friction.clone(),
             "dynamic_friction": self._dynamic_friction.clone(),
+            "contact_material_randomization_enabled": self.cfg.randomize_contact_materials,
             "active_obstacle_count": self._obstacle_active.sum(dim=0).clone(),
         }
 
@@ -790,7 +1168,10 @@ class AishaPhase3SafetyResidualEnv(AishaPhase3DynamicDREnv):
         normalized = (
             self._last_policy_observation - self._frozen_route_obs_mean
         ) / (self._frozen_route_obs_std + 1.0e-2)
-        with torch.inference_mode():
+        # These actions are copied into mutable episode buffers. ``no_grad``
+        # keeps inference cheap while returning ordinary tensors that can be
+        # reset in place after Gym auto-resets an environment.
+        with torch.no_grad():
             return self._frozen_route_actor(normalized).clamp(-1.0, 1.0)
 
     def _compose_residual_actions(
@@ -2462,7 +2843,10 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
         normalized = (
             self._last_policy_observation - self._frozen_recovery_obs_mean
         ) / (self._frozen_recovery_obs_std + 1.0e-2)
-        with torch.inference_mode():
+        # Do not use inference_mode here: the returned action is stored in a
+        # mutable reset buffer, and PyTorch forbids later in-place updates to an
+        # inference tensor outside the inference context.
+        with torch.no_grad():
             memory_output, hidden = self._frozen_recovery_memory(
                 normalized.unsqueeze(0), self._frozen_recovery_hidden
             )

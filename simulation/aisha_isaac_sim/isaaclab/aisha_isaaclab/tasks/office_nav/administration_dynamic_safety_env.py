@@ -18,6 +18,8 @@ from aisha_isaaclab.tasks.office_nav.administration_live_env import (
     administration_collision_raycast_targets,
 )
 from aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env import (
+    AishaMeasuredTightDoorEnvCfg,
+    AishaPhase3DynamicDREnv,
     AishaPhase3DynamicSafetyEnv,
     AishaPhase3DynamicSafetyEnvCfg,
     _person_proxy,
@@ -165,6 +167,37 @@ class AishaAdministrationSafetyPresentationEnvCfg(
 
 
 @configclass
+class AishaAdministrationMeasuredTightDoorEnvCfg(AishaMeasuredTightDoorEnvCfg):
+    """Accepted two-action route policy with measured-door safety in the live USD."""
+
+    scene: AishaAdministrationSafetyPresentationSceneCfg = (
+        AishaAdministrationSafetyPresentationSceneCfg(
+            num_envs=1,
+            env_spacing=55.0,
+            replicate_physics=False,
+            clone_in_fabric=False,
+        )
+    )
+
+    # Compensate the full visual scene's higher wheel/contact load using
+    # measured chassis-speed feedback. The target remains below 0.10 m/s and
+    # the controller brakes from 0.085 m/s so coast-down remains within the
+    # 0.10 m/s presentation limit; training and acceptance tasks keep
+    # this disabled, so their accepted result is not retroactively altered.
+    tight_door_traction_compensation_enabled = True
+    tight_door_slow_zone_normal_half_extent_m = 1.05
+    tight_door_traction_target_speed_mps = 0.06
+    tight_door_traction_command_ceiling_mps = 0.18
+    tight_door_traction_gain = 1.5
+    tight_door_traction_overspeed_stop_mps = 0.085
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        self.viewer.eye = (-4.5, 4.5, 5.5)
+        self.viewer.lookat = (0.0, 0.0, 0.55)
+
+
+@configclass
 class AishaAdministrationDynamicSafetyShowcaseEnvCfg(
     AishaAdministrationDynamicSafetyEnvCfg
 ):
@@ -220,6 +253,48 @@ class AishaAdministrationDynamicSafetyEnv(AishaPhase3DynamicSafetyEnv):
     def __init__(
         self,
         cfg: AishaAdministrationDynamicSafetyEnvCfg,
+        render_mode: str | None = None,
+        **kwargs,
+    ):
+        missing = [
+            path
+            for path in (ADMINISTRATION_LIVE_USD, PRESENTATION_ROBOT_USD)
+            if not Path(path).is_file()
+        ]
+        if missing:
+            raise FileNotFoundError(
+                "missing live administration assets; run "
+                f"isaaclab/tools/build_administration_live_assets.py first: {missing}"
+            )
+        super().__init__(cfg, render_mode, **kwargs)
+
+
+class AishaAdministrationMeasuredTightDoorEnv(AishaPhase3DynamicDREnv):
+    """Live measured-office scene with the accepted route actor and doorway guard."""
+
+    cfg: AishaAdministrationMeasuredTightDoorEnvCfg
+    live_route_waypoint_assumptions = {
+        "vice_principal_door_clear_width_m": 0.85,
+        "vice_principal_door_width_status": (
+            "user_reported_administration_minimum_conservative_destination_assumption"
+        ),
+        "vice_principal_interior_capture": "not_captured_locked_during_site_visit",
+        "vice_principal_interior_appearance": (
+            "plan_envelope_and_adjacent_material_assumption_only"
+        ),
+        "principal_door_clear_width_m": 0.90,
+        "principal_door_width_status": (
+            "reasonable_presentation_assumption_above_reported_administration_minimum"
+        ),
+        "door_clear_height_m": 2.12,
+        "central_polygon_step_down_m": 0.20,
+        "central_polygon_robot_access": "prohibited_mapped_no_go",
+        "physical_release": False,
+    }
+
+    def __init__(
+        self,
+        cfg: AishaAdministrationMeasuredTightDoorEnvCfg,
         render_mode: str | None = None,
         **kwargs,
     ):
