@@ -91,8 +91,11 @@ def _relative_or_absolute(path: Path) -> str:
 
 def main() -> int:
     device = args.device or "cuda:0"
-    is_phase3_task = "Phase3-" in args.task
-    is_phase3_dynamic_safety_task = "Phase3-DynamicSafety" in args.task
+    is_high_speed_safety_task = "Phase6-HighSpeed" in args.task
+    is_phase3_task = "Phase3-" in args.task or is_high_speed_safety_task
+    is_phase3_dynamic_safety_task = (
+        "Phase3-DynamicSafety" in args.task or is_high_speed_safety_task
+    )
     is_phase3_safety_residual_task = "Phase3-SafetyResidual" in args.task
     is_phase3_clearance_planner_task = (
         "Phase3-ClearancePlanner" in args.task
@@ -149,7 +152,12 @@ def main() -> int:
     except AttributeError:
         policy_nn = runner.alg.actor_critic
 
-    observations = env.get_observations()
+    # DirectRLEnv invokes its reset hook while base-class construction is still
+    # in progress. Derived Phase 3 buffers intentionally do not participate in
+    # that constructor-time reset. Start held-out accounting only after one
+    # complete user-visible reset so an uninitialized construction episode is
+    # never counted as a collision for every parallel environment.
+    observations, _ = env.reset()
     running_returns = torch.zeros(args.num_envs, device=env.device)
     running_lengths = torch.zeros(args.num_envs, dtype=torch.long, device=env.device)
     completed_returns: list[float] = []
@@ -354,6 +362,18 @@ def main() -> int:
                             outcomes.get(
                                 "minimum_ring_clearance_m",
                                 outcomes["minimum_applied_clearance_m"],
+                            )[env_id].item()
+                        ),
+                        "maximum_forward_speed_mps": float(
+                            outcomes.get(
+                                "maximum_forward_speed_mps",
+                                torch.zeros_like(outcomes["minimum_applied_clearance_m"]),
+                            )[env_id].item()
+                        ),
+                        "maximum_high_speed_segment_speed_mps": float(
+                            outcomes.get(
+                                "maximum_high_speed_segment_speed_mps",
+                                torch.zeros_like(outcomes["minimum_applied_clearance_m"]),
                             )[env_id].item()
                         ),
                         "final_distance_m": float(
@@ -579,6 +599,14 @@ def main() -> int:
                     float(record["minimum_ring_clearance_m"])
                     for record in records
                 ),
+                "maximum_forward_speed_mps": max(
+                    float(record["maximum_forward_speed_mps"])
+                    for record in records
+                ),
+                "maximum_high_speed_segment_speed_mps": max(
+                    float(record["maximum_high_speed_segment_speed_mps"])
+                    for record in records
+                ),
             }
 
         planner_diagnostics = summarize_planner(planner_episode_diagnostics)
@@ -739,6 +767,7 @@ def main() -> int:
             ),
             "phase3_curriculum_strength": phase3_curriculum_strength,
             "fixed_segment_id": args.fixed_segment_id,
+            "explicit_post_construction_reset": True,
         },
         "results": {
             "success_count": counts["success"],

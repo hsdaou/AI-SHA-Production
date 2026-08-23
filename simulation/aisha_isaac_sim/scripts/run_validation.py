@@ -2,9 +2,10 @@
 """Run reproducible AI-SHA import, drop, motion, and watchdog validation.
 
 The default smoke suite is an implementation check, not the handoff's final
-acceptance campaign. Use --suite full for 5 m straight runs at both controlled
-speeds. Presentation doorway geometry is available, while physical doorway and
-route claims remain blocked on the plan and site survey.
+acceptance campaign. Use --suite full for 5 m straight runs at both accepted
+controlled speeds. The isolated --suite high_speed gate measures the proposed
+0.80 m/s simulation tier and its controlled stop without changing the accepted
+0.30/0.50 m/s reports. It is not a physical stopping-distance test.
 """
 
 from __future__ import annotations
@@ -21,7 +22,9 @@ from isaacsim import SimulationApp
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--headless", action="store_true")
-    parser.add_argument("--suite", choices=("smoke", "full"), default="smoke")
+    parser.add_argument(
+        "--suite", choices=("smoke", "full", "high_speed"), default="smoke"
+    )
     parser.add_argument("--payload", choices=("empty", "loaded"), default="loaded")
     return parser.parse_args()
 
@@ -185,7 +188,10 @@ def run_motion_command(
     limiter = DifferentialDriveLimiter(
         wheel_radius_m=float(drive["geometry"]["wheel_radius_nominal_m"]),
         wheel_track_m=float(drive["geometry"]["wheel_track_design_m"]),
-        max_linear_mps=float(drive["navigation"]["controlled_demo_speed_mps"]),
+        max_linear_mps=max(
+            float(drive["navigation"]["controlled_demo_speed_mps"]),
+            abs(linear_mps),
+        ),
         max_angular_rad_s=1.0,
         max_acceleration_mps2=max(float(value) for value in drive["navigation"]["acceleration_target_mps2"]),
         max_angular_acceleration_rad_s2=1.0,
@@ -234,6 +240,116 @@ def run_motion_command(
         "distance_xy_m": float(np.linalg.norm(displacement[:2])),
         "yaw_change_deg": math.degrees(angle_delta(end_yaw, start_yaw)),
         "samples": samples,
+    }
+
+
+def run_high_speed_stop_command(
+    articulation: Articulation,
+    simulation: SimulationContext,
+    *,
+    target_speed_mps: float,
+    physics_hz: int,
+    drive: dict[str, object],
+    wheel_indices: list[int],
+) -> dict[str, object]:
+    """Measure a software-limited stop from the proposed hallway speed tier."""
+    dt = 1.0 / physics_hz
+    deceleration_mps2 = max(
+        float(value) for value in drive["navigation"]["acceleration_target_mps2"]
+    )
+    limiter = DifferentialDriveLimiter(
+        wheel_radius_m=float(drive["geometry"]["wheel_radius_nominal_m"]),
+        wheel_track_m=float(drive["geometry"]["wheel_track_design_m"]),
+        max_linear_mps=target_speed_mps,
+        max_angular_rad_s=1.0,
+        max_acceleration_mps2=deceleration_mps2,
+        max_angular_acceleration_rad_s2=1.0,
+        watchdog_timeout_s=0.25,
+    )
+    limiter.reset(0.0)
+    start_position, start_quaternion = pose(articulation)
+    start_yaw = euler_from_wxyz(start_quaternion)[2]
+    samples: list[dict[str, object]] = []
+    peak_speed_mps = 0.0
+    acceleration_duration_s = target_speed_mps / deceleration_mps2 + 2.0
+    for index in range(round(acceleration_duration_s * physics_hz)):
+        now_s = index * dt
+        limiter.command(target_speed_mps, 0.0, now_s)
+        left, right = limiter.update(now_s, dt)
+        articulation.set_joint_velocity_targets(
+            np.asarray([[left, right]], dtype=np.float32),
+            joint_indices=wheel_indices,
+        )
+        simulation.step(render=False)
+        velocity = np.asarray(articulation.get_linear_velocities()[0], dtype=float)
+        peak_speed_mps = max(peak_speed_mps, float(np.linalg.norm(velocity[:2])))
+
+    brake_position, _ = pose(articulation)
+    stop_threshold_mps = 0.05
+    stopped_after_s = None
+    stop_position = brake_position.copy()
+    stop_timeout_s = 4.0
+    for index in range(round(stop_timeout_s * physics_hz)):
+        now_s = acceleration_duration_s + index * dt
+        limiter.command(0.0, 0.0, now_s)
+        left, right = limiter.update(now_s, dt)
+        articulation.set_joint_velocity_targets(
+            np.asarray([[left, right]], dtype=np.float32),
+            joint_indices=wheel_indices,
+        )
+        simulation.step(render=False)
+        velocity = np.asarray(articulation.get_linear_velocities()[0], dtype=float)
+        speed_mps = float(np.linalg.norm(velocity[:2]))
+        position, quaternion = pose(articulation)
+        if index % max(1, physics_hz // 20) == 0 or speed_mps <= stop_threshold_mps:
+            samples.append(
+                {
+                    "time_after_stop_request_s": round((index + 1) * dt, 6),
+                    "speed_mps": speed_mps,
+                    "position_m": position.tolist(),
+                    "wheel_target_rad_s": [left, right],
+                }
+            )
+        if speed_mps <= stop_threshold_mps:
+            stopped_after_s = (index + 1) * dt
+            stop_position = position
+            break
+
+    articulation.set_joint_velocity_targets(
+        np.zeros((1, 2), dtype=np.float32), joint_indices=wheel_indices
+    )
+    _, end_quaternion = pose(articulation)
+    stopping_distance_m = float(np.linalg.norm((stop_position - brake_position)[:2]))
+    total_displacement_m = float(np.linalg.norm((stop_position - start_position)[:2]))
+    yaw_drift_deg = math.degrees(
+        angle_delta(euler_from_wxyz(end_quaternion)[2], start_yaw)
+    )
+    reached_target = peak_speed_mps >= target_speed_mps * 0.94
+    passed = (
+        reached_target
+        and stopped_after_s is not None
+        and stopped_after_s <= 2.25
+        and stopping_distance_m <= 1.00
+        and abs(yaw_drift_deg) <= 2.0
+    )
+    return {
+        "commanded_speed_mps": target_speed_mps,
+        "peak_measured_speed_mps": peak_speed_mps,
+        "target_reached_within_6_percent": reached_target,
+        "controlled_deceleration_mps2": deceleration_mps2,
+        "stop_threshold_mps": stop_threshold_mps,
+        "stopped_after_s": stopped_after_s,
+        "stopping_distance_m": stopping_distance_m,
+        "maximum_stopping_time_s": 2.25,
+        "maximum_stopping_distance_m": 1.00,
+        "yaw_drift_deg": yaw_drift_deg,
+        "total_displacement_m": total_displacement_m,
+        "samples": samples,
+        "passed": passed,
+        "claim_boundary": (
+            "software-limited flat-floor Isaac Sim stop only; not an emergency stop, "
+            "protective-field validation, or physical stopping-distance result"
+        ),
     }
 
 
@@ -287,7 +403,12 @@ def physics_checks(scene_path: str, physics: dict[str, object], drive: dict[str,
     progress(f"drop test complete (passed={drop_passed})")
 
     tests = []
-    speeds = (0.30,) if ARGS.suite == "smoke" else (0.30, 0.50)
+    if ARGS.suite == "smoke":
+        speeds = (0.30,)
+    elif ARGS.suite == "full":
+        speeds = (0.30, 0.50)
+    else:
+        speeds = (0.80,)
     for speed in speeds:
         reset_articulation(articulation, simulation, float(drop_end[2]), wheel_indices, settle_steps=2 * hz)
         duration = 3.0 if ARGS.suite == "smoke" else 5.0 / speed + 1.5
@@ -323,6 +444,29 @@ def physics_checks(scene_path: str, physics: dict[str, object], drive: dict[str,
         )
         tests.append(result)
         progress(f"straight {speed:.2f} m/s complete (passed={result['passed']})")
+
+    high_speed_stop = None
+    if ARGS.suite == "high_speed":
+        reset_articulation(
+            articulation,
+            simulation,
+            float(drop_end[2]),
+            wheel_indices,
+            settle_steps=2 * hz,
+        )
+        high_speed_stop = run_high_speed_stop_command(
+            articulation,
+            simulation,
+            target_speed_mps=0.80,
+            physics_hz=hz,
+            drive=drive,
+            wheel_indices=wheel_indices,
+        )
+        progress(
+            "high-speed controlled stop complete "
+            f"(passed={high_speed_stop['passed']}, "
+            f"distance={high_speed_stop['stopping_distance_m']:.3f} m)"
+        )
 
     reset_articulation(articulation, simulation, float(drop_end[2]), wheel_indices, settle_steps=2 * hz)
     pivot = run_motion_command(
@@ -368,6 +512,7 @@ def physics_checks(scene_path: str, physics: dict[str, object], drive: dict[str,
             "samples": drop_samples,
         },
         "straight": tests,
+        "high_speed_stop": high_speed_stop,
         "pivot": pivot,
         "pivot_reverse": pivot_reverse,
     }
@@ -439,6 +584,8 @@ def main() -> int:
     }
     passes = [report["asset"]["passed"], report["physics"]["drop"]["passed"], report["watchdog"]["passed"]]
     passes.extend(test["passed"] for test in report["physics"]["straight"])
+    if report["physics"]["high_speed_stop"] is not None:
+        passes.append(report["physics"]["high_speed_stop"]["passed"])
     passes.append(report["physics"]["pivot"]["passed"])
     if report["physics"]["pivot_reverse"] is not None:
         passes.append(report["physics"]["pivot_reverse"]["passed"])

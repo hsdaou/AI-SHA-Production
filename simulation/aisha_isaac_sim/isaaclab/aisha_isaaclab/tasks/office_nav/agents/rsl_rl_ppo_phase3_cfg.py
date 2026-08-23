@@ -333,3 +333,29 @@ class AishaPhase3DynamicSafetyPPORunnerCfg(AishaPhase3SafetyResidualPPORunnerCfg
         desired_kl=0.006,
         max_grad_norm=0.7,
     )
+
+
+@configclass
+class AishaPhase6HighSpeedSafetyPPORunnerCfg(
+    AishaPhase3DynamicSafetyPPORunnerCfg
+):
+    """Low-learning-rate continuation for staged 0.65/0.80 m/s adaptation."""
+
+    seed = 10701
+    max_iterations = 75
+    save_interval = 25
+    run_name = "phase6_high_speed_safety_seed10701"
+    algorithm = RslRlPpoAlgorithmCfg(
+        value_loss_coef=1.0,
+        use_clipped_value_loss=True,
+        clip_param=0.06,
+        entropy_coef=0.0001,
+        num_learning_epochs=5,
+        num_mini_batches=4,
+        learning_rate=2.0e-5,
+        schedule="adaptive",
+        gamma=0.995,
+        lam=0.95,
+        desired_kl=0.004,
+        max_grad_norm=0.7,
+    )

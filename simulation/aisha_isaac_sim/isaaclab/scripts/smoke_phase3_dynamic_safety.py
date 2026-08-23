@@ -105,6 +105,40 @@ def main() -> int:
 
         dynamic_ids = tuple(cfg.safety_dynamic_segment_ids)
         dynamic_weight = sum(cfg.segment_sampling_weights[index] for index in dynamic_ids)
+        high_speed_task = "Phase6-HighSpeed" in args.task
+        non_high_speed_mapping_preserved = True
+        high_speed_mapping_uses_expanded_range = True
+        if high_speed_task:
+            saved_actions = unwrapped._actions.clone()
+            saved_segment_ids = unwrapped._segment_ids.clone()
+            probe = torch.linspace(
+                -1.0, 1.0, args.num_envs, device=unwrapped.device
+            )
+            unwrapped._actions[:, 0] = probe
+            unwrapped._segment_ids[:] = 0
+            unwrapped._apply_segment_speed_envelope()
+            non_high_speed_mapping_preserved = bool(
+                torch.allclose(unwrapped._actions[:, 0], probe, atol=1.0e-6)
+                and torch.allclose(
+                    unwrapped._route_scoped_maximum_speed(),
+                    torch.full_like(probe, cfg.non_high_speed_maximum_mps),
+                    atol=1.0e-6,
+                )
+            )
+            unwrapped._actions[:, 0] = probe
+            unwrapped._segment_ids[:] = cfg.high_speed_segment_ids[0]
+            unwrapped._apply_segment_speed_envelope()
+            high_speed_mapping_uses_expanded_range = bool(
+                torch.allclose(unwrapped._actions[:, 0], probe, atol=1.0e-6)
+                and torch.allclose(
+                    unwrapped._route_scoped_maximum_speed(),
+                    torch.full_like(probe, cfg.high_speed_maximum_mps),
+                    atol=1.0e-6,
+                )
+            )
+            unwrapped._actions.copy_(saved_actions)
+            unwrapped._segment_ids.copy_(saved_segment_ids)
+        curriculum_strength = unwrapped._curriculum_strength()
         checks = {
             "task_registered": env.spec.id == args.task,
             "observation_contract_46": observations["policy"].shape[-1] == 46,
@@ -189,8 +223,31 @@ def main() -> int:
                 cfg.peak_motor_effort_limit_nm == 18.0
                 and cfg.peak_motor_time_limit_s == 3.0
             ),
-            "full_domain_randomization_strength": (
-                unwrapped._curriculum_strength() == 1.0
+            "domain_randomization_strength_matches_task_entry": (
+                abs(
+                    curriculum_strength
+                    - (
+                        float(cfg.curriculum_minimum_strength)
+                        if high_speed_task
+                        else 1.0
+                    )
+                )
+                <= 1.0e-9
+            ),
+            "high_speed_contract_or_original_task": (
+                not high_speed_task
+                or (
+                    cfg.linear_velocity_range_mps[1] == 0.50
+                    and cfg.high_speed_maximum_mps in {0.65, 0.80}
+                    and cfg.tight_door_maximum_speed_mps == 0.10
+                    and cfg.action_space == 1
+                )
+            ),
+            "non_high_speed_physical_commands_preserve_accepted_mapping": (
+                non_high_speed_mapping_preserved
+            ),
+            "declared_high_speed_segments_use_expanded_mapping": (
+                high_speed_mapping_uses_expanded_range
             ),
         }
         passed = all(checks.values())

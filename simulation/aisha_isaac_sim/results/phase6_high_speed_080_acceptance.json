@@ -1,0 +1,114 @@
+{
+  "report_type": "phase6_high_speed_080_simulation_acceptance",
+  "generated_at_utc": "2026-08-23T20:05:28.602096+00:00",
+  "passed": true,
+  "status": "accepted_simulation_hallway_tier_pending_measured_nav2_replay",
+  "checks": {
+    "checkpoint_hash_matches_both_formal_reports": true,
+    "formal_protocol_is_64_unseen_episodes_per_high_speed_segment": true,
+    "stage1_screen_success_rate_passed": true,
+    "stage1_screen_collision_rates_passed": true,
+    "stage1_screen_speed_observed": true,
+    "formal_success_rate_passed": true,
+    "formal_each_direction_success_rate_passed": true,
+    "formal_dynamic_collision_rate_passed": true,
+    "formal_static_collision_rate_passed": true,
+    "formal_080_speed_observed": true,
+    "runtime_contract_smoke_passed": true,
+    "flat_floor_speed_and_controlled_stop_preflight_passed": true,
+    "geometry_and_sensor_configuration_frozen": true,
+    "doorway_limit_unchanged": true,
+    "existing_measured_nav2_retention_gate_passed": true,
+    "physical_release_remains_false": true
+  },
+  "checks_passed": 16,
+  "checks_total": 16,
+  "selected_checkpoint": {
+    "path": "isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt",
+    "sha256": "e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318",
+    "training_run": "isaaclab/logs/rsl_rl/aisha_block_a_sensor_nav/2026-08-23_23-48-45_phase6_high_speed_080_seed10701",
+    "iteration": 223
+  },
+  "stage1_screen": {
+    "reports": [
+      "results/phase6_high_speed_065_model124_segment1_screen_seed10721.json",
+      "results/phase6_high_speed_065_model124_segment5_screen_seed10722.json"
+    ],
+    "episodes": 32,
+    "success_count": 30,
+    "collision_count": 0,
+    "dynamic_obstacle_collision_count": 0,
+    "static_collision_count": 0,
+    "time_out_count": 2,
+    "success_rate": 0.9375,
+    "dynamic_obstacle_collision_rate": 0.0,
+    "static_collision_rate": 0.0,
+    "minimum_segment_success_rate": 0.875,
+    "minimum_observed_peak_high_speed_mps": 0.6628162860870361,
+    "maximum_observed_peak_high_speed_mps": 0.6716566681861877
+  },
+  "stage2_formal_gate": {
+    "reports": [
+      "results/phase6_high_speed_080_model223_segment1_formal_seed10741.json",
+      "results/phase6_high_speed_080_model223_segment5_formal_seed10742.json"
+    ],
+    "episodes": 128,
+    "success_count": 126,
+    "collision_count": 2,
+    "dynamic_obstacle_collision_count": 1,
+    "static_collision_count": 1,
+    "time_out_count": 0,
+    "success_rate": 0.984375,
+    "dynamic_obstacle_collision_rate": 0.0078125,
+    "static_collision_rate": 0.0078125,
+    "minimum_segment_success_rate": 0.96875,
+    "minimum_observed_peak_high_speed_mps": 0.8283237218856812,
+    "maximum_observed_peak_high_speed_mps": 0.8437288403511047,
+    "requirements": {
+      "scope": "high_speed_route_segments_plus_measured_nav2_retention",
+      "high_speed_route_segment_ids": [
+        1,
+        5
+      ],
+      "episodes_per_high_speed_segment": 64,
+      "combined_high_speed_success_rate_min": 0.9,
+      "dynamic_obstacle_collision_rate_max": 0.02,
+      "static_collision_rate_max": 0.05,
+      "every_high_speed_segment_success_rate_min": 0.85,
+      "maximum_high_speed_segment_speed_mps_min_by_tier": {
+        "stage_1": 0.585,
+        "stage_2": 0.72
+      },
+      "measured_live_mission_required": true,
+      "measured_live_doorway_speed_limit_mps": 0.1,
+      "measured_live_episode_resets_allowed": 0
+    }
+  },
+  "flat_floor_preflight": {
+    "report": "results/validation_high_speed_loaded.json",
+    "steady_speed_mps": 0.8020547837268062,
+    "stopping_distance_m": 0.6380317431477476,
+    "stopped_after_s": 1.5083333333333333,
+    "physical_stopping_distance_credit": false
+  },
+  "measured_nav2_retention": {
+    "report": "results/administration_nav2_measured_integration_gate.json",
+    "passed": true,
+    "legs_completed": 12,
+    "maximum_abs_speed_in_doorway_mps": 0.06257984042167664,
+    "note": "This is the already accepted 0.30 m/s measured-scene retention gate. The selected Phase 6 checkpoint has not yet been replayed through the measured Nav2/Omniverse mission."
+  },
+  "claim_boundary": {
+    "supported": "Isaac Lab full-strength domain-randomized 0.80 m/s target on declared straight hallway segments 1 and 5",
+    "not_yet_supported": [
+      "0.80 m/s measured-administration Nav2 mission replay",
+      "final RTX Omniverse presentation run at the new hallway tier",
+      "sim-to-real performance",
+      "emergency stopping or human protective-field validation",
+      "physical robot release"
+    ],
+    "geometry_changed": false,
+    "doorway_speed_limit_mps": 0.1,
+    "physical_release": false
+  }
+}
