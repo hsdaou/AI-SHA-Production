@@ -5,7 +5,7 @@
         bool "aisha:physicalRelease" = 0
         bool "aisha:replayRobotExcluded" = 1
         string "aisha:sourceScene" = "../scenes/administration.usd"
-        string "aisha:sourceSceneSha256" = "6e48fa71ff29f9f08cfc35e55e9b65eb394444c1d4fa461fd71cd5a75fe167e7"
+        string "aisha:sourceSceneSha256" = "40414d9841e384afb06394382a2688f540aeb61395644070d1781175a7cad011"
     }
     defaultPrim = "Administration"
     metersPerUnit = 1
@@ -16,7 +16,7 @@ def Xform "Administration" (
     customData = {
         dictionary aisha = {
             string purpose = "live_policy_administration_environment"
-            string sourceSceneSha256 = "6e48fa71ff29f9f08cfc35e55e9b65eb394444c1d4fa461fd71cd5a75fe167e7"
+            string sourceSceneSha256 = "40414d9841e384afb06394382a2688f540aeb61395644070d1781175a7cad011"
         }
     }
     prepend references = @../scenes/administration.usd@</World>

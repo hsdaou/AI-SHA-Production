@@ -26,6 +26,7 @@ parser.add_argument(
         "Isaac-AISHA-BlockA-SensorNav-Direct-v0",
         "Isaac-AISHA-BlockA-Phase2-EndToEnd-SensorNav-Direct-v0",
         "Isaac-AISHA-Administration-Live-Direct-v0",
+        "Isaac-AISHA-Administration-Live-MeasuredTightDoor-Direct-v0",
         "Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Direct-v0",
         "Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Presentation-Direct-v0",
     ),
@@ -149,6 +150,8 @@ def main() -> int:
     checkpoint = args.checkpoint.expanduser().resolve()
     if not checkpoint.is_file():
         raise FileNotFoundError(checkpoint)
+
+    measured_door_task = "MeasuredTightDoor" in args.task
 
     device = args.device or "cuda:0"
     use_fabric = True
@@ -617,6 +620,8 @@ def main() -> int:
         "policy_architecture": (
             "frozen_phase3m_recovery_stack_plus_outer_recurrent_360_degree_brake_layer"
             if hasattr(env.unwrapped, "_frozen_recovery_actor")
+            else "ppo_route_policy_plus_deterministic_mapped_doorway_safety"
+            if measured_door_task
             else "route_planner_selected_learned_skill_ensemble"
             if segment_policies
             else "single_learned_policy"
@@ -637,6 +642,11 @@ def main() -> int:
             "the hash-locked Phase 3M route, clearance, protective-stop, pivot and torque stack supplies every "
             "steering command. There is no turn or dwell action override and no root-transform animation."
             if hasattr(env.unwrapped, "_frozen_recovery_actor")
+            else "The PPO checkpoint supplies route actions from LD19-style rays and goal state. A deterministic "
+            "mapped doorway layer constrains centreline, heading, chassis speed and overspeed braking at the "
+            "0.85/0.90 m office apertures. There is no scripted trajectory, turn/dwell supervisor, or "
+            "root-transform animation."
+            if measured_door_task
             else "Every wheel action is emitted by a learned LD19-style policy; the route planner selects a declared "
             "learned specialist on configured segments. There is no turn or dwell action override and no "
             "root-transform animation."
@@ -653,6 +663,12 @@ def main() -> int:
         ),
         "fabric_enabled": use_fabric,
         "claim_boundary": (
+            "live PPO checkpoint inference plus a disclosed deterministic doorway safety layer, with wheel physics "
+            "and ray sensing in the administration USD; the VP interior is an appearance assumption because it was "
+            "locked, the central 0.20 m drop is a mapped no-go, and this is not as-built, Nav2, sim-to-real, or "
+            "physical-release evidence"
+            if measured_door_task
+            else
             "live checkpoint inference with wheel physics and ray sensing in the walkthrough-matched "
             "administration USD; presentation geometry is not an as-built survey, and this is not "
             "Nav2, sim-to-real, or physical release"

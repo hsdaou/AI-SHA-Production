@@ -47,10 +47,20 @@ def load_measured_overlay(path: Path) -> dict:
     overlay = load_yaml(path)
     if overlay.get("overlay_type") != "measured_administration_geometry":
         raise ValueError("measured geometry file has the wrong overlay_type")
-    if overlay.get("status") != "measured_site_candidate":
-        raise ValueError("measured geometry file is not a measured-site candidate")
-    if overlay.get("candidate_route_geometry_valid") is not True:
-        raise ValueError("measured geometry failed one or more route-clearance gates")
+    status = overlay.get("status")
+    if status not in {"measured_site_candidate", "measured_site_presentation_candidate"}:
+        raise ValueError("measured geometry file is not an accepted candidate type")
+    if status == "measured_site_candidate":
+        if overlay.get("candidate_route_geometry_valid") is not True:
+            raise ValueError("measured geometry failed one or more route-clearance gates")
+    else:
+        if overlay.get("candidate_simulation_route_geometry_valid") is not True:
+            raise ValueError("measured presentation geometry failed its simulation clearance gate")
+        if overlay.get("candidate_route_geometry_valid") is not False:
+            raise ValueError("presentation geometry must not claim the production route gate")
+        profile = overlay.get("presentation_clearance_profile", {})
+        if profile.get("simulation_only") is not True:
+            raise ValueError("tight-door presentation profile must be explicitly simulation-only")
     if overlay.get("physical_release") is not False:
         raise ValueError("measured geometry must preserve physical_release: false")
     return overlay
@@ -413,9 +423,16 @@ def build_presentation(args: argparse.Namespace) -> int:
             bind_visual(shape.GetPrim(), material)
             return shape.GetPrim()
 
-        def polygon_floor(name: str, points_xy: list[tuple[float, float]], material: UsdShade.Material) -> None:
-            mesh = UsdGeom.Mesh.Define(stage, f"/World/Architecture/Floors/{name}")
-            mesh.CreatePointsAttr([Gf.Vec3f(x, y, 0.002) for x, y in points_xy])
+        def polygon_floor(
+            name: str,
+            points_xy: list[tuple[float, float]],
+            material: UsdShade.Material,
+            *,
+            z: float = 0.002,
+        ) -> Usd.Prim:
+            prim_path = name if name.startswith("/") else f"/World/Architecture/Floors/{name}"
+            mesh = UsdGeom.Mesh.Define(stage, prim_path)
+            mesh.CreatePointsAttr([Gf.Vec3f(x, y, z) for x, y in points_xy])
             mesh.CreateFaceVertexCountsAttr([len(points_xy)])
             mesh.CreateFaceVertexIndicesAttr(list(range(len(points_xy))))
             mesh.CreateSubdivisionSchemeAttr(UsdGeom.Tokens.none)
@@ -423,6 +440,7 @@ def build_presentation(args: argparse.Namespace) -> int:
             bind_visual(mesh.GetPrim(), material)
             UsdPhysics.CollisionAPI.Apply(mesh.GetPrim())
             bind_physics(mesh.GetPrim(), tile_physics)
+            return mesh.GetPrim()
 
         def textured_polygon_surface(
             name: str,
@@ -625,12 +643,19 @@ def build_presentation(args: argparse.Namespace) -> int:
                 hinge[0] + normal[0] * swing_sign * width / 2.0,
                 hinge[1] + normal[1] * swing_sign * width / 2.0,
             )
-            box(
+            open_leaf = box(
                 f"/World/Architecture/Doors/{name}/OpenLeaf",
                 (width, 0.045, max(0.10, height - 0.07)),
                 (leaf_centre[0], leaf_centre[1], max(0.10, height - 0.07) / 2.0),
                 light_grey,
+                collision=False,
                 rotate_z_deg=angle_deg + 90.0,
+            )
+            # The supplied 0.85 m value is a clear-opening measurement.  Do
+            # not subtract the presentation leaf thickness a second time;
+            # the filmed route assumes each door is secured fully open.
+            open_leaf.SetCustomDataByKey(
+                "aisha:collision", "none_visual_only_secured_fully_open"
             )
             leaf_angle = angle_deg + 90.0
             leaf_tangent = (math.cos(math.radians(leaf_angle)), math.sin(math.radians(leaf_angle)))
@@ -703,6 +728,7 @@ def build_presentation(args: argparse.Namespace) -> int:
                     "swing_from_hallway",
                     "outward_for_camera_and_route_clearance" if opens_outward else "inward",
                 ),
+                "open_leaf_collision": "visual_only_secured_fully_open",
                 "hinge": values.get(
                     "hinge_side_from_hallway", "left" if hinge_left else "right"
                 ),
@@ -908,14 +934,88 @@ def build_presentation(args: argparse.Namespace) -> int:
                 point = local_to_world(centre_xy, (0.0, local_y), rotate_z_deg)
                 box(f"/World/Architecture/Ceilings/Vents/{name}/Louver_{index:02d}", (0.62, 0.014, 0.018), (*point, wall_height - 0.038), metal, collision=False, rotate_z_deg=rotate_z_deg)
 
-        # Floors and support slab.
-        box("/World/Architecture/SupportSlab", (48.0, 32.0, 0.12), (7.0, -4.0, -0.065), dark_grey, physics_binding=tile_physics)
+        # Floors and support slab. The site capture notes that the central
+        # polygon is 0.20 m below the surrounding atrium ring and is not robot
+        # accessible. The support slab is therefore lowered to the drop level;
+        # the surrounding floor meshes remain the robot contact surface.
+        atrium_config = config["plan_geometry"]["atrium"]
+        central_polygon = atrium_config["central_polygon"]
+        central_step_down = float(central_polygon["step_down_m"])
+        box(
+            "/World/Architecture/SupportSlab",
+            (48.0, 32.0, 0.12),
+            (7.0, -4.0, -central_step_down - 0.06),
+            dark_grey,
+            physics_binding=tile_physics,
+        )
         radius = float(config["known_dimensions"]["atrium_diagonal_m"]["value"]) / 2.0
         vertices = [
             (radius * math.cos(math.radians(22.5 + 45.0 * index)), radius * math.sin(math.radians(22.5 + 45.0 * index)))
             for index in range(8)
         ]
-        polygon_floor("Atrium", vertices, terrazzo)
+        central_radius = float(central_polygon["outer_vertex_radius_m"])
+        central_orientation = float(central_polygon["orientation_deg"])
+        central_centre = tuple(float(value) for value in central_polygon["centre_xy_m"])
+        central_vertices = [
+            (
+                central_centre[0]
+                + central_radius
+                * math.cos(math.radians(central_orientation + 45.0 * index)),
+                central_centre[1]
+                + central_radius
+                * math.sin(math.radians(central_orientation + 45.0 * index)),
+            )
+            for index in range(8)
+        ]
+        for index in range(8):
+            polygon_floor(
+                f"Atrium/WalkableRing_{index:02d}",
+                [
+                    vertices[index],
+                    vertices[(index + 1) % 8],
+                    central_vertices[(index + 1) % 8],
+                    central_vertices[index],
+                ],
+                terrazzo,
+            )
+        central_floor = polygon_floor(
+            "/World/Architecture/RestrictedAreas/CentralAtriumDrop/LowerFloor",
+            central_vertices,
+            terrazzo,
+            z=-central_step_down + 0.002,
+        )
+        central_floor.SetCustomDataByKey("aisha:robotAccess", "prohibited")
+        central_floor.SetCustomDataByKey("aisha:stepDownM", central_step_down)
+
+        # The low riser is visible and dimensionally truthful. A separate
+        # invisible collision/raycast proxy makes the mapped no-go edge visible
+        # to the simulated crown LiDAR, which cannot sense a downward step. This
+        # proxy is presentation/training infrastructure, not a physical-safety
+        # claim about the real robot.
+        for index in range(8):
+            start = central_vertices[index]
+            end = central_vertices[(index + 1) % 8]
+            dx, dy = end[0] - start[0], end[1] - start[1]
+            length = math.hypot(dx, dy)
+            centre_xy = ((start[0] + end[0]) / 2.0, (start[1] + end[1]) / 2.0)
+            yaw_deg = math.degrees(math.atan2(dy, dx))
+            box(
+                f"/World/Architecture/RestrictedAreas/CentralAtriumDrop/Riser_{index:02d}",
+                (length, 0.025, central_step_down),
+                (*centre_xy, -central_step_down / 2.0),
+                dark_grey,
+                collision=False,
+                rotate_z_deg=yaw_deg,
+            )
+            barrier = box(
+                f"/World/Architecture/RestrictedAreas/CentralAtriumDrop/NavigationBarrier_{index:02d}",
+                (length, 0.04, 1.25),
+                (*centre_xy, 0.625),
+                dark_grey,
+                rotate_z_deg=yaw_deg,
+            )
+            barrier.SetCustomDataByKey("aisha:proxyPurpose", "central_drop_no_go_lidar_and_collision")
+            UsdGeom.Imageable(barrier).CreateVisibilityAttr(UsdGeom.Tokens.invisible)
         hallway = config["plan_geometry"]["east_hallway"]
         hall_x_min, hall_x_max = (float(value) for value in hallway["x_range_m"])
         hall_y_min, hall_y_max = (float(value) for value in hallway["y_range_m"])
@@ -951,7 +1051,25 @@ def build_presentation(args: argparse.Namespace) -> int:
         # Render-only PBR finish meshes sit just above the already validated
         # collision floors. They add the dense terrazzo and light timber visible
         # in the walkthrough without changing wheel contact or route clearance.
-        textured_polygon_surface("AtriumTerrazzo", vertices, terrazzo_finish, metres_per_tile=2.2)
+        for index in range(8):
+            textured_polygon_surface(
+                f"AtriumTerrazzoRing_{index:02d}",
+                [
+                    vertices[index],
+                    vertices[(index + 1) % 8],
+                    central_vertices[(index + 1) % 8],
+                    central_vertices[index],
+                ],
+                terrazzo_finish,
+                metres_per_tile=2.2,
+            )
+        textured_polygon_surface(
+            "CentralAtriumLowerTerrazzo",
+            central_vertices,
+            terrazzo_finish,
+            z=-central_step_down + 0.006,
+            metres_per_tile=2.2,
+        )
         textured_rect_surface("EastHallTerrazzo", hall_size, hall_centre, terrazzo_finish, metres_per_tile=2.2)
         textured_rect_surface("ViceAccessTerrazzo", vice_access_size, vice_access_centre, terrazzo_finish, metres_per_tile=2.2)
         textured_rect_surface("PrincipalAccessTerrazzo", (5.80, principal_passage_width), (5.45, -5.45), terrazzo_finish, rotate_z_deg=-45.0, metres_per_tile=2.2)
@@ -1118,8 +1236,9 @@ def build_presentation(args: argparse.Namespace) -> int:
             framed_panel(f"EastHall_{index:02d}", (x, -1.255, 1.58), inset_material=inset)
         framed_panel("AtriumNorth", (1.65, 4.835, 1.55), size_xz=(1.20, 1.45), inset_material=paper)
 
-        # The first visited room follows the walkthrough's round-table office:
-        # timber storage, black cantilever chairs and broad exterior glazing.
+        # The VP interior was locked during capture. This room is therefore a
+        # disclosed plan-envelope and adjacent-material presentation assumption,
+        # not a claim that its furniture was observed in the walkthrough.
         vice_table_centre = (15.45, -6.62)
         round_meeting_table("ViceMeetingTable", vice_table_centre, 0.76)
         for index, angle_deg in enumerate((70.0, 135.0, 180.0, 225.0, 290.0)):
@@ -1283,7 +1402,9 @@ def build_presentation(args: argparse.Namespace) -> int:
         robot_xform.AddRotateZOp(opSuffix="route").Set(0.0)
         robot.GetPrim().SetCustomDataByKey("aisha:payloadVariant", args.payload)
         geometry_status = (
-            "measured_site_candidate" if measured_overlay is not None else "plan_derived_route_scoped"
+            str(measured_overlay["status"])
+            if measured_overlay is not None
+            else "plan_derived_route_scoped"
         )
         robot.GetPrim().SetCustomDataByKey("aisha:routeGeometryStatus", geometry_status)
 
@@ -1331,9 +1452,19 @@ def build_presentation(args: argparse.Namespace) -> int:
 
         minimum = float(config["presentation_release"]["minimum_demo_door_clear_width_m"])
         robot_width = float(config["presentation_release"]["robot_transit_width_m"])
+        planning_padding = float(
+            config.get("presentation_clearance_profile", {}).get(
+                "footprint_padding_per_side_m", 0.0
+            )
+        )
         for values in doors.values():
             values["minimum_required_m"] = minimum
-            values["nominal_side_clearance_m"] = (float(values["clear_width_m"]) - robot_width) / 2.0
+            values["nominal_physical_side_clearance_m"] = (
+                float(values["clear_width_m"]) - robot_width
+            ) / 2.0
+            values["nominal_padded_side_clearance_m"] = (
+                float(values["clear_width_m"]) - robot_width - 2.0 * planning_padding
+            ) / 2.0
             values["presentation_width_gate_passed"] = float(values["clear_width_m"]) >= minimum
             values["high_fidelity_threshold_validation"] = "blocked"
 
@@ -1355,7 +1486,7 @@ def build_presentation(args: argparse.Namespace) -> int:
         report = {
             "timestamp_utc": datetime.now(timezone.utc).isoformat(),
             "status": (
-                "measured_site_candidate_scene_built"
+                f"{geometry_status}_scene_built"
                 if measured_overlay is not None
                 else "walkthrough_matched_plan_derived_presentation_scene_built"
             ),
@@ -1373,7 +1504,12 @@ def build_presentation(args: argparse.Namespace) -> int:
             },
             "door_survey": {
                 "status": (
-                    "measured_overlay_manual_measurements_used"
+                    str(
+                        measured_overlay.get(
+                            "measurement_scope",
+                            "measured_overlay_manual_measurements_used",
+                        )
+                    )
                     if measured_overlay is not None
                     else "not_supplied_assumptions_used"
                 ),
@@ -1388,6 +1524,16 @@ def build_presentation(args: argparse.Namespace) -> int:
                     if measured_overlay is not None
                     else []
                 ),
+                "registration_status": (
+                    measured_overlay.get("registration_status")
+                    if measured_overlay is not None
+                    else None
+                ),
+                "presentation_clearance_profile": (
+                    measured_overlay.get("presentation_clearance_profile")
+                    if measured_overlay is not None
+                    else None
+                ),
                 "physical_release": False,
             },
             "config_file": str(config_path),
@@ -1398,6 +1544,11 @@ def build_presentation(args: argparse.Namespace) -> int:
             "geometry_rtx_refinement_config_sha256": sha256_file(refinement_path),
             "plan_geometry": config["plan_geometry"],
             "appearance": config["appearance"],
+            "capture_limitations": (
+                measured_overlay.get("capture_limitations", {})
+                if measured_overlay is not None
+                else {}
+            ),
             "visual_upgrade": {
                 "version": "administration_walkthrough_procedural_pbr_v1",
                 "rtx_material_version": "administration_rtx_pbr_v2",
@@ -1415,6 +1566,20 @@ def build_presentation(args: argparse.Namespace) -> int:
             },
             "doors": doors,
             "route": route,
+            "central_atrium_drop": {
+                "step_down_m": central_step_down,
+                "robot_access": central_polygon["robot_access"],
+                "radius_m": central_radius,
+                "radius_status": central_polygon["radius_status"],
+                "navigation_boundary": central_polygon["simulation_boundary"],
+                "vice_principal_interior_capture": (
+                    measured_overlay.get("capture_limitations", {})
+                    .get("vice_principal_office_interior", {})
+                    .get("status")
+                    if measured_overlay is not None
+                    else "not_recorded_in_base_assumptions"
+                ),
+            },
             "sensor_contracts": sensor_bindings,
             "contact_material_bindings": contact_bindings,
             "checks": {
@@ -1431,6 +1596,10 @@ def build_presentation(args: argparse.Namespace) -> int:
                     float(config["presentation_release"]["robot_transit_length_m"]) / 2.0,
                 )
                 + column_radius,
+                "central_atrium_drop_is_mapped_no_go": central_step_down == 0.20
+                and central_polygon["robot_access"] == "prohibited"
+                and central_polygon["simulation_boundary"]
+                == "mapped_no_go_with_invisible_lidar_collision_proxy",
                 "all_visual_texture_assets_present": all(texture_path.is_file() for texture_path in texture_paths),
                 "visual_upgrade_preserves_collision_geometry": True,
                 "scene_reopens": Usd.Stage.Open(str(path)) is not None,

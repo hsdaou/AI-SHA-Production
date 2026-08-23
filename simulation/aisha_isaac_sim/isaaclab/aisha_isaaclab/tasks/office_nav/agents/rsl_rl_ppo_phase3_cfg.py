@@ -41,6 +41,30 @@ class AishaPhase3DynamicPPORunnerCfg(AishaPhase2RehearsalPPORunnerCfg):
 
 
 @configclass
+class AishaMeasuredTightDoorPPORunnerCfg(AishaPhase3DynamicPPORunnerCfg):
+    """Low-rate focused adaptation to the padded measured presentation doors."""
+
+    seed = 10623
+    max_iterations = 300
+    save_interval = 25
+    run_name = "measured_tight_door_stage1_seed10623"
+    algorithm = RslRlPpoAlgorithmCfg(
+        value_loss_coef=1.0,
+        use_clipped_value_loss=True,
+        clip_param=0.06,
+        entropy_coef=0.0002,
+        num_learning_epochs=5,
+        num_mini_batches=4,
+        learning_rate=2.0e-5,
+        schedule="adaptive",
+        gamma=0.995,
+        lam=0.95,
+        desired_kl=0.005,
+        max_grad_norm=0.7,
+    )
+
+
+@configclass
 class AishaPhase3Segment6PPORunnerCfg(AishaPhase3DynamicPPORunnerCfg):
     """Low-step-size recovery of the Phase 3 principal-office turn."""
 

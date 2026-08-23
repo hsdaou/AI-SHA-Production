@@ -91,3 +91,4 @@ simulation/aisha_isaac_sim/isaaclab/outputs/
 !simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase2_policy_model_1850.pt
 !simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase3_frozen_route_model_2225.pt
 !simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase3l_clearance_planner_model_200.pt
+!simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_measured_tight_door_model2350.pt

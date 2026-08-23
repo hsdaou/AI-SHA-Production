@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import math
@@ -16,7 +17,7 @@ from isaacsim import SimulationApp
 
 simulation_app = SimulationApp({"headless": True})
 
-from pxr import Gf, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade  # noqa: E402
+from pxr import Gf, PhysxSchema, Sdf, Usd, UsdGeom, UsdPhysics, UsdShade  # noqa: E402
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[2]
@@ -33,13 +34,39 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def deep_merge(base: dict, overlay: dict) -> dict:
+    merged = copy.deepcopy(base)
+    for key, value in overlay.items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = deep_merge(merged[key], value)
+        else:
+            merged[key] = copy.deepcopy(value)
+    return merged
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
+    parser.add_argument(
+        "--measured-geometry",
+        type=Path,
+        help="simulation-only measured presentation overlay for doors and no-go geometry",
+    )
     args = parser.parse_args()
 
     config = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))
+    measured_overlay = None
+    if args.measured_geometry is not None:
+        overlay_path = args.measured_geometry.expanduser().resolve()
+        measured_overlay = yaml.safe_load(overlay_path.read_text(encoding="utf-8"))
+        if measured_overlay.get("status") != "measured_site_presentation_candidate":
+            raise ValueError("training overlay must be a measured-site presentation candidate")
+        if measured_overlay.get("candidate_simulation_route_geometry_valid") is not True:
+            raise ValueError("training overlay failed its simulation route gate")
+        if measured_overlay.get("physical_release") is not False:
+            raise ValueError("training overlay must preserve physical_release: false")
+        config = deep_merge(config, measured_overlay)
     output = args.output.expanduser().resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     if output.exists():
@@ -74,7 +101,7 @@ def main() -> int:
         centre: tuple[float, float, float],
         visual: UsdShade.Material,
         yaw_deg: float = 0.0,
-    ) -> None:
+    ) -> Usd.Prim:
         cube = UsdGeom.Cube.Define(stage, f"/Course/Geometry/{name}")
         cube.CreateSizeAttr(1.0)
         xform = UsdGeom.Xformable(cube.GetPrim())
@@ -83,8 +110,16 @@ def main() -> int:
             xform.AddRotateZOp().Set(float(yaw_deg))
         xform.AddScaleOp().Set(Gf.Vec3d(*size))
         UsdPhysics.CollisionAPI.Apply(cube.GetPrim())
+        physx_collision = PhysxSchema.PhysxCollisionAPI.Apply(cube.GetPrim())
+        # Keep solver contact skin from consuming the 41 mm/side physical
+        # clearance of the measured 0.85 m stress-test apertures. The loaded
+        # robot uses a 10 mm contact offset; a 5 mm course offset leaves a
+        # conservative geometric margin without enlarging the doorway.
+        physx_collision.CreateContactOffsetAttr().Set(0.005)
+        physx_collision.CreateRestOffsetAttr().Set(0.0)
         UsdShade.MaterialBindingAPI.Apply(cube.GetPrim()).Bind(visual)
         authored_colliders.append(str(cube.GetPath()))
+        return cube.GetPrim()
 
     wall_height = float(config["plan_geometry"]["wall_height_m"]["value"])
     wall_thickness = float(config["plan_geometry"]["wall_thickness_m"]["value"])
@@ -135,6 +170,33 @@ def main() -> int:
         (radius * math.cos(math.radians(22.5 + 45.0 * index)), radius * math.sin(math.radians(22.5 + 45.0 * index)))
         for index in range(8)
     ]
+    central_polygon = config["plan_geometry"]["atrium"]["central_polygon"]
+    central_radius = float(central_polygon["outer_vertex_radius_m"])
+    central_orientation = float(central_polygon["orientation_deg"])
+    central_centre = tuple(float(value) for value in central_polygon["centre_xy_m"])
+    central_vertices = [
+        (
+            central_centre[0]
+            + central_radius
+            * math.cos(math.radians(central_orientation + 45.0 * index)),
+            central_centre[1]
+            + central_radius
+            * math.sin(math.radians(central_orientation + 45.0 * index)),
+        )
+        for index in range(8)
+    ]
+    for index in range(8):
+        start, end = central_vertices[index], central_vertices[(index + 1) % 8]
+        dx, dy = end[0] - start[0], end[1] - start[1]
+        barrier = box(
+            f"CentralDropNavigationBarrier_{index:02d}",
+            (math.hypot(dx, dy), 0.04, 1.25),
+            ((start[0] + end[0]) / 2.0, (start[1] + end[1]) / 2.0, 0.625),
+            accent_material,
+            math.degrees(math.atan2(dy, dx)),
+        )
+        barrier.SetCustomDataByKey("aisha:proxyPurpose", "central_drop_no_go_lidar_and_collision")
+        UsdGeom.Imageable(barrier).CreateVisibilityAttr(UsdGeom.Tokens.invisible)
     for index in range(8):
         start, end = vertices[index], vertices[(index + 1) % 8]
         if index == 6:  # route opening to Principal suite
@@ -152,10 +214,35 @@ def main() -> int:
 
     vp_door = config["doors"]["vice_principal"]
     vp_width = float(vp_door["clear_width_m"])
+    training_padding = float(
+        config.get("presentation_clearance_profile", {}).get(
+            "footprint_padding_per_side_m", 0.0
+        )
+    )
+    # Author the measured physical aperture.  Footprint padding belongs to the
+    # route-clearance acceptance test, not the wall collider: shrinking the
+    # world by the padding and then driving the full-size robot through it
+    # double-counts the margin (and makes PhysX contact offsets dominate this
+    # unusually tight presentation stress case).
+    vp_training_width = vp_width
+    vp_padded_centre_band = vp_width - (
+        float(config["presentation_clearance_profile"]["physical_body_width_m"])
+        + 2.0 * training_padding
+    )
+    if vp_padded_centre_band <= 0.0:
+        raise ValueError("Vice-Principal aperture cannot contain the padded robot footprint")
     wall("ViceAccessWest", (15.90, -5.05), (15.90, -1.40))
     wall("ViceAccessEast", (18.30, -5.05), (18.30, -1.40))
-    wall("ViceNorthWest", (13.95, -5.05), (17.10 - vp_width / 2.0, -5.05))
-    wall("ViceNorthEast", (17.10 + vp_width / 2.0, -5.05), (20.25, -5.05))
+    wall(
+        "ViceNorthWest",
+        (13.95, -5.05),
+        (17.10 - vp_training_width / 2.0, -5.05),
+    )
+    wall(
+        "ViceNorthEast",
+        (17.10 + vp_training_width / 2.0, -5.05),
+        (20.25, -5.05),
+    )
     wall("ViceSouth", (13.95, -8.05), (20.25, -8.05))
     wall("ViceWest", (13.95, -8.05), (13.95, -5.05))
     wall("ViceEast", (20.25, -8.05), (20.25, -5.05))
@@ -179,7 +266,20 @@ def main() -> int:
     ]
     principal_door = config["doors"]["principal"]
     principal_door_centre = local_to_world(principal_centre, (-principal_size[0] / 2.0, 0.0), principal_yaw)
-    split_wall("PrincipalWest", corners[0], corners[3], principal_door_centre, float(principal_door["clear_width_m"]))
+    principal_training_width = float(principal_door["clear_width_m"])
+    principal_padded_centre_band = principal_training_width - (
+        float(config["presentation_clearance_profile"]["physical_body_width_m"])
+        + 2.0 * training_padding
+    )
+    if principal_padded_centre_band <= 0.0:
+        raise ValueError("Principal aperture cannot contain the padded robot footprint")
+    split_wall(
+        "PrincipalWest",
+        corners[0],
+        corners[3],
+        principal_door_centre,
+        principal_training_width,
+    )
     wall("PrincipalSouth", corners[0], corners[1])
     wall("PrincipalEast", corners[1], corners[2])
     wall("PrincipalNorth", corners[2], corners[3])
@@ -212,8 +312,20 @@ def main() -> int:
         )
 
     course.GetPrim().SetCustomDataByKey("aisha:sourcePlanPage", 2)
-    course.GetPrim().SetCustomDataByKey("aisha:geometryStatus", "plan_derived_training_proxy")
-    course.GetPrim().SetCustomDataByKey("aisha:doorWidthsStatus", "presentation_assumption_not_measured")
+    geometry_status = (
+        "measured_site_presentation_candidate_training_proxy"
+        if measured_overlay is not None
+        else "plan_derived_training_proxy"
+    )
+    door_width_status = (
+        "user_reported_administration_minimum_conservative_destination_assumption"
+        if measured_overlay is not None
+        else "presentation_assumption_not_measured"
+    )
+    course.GetPrim().SetCustomDataByKey("aisha:geometryStatus", geometry_status)
+    course.GetPrim().SetCustomDataByKey("aisha:doorWidthsStatus", door_width_status)
+    course.GetPrim().SetCustomDataByKey("aisha:centralAtriumStepDownM", float(central_polygon["step_down_m"]))
+    course.GetPrim().SetCustomDataByKey("aisha:centralAtriumRobotAccess", "prohibited")
     stage.GetRootLayer().customLayerData = {
         "aisha:purpose": "isaac_lab_parallel_sensor_training",
         "aisha:physicalRelease": False,
@@ -228,13 +340,47 @@ def main() -> int:
         "output_sha256": _sha256(output),
         "source_config": str(CONFIG),
         "source_config_sha256": _sha256(CONFIG),
+        "source_overlay": (
+            str(args.measured_geometry.expanduser().resolve())
+            if measured_overlay is not None
+            else None
+        ),
+        "source_overlay_sha256": (
+            _sha256(args.measured_geometry.expanduser().resolve())
+            if measured_overlay is not None
+            else None
+        ),
         "source_plan_page": 2,
         "source_plan_sha256": config["provenance"]["plan_source"]["sha256"],
         "authored_static_colliders": len(authored_colliders),
         "course_reopens": Usd.Stage.Open(str(output)) is not None,
-        "geometry_status": "plan_derived_training_proxy",
-        "door_width_status": "presentation_assumption_not_measured",
+        "geometry_status": geometry_status,
+        "door_width_status": door_width_status,
+        "door_clear_widths_m": {
+            name: float(values["clear_width_m"])
+            for name, values in config["doors"].items()
+        },
+        "effective_training_apertures_m": {
+            "vice_principal": vp_training_width,
+            "principal": principal_training_width,
+        },
+        "padded_route_acceptance_centre_bands_m": {
+            "vice_principal": vp_padded_centre_band,
+            "principal": principal_padded_centre_band,
+        },
+        "padding_enforcement": "trajectory_acceptance_not_collision_geometry",
+        "footprint_padding_per_side_m": training_padding,
+        "central_atrium_drop": {
+            "step_down_m": float(central_polygon["step_down_m"]),
+            "robot_access": central_polygon["robot_access"],
+            "lidar_collision_proxy_segments": 8,
+        },
         "physical_release": False,
+        "course_contact_model": {
+            "contact_offset_m": 0.005,
+            "rest_offset_m": 0.0,
+            "purpose": "avoid solver-inflated measured doorway geometry",
+        },
     }
     report_path = args.report.expanduser().resolve()
     report_path.parent.mkdir(parents=True, exist_ok=True)

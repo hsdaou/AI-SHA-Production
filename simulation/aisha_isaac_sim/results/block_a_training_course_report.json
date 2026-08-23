@@ -1,15 +1,41 @@
 {
   "report_type": "block_a_training_course_build",
-  "generated_at_utc": "2026-08-22T05:01:51.687651+00:00",
+  "generated_at_utc": "2026-08-23T16:35:45.813247+00:00",
   "output": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/usd/block_a_training_course.usda",
-  "output_sha256": "d605f6731ad871d1476500dfbc7bb25fc7c96bd67c6b92ddb11cf9194a9e93a4",
+  "output_sha256": "f758a6d3e39266eec7e4df2c0bec7e526fad64dd3f3b4e1f20ad53193f4f25ff",
   "source_config": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
-  "source_config_sha256": "3a5a8bc3b5dc83bd35c7bfa7e39bd83ff90eecf7a755d755db478b7a183e230c",
+  "source_config_sha256": "c06e1941e873ae88012844ee27be9e7614342412d5c51cccfe9358a9559ffe47",
+  "source_overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
+  "source_overlay_sha256": "e5b60981b6771158434fb160beac97b2d197643ab0520d198174c9846992298b",
   "source_plan_page": 2,
   "source_plan_sha256": "4d8698f868c296442ebd6e667d4700f2e9bc7f27b4787639395a370d76779112",
-  "authored_static_colliders": 32,
+  "authored_static_colliders": 40,
   "course_reopens": true,
-  "geometry_status": "plan_derived_training_proxy",
-  "door_width_status": "presentation_assumption_not_measured",
-  "physical_release": false
+  "geometry_status": "measured_site_presentation_candidate_training_proxy",
+  "door_width_status": "user_reported_administration_minimum_conservative_destination_assumption",
+  "door_clear_widths_m": {
+    "vice_principal": 0.85,
+    "principal": 0.9
+  },
+  "effective_training_apertures_m": {
+    "vice_principal": 0.85,
+    "principal": 0.9
+  },
+  "padded_route_acceptance_centre_bands_m": {
+    "vice_principal": 0.02199999999999991,
+    "principal": 0.07199999999999995
+  },
+  "padding_enforcement": "trajectory_acceptance_not_collision_geometry",
+  "footprint_padding_per_side_m": 0.03,
+  "central_atrium_drop": {
+    "step_down_m": 0.2,
+    "robot_access": "prohibited",
+    "lidar_collision_proxy_segments": 8
+  },
+  "physical_release": false,
+  "course_contact_model": {
+    "contact_offset_m": 0.005,
+    "rest_offset_m": 0.0,
+    "purpose": "avoid solver-inflated measured doorway geometry"
+  }
 }

@@ -20,24 +20,21 @@ over "Flattened_Prototype_1"
     def Xform "mesh_0"
     {
         uniform token purpose = "guide"
-        quatd xformOp:orient = (0.70710688829422, -0.7071066498756409, 0, 0)
+        quatd xformOp:orient = (1, 0, 0, 0)
         double3 xformOp:scale = (1, 1, 1)
         double3 xformOp:translate = (0, 0, 0)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-        def Cylinder "cylinder" (
+        def Sphere "sphere" (
             apiSchemas = ["PhysicsCollisionAPI", "PhysxCollisionAPI", "MaterialBindingAPI"]
         )
         {
-            uniform token axis = "Z"
-            float3[] extent = [(-0.1, -0.1, -0.024), (0.1, 0.1, 0.024)]
-            double height = 0.04800000041723251
+            float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
             rel material:binding:physics = </Flattened_Prototype_1/PhysicsMaterial> (
                 bindMaterialAs = "strongerThanDescendants"
             )
             float physxCollision:contactOffset = 0.01
-            float physxCollision:restOffset = 0.001
-            double radius = 0.10000000149011612
+            double radius = 0.06499999761581421
         }
     }
 
@@ -45,9 +42,9 @@ over "Flattened_Prototype_1"
         apiSchemas = ["PhysicsMaterialAPI", "PhysxMaterialAPI"]
     )
     {
-        float physics:dynamicFriction = 0.55
+        float physics:dynamicFriction = 0.15
         float physics:restitution = 0
-        float physics:staticFriction = 0.65
+        float physics:staticFriction = 0.2
         uniform token physxMaterial:frictionCombineMode = "min"
         uniform token physxMaterial:restitutionCombineMode = "min"
     }
@@ -57,133 +54,20 @@ over "Flattened_Prototype_2"
 {
     def Xform "mesh_0"
     {
-        uniform token purpose = "guide"
         quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.3310000002384186, 0.17299999296665192, 0.2199999988079071)
-        double3 xformOp:translate = (0, 0, 0)
+        double3 xformOp:scale = (0.9100000262260437, 0.6100000143051147, 0.03200000151991844)
+        double3 xformOp:translate = (0, 0, 0.1940000057220459)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-        def Cube "box" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
+        def Cube "box"
         {
-            float3[] extent = [(-0.1655, -0.0865, -0.11), (0.1655, 0.0865, 0.11)]
+            float3[] extent = [(-0.455, -0.305, -0.016), (0.455, 0.305, 0.016)]
             double size = 1
         }
     }
 }
 
 over "Flattened_Prototype_3"
-{
-    def Xform "mesh_0"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.17000000178813934, 0.11999999731779099, 0.03999999910593033)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box"
-        {
-            float3[] extent = [(-0.085, -0.06, -0.02), (0.085, 0.06, 0.02)]
-            double size = 1
-        }
-    }
-}
-
-over "Flattened_Prototype_4"
-{
-    def Xform "cargo_posts_link_visual_0"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
-        double3 xformOp:translate = (-0.3499999940395355, -0.2549999952316284, 0.3684999942779541)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box"
-        {
-            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
-            double size = 1
-        }
-    }
-
-    def Xform "cargo_posts_link_visual_1"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
-        double3 xformOp:translate = (-0.3499999940395355, 0.2549999952316284, 0.3684999942779541)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box"
-        {
-            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
-            double size = 1
-        }
-    }
-
-    def Xform "cargo_posts_link_visual_2"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
-        double3 xformOp:translate = (0.24500000476837158, -0.2549999952316284, 0.3684999942779541)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box"
-        {
-            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
-            double size = 1
-        }
-    }
-
-    def Xform "cargo_posts_link_visual_3"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
-        double3 xformOp:translate = (0.24500000476837158, 0.2549999952316284, 0.3684999942779541)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box"
-        {
-            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
-            double size = 1
-        }
-    }
-}
-
-over "Flattened_Prototype_5"
-{
-    def Xform "mesh_0"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (1, 1, 1)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Sphere "sphere"
-        {
-            float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
-            double radius = 0.06499999761581421
-        }
-    }
-}
-
-over "Flattened_Prototype_6"
-{
-    def Xform "mesh_0"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.05999999865889549, 0.05999999865889549, 0.03999999910593033)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box"
-        {
-            float3[] extent = [(-0.03, -0.03, -0.02), (0.03, 0.03, 0.02)]
-            double size = 1
-        }
-    }
-}
-
-over "Flattened_Prototype_7"
 {
     def Xform "mesh_0"
     {
@@ -203,7 +87,118 @@ over "Flattened_Prototype_7"
     }
 }
 
-over "Flattened_Prototype_8"
+over "Flattened_Prototype_4"
+{
+    def Xform "mesh_0"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.07000000029802322, 0.07000000029802322, 0.6000000238418579)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-0.035, -0.035, -0.3), (0.035, 0.035, 0.3)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_5"
+{
+    def Xform "cargo_posts_link_collision_0"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
+        double3 xformOp:translate = (-0.3499999940395355, -0.2549999952316284, 0.3684999942779541)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
+            double size = 1
+        }
+    }
+
+    def Xform "cargo_posts_link_collision_1"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
+        double3 xformOp:translate = (-0.3499999940395355, 0.2549999952316284, 0.3684999942779541)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
+            double size = 1
+        }
+    }
+
+    def Xform "cargo_posts_link_collision_2"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
+        double3 xformOp:translate = (0.24500000476837158, -0.2549999952316284, 0.3684999942779541)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
+            double size = 1
+        }
+    }
+
+    def Xform "cargo_posts_link_collision_3"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
+        double3 xformOp:translate = (0.24500000476837158, 0.2549999952316284, 0.3684999942779541)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_6"
+{
+    def Xform "mesh_0"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.3310000002384186, 0.17299999296665192, 0.2199999988079071)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-0.1655, -0.0865, -0.11), (0.1655, 0.0865, 0.11)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_7"
 {
     def Xform "mesh_0"
     {
@@ -220,24 +215,79 @@ over "Flattened_Prototype_8"
     }
 }
 
-over "Flattened_Prototype_9"
+over "Flattened_Prototype_8"
 {
     def Xform "mesh_0"
     {
+        uniform token purpose = "guide"
         quatd xformOp:orient = (1, 0, 0, 0)
         double3 xformOp:scale = (1, 1, 1)
         double3 xformOp:translate = (0, 0, 0)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-        def Sphere "sphere"
+        def Sphere "sphere" (
+            apiSchemas = ["PhysicsCollisionAPI", "PhysxCollisionAPI", "MaterialBindingAPI"]
+        )
         {
             float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
+            rel material:binding:physics = </Flattened_Prototype_8/PhysicsMaterial> (
+                bindMaterialAs = "strongerThanDescendants"
+            )
+            float physxCollision:contactOffset = 0.01
             double radius = 0.06499999761581421
+        }
+    }
+
+    def Material "PhysicsMaterial" (
+        apiSchemas = ["PhysicsMaterialAPI", "PhysxMaterialAPI"]
+    )
+    {
+        float physics:dynamicFriction = 0.15
+        float physics:restitution = 0
+        float physics:staticFriction = 0.2
+        uniform token physxMaterial:frictionCombineMode = "min"
+        uniform token physxMaterial:restitutionCombineMode = "min"
+    }
+}
+
+over "Flattened_Prototype_9"
+{
+    def Xform "mesh_0"
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.3310000002384186, 0.17299999296665192, 0.2199999988079071)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box"
+        {
+            float3[] extent = [(-0.1655, -0.0865, -0.11), (0.1655, 0.0865, 0.11)]
+            double size = 1
         }
     }
 }
 
 over "Flattened_Prototype_10"
+{
+    def Xform "mesh_0"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.17000000178813934, 0.11999999731779099, 0.03999999910593033)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-0.085, -0.06, -0.02), (0.085, 0.06, 0.02)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_11"
 {
     def Xform "mesh_0"
     {
@@ -254,7 +304,7 @@ over "Flattened_Prototype_10"
             uniform token axis = "Z"
             float3[] extent = [(-0.1, -0.1, -0.024), (0.1, 0.1, 0.024)]
             double height = 0.04800000041723251
-            rel material:binding:physics = </Flattened_Prototype_10/PhysicsMaterial> (
+            rel material:binding:physics = </Flattened_Prototype_11/PhysicsMaterial> (
                 bindMaterialAs = "strongerThanDescendants"
             )
             float physxCollision:contactOffset = 0.01
@@ -275,58 +325,26 @@ over "Flattened_Prototype_10"
     }
 }
 
-over "Flattened_Prototype_11"
-{
-    def Xform "mesh_0"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.5, 0.4000000059604645, 0.15000000596046448)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box"
-        {
-            float3[] extent = [(-0.25, -0.2, -0.075), (0.25, 0.2, 0.075)]
-            double size = 1
-        }
-    }
-}
-
 over "Flattened_Prototype_12"
 {
-    def Xform "mesh_0"
-    {
-        uniform token purpose = "guide"
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.17000000178813934, 0.11999999731779099, 0.03999999910593033)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float3[] extent = [(-0.085, -0.06, -0.02), (0.085, 0.06, 0.02)]
-            double size = 1
-        }
-    }
 }
 
 over "Flattened_Prototype_13"
 {
     def Xform "mesh_0"
     {
-        quatd xformOp:orient = (0.70710688829422, -0.7071066498756409, 0, 0)
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
         double3 xformOp:scale = (1, 1, 1)
         double3 xformOp:translate = (0, 0, 0)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-        def Cylinder "cylinder"
+        def Sphere "sphere" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
         {
-            uniform token axis = "Z"
-            float3[] extent = [(-0.1, -0.1, -0.024), (0.1, 0.1, 0.024)]
-            double height = 0.04800000041723251
-            double radius = 0.10000000149011612
+            float3[] extent = [(-0.225, -0.225, -0.225), (0.225, 0.225, 0.225)]
+            double radius = 0.22499999403953552
         }
     }
 }
@@ -335,17 +353,14 @@ over "Flattened_Prototype_14"
 {
     def Xform "mesh_0"
     {
-        uniform token purpose = "guide"
         quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.9100000262260437, 0.6100000143051147, 0.03200000151991844)
-        double3 xformOp:translate = (0, 0, 0.1940000057220459)
+        double3 xformOp:scale = (0.05999999865889549, 0.05999999865889549, 0.03999999910593033)
+        double3 xformOp:translate = (0, 0, 0)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-        def Cube "box" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
+        def Cube "box"
         {
-            float3[] extent = [(-0.455, -0.305, -0.016), (0.455, 0.305, 0.016)]
+            float3[] extent = [(-0.03, -0.03, -0.02), (0.03, 0.03, 0.02)]
             double size = 1
         }
     }
@@ -390,6 +405,213 @@ over "Flattened_Prototype_16"
 {
     def Xform "mesh_0"
     {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (0.70710688829422, -0.7071066498756409, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cylinder "cylinder" (
+            apiSchemas = ["PhysicsCollisionAPI", "PhysxCollisionAPI", "MaterialBindingAPI"]
+        )
+        {
+            uniform token axis = "Z"
+            float3[] extent = [(-0.1, -0.1, -0.024), (0.1, 0.1, 0.024)]
+            double height = 0.04800000041723251
+            rel material:binding:physics = </Flattened_Prototype_16/PhysicsMaterial> (
+                bindMaterialAs = "strongerThanDescendants"
+            )
+            float physxCollision:contactOffset = 0.01
+            float physxCollision:restOffset = 0.001
+            double radius = 0.10000000149011612
+        }
+    }
+
+    def Material "PhysicsMaterial" (
+        apiSchemas = ["PhysicsMaterialAPI", "PhysxMaterialAPI"]
+    )
+    {
+        float physics:dynamicFriction = 0.55
+        float physics:restitution = 0
+        float physics:staticFriction = 0.65
+        uniform token physxMaterial:frictionCombineMode = "min"
+        uniform token physxMaterial:restitutionCombineMode = "min"
+    }
+}
+
+over "Flattened_Prototype_17"
+{
+    def Xform "mesh_0"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.5, 0.4000000059604645, 0.15000000596046448)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-0.25, -0.2, -0.075), (0.25, 0.2, 0.075)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_18"
+{
+    def Xform "mesh_0"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.9100000262260437, 0.6100000143051147, 0.03200000151991844)
+        double3 xformOp:translate = (0, 0, 0.1940000057220459)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-0.455, -0.305, -0.016), (0.455, 0.305, 0.016)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_19"
+{
+    def Xform "mesh_0"
+    {
+        quatd xformOp:orient = (0.70710688829422, -0.7071066498756409, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cylinder "cylinder"
+        {
+            uniform token axis = "Z"
+            float3[] extent = [(-0.1, -0.1, -0.024), (0.1, 0.1, 0.024)]
+            double height = 0.04800000041723251
+            double radius = 0.10000000149011612
+        }
+    }
+}
+
+over "Flattened_Prototype_20"
+{
+    def Xform "mesh_0"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.05999999865889549, 0.05999999865889549, 0.03999999910593033)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-0.03, -0.03, -0.02), (0.03, 0.03, 0.02)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_21"
+{
+    def Xform "mesh_0"
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.17000000178813934, 0.11999999731779099, 0.03999999910593033)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box"
+        {
+            float3[] extent = [(-0.085, -0.06, -0.02), (0.085, 0.06, 0.02)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_22"
+{
+    def Xform "mesh_0"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Sphere "sphere" (
+            apiSchemas = ["PhysicsCollisionAPI", "PhysxCollisionAPI", "MaterialBindingAPI"]
+        )
+        {
+            float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
+            rel material:binding:physics = </Flattened_Prototype_22/PhysicsMaterial> (
+                bindMaterialAs = "strongerThanDescendants"
+            )
+            float physxCollision:contactOffset = 0.01
+            double radius = 0.06499999761581421
+        }
+    }
+
+    def Material "PhysicsMaterial" (
+        apiSchemas = ["PhysicsMaterialAPI", "PhysxMaterialAPI"]
+    )
+    {
+        float physics:dynamicFriction = 0.15
+        float physics:restitution = 0
+        float physics:staticFriction = 0.2
+        uniform token physxMaterial:frictionCombineMode = "min"
+        uniform token physxMaterial:restitutionCombineMode = "min"
+    }
+}
+
+over "Flattened_Prototype_23"
+{
+}
+
+over "Flattened_Prototype_24"
+{
+    def Xform "mesh_0"
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Sphere "sphere"
+        {
+            float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
+            double radius = 0.06499999761581421
+        }
+    }
+}
+
+over "Flattened_Prototype_25"
+{
+    def Xform "mesh_0"
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Sphere "sphere"
+        {
+            float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
+            double radius = 0.06499999761581421
+        }
+    }
+}
+
+over "Flattened_Prototype_26"
+{
+    def Xform "mesh_0"
+    {
         quatd xformOp:orient = (1, 0, 0, 0)
         double3 xformOp:scale = (1, 1, 1)
         double3 xformOp:translate = (0, 0, 0)
@@ -403,7 +625,118 @@ over "Flattened_Prototype_16"
     }
 }
 
-over "Flattened_Prototype_17"
+over "Flattened_Prototype_27"
+{
+}
+
+over "Flattened_Prototype_28"
+{
+    def Xform "mesh_0"
+    {
+        uniform token purpose = "guide"
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.05999999865889549, 0.05999999865889549, 0.03999999910593033)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box" (
+            apiSchemas = ["PhysicsCollisionAPI"]
+        )
+        {
+            float3[] extent = [(-0.03, -0.03, -0.02), (0.03, 0.03, 0.02)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_29"
+{
+    def Xform "mesh_0"
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.5, 0.4000000059604645, 0.15000000596046448)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box"
+        {
+            float3[] extent = [(-0.25, -0.2, -0.075), (0.25, 0.2, 0.075)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_30"
+{
+    def Xform "mesh_0"
+    {
+        quatd xformOp:orient = (0.70710688829422, -0.7071066498756409, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cylinder "cylinder"
+        {
+            uniform token axis = "Z"
+            float3[] extent = [(-0.1, -0.1, -0.024), (0.1, 0.1, 0.024)]
+            double height = 0.04800000041723251
+            double radius = 0.10000000149011612
+        }
+    }
+}
+
+over "Flattened_Prototype_31"
+{
+    def Xform "mesh_0"
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (1, 1, 1)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Sphere "sphere"
+        {
+            float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
+            double radius = 0.06499999761581421
+        }
+    }
+}
+
+over "Flattened_Prototype_32"
+{
+    def Xform "mesh_0"
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.8050000071525574, 0.6100000143051147, 0.003000000026077032)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box"
+        {
+            float3[] extent = [(-0.4025, -0.305, -0.0015), (0.4025, 0.305, 0.0015)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_33"
+{
+    def Xform "mesh_0"
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.07000000029802322, 0.07000000029802322, 0.6000000238418579)
+        double3 xformOp:translate = (0, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box"
+        {
+            float3[] extent = [(-0.035, -0.035, -0.3), (0.035, 0.035, 0.3)]
+            double size = 1
+        }
+    }
+}
+
+over "Flattened_Prototype_34"
 {
     def Xform "structure_link_collision_0"
     {
@@ -525,81 +858,83 @@ over "Flattened_Prototype_17"
     }
 }
 
-over "Flattened_Prototype_18"
+over "Flattened_Prototype_35"
 {
-    def Xform "mesh_0"
+    def Xform "cargo_posts_link_visual_0"
     {
-        uniform token purpose = "guide"
         quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.07000000029802322, 0.07000000029802322, 0.6000000238418579)
-        double3 xformOp:translate = (0, 0, 0)
+        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
+        double3 xformOp:translate = (-0.3499999940395355, -0.2549999952316284, 0.3684999942779541)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-        def Cube "box" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
+        def Cube "box"
         {
-            float3[] extent = [(-0.035, -0.035, -0.3), (0.035, 0.035, 0.3)]
+            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
+            double size = 1
+        }
+    }
+
+    def Xform "cargo_posts_link_visual_1"
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
+        double3 xformOp:translate = (-0.3499999940395355, 0.2549999952316284, 0.3684999942779541)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box"
+        {
+            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
+            double size = 1
+        }
+    }
+
+    def Xform "cargo_posts_link_visual_2"
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
+        double3 xformOp:translate = (0.24500000476837158, -0.2549999952316284, 0.3684999942779541)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box"
+        {
+            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
+            double size = 1
+        }
+    }
+
+    def Xform "cargo_posts_link_visual_3"
+    {
+        quatd xformOp:orient = (1, 0, 0, 0)
+        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
+        double3 xformOp:translate = (0.24500000476837158, 0.2549999952316284, 0.3684999942779541)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Cube "box"
+        {
+            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
             double size = 1
         }
     }
 }
 
-over "Flattened_Prototype_19"
+over "Flattened_Prototype_36"
 {
     def Xform "mesh_0"
     {
-        uniform token purpose = "guide"
         quatd xformOp:orient = (1, 0, 0, 0)
         double3 xformOp:scale = (1, 1, 1)
         double3 xformOp:translate = (0, 0, 0)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-        def Sphere "sphere" (
-            apiSchemas = ["PhysicsCollisionAPI", "PhysxCollisionAPI", "MaterialBindingAPI"]
-        )
+        def Sphere "sphere"
         {
             float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
-            rel material:binding:physics = </Flattened_Prototype_19/PhysicsMaterial> (
-                bindMaterialAs = "strongerThanDescendants"
-            )
-            float physxCollision:contactOffset = 0.01
             double radius = 0.06499999761581421
         }
     }
-
-    def Material "PhysicsMaterial" (
-        apiSchemas = ["PhysicsMaterialAPI", "PhysxMaterialAPI"]
-    )
-    {
-        float physics:dynamicFriction = 0.15
-        float physics:restitution = 0
-        float physics:staticFriction = 0.2
-        uniform token physxMaterial:frictionCombineMode = "min"
-        uniform token physxMaterial:restitutionCombineMode = "min"
-    }
 }
 
-over "Flattened_Prototype_20"
-{
-    def Xform "mesh_0"
-    {
-        quatd xformOp:orient = (0.70710688829422, -0.7071066498756409, 0, 0)
-        double3 xformOp:scale = (1, 1, 1)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cylinder "cylinder"
-        {
-            uniform token axis = "Z"
-            float3[] extent = [(-0.1, -0.1, -0.024), (0.1, 0.1, 0.024)]
-            double height = 0.04800000041723251
-            double radius = 0.10000000149011612
-        }
-    }
-}
-
-over "Flattened_Prototype_21"
+over "Flattened_Prototype_37"
 {
     def Xform "structure_link_visual_0"
     {
@@ -714,341 +1049,6 @@ over "Flattened_Prototype_21"
     }
 }
 
-over "Flattened_Prototype_22"
-{
-    def Xform "mesh_0"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.07000000029802322, 0.07000000029802322, 0.6000000238418579)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box"
-        {
-            float3[] extent = [(-0.035, -0.035, -0.3), (0.035, 0.035, 0.3)]
-            double size = 1
-        }
-    }
-}
-
-over "Flattened_Prototype_23"
-{
-    def Xform "mesh_0"
-    {
-        uniform token purpose = "guide"
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.5, 0.4000000059604645, 0.15000000596046448)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float3[] extent = [(-0.25, -0.2, -0.075), (0.25, 0.2, 0.075)]
-            double size = 1
-        }
-    }
-}
-
-over "Flattened_Prototype_24"
-{
-}
-
-over "Flattened_Prototype_25"
-{
-    def Xform "mesh_0"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (1, 1, 1)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Sphere "sphere"
-        {
-            float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
-            double radius = 0.06499999761581421
-        }
-    }
-}
-
-over "Flattened_Prototype_26"
-{
-    def Xform "mesh_0"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.3310000002384186, 0.17299999296665192, 0.2199999988079071)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box"
-        {
-            float3[] extent = [(-0.1655, -0.0865, -0.11), (0.1655, 0.0865, 0.11)]
-            double size = 1
-        }
-    }
-}
-
-over "Flattened_Prototype_27"
-{
-}
-
-over "Flattened_Prototype_28"
-{
-    def Xform "mesh_0"
-    {
-        uniform token purpose = "guide"
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (1, 1, 1)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Sphere "sphere" (
-            apiSchemas = ["PhysicsCollisionAPI", "PhysxCollisionAPI", "MaterialBindingAPI"]
-        )
-        {
-            float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
-            rel material:binding:physics = </Flattened_Prototype_28/PhysicsMaterial> (
-                bindMaterialAs = "strongerThanDescendants"
-            )
-            float physxCollision:contactOffset = 0.01
-            double radius = 0.06499999761581421
-        }
-    }
-
-    def Material "PhysicsMaterial" (
-        apiSchemas = ["PhysicsMaterialAPI", "PhysxMaterialAPI"]
-    )
-    {
-        float physics:dynamicFriction = 0.15
-        float physics:restitution = 0
-        float physics:staticFriction = 0.2
-        uniform token physxMaterial:frictionCombineMode = "min"
-        uniform token physxMaterial:restitutionCombineMode = "min"
-    }
-}
-
-over "Flattened_Prototype_29"
-{
-    def Xform "cargo_posts_link_collision_0"
-    {
-        uniform token purpose = "guide"
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
-        double3 xformOp:translate = (-0.3499999940395355, -0.2549999952316284, 0.3684999942779541)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
-            double size = 1
-        }
-    }
-
-    def Xform "cargo_posts_link_collision_1"
-    {
-        uniform token purpose = "guide"
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
-        double3 xformOp:translate = (-0.3499999940395355, 0.2549999952316284, 0.3684999942779541)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
-            double size = 1
-        }
-    }
-
-    def Xform "cargo_posts_link_collision_2"
-    {
-        uniform token purpose = "guide"
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
-        double3 xformOp:translate = (0.24500000476837158, -0.2549999952316284, 0.3684999942779541)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
-            double size = 1
-        }
-    }
-
-    def Xform "cargo_posts_link_collision_3"
-    {
-        uniform token purpose = "guide"
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.02500000037252903, 0.02500000037252903, 0.31700000166893005)
-        double3 xformOp:translate = (0.24500000476837158, 0.2549999952316284, 0.3684999942779541)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float3[] extent = [(-0.0125, -0.0125, -0.1585), (0.0125, 0.0125, 0.1585)]
-            double size = 1
-        }
-    }
-}
-
-over "Flattened_Prototype_30"
-{
-    def Xform "mesh_0"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.9100000262260437, 0.6100000143051147, 0.03200000151991844)
-        double3 xformOp:translate = (0, 0, 0.1940000057220459)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box"
-        {
-            float3[] extent = [(-0.455, -0.305, -0.016), (0.455, 0.305, 0.016)]
-            double size = 1
-        }
-    }
-}
-
-over "Flattened_Prototype_31"
-{
-    def Xform "mesh_0"
-    {
-        uniform token purpose = "guide"
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (1, 1, 1)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Sphere "sphere" (
-            apiSchemas = ["PhysicsCollisionAPI", "PhysxCollisionAPI", "MaterialBindingAPI"]
-        )
-        {
-            float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
-            rel material:binding:physics = </Flattened_Prototype_31/PhysicsMaterial> (
-                bindMaterialAs = "strongerThanDescendants"
-            )
-            float physxCollision:contactOffset = 0.01
-            double radius = 0.06499999761581421
-        }
-    }
-
-    def Material "PhysicsMaterial" (
-        apiSchemas = ["PhysicsMaterialAPI", "PhysxMaterialAPI"]
-    )
-    {
-        float physics:dynamicFriction = 0.15
-        float physics:restitution = 0
-        float physics:staticFriction = 0.2
-        uniform token physxMaterial:frictionCombineMode = "min"
-        uniform token physxMaterial:restitutionCombineMode = "min"
-    }
-}
-
-over "Flattened_Prototype_32"
-{
-    def Xform "mesh_0"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (1, 1, 1)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Sphere "sphere"
-        {
-            float3[] extent = [(-0.065, -0.065, -0.065), (0.065, 0.065, 0.065)]
-            double radius = 0.06499999761581421
-        }
-    }
-}
-
-over "Flattened_Prototype_33"
-{
-    def Xform "mesh_0"
-    {
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.8050000071525574, 0.6100000143051147, 0.003000000026077032)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box"
-        {
-            float3[] extent = [(-0.4025, -0.305, -0.0015), (0.4025, 0.305, 0.0015)]
-            double size = 1
-        }
-    }
-}
-
-over "Flattened_Prototype_34"
-{
-}
-
-over "Flattened_Prototype_35"
-{
-    def Xform "mesh_0"
-    {
-        uniform token purpose = "guide"
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.05999999865889549, 0.05999999865889549, 0.03999999910593033)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float3[] extent = [(-0.03, -0.03, -0.02), (0.03, 0.03, 0.02)]
-            double size = 1
-        }
-    }
-}
-
-over "Flattened_Prototype_36"
-{
-    def Xform "mesh_0"
-    {
-        uniform token purpose = "guide"
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (1, 1, 1)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Sphere "sphere" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float3[] extent = [(-0.225, -0.225, -0.225), (0.225, 0.225, 0.225)]
-            double radius = 0.22499999403953552
-        }
-    }
-}
-
-over "Flattened_Prototype_37"
-{
-    def Xform "mesh_0"
-    {
-        uniform token purpose = "guide"
-        quatd xformOp:orient = (1, 0, 0, 0)
-        double3 xformOp:scale = (0.05999999865889549, 0.05999999865889549, 0.03999999910593033)
-        double3 xformOp:translate = (0, 0, 0)
-        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
-
-        def Cube "box" (
-            apiSchemas = ["PhysicsCollisionAPI"]
-        )
-        {
-            float3[] extent = [(-0.03, -0.03, -0.02), (0.03, 0.03, 0.02)]
-            double size = 1
-        }
-    }
-}
-
 def Xform "robot" (
     customData = {
         dictionary aisha = {
@@ -1137,14 +1137,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_30>
+                add references = </Flattened_Prototype_2>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_14>
+                add references = </Flattened_Prototype_18>
             )
             {
             }
@@ -1166,14 +1166,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_26>
+                add references = </Flattened_Prototype_9>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_2>
+                add references = </Flattened_Prototype_6>
             )
             {
             }
@@ -1699,14 +1699,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_11>
+                add references = </Flattened_Prototype_29>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_23>
+                add references = </Flattened_Prototype_17>
             )
             {
             }
@@ -1728,14 +1728,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_4>
+                add references = </Flattened_Prototype_35>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_29>
+                add references = </Flattened_Prototype_5>
             )
             {
             }
@@ -1757,14 +1757,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_33>
+                add references = </Flattened_Prototype_32>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_7>
+                add references = </Flattened_Prototype_3>
             )
             {
             }
@@ -1786,14 +1786,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_9>
+                add references = </Flattened_Prototype_31>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_19>
+                add references = </Flattened_Prototype_1>
             )
             {
             }
@@ -1815,14 +1815,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_5>
+                add references = </Flattened_Prototype_24>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_31>
+                add references = </Flattened_Prototype_8>
             )
             {
             }
@@ -1851,7 +1851,7 @@ def Xform "robot" (
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_28>
+                add references = </Flattened_Prototype_22>
             )
             {
             }
@@ -1873,7 +1873,7 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_32>
+                add references = </Flattened_Prototype_36>
             )
             {
             }
@@ -1902,14 +1902,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_3>
+                add references = </Flattened_Prototype_21>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_12>
+                add references = </Flattened_Prototype_10>
             )
             {
             }
@@ -1931,14 +1931,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_6>
+                add references = </Flattened_Prototype_7>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_37>
+                add references = </Flattened_Prototype_20>
             )
             {
             }
@@ -1960,14 +1960,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_16>
+                add references = </Flattened_Prototype_26>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_36>
+                add references = </Flattened_Prototype_13>
             )
             {
             }
@@ -1989,7 +1989,7 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_34>
+                add references = </Flattened_Prototype_27>
             )
             {
             }
@@ -2015,7 +2015,7 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_24>
+                add references = </Flattened_Prototype_12>
             )
             {
             }
@@ -2041,14 +2041,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_8>
+                add references = </Flattened_Prototype_14>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_35>
+                add references = </Flattened_Prototype_28>
             )
             {
             }
@@ -2070,7 +2070,7 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_27>
+                add references = </Flattened_Prototype_23>
             )
             {
             }
@@ -2096,14 +2096,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_22>
+                add references = </Flattened_Prototype_33>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_18>
+                add references = </Flattened_Prototype_4>
             )
             {
             }
@@ -2125,14 +2125,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_21>
+                add references = </Flattened_Prototype_37>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_17>
+                add references = </Flattened_Prototype_34>
             )
             {
             }
@@ -2154,14 +2154,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_20>
+                add references = </Flattened_Prototype_30>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_10>
+                add references = </Flattened_Prototype_11>
             )
             {
             }
@@ -2183,14 +2183,14 @@ def Xform "robot" (
 
             def Xform "visuals" (
                 instanceable = true
-                add references = </Flattened_Prototype_13>
+                add references = </Flattened_Prototype_19>
             )
             {
             }
 
             def Xform "collisions" (
                 instanceable = true
-                add references = </Flattened_Prototype_1>
+                add references = </Flattened_Prototype_16>
             )
             {
             }

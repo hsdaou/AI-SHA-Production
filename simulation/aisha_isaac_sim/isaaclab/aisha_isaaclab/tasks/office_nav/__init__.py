@@ -191,6 +191,26 @@ gym.register(
 
 
 gym.register(
+    id="Isaac-AISHA-BlockA-MeasuredTightDoor-SensorNav-Direct-v0",
+    entry_point=(
+        "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+        "AishaPhase3DynamicDREnv"
+    ),
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+            "AishaMeasuredTightDoorEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+            "AishaMeasuredTightDoorPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
     id="Isaac-AISHA-BlockA-Phase3-RecurrentDistill-SensorNav-Direct-v0",
     entry_point=(
         "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
@@ -385,6 +405,26 @@ gym.register(
         "rsl_rl_cfg_entry_point": (
             "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
             "AishaPhase3DynamicSafetyPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
+    id="Isaac-AISHA-Administration-Live-MeasuredTightDoor-Direct-v0",
+    entry_point=(
+        "aisha_isaaclab.tasks.office_nav.administration_dynamic_safety_env:"
+        "AishaAdministrationMeasuredTightDoorEnv"
+    ),
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.administration_dynamic_safety_env:"
+            "AishaAdministrationMeasuredTightDoorEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+            "AishaMeasuredTightDoorPPORunnerCfg"
         ),
     },
 )

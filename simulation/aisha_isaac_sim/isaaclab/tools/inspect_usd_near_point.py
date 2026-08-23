@@ -26,12 +26,28 @@ def main() -> int:
     if stage is None:
         raise RuntimeError(f"could not open {args.usd}")
 
-    cache = UsdGeom.BBoxCache(Usd.TimeCode.Default(), [UsdGeom.Tokens.default_])
+    cache = UsdGeom.BBoxCache(
+        Usd.TimeCode.Default(),
+        [
+            UsdGeom.Tokens.default_,
+            UsdGeom.Tokens.render,
+            UsdGeom.Tokens.proxy,
+            UsdGeom.Tokens.guide,
+        ],
+        useExtentsHint=True,
+    )
     query_x, query_y = args.xy
     matches: list[tuple[float, str, tuple[float, ...], tuple[float, ...]]] = []
-    for prim in stage.Traverse():
+    traversed = 0
+    boundable_count = 0
+    collision_count = 0
+    for prim in Usd.PrimRange.Stage(stage, Usd.TraverseInstanceProxies()):
+        traversed += 1
         if not prim.IsA(UsdGeom.Boundable):
             continue
+        boundable_count += 1
+        if prim.HasAPI(UsdPhysics.CollisionAPI):
+            collision_count += 1
         if args.collision_only and not prim.HasAPI(UsdPhysics.CollisionAPI):
             continue
         world_range = cache.ComputeWorldBound(prim).ComputeAlignedRange()
@@ -51,7 +67,15 @@ def main() -> int:
             )
 
     for distance, path, minimum, maximum in sorted(matches):
-        print(f"NEAR distance_xy_m={distance:.4f} min={minimum} max={maximum} prim={path}")
+        print(
+            f"NEAR distance_xy_m={distance:.4f} min={minimum} max={maximum} prim={path}",
+            flush=True,
+        )
+    print(
+        f"SUMMARY traversed={traversed} boundable={boundable_count} "
+        f"collision_boundable={collision_count} matches={len(matches)}",
+        flush=True,
+    )
     return 0
 
 

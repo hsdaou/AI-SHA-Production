@@ -152,6 +152,7 @@ class AishaBlockASensorEnvCfg(DirectRLEnvCfg):
     # Evaluation-only mode: keep each parallel environment assigned to one
     # route segment so the evaluator can enforce an equal quota per segment.
     balanced_segment_assignment: bool = False
+    balanced_segment_ids: tuple[int, ...] | None = None
     # Door entry/exit and the atrium-to-principal turn are deliberately
     # oversampled after held-out evaluation identified them as the hard cases.
     segment_sampling_weights = (1.0, 1.0, 1.0, 10.0, 10.0, 1.0, 1.0, 1.0, 10.0, 10.0, 1.0, 1.0)
@@ -552,7 +553,20 @@ class AishaBlockASensorEnv(DirectRLEnv):
                 (count,), self.cfg.fixed_segment_id, dtype=torch.long, device=self.device
             )
         elif self.cfg.balanced_segment_assignment:
-            segment_ids = env_ids.remainder(len(ROUTE_SEGMENTS))
+            if self.cfg.balanced_segment_ids is None:
+                segment_ids = env_ids.remainder(len(ROUTE_SEGMENTS))
+            else:
+                if not self.cfg.balanced_segment_ids:
+                    raise ValueError("balanced_segment_ids must not be empty")
+                if any(
+                    value < 0 or value >= len(ROUTE_SEGMENTS)
+                    for value in self.cfg.balanced_segment_ids
+                ):
+                    raise ValueError("balanced_segment_ids contains an invalid route segment")
+                balanced_ids = torch.tensor(
+                    self.cfg.balanced_segment_ids, dtype=torch.long, device=self.device
+                )
+                segment_ids = balanced_ids[env_ids.remainder(len(balanced_ids))]
         else:
             segment_ids = torch.multinomial(self._segment_sampling_weights, count, replacement=True)
         self._segment_ids[env_ids] = segment_ids

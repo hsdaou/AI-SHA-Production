@@ -18,6 +18,9 @@ import yaml
 SIM_ROOT = Path(__file__).resolve().parents[1]
 PREPARER = SIM_ROOT / "tools" / "prepare_measured_administration.py"
 TEMPLATE = SIM_ROOT / "config" / "measured_administration_template.yaml"
+PRESENTATION_OVERLAY = (
+    SIM_ROOT / "config" / "measured_administration_presentation_2026-08-23.yaml"
+)
 BUILDER = SIM_ROOT / "scripts" / "build_administration.py"
 
 
@@ -190,6 +193,31 @@ class MeasuredAdministrationTests(unittest.TestCase):
         self.assertEqual(base, original)
         self.assertEqual(merged["plan_geometry"]["wall_thickness_m"], 0.15)
         self.assertEqual(merged["plan_geometry"]["ceiling_height_m"], 2.85)
+
+    def test_tight_door_overlay_is_accepted_only_as_simulation_candidate(self) -> None:
+        overlay = self.builder.load_measured_overlay(PRESENTATION_OVERLAY)
+        self.assertEqual(overlay["status"], "measured_site_presentation_candidate")
+        self.assertFalse(overlay["candidate_route_geometry_valid"])
+        self.assertTrue(overlay["candidate_simulation_route_geometry_valid"])
+        self.assertTrue(overlay["presentation_clearance_profile"]["simulation_only"])
+        self.assertIs(overlay["physical_release"], False)
+        self.assertEqual(
+            overlay["plan_geometry"]["atrium"]["central_polygon"]["step_down_m"],
+            0.20,
+        )
+        self.assertEqual(
+            overlay["capture_limitations"]["vice_principal_office_interior"]["status"],
+            "not_captured_locked_during_site_visit",
+        )
+
+    def test_tight_door_overlay_cannot_claim_production_route_gate(self) -> None:
+        overlay = yaml.safe_load(PRESENTATION_OVERLAY.read_text(encoding="utf-8"))
+        overlay["candidate_route_geometry_valid"] = True
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "invalid.yaml"
+            path.write_text(yaml.safe_dump(overlay), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "must not claim the production route gate"):
+                self.builder.load_measured_overlay(path)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,201 @@
+{
+  "task": "Isaac-AISHA-BlockA-MeasuredTightDoor-SensorNav-Direct-v0",
+  "segment_count": 12,
+  "samples_per_segment": 64,
+  "randomized_resets": true,
+  "all_starts_clear": true,
+  "segments": [
+    {
+      "segment_id": 0,
+      "start": "home",
+      "goal": "east_atrium_exit",
+      "samples": 64,
+      "start_xy_m": [
+        3.4062347412109375,
+        -0.005462646484375
+      ],
+      "goal_distance_m": 1.298720359802246,
+      "minimum_lidar_range_m": 1.7550671100616455,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    },
+    {
+      "segment_id": 1,
+      "start": "east_atrium_exit",
+      "goal": "vice_principal_turn",
+      "samples": 64,
+      "start_xy_m": [
+        4.2569732666015625,
+        -0.0059967041015625
+      ],
+      "goal_distance_m": 12.841080665588379,
+      "minimum_lidar_range_m": 1.7361503839492798,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    },
+    {
+      "segment_id": 2,
+      "start": "vice_principal_turn",
+      "goal": "vice_principal_approach",
+      "samples": 64,
+      "start_xy_m": [
+        16.640029907226562,
+        0.482025146484375
+      ],
+      "goal_distance_m": 4.2964959144592285,
+      "minimum_lidar_range_m": 0.782048225402832,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    },
+    {
+      "segment_id": 3,
+      "start": "vice_principal_approach",
+      "goal": "vice_principal",
+      "samples": 64,
+      "start_xy_m": [
+        17.113815307617188,
+        -3.3554534912109375
+      ],
+      "goal_distance_m": 3.0388197898864746,
+      "minimum_lidar_range_m": 1.0674502849578857,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    },
+    {
+      "segment_id": 4,
+      "start": "vice_principal",
+      "goal": "vice_principal_depart",
+      "samples": 64,
+      "start_xy_m": [
+        17.114776611328125,
+        -6.40252685546875
+      ],
+      "goal_distance_m": 6.413534164428711,
+      "minimum_lidar_range_m": 1.0749969482421875,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    },
+    {
+      "segment_id": 5,
+      "start": "vice_principal_depart",
+      "goal": "hallway_return",
+      "samples": 64,
+      "start_xy_m": [
+        17.100128173828125,
+        -0.4254913330078125
+      ],
+      "goal_distance_m": 12.40992259979248,
+      "minimum_lidar_range_m": 1.252056360244751,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    },
+    {
+      "segment_id": 6,
+      "start": "hallway_return",
+      "goal": "principal_turn",
+      "samples": 64,
+      "start_xy_m": [
+        5.126495361328125,
+        0.0060882568359375
+      ],
+      "goal_distance_m": 3.838477611541748,
+      "minimum_lidar_range_m": 1.7766276597976685,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    },
+    {
+      "segment_id": 7,
+      "start": "principal_turn",
+      "goal": "principal_approach",
+      "samples": 64,
+      "start_xy_m": [
+        3.59771728515625,
+        -3.0328521728515625
+      ],
+      "goal_distance_m": 4.8532586097717285,
+      "minimum_lidar_range_m": 1.150858759880066,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    },
+    {
+      "segment_id": 8,
+      "start": "principal_approach",
+      "goal": "principal",
+      "samples": 64,
+      "start_xy_m": [
+        6.158172607421875,
+        -6.6143646240234375
+      ],
+      "goal_distance_m": 2.758471965789795,
+      "minimum_lidar_range_m": 0.7617315649986267,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    },
+    {
+      "segment_id": 9,
+      "start": "principal",
+      "goal": "principal_depart",
+      "samples": 64,
+      "start_xy_m": [
+        8.013442993164062,
+        -8.659698486328125
+      ],
+      "goal_distance_m": 2.3116519451141357,
+      "minimum_lidar_range_m": 1.6504191160202026,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    },
+    {
+      "segment_id": 10,
+      "start": "principal_depart",
+      "goal": "atrium_return",
+      "samples": 64,
+      "start_xy_m": [
+        6.540283203125,
+        -6.88580322265625
+      ],
+      "goal_distance_m": 4.605409145355225,
+      "minimum_lidar_range_m": 0.9461644887924194,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    },
+    {
+      "segment_id": 11,
+      "start": "atrium_return",
+      "goal": "home_return",
+      "samples": 64,
+      "start_xy_m": [
+        3.76483154296875,
+        -3.7830657958984375
+      ],
+      "goal_distance_m": 3.806229829788208,
+      "minimum_lidar_range_m": 1.1845263242721558,
+      "collision_at_start": false,
+      "collision_count": 0,
+      "invalid_at_start": false,
+      "invalid_count": 0
+    }
+  ]
+}

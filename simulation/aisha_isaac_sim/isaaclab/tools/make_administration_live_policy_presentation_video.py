@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import shutil
 import subprocess
 from pathlib import Path
@@ -17,8 +18,8 @@ PHASE_LABELS = {
     0: "Central atrium departure",
     1: "Transit to Vice Principal wing",
     2: "Vice Principal office approach",
-    3: "Vice Principal office entry",
-    4: "Vice Principal office departure",
+    3: "Vice Principal entry | interior appearance assumed (locked)",
+    4: "Vice Principal departure | interior appearance assumed (locked)",
     5: "Return through east hallway",
     6: "Principal suite turn",
     7: "Principal office approach",
@@ -68,13 +69,27 @@ def main() -> int:
     parser.add_argument("--run-report", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument(
+        "--build-report",
+        type=Path,
+        default=Path(__file__).resolve().parents[2]
+        / "results"
+        / "administration_build_report.json",
+    )
     parser.add_argument("--speed", type=int, default=3)
     parser.add_argument("--skip-seconds", type=float, default=0.4)
+    parser.add_argument(
+        "--camera-mode",
+        choices=("follow", "cinematic"),
+        default=None,
+        help="Override camera metadata when the evidence report was replayed headlessly.",
+    )
     args = parser.parse_args()
     if args.speed < 1:
         parser.error("--speed must be positive")
 
     run = json.loads(args.run_report.read_text(encoding="utf-8"))
+    build = json.loads(args.build_report.read_text(encoding="utf-8"))
     if run.get("outcome") != "success" or run.get("waypoints_completed") != 12:
         raise RuntimeError("live run report is not a successful 12-segment route")
     if run.get("root_transform_animation") is not False:
@@ -94,9 +109,14 @@ def main() -> int:
     phase3n_dynamic_safety = run.get("policy_architecture") == (
         "frozen_phase3m_recovery_stack_plus_outer_recurrent_360_degree_brake_layer"
     )
+    measured_door_safety = run.get("policy_architecture") == (
+        "ppo_route_policy_plus_deterministic_mapped_doorway_safety"
+    )
     control_label = (
         "Wheel physics | 360-degree rays | frozen Phase 3M + learned brake safety | no supervisor"
         if policy_only and phase3n_dynamic_safety
+        else "Wheel physics | PPO route policy + mapped doorway safety | no scripted trajectory"
+        if policy_only and measured_door_safety
         else
         "Wheel physics | LD19-style rays | PPO base + imitation specialist | no supervisor"
         if policy_only and learned_skill_ensemble
@@ -151,6 +171,7 @@ def main() -> int:
                 trace_index += 1
             telemetry = trace[trace_index]
             minimum_range = float(telemetry.get("minimum_lidar_range_m", 0.0))
+            range_label = f"{minimum_range:.2f} m" if math.isfinite(minimum_range) else "n/a"
             linear_velocity = float(telemetry.get("linear_velocity_mps", 0.0))
             yaw_rate = float(telemetry.get("yaw_rate_rad_s", 0.0))
             action = telemetry.get("policy_action", [0.0, 0.0])
@@ -225,7 +246,13 @@ def main() -> int:
             )
             cv2.putText(
                 frame,
-                f"waypoints {waypoint_count}/12 | nearest LD19-style ray {minimum_range:.2f} m | 0 collisions",
+                (
+                    f"waypoints {waypoint_count}/12 | ray {range_label} | "
+                    "VP 0.85 m | Principal 0.90 m | 0.20 m polygon NO-GO | 0 collisions"
+                    if measured_door_safety
+                    else f"waypoints {waypoint_count}/12 | nearest LD19-style ray "
+                    f"{range_label} | 0 collisions"
+                ),
                 (32, 704),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.49,
@@ -283,6 +310,9 @@ def main() -> int:
         "checkpoint_sha256": run["checkpoint_sha256"],
         "policy_architecture": run.get("policy_architecture"),
         "phase3n_dynamic_safety_overlay": phase3n_dynamic_safety,
+        "measured_doorway_safety_layer": measured_door_safety,
+        "source_build_report": str(args.build_report.resolve()),
+        "source_build_report_sha256": sha256_file(args.build_report),
         "segment_policy_checkpoints": run.get("segment_policy_checkpoints", {}),
         "output_video": str(args.output.resolve()),
         "output_video_sha256": sha256_file(args.output),
@@ -295,13 +325,20 @@ def main() -> int:
         "policy_only_control": policy_only,
         "telemetry_overlay": True,
         "telemetry_source_trace_records": len(trace),
-        "camera_mode": run.get("camera", {}).get("mode"),
+        "camera_mode": args.camera_mode or run.get("camera", {}).get("mode"),
         "passed": True,
         "disclosure": (
             "Temporally sampled and labeled from the complete successful live-policy capture; "
-            "robot motion is unchanged. Door geometry remains a disclosed presentation assumption, "
-            "and this video is not evidence of physical deployment readiness."
+            "robot motion is unchanged. The VP interior appearance is assumed because it was locked; "
+            "the 0.85 m VP door uses the reported administration minimum, the 0.90 m Principal door is a "
+            "presentation assumption, and the 0.20 m central drop is a mapped no-go. This is not evidence "
+            "of physical deployment readiness."
         ),
+        "geometry_disclosure": {
+            "doors": build.get("doors", {}),
+            "central_atrium_drop": build.get("central_atrium_drop", {}),
+            "capture_limitations": build.get("capture_limitations", {}),
+        },
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")

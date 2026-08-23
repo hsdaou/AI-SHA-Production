@@ -1,0 +1,97 @@
+# Immutable-evidence manifest for the 2026-08-23 administration capture.
+# Paths intentionally point outside Git: the video/photos include a person,
+# screens/documents and GPS EXIF, so raw media must not be pushed to GitHub.
+
+schema_version: 2
+status: capture_received_semantic_extraction_pending
+site: "Block A ground-floor administration"
+
+capture:
+  date: "2026-08-23"
+  operator: "site representative"
+  device_model: "Apple iPhone 15 Pro Max (photo EXIF)"
+  application: "RoomPlan-compatible capture application (inferred from semantic USDZ)"
+  application_version: null
+
+coordinate_contract:
+  source_units: metre
+  source_up_axis: Y
+  source_forward_axis: "-Z"
+  source_metadata_verified_in_export: true
+  target_units: metre
+  target_up_axis: Z
+  target_forward_axis: X
+  target_origin: "centre of Block A atrium at finished-floor level"
+  registration_status: pending_independent_plan_registration
+
+manual_reference_measurements:
+  units: metre
+  narrowest_door:
+    clear_width_m: 0.85
+    clear_height_m: 2.12
+    scope: "user-reported narrowest door in the administration"
+    door_identity: null
+    measurement_method: "user supplied"
+
+privacy:
+  reviewed: true
+  people_present: true
+  screens_or_documents_present: true
+  gps_metadata_present_in_photos: true
+  raw_media_repository_ingest_allowed: false
+
+evidence:
+  - id: roomplan_primary_1545
+    role: semantic_geometry_primary
+    file: Project-2608231545.usdz
+    repository_ingest_allowed: false
+  - id: roomplan_supplement_1553
+    role: semantic_geometry_supplement
+    file: Project-2608231553.usdz
+    repository_ingest_allowed: false
+  - id: mesh_primary_1545
+    role: triangle_mesh_primary
+    file: Project-2608231545.stl
+    repository_ingest_allowed: false
+  - id: mesh_supplement_1553
+    role: triangle_mesh_supplement
+    file: Project-2608231553.stl
+    repository_ingest_allowed: false
+  - id: walkthrough_6700
+    role: appearance_topology_and_room_identity_reference
+    file: IMG_6700.MOV
+    repository_ingest_allowed: false
+  - id: photo_6701
+    role: appearance_reference
+    file: IMG_6701.HEIC
+    repository_ingest_allowed: false
+  - id: photo_6702
+    role: appearance_reference
+    file: IMG_6702.HEIC
+    repository_ingest_allowed: false
+  - id: photo_6703
+    role: doorway_and_office_reference
+    file: IMG_6703.HEIC
+    repository_ingest_allowed: false
+  - id: photo_6704
+    role: doorway_and_corridor_reference
+    file: IMG_6704.HEIC
+    repository_ingest_allowed: false
+  - id: photo_6705
+    role: doorway_and_corridor_reference
+    file: IMG_6705.HEIC
+    repository_ingest_allowed: false
+  - id: photo_6707
+    role: executive_office_material_reference
+    file: IMG_6707.HEIC
+    repository_ingest_allowed: false
+  - id: photo_6708
+    role: executive_office_material_reference
+    file: IMG_6708.HEIC
+    repository_ingest_allowed: false
+
+safety_boundary:
+  scan_is_survey_input_not_safety_certification: true
+  generated_geometry_never_releases_physical_operation: true
+  production_nav2_profile_must_remain_unchanged: true
+  presentation_tight_door_profile_is_simulation_only: true

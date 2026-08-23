@@ -52,6 +52,16 @@ plan_geometry:
     centre_xy_m: [0.00, 0.00]
     diagonal_m: 12.75
     orientation_deg: 22.5
+    central_polygon:
+      centre_xy_m: [0.00, 0.00]
+      outer_vertex_radius_m: 2.30
+      orientation_deg: 22.5
+      radius_status: presentation_estimate_from_approved_page_2_plan
+      step_down_m: 0.20
+      step_status: user_supplied_site_observation_2026_08_23
+      robot_access: prohibited
+      access_status: user_supplied_site_observation_2026_08_23
+      simulation_boundary: mapped_no_go_with_invisible_lidar_collision_proxy
   east_hallway:
     x_range_m: [5.89, 22.00]
     y_range_m: [-1.40, 1.40]
@@ -91,11 +101,11 @@ doors:
     hinge: left_jamb_for_approach_and_pivot_clearance_presentation_assumption
 
 route:
-  status: plan_derived_topology_with_presentation_goal_offsets
+  status: plan_derived_topology_with_user_supplied_central_drop_avoidance
   speed_mps: 0.30
   approach_speed_mps: 0.20
   waypoints:
-    - {id: home, x_m: 0.00, y_m: 0.00, yaw_deg: 0.0, action: start_and_end}
+    - {id: home, x_m: 3.40, y_m: 0.00, yaw_deg: 0.0, action: start_and_end_on_east_atrium_ring}
     - {id: east_atrium_exit, x_m: 4.70, y_m: 0.00, yaw_deg: 0.0, action: transit}
     - {id: vice_principal_turn, x_m: 17.10, y_m: 0.50, yaw_deg: -90.0, action: align_in_open_hallway_with_turn_clearance}
     - {id: vice_principal_approach, x_m: 17.10, y_m: -3.80, yaw_deg: -90.0, action: straight_door_approach}
@@ -107,7 +117,7 @@ route:
     - {id: principal, x_m: 8.01, y_m: -8.66, yaw_deg: -45.0, action: presentation_stop_inside_clear_pivot_zone}
     - {id: principal_depart, x_m: 6.53, y_m: -6.90, yaw_deg: 135.0, action: clear_side_room_turn_then_door_centre_departure}
     - {id: atrium_return, x_m: 3.45, y_m: -3.45, yaw_deg: 135.0, action: corridor_to_atrium_turn}
-    - {id: home_return, x_m: 0.00, y_m: 0.00, yaw_deg: 180.0, action: end}
+    - {id: home_return, x_m: 3.40, y_m: 0.00, yaw_deg: 180.0, action: end_on_east_atrium_ring}
 
 appearance:
   source: administration_walkthrough_2026-08-20.mp4

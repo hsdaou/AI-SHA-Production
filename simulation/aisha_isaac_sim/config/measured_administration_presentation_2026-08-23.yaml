@@ -1,0 +1,87 @@
+# Plan-registered, simulation-only presentation overlay derived from the
+# 2026-08-23 RoomPlan capture and the user's administration-wide minimum door.
+#
+# The approved page-2 topology remains authoritative until the two native scan
+# sections are independently registered. The locked VP destination is modelled
+# at the reported 0.85 m administration-wide minimum. The captured Principal
+# destination uses a reasonable 0.90 m presentation assumption; neither value
+# is represented as an individual site measurement.
+
+overlay_type: measured_administration_geometry
+schema_version: 2
+status: measured_site_presentation_candidate
+measurement_scope: "administration_minimum_applied_to_locked_vp_door; principal_door_0.90m_presentation_assumption"
+registration_status: "approved_page_2_topology_with_roomplan_scale_and_appearance_evidence; native_scan_alignment_pending"
+candidate_route_geometry_valid: false
+candidate_simulation_route_geometry_valid: true
+physical_release: false
+
+source_capture_hashes:
+  - d12576bf72c1a5ccf51706501bc8d65f16ea2a22353a9cf7cf287c3f58f9e13b
+  - d94287e3562344e634889a94aba1ea39d359e29666dd6389673bd8a12599d6cb
+  - 791920a0abe6ea7c055ffdcfa91955c772db38c8f54e3165169dbf2696c31f3b
+  - 9e83e1325bf96afbe467b91c5c660e567a4d233486c0a6c08f40851a0decf3c8
+
+known_dimensions:
+  narrowest_administration_door_m:
+    value: [0.85, 2.12]
+    status: "user_supplied_clear_width_and_height"
+
+capture_limitations:
+  vice_principal_office_interior:
+    status: "not_captured_locked_during_site_visit"
+    presentation_treatment: "plan_envelope_and_walkthrough_consistent_material_assumption_only"
+
+plan_geometry:
+  atrium:
+    central_polygon:
+      step_down_m: 0.20
+      step_status: "user_supplied_site_observation_2026_08_23"
+      robot_access: prohibited
+      access_status: "user_supplied_site_observation_2026_08_23"
+      simulation_boundary: "mapped_no_go_with_invisible_lidar_collision_proxy"
+
+doors:
+  vice_principal:
+    clear_width_m: 0.85
+    clear_height_m: 2.12
+    frame_depth_m: 0.16
+    width_status: "user_reported_administration_minimum_conservative_destination_assumption"
+    threshold_height_mm: 0
+    threshold_status: "flush_presentation_assumption_from_walkthrough_not_measured"
+  principal:
+    clear_width_m: 0.90
+    clear_height_m: 2.12
+    frame_depth_m: 0.16
+    width_status: "reasonable_presentation_assumption_above_reported_0.85m_administration_minimum_not_individually_measured"
+    threshold_height_mm: 0
+    threshold_status: "flush_presentation_assumption_from_walkthrough_not_measured"
+
+presentation_release:
+  minimum_demo_door_clear_width_m: 0.828
+  accepted_for_scripted_presentation: true
+  accepted_for_physical_or_unsupervised_operation: false
+  threshold_contact_claim_allowed: false
+  door_leaf_treatment: "visual_only_and_secured_fully_open_so_reported_clear_width_is_not_reduced_twice"
+
+presentation_clearance_profile:
+  id: measured_tight_door_v1
+  simulation_only: true
+  physical_body_width_m: 0.768
+  footprint_padding_per_side_m: 0.030
+  padded_transit_width_m: 0.828
+  measured_narrowest_clear_width_m: 0.850
+  nominal_total_margin_m: 0.022
+  nominal_margin_per_side_m: 0.011
+  maximum_doorway_speed_mps: 0.10
+  straight_centreline_approach_required: true
+  rotation_in_doorway_forbidden: true
+  physical_release: false
+
+safety_boundary:
+  production_nav2_padding_must_remain_0_080_m: true
+  raw_media_not_committed_due_to_people_documents_and_gps: true
+  scan_alignment_not_claimed: true
+  threshold_not_measured: true
+  central_atrium_drop_requires_no_go_mapping: true
+  vice_principal_interior_not_captured: true

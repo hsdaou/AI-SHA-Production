@@ -370,10 +370,29 @@ def main() -> int:
                 )
             if segment_id is not None:
                 segment = segment_counts.setdefault(
-                    segment_id, {"episodes": 0, "success": 0, "collision": 0, "time_out": 0}
+                    segment_id,
+                    {
+                        "episodes": 0,
+                        "success": 0,
+                        "collision": 0,
+                        "time_out": 0,
+                        "final_distance_sum_m": 0.0,
+                        "abs_final_heading_error_sum_rad": 0.0,
+                        "final_x_sum_m": 0.0,
+                        "final_y_sum_m": 0.0,
+                    },
                 )
                 segment["episodes"] += 1
                 segment[outcome] += 1
+                segment["final_distance_sum_m"] += float(
+                    outcomes["final_distance_m"][env_id].item()
+                )
+                segment["abs_final_heading_error_sum_rad"] += abs(
+                    float(outcomes["final_heading_error_rad"][env_id].item())
+                )
+                final_xy = outcomes["position_xy_m"][env_id]
+                segment["final_x_sum_m"] += float(final_xy[0].item())
+                segment["final_y_sum_m"] += float(final_xy[1].item())
 
         running_returns[done_ids] = 0.0
         running_lengths[done_ids] = 0
@@ -424,6 +443,18 @@ def main() -> int:
                 "success_rate": segment["success"] / segment["episodes"],
                 "collision_rate": segment["collision"] / segment["episodes"],
                 "time_out_rate": segment["time_out"] / segment["episodes"],
+                "mean_final_distance_m": segment["final_distance_sum_m"]
+                / segment["episodes"],
+                "mean_abs_final_heading_error_deg": segment[
+                    "abs_final_heading_error_sum_rad"
+                ]
+                / segment["episodes"]
+                * 180.0
+                / torch.pi,
+                "mean_final_position_xy_m": [
+                    segment["final_x_sum_m"] / segment["episodes"],
+                    segment["final_y_sum_m"] / segment["episodes"],
+                ],
             }
         )
     acceptance_gate = None

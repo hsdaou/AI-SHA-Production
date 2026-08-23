@@ -2,8 +2,8 @@
 # This file describes a real physics-driven learning task. It is not a claim of
 # physical release or successful sim-to-real transfer.
 
-revision: "TRAINING-ENDTOEND-N"
-date: "2026-08-22"
+revision: "TRAINING-MEASURED-ADMIN-O"
+date: "2026-08-23"
 
 software_baseline:
   isaac_sim_version: "5.1.0-rc.19+release.26219.9c81211b.gl"
@@ -66,11 +66,11 @@ sensor_curriculum:
   presentation_assumptions:
     - "route waypoints are navigation centerlines interpreted from A1 page 2, Block A"
     - "principal_turn is placed on the corridor centerline at [3.45, -3.45] to avoid the diagonal wall"
-    - "both office door clear widths are 1.40 m presentation assumptions, not site measurements"
+    - "the original training course used 1.40 m office-door presentation assumptions; the later measured-administration task supersedes them with a reported 0.85 m VP opening and a disclosed 0.90 m Principal assumption"
     - "both office thresholds are modeled flush (0 mm) for presentation because the rigid castor proxy cannot support threshold-contact conclusions"
     - "office stop points are placed far enough inside each doorway for the declared 1.64 m pivot envelope; chained office visits use a tighter 0.20 m learned-goal tolerance"
     - "hallway_return first reaches the east atrium opening; the policy is not trained to cut diagonally through a wall"
-    - "door clearances remain presentation assumptions until site measurement"
+    - "the 0.85 m administration minimum and 2.12 m door height are user-reported; the Principal door width and both thresholds remain presentation assumptions"
   anti_reward_hacking:
     rule: "stationary shaping is below the time penalty and motion below 0.03 m/s receives an additional -0.02 per policy step"
     purpose: "force the deterministic mean policy to commit to doorway traversal instead of relying on exploration noise"
@@ -792,6 +792,76 @@ phase3_curriculum:
       checks_total: 27
       passed: true
       physical_safety_claim_allowed: false
+    measured_administration_presentation:
+      status: "accepted_simulation_presentation_evidence"
+      purpose: "demonstrate the learned route policy plus deterministic mapped-doorway safety in the plan- and capture-informed administration scene"
+      task: "Isaac-AISHA-Administration-Live-MeasuredTightDoor-Direct-v0"
+      seed: 10643
+      geometry_config: "config/measured_administration_presentation_2026-08-23.yaml"
+      checkpoint: "isaaclab/checkpoints/aisha_measured_tight_door_model2350.pt"
+      checkpoint_sha256: "6bf032350d36539d6e18651d8c3344c17951ff33dfade17a7910a694933d2d5f"
+      formal_training_acceptance:
+        report: "results/measured_tight_door_model2350_extended_handoff_acceptance_seed10640.json"
+        episodes: 576
+        successes: 557
+        success_rate: 0.967014
+        collisions: 0
+        timeouts: 19
+        every_route_and_office_segment_passed: true
+        protocol_satisfied: true
+        passed: true
+      control:
+        architecture: "PPO route policy plus deterministic mapped-doorway safety"
+        learned_policy_steps: 13307
+        turn_supervisor_steps: 0
+        presentation_dwell_steps: 0
+        scripted_trajectory: false
+        root_transform_animation: false
+      geometry_and_capture_disclosures:
+        vice_principal_door_clear_width_m: 0.85
+        vice_principal_width_status: "user-reported administration minimum conservatively applied to this destination"
+        principal_door_clear_width_m: 0.90
+        principal_width_status: "reasonable presentation assumption; not individually measured"
+        door_clear_height_m: 2.12
+        threshold_status: "flush presentation assumption; not measured"
+        vice_principal_interior_status: "locked during capture; appearance is a plan-envelope and adjacent-material assumption"
+        central_polygon_step_down_m: 0.20
+        central_polygon_robot_access: "prohibited; mapped no-go with invisible LiDAR collision proxy"
+      live_route:
+        report: "results/measured_administration_final_cinematic_policy_only_seed10643.json"
+        waypoints_completed: 12
+        policy_steps: 13307
+        simulated_duration_s: 443.56666666666666
+        static_collisions: 0
+        dynamic_collisions: 0
+        maximum_doorway_speed_mps: 0.05671
+        doorway_speed_limit_mps: 0.10
+        minimum_polygon_full_footprint_clearance_m: 0.236198
+        passed: true
+      raw_video:
+        path: "outputs/measured_administration_final_speedgate_cinematic_seed10643/aisha-block-a-learned-route-step-0.mp4"
+        sha256: "7c1d1a480e6e4a48e64c551c7370c2c7ee153e9a1ec7e46beb2ebd2aedc3c833"
+        resolution: [1280, 720]
+        fps: 30.0
+        frames: 13307
+        duration_s: 443.56666666666666
+        committed: false
+      presentation_video:
+        path: "media/videos/AI-SHA_Measured_Administration_Live_Policy_3x.mp4"
+        sha256: "8edc5ce42a9f4a5f6a8d808826efa407d2856a1b6714d9641abc979b047cdf7f"
+        report: "results/measured_administration_live_policy_presentation_video_report.json"
+        resolution: [1280, 720]
+        fps: 30.0
+        frames: 4432
+        duration_s: 147.73333333333332
+        motion_changed_by_edit: false
+      validation:
+        report: "results/measured_administration_final_presentation_validation.json"
+        checks_passed: 23
+        checks_total: 23
+        passed: true
+      claim_boundary: "accepted Omniverse/Isaac Lab presentation evidence, not an as-built digital twin, autonomous Nav2 release, sim-to-real validation, or physical safety release"
+      physical_release: false
     combined_acceptance_report: "results/phase3n_dynamic_safety_acceptance.json"
     full_phase3_simulation_acceptance_passed: true
     physical_safety_claim_allowed: false
@@ -961,6 +1031,11 @@ release:
   final_omniverse_presentation_reel_available: true
   final_omniverse_presentation_reel_validated: true
   phase3_geometry_rtx_refinement_available: true
+  measured_administration_candidate_integrated: true
+  measured_administration_training_acceptance_passed: true
+  measured_administration_live_route_passed: true
+  measured_administration_presentation_available: true
+  measured_administration_presentation_validated: true
   nav2_integrated: false
   physical_robot_release: false
-  required_next_gate: "rehearse the accepted final Omniverse reel and optionally add presenter narration; physical deployment still requires an as-built site survey, measured clearances, Nav2 integration, sim-to-real validation and hardware safety commissioning"
+  required_next_gate: "for higher visual fidelity, register the native RoomPlan sections and optionally capture the locked VP interior; physical deployment separately requires threshold and destination-specific clearance verification, Nav2 integration, sim-to-real testing, all-direction protective sensing, stopping-distance validation and hardware safety commissioning"

@@ -1,0 +1,141 @@
+{
+  "report_type": "measured_tight_door_runtime_smoke",
+  "generated_at_utc": "2026-08-23T14:34:47.567717+00:00",
+  "task": "Isaac-AISHA-BlockA-MeasuredTightDoor-SensorNav-Direct-v0",
+  "steps": 1100,
+  "num_envs": 4,
+  "checks": {
+    "task_registered": true,
+    "observation_contract_46": true,
+    "action_contract_2": true,
+    "observation_values_finite": true,
+    "measured_course_loaded": true,
+    "physical_doors_are_0_85m": true,
+    "physical_collision_apertures_are_0_85m": true,
+    "padding_enforced_by_trajectory_acceptance": true,
+    "padded_centre_band_is_0_022m": true,
+    "central_drop_no_go_proxy_present": true,
+    "slow_zone_exercised": true,
+    "no_rotation_zone_exercised": true,
+    "rotation_suppressed_at_frame": true,
+    "centred_physics_crossing_completed": false,
+    "frame_speed_at_or_below_0_10mps_with_tolerance": true,
+    "physical_release_disabled": true
+  },
+  "checks_passed": 15,
+  "checks_total": 16,
+  "passed": false,
+  "metrics": {
+    "slow_zone_env_steps": 4168,
+    "no_rotation_zone_env_steps": 4168,
+    "maximum_speed_in_no_rotation_zone_mps": 0.35917767882347107,
+    "maximum_speed_at_frame_mps": 0.04594223201274872,
+    "maximum_applied_yaw_action_in_no_rotation_zone": 0.0,
+    "reset_events": 0,
+    "successful_crossings": 0,
+    "final_local_xy_m": [
+      [
+        17.099380493164062,
+        -5.55561637878418
+      ],
+      [
+        17.106971740722656,
+        -5.567819595336914
+      ],
+      [
+        17.12600326538086,
+        -5.657495498657227
+      ],
+      [
+        17.121509552001953,
+        -5.644035339355469
+      ]
+    ],
+    "final_root_linear_velocity_body_mps": [
+      [
+        0.04388715699315071,
+        -0.00024243444204330444
+      ],
+      [
+        0.04252929985523224,
+        0.0005574598908424377
+      ],
+      [
+        0.045658499002456665,
+        -0.00023607909679412842
+      ],
+      [
+        0.045629460364580154,
+        -0.0007385239005088806
+      ]
+    ],
+    "final_wheel_joint_velocity_rad_s": [
+      [
+        0.4230685830116272,
+        0.42933207750320435
+      ],
+      [
+        0.4190245270729065,
+        0.42367470264434814
+      ],
+      [
+        0.44306644797325134,
+        0.44505733251571655
+      ],
+      [
+        0.43069422245025635,
+        0.44920164346694946
+      ]
+    ],
+    "final_wheel_target_rad_s": [
+      [
+        0.9999999403953552,
+        0.9999999403953552
+      ],
+      [
+        0.9999999403953552,
+        0.9999999403953552
+      ],
+      [
+        0.9999999403953552,
+        0.9999999403953552
+      ],
+      [
+        0.9999999403953552,
+        0.9999999403953552
+      ]
+    ],
+    "final_applied_action": [
+      [
+        -0.6000000238418579,
+        0.0
+      ],
+      [
+        -0.6000000238418579,
+        0.0
+      ],
+      [
+        -0.6000000238418579,
+        0.0
+      ],
+      [
+        -0.6000000238418579,
+        0.0
+      ]
+    ],
+    "final_minimum_lidar_range_m": [
+      1.0742193460464478,
+      1.0863063335418701,
+      1.1806141138076782,
+      1.1674282550811768
+    ],
+    "final_lidar_envelope_collision": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "physical_release": false,
+  "claim_boundary": "Simulation-only task smoke; this is not learned-policy acceptance or a physical doorway safety release."
+}
