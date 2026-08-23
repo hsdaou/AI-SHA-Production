@@ -105,7 +105,7 @@ python3 tools/probe_administration_nav2_bridge.py \
   --output results/administration_nav2_bridge_external_probe.json
 ```
 
-## 4. Reproduce the provisional Nav2 + Phase 3N integration
+## 4. Reproduce the Nav2 + Phase 3N integrations
 
 Official ROS 2 Jazzy Nav2 binaries are available in a user-local overlay at
 `~/.local/share/ai_sha_ros_jazzy_overlay/root`. This avoids modifying the
@@ -158,6 +158,43 @@ tools/run_administration_nav2_mission.sh \
 from `src/robot_bringup/config/nav2_params.yaml`. That older file is for a 0.60
 x 0.50 m holonomic mecanum chassis and is unsafe for the Rev D model.
 
+### Measured-presentation static mission
+
+The measured-presentation profile adds the 0.85 m VP door, 0.90 m Principal
+door, 0.20 m central drop no-go region and a deterministic two-stage doorway
+alignment guard. Run its complete headless gate with:
+
+```bash
+tools/run_administration_nav2_measured_integration.sh
+```
+
+For a visible Omniverse session, use three terminals:
+
+```bash
+# Terminal 1: visible Isaac Sim window
+tools/run_administration_nav2_measured_bridge.sh
+
+# Terminal 2
+tools/run_administration_nav2_measured_servers.sh
+
+# Terminal 3, after Nav2 becomes active
+tools/run_administration_nav2_measured_mission.sh
+```
+
+The accepted run completed all 12 legs, both office entries/departures, both
+180-degree office pivots and the return home in 261.544 s wall time. The bridge
+ran 18,323 control steps with no episode reset. Both doorways were crossed in
+both directions; maximum measured doorway body speed was 0.06258 m/s against
+the 0.10 m/s limit. The accepted learned Phase 3N layer had authority for 689
+steps and applied braking on 192. The aggregate report
+`results/administration_nav2_measured_integration_gate.json` passes 27/27.
+
+The hallway command ceiling remains 0.30 m/s, with 0.08 m/s targeted through
+the tight openings. A future 0.80 m/s hallway tier will retain the current
+geometry and doorway limit, but it needs its own staged training, stopping and
+dynamic-obstacle acceptance. The existing accepted policies are not represented
+as validated at 0.80 m/s.
+
 ## 5. Architecture and claim boundary
 
 Two authentic controller paths are now verified:
@@ -174,10 +211,11 @@ Nav2 and the frozen learned local navigator are not placed in series because
 they are both local motion authorities; doing that without a deliberate
 arbitration design would obscure which controller caused a command.
 
-This closes the provisional Nav2 integration gate, not the physical-release
-gate. Geometry and the occupancy map remain presentation assumptions. After the
-iPhone capture arrives, rebuild the measured scene/map and rerun the exact same
-integration command. Physical work still requires measured clearance review,
+This closes the measured-presentation **static** Nav2 integration gate, not the
+blocked-route dynamic-replanning or physical-release gates. The supplied iPhone
+mesh sections and manual door dimensions inform the procedural scene, but
+native section-to-stage registration and an as-built survey are still
+incomplete. Physical work still requires measured clearance/threshold review,
 sim-to-real validation, a hardware emergency stop and supervised commissioning.
 
 Check measured-site preparation at any time with:

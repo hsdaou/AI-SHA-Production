@@ -66,13 +66,17 @@ def main() -> int:
         "production_global_padding_unchanged": close(production_global["footprint_padding"], 0.08),
         "tight_local_padding_is_0_030_m": close(tight_local["footprint_padding"], 0.03),
         "tight_global_padding_is_0_030_m": close(tight_global["footprint_padding"], 0.03),
-        "tight_speed_is_0_10_mps": close(tight_controller["max_vel_x"], 0.10)
-        and close(tight_controller["max_speed_xy"], 0.10)
-        and close(tight_smoother["max_velocity"][0], 0.10),
-        "tight_acceleration_is_0_15_mps2": close(tight_controller["acc_lim_x"], 0.15)
-        and close(tight_controller["decel_lim_x"], -0.15)
-        and close(tight_smoother["max_accel"][0], 0.15)
-        and close(tight_smoother["max_decel"][0], -0.15),
+        "tight_inflation_exceeds_inscribed_radius": close(
+            tight_local["inflation_layer"]["inflation_radius"], 0.45
+        )
+        and close(tight_global["inflation_layer"]["inflation_radius"], 0.45),
+        "hallway_cruise_is_0_30_mps": close(tight_controller["max_vel_x"], 0.30)
+        and close(tight_controller["max_speed_xy"], 0.30)
+        and close(tight_smoother["max_velocity"][0], 0.30),
+        "hallway_acceleration_is_0_25_mps2": close(tight_controller["acc_lim_x"], 0.25)
+        and close(tight_controller["decel_lim_x"], -0.25)
+        and close(tight_smoother["max_accel"][0], 0.25)
+        and close(tight_smoother["max_decel"][0], -0.25),
         "padded_width_is_0_828_m": close(profile["padded_transit_width_m"], 0.828),
         "measured_width_is_0_850_m": close(profile["measured_narrowest_clear_width_m"], 0.85),
         "nominal_total_margin_is_0_022_m": close(profile["nominal_total_margin_m"], 0.022),

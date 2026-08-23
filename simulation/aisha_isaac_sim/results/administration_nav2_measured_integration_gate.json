@@ -1,0 +1,111 @@
+{
+  "report_type": "administration_nav2_measured_integration_gate",
+  "generated_at_utc": "2026-08-23T18:38:12.242521+00:00",
+  "passed": true,
+  "checks": {
+    "measured_nav2_mission_passed": true,
+    "measured_site_profile_selected": true,
+    "all_12_legs_succeeded": true,
+    "both_office_pivots_succeeded": true,
+    "paired_bridge_passed": true,
+    "mission_completion_reached_bridge": true,
+    "bridge_episode_never_reset": true,
+    "all_ros_channels_exercised": true,
+    "accepted_learned_360_checkpoint_loaded": true,
+    "formal_dynamic_safety_gate_passed": true,
+    "mapped_site_guard_enabled": true,
+    "central_drop_safety_authority_is_explicit": true,
+    "measured_nav2_numerical_envelope_disclosed": true,
+    "mapped_overlay_hash_matches": true,
+    "both_measured_doorways_exercised": true,
+    "mapped_doorway_alignment_exercised": true,
+    "doorway_speed_gate_passed": true,
+    "central_polygon_full_footprint_clearance_positive": true,
+    "measured_map_passed": true,
+    "measured_map_is_current_scene": true,
+    "measured_map_resolution_is_1cm": true,
+    "central_drop_mapped_no_go": true,
+    "reported_door_geometry_applied": true,
+    "vp_locked_assumption_disclosed": true,
+    "separate_measured_route_policy_accepted": true,
+    "measured_omniverse_presentation_still_valid": true,
+    "physical_release_remains_false": true
+  },
+  "checks_passed": 27,
+  "checks_total": 27,
+  "live_stack": {
+    "architecture": "Nav2 global planner + DWB local controller -> deterministic mapped doorway/polygon guard -> accepted learned Phase 3N 360 brake -> articulated wheel physics",
+    "mission_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_measured_mission.json",
+    "bridge_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_measured_bridge.json",
+    "legs_completed": 12,
+    "elapsed_wall_s": 261.544,
+    "bridge_steps": 18323,
+    "learned_safety_authority_steps": 689,
+    "learned_safety_brake_steps": 192,
+    "mapped_guard": {
+      "steps": 18323,
+      "doorway_active_steps": 9981,
+      "doorway_slow_steps": 5797,
+      "doorway_alignment_steps": 8484,
+      "doorway_alignment_hold_steps": 1728,
+      "doorway_overspeed_stops": 5,
+      "doorway_direction_rearms": 2,
+      "polygon_no_go_stops": 0,
+      "doorway_entries": {
+        "vice_principal": 2,
+        "principal": 2
+      },
+      "maximum_abs_speed_in_doorway_mps": 0.06257984042167664,
+      "maximum_abs_tangent_offset_in_doorway_m": 0.02150730077275781,
+      "minimum_polygon_full_footprint_clearance_m": 0.279585,
+      "enabled": true,
+      "architecture": "nav2_cmd_vel_then_mapped_doorway_and_polygon_guard",
+      "maximum_doorway_speed_mps": 0.1,
+      "target_doorway_speed_mps": 0.08,
+      "doorway_alignment_tolerance_deg": 0.7500000000000001,
+      "approach_alignment_tolerance_deg": 3.0000000000000004,
+      "overspeed_stop_mps": 0.095,
+      "traction_command_ceiling_mps": 0.18,
+      "traction_gain": 1.5,
+      "polygon_outer_radius_m": 2.3,
+      "polygon_body_circumscribed_radius_m": 0.8204151388169284,
+      "polygon_minimum_clearance_m": 0.05,
+      "physical_safety_credit": false,
+      "overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
+      "overlay_sha256": "e5b60981b6771158434fb160beac97b2d197643ab0520d198174c9846992298b",
+      "site_config": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
+      "site_config_sha256": "c06e1941e873ae88012844ee27be9e7614342412d5c51cccfe9358a9559ffe47"
+    }
+  },
+  "separate_learned_route_policy": {
+    "architecture_boundary": "The accepted measured route PPO is retained as independent learned-route evidence. It is not placed in series with DWB because both are local motion authorities.",
+    "checkpoint_sha256": "6bf032350d36539d6e18651d8c3344c17951ff33dfade17a7910a694933d2d5f",
+    "formal_success_rate": 0.9670138888888888,
+    "formal_collision_count": 0
+  },
+  "geometry_boundary": {
+    "status": "measured_site_presentation_candidate",
+    "vice_principal_door_m": [
+      0.85,
+      2.12
+    ],
+    "principal_door_m": [
+      0.9,
+      2.12
+    ],
+    "vice_principal_interior": "locked_not_captured_appearance_assumed",
+    "central_polygon_step_down_m": 0.2,
+    "native_scan_registration_complete": false
+  },
+  "phase5_progress": {
+    "measured_static_nav2_gate_percent": 55,
+    "remaining": [
+      "blocked-route dynamic replanning gate",
+      "multi-goal office directory beyond the two presentation destinations",
+      "native RoomPlan section registration and visual mesh refinement",
+      "operator-facing Nav2/LiDAR/costmap presentation capture"
+    ]
+  },
+  "physical_release": false,
+  "claim_boundary": "Passing proves a measured-presentation static Nav2 mission with mapped simulation guards and a learned 360 brake layer. It is not an as-built digital twin, a blocked-route/replanning acceptance, sim-to-real evidence, or physical approval."
+}

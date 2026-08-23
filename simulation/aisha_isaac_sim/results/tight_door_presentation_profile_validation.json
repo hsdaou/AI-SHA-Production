@@ -1,6 +1,6 @@
 {
   "report_type": "tight_door_presentation_profile_validation",
-  "generated_at_utc": "2026-08-23T13:41:46.795567+00:00",
+  "generated_at_utc": "2026-08-23T18:38:12.216592+00:00",
   "status": "passed",
   "passed": true,
   "checks": {
@@ -8,8 +8,9 @@
     "production_global_padding_unchanged": true,
     "tight_local_padding_is_0_030_m": true,
     "tight_global_padding_is_0_030_m": true,
-    "tight_speed_is_0_10_mps": true,
-    "tight_acceleration_is_0_15_mps2": true,
+    "tight_inflation_exceeds_inscribed_radius": true,
+    "hallway_cruise_is_0_30_mps": true,
+    "hallway_acceleration_is_0_25_mps2": true,
     "padded_width_is_0_828_m": true,
     "measured_width_is_0_850_m": true,
     "nominal_total_margin_is_0_022_m": true,
@@ -19,8 +20,8 @@
     "production_route_gate_false": true,
     "physical_release_false": true
   },
-  "checks_passed": 14,
-  "checks_total": 14,
+  "checks_passed": 15,
+  "checks_total": 15,
   "production_params": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/nav2_sim_params.yaml",
   "tight_door_params": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/nav2_sim_tight_door_params.yaml",
   "measured_overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",

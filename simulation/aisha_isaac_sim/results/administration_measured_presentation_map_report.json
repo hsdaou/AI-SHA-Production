@@ -1,15 +1,15 @@
 {
   "report_type": "administration_measured_presentation_occupancy_map",
-  "generated_at_utc": "2026-08-23T14:03:55.292460+00:00",
+  "generated_at_utc": "2026-08-23T17:40:56.436401+00:00",
   "status": "measured_site_presentation_candidate_map_generated",
   "source": {
     "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
-    "scene_sha256": "d1ff03c21a65293f3488e3b9a9b59c83461a6b569e32543fc156a7929230c1f2",
+    "scene_sha256": "40414d9841e384afb06394382a2688f540aeb61395644070d1781175a7cad011",
     "configuration": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
     "configuration_sha256": "c06e1941e873ae88012844ee27be9e7614342412d5c51cccfe9358a9559ffe47",
     "geometry_status": "measured_site_presentation_candidate",
     "overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
-    "overlay_sha256": "5ba7085bbb3668d21eec2e14555957919847393fb079f533d0b7974ddab71182"
+    "overlay_sha256": "e5b60981b6771158434fb160beac97b2d197643ab0520d198174c9846992298b"
   },
   "map": {
     "yaml": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/maps/administration_measured_presentation/administration_measured_presentation.yaml",
@@ -53,8 +53,8 @@
       "ViceAccess",
       "VicePrincipal"
     ],
-    "obstacle_primitives": 123,
-    "collision_primitives_inspected": 155,
+    "obstacle_primitives": 121,
+    "collision_primitives_inspected": 153,
     "collision_primitives_ignored": 19
   },
   "route": {
