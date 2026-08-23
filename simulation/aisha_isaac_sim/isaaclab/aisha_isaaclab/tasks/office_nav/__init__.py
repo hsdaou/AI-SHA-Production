@@ -411,6 +411,26 @@ gym.register(
 
 
 gym.register(
+    id="Isaac-AISHA-Administration-Live-Measured-Nav2-DynamicSafety-Direct-v0",
+    entry_point=(
+        "aisha_isaaclab.tasks.office_nav.administration_dynamic_safety_env:"
+        "AishaAdministrationDynamicSafetyEnv"
+    ),
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.administration_dynamic_safety_env:"
+            "AishaAdministrationMeasuredNav2SafetyEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+            "AishaPhase3DynamicSafetyPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
     id="Isaac-AISHA-Administration-Live-MeasuredTightDoor-Direct-v0",
     entry_point=(
         "aisha_isaaclab.tasks.office_nav.administration_dynamic_safety_env:"

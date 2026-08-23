@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev N - 2026-08-23 - measured administration live-policy presentation accepted**
+**Rev O - 2026-08-23 - measured Nav2 plus learned-safety mission accepted**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -47,6 +47,34 @@ The acceptance evidence is
 checks passed). The accepted checkpoint is packaged as
 `isaaclab/checkpoints/aisha_measured_tight_door_model2350.pt`, SHA-256
 `6bf032350d36539d6e18651d8c3344c17951ff33dfade17a7910a694933d2d5f`.
+
+## Latest live autonomy gate
+
+The unchanged Rev D robot now also passes the measured-presentation static
+mission under the coupled live stack:
+
+```text
+Nav2 global planner + DWB local controller
+  -> measured doorway and central-polygon guard
+  -> accepted Phase 3N learned 360-degree brake
+  -> articulated wheel/contact physics
+```
+
+The verified run completed all 12 mission legs, entered and departed both
+offices, performed both in-office 180-degree pivots, and returned home without
+an episode reset. The mapped guard recorded two traversals of each doorway. Its
+maximum measured doorway body speed was 0.06258 m/s against the 0.10 m/s limit,
+maximum doorway tangent offset was 0.02151 m, and minimum predicted full-body
+clearance from the inaccessible 0.20 m central drop was 0.27959 m. The learned
+Phase 3N layer had authority on 689 control steps and applied braking on 192.
+`results/administration_nav2_measured_integration_gate.json` passes 27/27.
+
+The current hallway profile remains 0.30 m/s and the doorway target remains
+0.08 m/s. No chassis, footprint, URDF, USD, mass, track or sensor geometry was
+changed. A 0.80 m/s hallway cruise is the next **separately trained simulation
+target**, not a claim about this accepted run: it requires a staged speed and
+stopping-distance curriculum, dynamic-obstacle regression and a new formal
+gate. It must not raise the 0.10 m/s measured-doorway limit.
 
 ## Architecture decision
 
@@ -294,11 +322,12 @@ explicit `--presentation-assumptions` mode builds `scenes/administration.usd`
 from page 2 of the approved ground-floor plan. The central 12.75 m atrium,
 2.80 m east hallway, east Vice-Principal placement and angled south-east
 Principal placement now control the route topology. Corridor/office finishes,
-furniture and lighting follow the supplied walkthrough video. Both office clear
-widths are now disclosed 1.40 m presentation assumptions. Both thresholds are
-assumed flush because the rigid castor proxy cannot support threshold-contact
-conclusions. Neither value is a site measurement; scene metadata and reports
-keep physical release false.
+furniture and lighting follow the supplied walkthrough video. Its original
+wide-door mode uses disclosed 1.40 m presentation openings; the newer measured
+overlay supersedes those with the reported 0.85 m VP opening and a disclosed
+0.90 m Principal assumption. Thresholds remain assumed flush because the rigid
+castor proxy cannot support threshold-contact conclusions. Scene metadata and
+reports keep physical release false.
 
 The walkthrough-derived atrium columns are also presentation assumptions, not
 surveyed structure. Their positions are declared in the scene configuration and
@@ -834,8 +863,10 @@ can release the route. For physical operation, if clear width is below 0.920 m,
 change the route or narrow the mechanical design instead of tuning Nav2 to
 squeeze through.
 
-Start at 0.30 m/s. The controlled demo target is 0.50 m/s. Treat 0.80 m/s as a
-design ceiling only after measured stopping-distance and protective-field tests.
+The accepted profile starts at 0.30 m/s. The next separately trained simulation
+hallway target is 0.80 m/s while tight doors remain limited to 0.10 m/s. Physical
+operation at 0.80 m/s remains prohibited until measured stopping-distance,
+protective-field and supervised commissioning tests pass.
 
 ## Perception is not the safety system
 

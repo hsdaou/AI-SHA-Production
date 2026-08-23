@@ -314,9 +314,18 @@ def main() -> int:
     parser.add_argument("--stop-after-waypoint", type=int, default=0)
     parser.add_argument(
         "--control-stack",
-        choices=("nav2", "nav2_phase3n_safety"),
+        choices=(
+            "nav2",
+            "nav2_phase3n_safety",
+            "nav2_mapped_doorway_phase3n_safety",
+        ),
         default="nav2",
         help="declare the independently launched bridge command-arbitration mode",
+    )
+    parser.add_argument(
+        "--site-profile",
+        choices=("provisional", "measured_presentation"),
+        default="provisional",
     )
     args = parser.parse_args()
     config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
@@ -425,7 +434,11 @@ def main() -> int:
         )
         expected_legs = max(0, len(waypoints) - 1)
         report = {
-            "report_type": "administration_nav2_provisional_mission",
+            "report_type": (
+                "administration_nav2_measured_presentation_mission"
+                if args.site_profile == "measured_presentation"
+                else "administration_nav2_provisional_mission"
+            ),
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
             "status": "completed" if failure is None else "failed",
             "route_status": config["route"]["status"],
@@ -467,18 +480,35 @@ def main() -> int:
                 ),
                 "last_20": [list(sample) for sample in mission.command_samples[-20:]],
             },
-            "map_status": "provisional_plan_derived_not_measured",
+            "map_status": (
+                "measured_site_presentation_candidate"
+                if args.site_profile == "measured_presentation"
+                else "provisional_plan_derived_not_measured"
+            ),
+            "site_profile": args.site_profile,
             "control_stack": args.control_stack,
-            "learned_policy_coupled": args.control_stack == "nav2_phase3n_safety",
+            "learned_policy_coupled": args.control_stack
+            in {
+                "nav2_phase3n_safety",
+                "nav2_mapped_doorway_phase3n_safety",
+            },
             "learned_360_safety_coupled": (
-                args.control_stack == "nav2_phase3n_safety"
+                args.control_stack
+                in {
+                    "nav2_phase3n_safety",
+                    "nav2_mapped_doorway_phase3n_safety",
+                }
+            ),
+            "mapped_doorway_safety_coupled": (
+                args.control_stack == "nav2_mapped_doorway_phase3n_safety"
             ),
             "frozen_phase3m_local_navigation_coupled": False,
             "physical_release": False,
             "claim_boundary": (
-                "This is a live Nav2/Isaac physics mission on provisional geometry. The "
+                "This is a live Nav2/Isaac physics mission. The "
                 "control-stack declaration is verified against the paired bridge report by "
-                "validate_administration_nav2_phase3n_integration.py. It does not prove "
+                "the corresponding integration validator. A measured_presentation profile "
+                "uses the reported minimum and disclosed assumptions; it does not prove "
                 "measured-site clearance, stopping distance, sim-to-real performance, or "
                 "physical safety."
             ),

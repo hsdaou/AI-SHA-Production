@@ -25,8 +25,10 @@ from aisha_isaaclab.tasks.office_nav.phase2_end_to_end_env import (
 ADMINISTRATION_LIVE_USD = SIM_PACKAGE_ROOT / "usd" / "administration_live_environment.usda"
 PRESENTATION_ROBOT_USD = SIM_PACKAGE_ROOT / "usd" / "aisha_loaded_presentation.usda"
 
-def administration_collision_raycast_targets() -> list[MultiMeshRayCasterCfg.RaycastTargetCfg]:
-    """Return only collision/navigation shapes, excluding presentation-only meshes."""
+def administration_collision_raycast_targets(
+    *, excluded_path_prefixes: tuple[str, ...] = ()
+) -> list[MultiMeshRayCasterCfg.RaycastTargetCfg]:
+    """Return collision/navigation shapes, with explicit purpose-specific exclusions."""
     if not ADMINISTRATION_LIVE_USD.is_file():
         return []
     stage = Usd.Stage.Open(str(ADMINISTRATION_LIVE_USD))
@@ -37,6 +39,8 @@ def administration_collision_raycast_targets() -> list[MultiMeshRayCasterCfg.Ray
     for prim in stage.TraverseAll():
         path = str(prim.GetPath())
         if not path.startswith(prefix + "/") or path.startswith(prefix + "/AISHA"):
+            continue
+        if any(path.startswith(excluded) for excluded in excluded_path_prefixes):
             continue
         if not prim.IsActive() or not prim.HasAPI(UsdPhysics.CollisionAPI):
             continue

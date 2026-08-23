@@ -36,6 +36,16 @@ parser.add_argument(
     type=Path,
     help="load a Phase 3N checkpoint and arbitrate every Nav2 command through it",
 )
+parser.add_argument(
+    "--mapped-safety-overlay",
+    type=Path,
+    help="enable the measured-doorway and central-polygon presentation guard",
+)
+parser.add_argument(
+    "--mapped-safety-site-config",
+    type=Path,
+    help="site geometry containing mapped door centres and wall orientations",
+)
 AppLauncher.add_app_launcher_args(parser)
 args = parser.parse_args()
 
@@ -54,11 +64,21 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_ROOT = PROJECT_ROOT.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 import aisha_isaaclab.tasks  # noqa: E402,F401
+from aisha_isaaclab.tasks.office_nav.mapped_nav2_safety import (  # noqa: E402
+    MappedNav2SafetyGuard,
+)
 
 
 PHASE3N_PRESENTATION_TASK = (
     "Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Presentation-Direct-v0"
 )
+PHASE3N_MEASURED_NAV2_TASK = (
+    "Isaac-AISHA-Administration-Live-Measured-Nav2-DynamicSafety-Direct-v0"
+)
+PHASE3N_COMPATIBLE_TASKS = {
+    PHASE3N_PRESENTATION_TASK,
+    PHASE3N_MEASURED_NAV2_TASK,
+}
 ACCEPTED_PHASE3N_CHECKPOINT = "aisha_phase3n_dynamic_safety_model_50.pt"
 ACCEPTED_PHASE3N_SHA256 = (
     "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b"
@@ -88,7 +108,13 @@ def ros_stamp(simulation_time_s: float):
 class AishaSimulationBridge:
     """Small direct ROS publisher/subscriber around the Isaac Lab scene."""
 
-    def __init__(self, raw_env, control_period_s: float, sensor_positions: dict[str, list[float]]):
+    def __init__(
+        self,
+        raw_env,
+        control_period_s: float,
+        sensor_positions: dict[str, list[float]],
+        mapped_guard: MappedNav2SafetyGuard | None = None,
+    ):
         import rclpy
         from geometry_msgs.msg import Twist
         from nav_msgs.msg import Odometry
@@ -101,6 +127,7 @@ class AishaSimulationBridge:
         self.rclpy = rclpy
         self.raw_env = raw_env
         self.control_period_s = control_period_s
+        self.mapped_guard = mapped_guard
         self.node = rclpy.create_node(
             "aisha_isaac_administration_bridge",
             parameter_overrides=[],
@@ -132,6 +159,7 @@ class AishaSimulationBridge:
         self.stop_latched = False
         self.front_stop_trigger_m = 0.60
         self.front_stop_release_m = 0.75
+        self.front_stop_half_angle_deg = 10.0
         self.command_watchdog_s = 0.30
         self.maximum_forward_mps = 0.30
         self.maximum_angular_rad_s = 0.55
@@ -154,6 +182,7 @@ class AishaSimulationBridge:
             "front_scan": 0,
         }
         self.minimum_front_range_m = math.inf
+        self.minimum_central_front_range_m = math.inf
         self.minimum_ring_clearance_m = math.inf
         self.publish_static_transforms(sensor_positions)
 
@@ -209,7 +238,17 @@ class AishaSimulationBridge:
         )
 
     def command_action(self) -> torch.Tensor:
-        front_min = float(torch.amin(self.front_ranges()[0]).item())
+        front_ranges = self.front_ranges()[0]
+        front_min = float(torch.amin(front_ranges).item())
+        centre_index = int(front_ranges.numel() // 2)
+        half_width = max(1, round(self.front_stop_half_angle_deg / 5.0))
+        central_front_min = float(
+            torch.amin(
+                front_ranges[
+                    max(0, centre_index - half_width) : centre_index + half_width + 1
+                ]
+            ).item()
+        )
         ring_clearance = float(
             torch.amin(
                 self.raw_env._lidar_ranges()[0]
@@ -217,20 +256,57 @@ class AishaSimulationBridge:
             ).item()
         )
         self.minimum_front_range_m = min(self.minimum_front_range_m, front_min)
+        self.minimum_central_front_range_m = min(
+            self.minimum_central_front_range_m, central_front_min
+        )
         self.minimum_ring_clearance_m = min(
             self.minimum_ring_clearance_m, ring_clearance
         )
         if self.stop_latched:
-            self.stop_latched = front_min < self.front_stop_release_m
-        elif front_min <= self.front_stop_trigger_m:
+            self.stop_latched = central_front_min < self.front_stop_release_m
+        elif central_front_min <= self.front_stop_trigger_m:
             self.stop_latched = True
             self.obstacle_stops += 1
+
+        linear = self.command_linear_mps
+        angular = self.command_angular_rad_s
+        if self.mapped_guard is not None:
+            local_xy = self.raw_env._local_xy()[0]
+            quaternion = self.raw_env._robot.data.root_quat_w[0]
+            yaw = math.atan2(
+                2.0
+                * (
+                    float(quaternion[0] * quaternion[3])
+                    + float(quaternion[1] * quaternion[2])
+                ),
+                1.0
+                - 2.0
+                * (
+                    float(quaternion[2] * quaternion[2])
+                    + float(quaternion[3] * quaternion[3])
+                ),
+            )
+            guard_result = self.mapped_guard.apply(
+                x_m=float(local_xy[0].item()),
+                y_m=float(local_xy[1].item()),
+                yaw_rad=yaw,
+                yaw_rate_rad_s=float(
+                    self.raw_env._robot.data.root_ang_vel_b[0, 2].item()
+                ),
+                forward_speed_mps=float(
+                    self.raw_env._robot.data.root_lin_vel_b[0, 0].item()
+                ),
+                requested_linear_mps=linear,
+                requested_angular_rad_s=angular,
+            )
+            linear = guard_result.linear_mps
+            angular = guard_result.angular_rad_s
 
         stale = self.simulation_time_s - self.command_received_at_s > self.command_watchdog_s
         if stale and (self.command_linear_mps != 0.0 or self.command_angular_rad_s != 0.0):
             self.watchdog_stops += 1
-        linear = 0.0 if stale or self.stop_latched else self.command_linear_mps
-        angular = 0.0 if stale else self.command_angular_rad_s
+        linear = 0.0 if stale or self.stop_latched else linear
+        angular = 0.0 if stale else angular
         if self.stop_latched and abs(angular) > 1.0e-3:
             # A front-only latch that also suppresses yaw can deadlock at a
             # doorway edge: DWB needs to rotate away before the front beam can
@@ -372,6 +448,24 @@ def main() -> int:
     if not rclpy.ok():
         rclpy.init()
     learned_safety_enabled = args.phase3n_safety_checkpoint is not None
+    mapped_guard = None
+    mapped_overlay_path = None
+    mapped_site_config_path = None
+    if args.mapped_safety_overlay is not None:
+        if args.mapped_safety_site_config is None:
+            raise ValueError(
+                "--mapped-safety-overlay requires --mapped-safety-site-config"
+            )
+        mapped_overlay_path = args.mapped_safety_overlay.expanduser().resolve()
+        mapped_site_config_path = args.mapped_safety_site_config.expanduser().resolve()
+        if not mapped_overlay_path.is_file():
+            raise FileNotFoundError(mapped_overlay_path)
+        if not mapped_site_config_path.is_file():
+            raise FileNotFoundError(mapped_site_config_path)
+        mapped_guard = MappedNav2SafetyGuard.from_site_configs(
+            yaml.safe_load(mapped_site_config_path.read_text(encoding="utf-8")),
+            yaml.safe_load(mapped_overlay_path.read_text(encoding="utf-8")),
+        )
     task = args.task
     checkpoint = None
     checkpoint_sha256 = None
@@ -382,10 +476,10 @@ def main() -> int:
         checkpoint_sha256 = sha256_file(checkpoint)
         if task == parser.get_default("task"):
             task = PHASE3N_PRESENTATION_TASK
-        if task != PHASE3N_PRESENTATION_TASK:
+        if task not in PHASE3N_COMPATIBLE_TASKS:
             raise ValueError(
-                "--phase3n-safety-checkpoint requires the deterministic Phase 3N "
-                f"presentation task: {PHASE3N_PRESENTATION_TASK}"
+                "--phase3n-safety-checkpoint requires a deterministic compatible "
+                f"Phase 3N task: {sorted(PHASE3N_COMPATIBLE_TASKS)}"
             )
 
     cfg = parse_env_cfg(task, device=args.device, num_envs=1, use_fabric=True)
@@ -466,7 +560,12 @@ def main() -> int:
         ]
         for name in ("crown_lidar", "front_lidar", "imu")
     }
-    bridge = AishaSimulationBridge(raw_env, control_period_s, sensor_positions)
+    bridge = AishaSimulationBridge(
+        raw_env,
+        control_period_s,
+        sensor_positions,
+        mapped_guard=mapped_guard,
+    )
     steps_completed = 0
     reset_detected = False
     safety_authority_steps = 0
@@ -474,6 +573,8 @@ def main() -> int:
     safety_brake_sum = 0.0
     maximum_safety_brake_fraction = 0.0
     minimum_ring_clearance_m = math.inf
+    last_pre_step_position_xy_m = None
+    last_pre_step_minimum_ring_clearance_m = None
     try:
         if not learned_safety_enabled:
             env.reset()
@@ -489,6 +590,18 @@ def main() -> int:
                 elif steps_completed == 75:
                     bridge.set_self_test_command(0.0)
             navigation_action = bridge.command_action()
+            pre_step_position = raw_env._local_xy()[0].detach().cpu().tolist()
+            pre_step_ring_clearance = float(
+                torch.amin(
+                    raw_env._lidar_ranges()[0] - raw_env._lidar_envelope_ranges
+                ).item()
+            )
+            last_pre_step_position_xy_m = [
+                round(float(value), 6) for value in pre_step_position
+            ]
+            last_pre_step_minimum_ring_clearance_m = round(
+                pre_step_ring_clearance, 6
+            )
             if learned_safety_enabled:
                 raw_env.set_external_navigation_actions(navigation_action)
                 with torch.inference_mode():
@@ -523,6 +636,34 @@ def main() -> int:
                 break
     finally:
         position = raw_env._local_xy()[0].detach().cpu().tolist()
+        exact_ranges = raw_env._lidar_ranges()[0]
+        exact_clearances = exact_ranges - raw_env._lidar_envelope_ranges
+        minimum_clearance_index = int(torch.argmin(exact_clearances).item())
+        minimum_hit = raw_env.scene.sensors["crown_lidar"].data.ray_hits_w[
+            0, minimum_clearance_index
+        ]
+        episode_outcomes = raw_env.extras.get("episode_outcomes", {})
+        termination_diagnostics = {
+            "minimum_clearance_ray_index": minimum_clearance_index,
+            "minimum_clearance_ray_angle_deg": -180.0
+            + 10.0 * minimum_clearance_index,
+            "minimum_exact_range_m": round(
+                float(exact_ranges[minimum_clearance_index].item()), 6
+            ),
+            "minimum_exact_clearance_m": round(
+                float(exact_clearances[minimum_clearance_index].item()), 6
+            ),
+            "minimum_hit_world_xyz_m": [
+                round(float(value), 6) for value in minimum_hit.detach().cpu().tolist()
+            ],
+            "episode_outcomes": {
+                key: bool(value[0].item())
+                for key, value in episode_outcomes.items()
+                if isinstance(value, torch.Tensor)
+                and value.dtype == torch.bool
+                and value.numel() >= 1
+            },
+        }
         report = {
             "report_type": "administration_nav2_bridge",
             "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -551,6 +692,7 @@ def main() -> int:
                 "command_watchdog_s": bridge.command_watchdog_s,
                 "front_stop_trigger_m": bridge.front_stop_trigger_m,
                 "front_stop_release_m": bridge.front_stop_release_m,
+                "front_stop_half_angle_deg": bridge.front_stop_half_angle_deg,
                 "minimum_rotation_clearance_m": bridge.minimum_rotation_clearance_m,
             },
             "events": {
@@ -563,6 +705,11 @@ def main() -> int:
                 "rotation_guard_stops": bridge.rotation_guard_stops,
                 "mission_complete_signal_received": bridge.exit_requested,
                 "episode_reset_gate_detected": reset_detected,
+            },
+            "termination_diagnostics": termination_diagnostics,
+            "last_pre_step_snapshot": {
+                "position_xy_m": last_pre_step_position_xy_m,
+                "minimum_ring_clearance_m": last_pre_step_minimum_ring_clearance_m,
             },
             "learned_safety": {
                 "enabled": learned_safety_enabled,
@@ -589,10 +736,26 @@ def main() -> int:
                 ),
                 "deterministic_static_integration_gate": learned_safety_enabled,
             },
+            "mapped_site_safety": (
+                {
+                    **mapped_guard.report(),
+                    "overlay": str(mapped_overlay_path),
+                    "overlay_sha256": sha256_file(mapped_overlay_path),
+                    "site_config": str(mapped_site_config_path),
+                    "site_config_sha256": sha256_file(mapped_site_config_path),
+                }
+                if mapped_guard is not None
+                else {"enabled": False}
+            ),
             "final_position_xy_m": [round(float(value), 5) for value in position],
             "minimum_front_range_m": (
                 round(bridge.minimum_front_range_m, 5)
                 if math.isfinite(bridge.minimum_front_range_m)
+                else None
+            ),
+            "minimum_central_front_range_m": (
+                round(bridge.minimum_central_front_range_m, 5)
+                if math.isfinite(bridge.minimum_central_front_range_m)
                 else None
             ),
             "minimum_ring_clearance_m": (
@@ -602,11 +765,29 @@ def main() -> int:
             ),
             "learned_policy_coupled": learned_safety_enabled,
             "learned_360_safety_coupled": learned_safety_enabled,
+            "central_drop_safety_routing": {
+                "learned_crown_scan_excludes_navigation_barrier": (
+                    task == PHASE3N_MEASURED_NAV2_TASK
+                ),
+                "occupancy_map_keeps_navigation_barrier": True,
+                "physics_collider_kept": True,
+                "mapped_full_footprint_guard_required": (
+                    task == PHASE3N_MEASURED_NAV2_TASK
+                ),
+            },
+            "measured_nav2_termination_envelope": {
+                "lidar_collision_margin_m": float(cfg.lidar_collision_margin_m),
+                "nav2_footprint_padding_m": 0.03 if mapped_guard is not None else None,
+                "physical_geometry_changed": False,
+                "physical_safety_credit": False,
+            },
             "frozen_phase3m_local_navigation_coupled": False,
             "physical_release": False,
             "claim_boundary": (
                 "With a Phase 3N checkpoint this run proves live Nav2-to-learned-safety "
-                "arbitration in the provisional Isaac scene. It does not couple the frozen "
+                "arbitration in the Isaac scene. When enabled, the mapped-site guard adds "
+                "simulation-only doorway alignment/speed and central-drop constraints before "
+                "the learned brake actor. It does not couple the frozen "
                 "Phase 3M local navigator, replace the formal dynamic-obstacle evaluation, "
                 "prove stopping distance or sim-to-real performance, or authorize physical "
                 "deployment. Without a checkpoint it proves Isaac physics/ROS exchange only."
@@ -616,6 +797,9 @@ def main() -> int:
             steps_completed > 0
             and all(count > 0 for count in bridge.messages.values())
             and not reset_detected
+            and (
+                task != PHASE3N_MEASURED_NAV2_TASK or mapped_guard is not None
+            )
             and (
                 not learned_safety_enabled
                 or report["learned_safety"]["checkpoint_is_accepted_phase3n"]

@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-23. Phase 3N freezes the successful Phase 3M pivot/clearance stack, adds a one-action recurrent 360-degree brake layer, and passes the declared randomized, static-regression and live-administration simulation gates. Phase 4A packages a separate live dynamic-pedestrian insert, and the final 76.9-second Omniverse administration reel now passes 27/27 evidence checks. This is not a physical safety or deployment release.**
+**Updated 2026-08-23. The unchanged Rev D robot now passes the measured-presentation 12-leg live Nav2 mission through both offices with the accepted Phase 3N learned 360-degree brake layer. The aggregate gate passes 27/27. Phase 4A and the accepted Omniverse evidence reel remain the dynamic-obstacle presentation evidence. This is not a physical safety or deployment release.**
 
 ## Completed
 
@@ -39,9 +39,10 @@
   final presentation material because it does not match the walkthrough closely
   enough. Walkthrough-grounded photoreal concept stills are kept separate from
   simulation evidence.
-- Both office openings use a disclosed 1.40 m presentation assumption, giving
-  316 mm nominal transit clearance per side. Both thresholds are assumed flush;
-  these values are neither measured nor released for physical operation.
+- The original wide-door presentation scene used disclosed 1.40 m openings.
+  The current measured-presentation scene supersedes them with the reported
+  0.85 m minimum VP opening and a disclosed 0.90 m Principal assumption. Both
+  thresholds remain assumed flush and neither route is physically released.
 - AI-SHA-Production commit `8893535` was reconciled for sensor/system contracts:
   LD19 `/scan`, RealSense D435 aligned depth, and BNO055 `/imu/data` at 50 Hz.
 - A real Isaac Lab DirectRLEnv task, `Isaac-AISHA-OfficeNav-Direct-v0`, now
@@ -344,6 +345,30 @@
   maps for terrazzo, walnut, oak and mottled-grey finishes. Five 1280 x 720
   office/route stills were regenerated with PathTracing at 64 spp;
   `phase3_geometry_rtx_refinement_validation.json` passes 17/17 checks.
+- The measured-presentation live autonomy stack now connects Nav2 global/DWB
+  planning to a mapped two-stage doorway/central-drop guard, then to the
+  accepted Phase 3N learned 360-degree brake and articulated wheel physics.
+  The new task, wrappers and evidence keep this path separate from the learned
+  route policy because Nav2/DWB and that policy are alternative local motion
+  authorities.
+- The first accepted measured static mission completed all 12/12 legs, both
+  office entries/departures, two in-office 180-degree pivots and the return
+  home in 18,323 bridge steps without an episode reset. Door entry counters are
+  2/2 for both VP and Principal; maximum measured doorway speed was 0.06258 m/s
+  against the 0.10 m/s limit and maximum tangent offset was 0.02151 m.
+- The inaccessible 0.20 m central atrium drop remains in the occupancy map and
+  as a physics collider. It is removed only from the learned crown-ray target
+  set to avoid treating an artificial navigation barrier as a person/object;
+  a predicted full-footprint mapped guard retains authority. Minimum predicted
+  clearance was 0.27959 m. This routing and the 0.015 m simulation termination
+  envelope earn no physical safety credit.
+- The accepted Phase 3N checkpoint was loaded by hash. It had authority for 689
+  steps and applied braking on 192. The aggregate evidence report
+  `administration_nav2_measured_integration_gate.json` passes 27/27.
+- The current hallway profile remains 0.30 m/s and tight-doorway target/limit
+  remain 0.08/0.10 m/s. A 0.80 m/s hallway cruise is the next separately
+  trained simulation tier with unchanged robot geometry; the existing
+  policies and this gate do not validate that speed.
 
 ## Deterministic contact tuning disclosure
 
@@ -358,10 +383,10 @@ claim. See `config/physics_materials.yaml`.
 - The approved plan is now present and controls printed dimensions, room
   relationship and route topology. PDF trace offsets and final in-room goal
   offsets remain presentation placements rather than survey-grade coordinates.
-- Door widths (1.40/1.40 m), flush thresholds and outward-open left-jamb door
-  leaves are presentation assumptions selected to provide a reasonable,
-  collision-enabled demonstration route; measured clear widths, threshold
-  heights and hinge/leaf geometry remain absent.
+- The user-reported 0.85 m minimum and 2.12 m door height are applied to the VP
+  opening. The Principal opening uses a disclosed 0.90 m presentation
+  assumption and the same height. Flush thresholds and exact hinge/leaf
+  geometry remain assumptions; neither route is physically released.
 - Wall/ceiling height, wall thickness, office furniture offsets and decorative
   detail remain walkthrough-derived or presentation assumptions.
 - High-fidelity contact asset: measured carrier spring curve and caster
@@ -369,12 +394,11 @@ claim. See `config/physics_materials.yaml`.
 - The LD19, D435 and BNO055 models/interfaces are known, but the low front LiDAR
   model and exact camera intrinsics remain hold points. The trained ray ranges
   are scalable geometric sensing, not a validated RTX LD19 noise model.
-- The 12-segment Principal/Vice-Principal sensor policy now passes its declared
-  held-out gate. D435 depth/semantic inputs, broader material and sensor domain
-  randomization and dynamic-person training are now implemented and completed,
-  and the declared Phase 3 simulation acceptance gate passes. Dynamic
-  furniture, Nav2 integration, measured-site validation and sim-to-real
-  commissioning remain subsequent gates.
+- The 12-segment Principal/Vice-Principal sensor policy and declared Phase 3
+  dynamic-safety gate pass. The measured-presentation static Nav2 integration
+  now also passes. Blocked-route dynamic replanning, broader office-directory
+  coverage, native scan registration and sim-to-real commissioning remain
+  subsequent gates.
 - The administration USD has been rebuilt around the walkthrough's primary
   visual anchors: brighter polished terrazzo and aggregate, white atrium
   columns, dark timber/slatted walls, office glazing, a round timber meeting
@@ -416,8 +440,28 @@ claim. See `config/physics_materials.yaml`.
 - Phase 2 code, checkpoint, gates, live execution and presentation evidence are
   complete. The scene is still a presentation-quality plan/walkthrough model,
   not a photogrammetric or measured as-built digital twin.
-- Physical Nav2 release still depends on measured door/threshold data, an
-  as-built navigation survey and closed-route commissioning.
+- Physical Nav2 release still depends on complete threshold/door hardware data,
+  an as-built navigation survey and closed-route commissioning.
+
+## Progress snapshot
+
+These are evidence-based project-management estimates, not safety ratings:
+
+| Workstream | Progress |
+|---|---:|
+| Presentation-ready Omniverse simulation | 90% |
+| Learned navigation and doorway handling | 87% |
+| Measured digital twin | 66% |
+| Nav2/localisation integration | 72% |
+| Dynamic-obstacle simulation safety | 79% |
+| Physical deployment readiness | 30% |
+| Overall end objective | 74% |
+
+The major increase is Nav2/localisation integration: a full measured static
+mission is now accepted. The remaining work is dominated by blocked-route
+dynamic replanning, the 0.80 m/s simulation curriculum and regression gate,
+native scan/visual refinement, operator-facing capture and physical sim-to-real
+commissioning.
 
 ## Evidence
 
@@ -509,6 +553,9 @@ claim. See `config/physics_materials.yaml`.
 - `phase4a_dynamic_safety_showcase_acceptance.json`
 - `final_omniverse_administration_presentation_report.json`
 - `final_omniverse_administration_presentation_acceptance.json`
+- `administration_nav2_measured_bridge.json`
+- `administration_nav2_measured_mission.json`
+- `administration_nav2_measured_integration_gate.json`
 - `phase3_geometry_rtx_refinement_validation.json`
 - `phase3_launch_status.json`
 - `PRODUCTION_REPOSITORY_REVIEW.md`

@@ -2,8 +2,10 @@
 #
 # This does not replace nav2_sim_params.yaml: the production-oriented 0.080 m
 # padding remains unchanged there. This presentation stress-case uses 0.030 m
-# per side (0.828 m padded width), 0.10 m/s maximum translation, a centred
-# straight approach, and no rotation in a doorway. It is not a physical release.
+# per side (0.828 m padded width), 0.30 m/s hallway cruise, a mapped 0.10 m/s
+# doorway limit with a 0.08 m/s target, a centred straight approach, and no
+# rotation in a doorway. This file must be coupled to the mapped-site guard and
+# is not a physical release.
 
 amcl:
   ros__parameters:
@@ -69,20 +71,20 @@ controller_server:
       plugin: dwb_core::DWBLocalPlanner
       debug_trajectory_details: true
       min_vel_x: 0.0
-      max_vel_x: 0.10
+      max_vel_x: 0.30
       min_vel_y: 0.0
       max_vel_y: 0.0
       max_vel_theta: 0.55
       min_speed_xy: 0.0
-      max_speed_xy: 0.10
+      max_speed_xy: 0.30
       # The Rev D wheel drives have a measurable in-place static-friction
       # deadband in the furnished USD scene. Commands below 0.30 rad/s can
       # start a pivot and then stall; keep terminal pivots above that floor.
       min_speed_theta: 0.30
-      acc_lim_x: 0.15
+      acc_lim_x: 0.25
       acc_lim_y: 0.0
       acc_lim_theta: 0.50
-      decel_lim_x: -0.15
+      decel_lim_x: -0.25
       decel_lim_y: 0.0
       decel_lim_theta: -0.50
       vx_samples: 12
@@ -168,7 +170,9 @@ local_costmap:
           raytrace_max_range: 10.0
       inflation_layer:
         plugin: nav2_costmap_2d::InflationLayer
-        inflation_radius: 0.12
+        # Keep a meaningful gradient around pillars/corners while the separate
+        # 0.03 m footprint padding preserves 0.85 m doorway feasibility.
+        inflation_radius: 0.45
         cost_scaling_factor: 4.0
       always_send_full_costmap: true
 
@@ -212,7 +216,7 @@ global_costmap:
           raytrace_max_range: 10.0
       inflation_layer:
         plugin: nav2_costmap_2d::InflationLayer
-        inflation_radius: 0.12
+        inflation_radius: 0.45
         cost_scaling_factor: 4.0
       always_send_full_costmap: true
 
@@ -255,10 +259,10 @@ velocity_smoother:
     smoothing_frequency: 20.0
     scale_velocities: false
     feedback: OPEN_LOOP
-    max_velocity: [0.10, 0.0, 0.55]
+    max_velocity: [0.30, 0.0, 0.55]
     min_velocity: [0.0, 0.0, -0.55]
-    max_accel: [0.15, 0.0, 0.50]
-    max_decel: [-0.15, 0.0, -0.50]
+    max_accel: [0.25, 0.0, 0.50]
+    max_decel: [-0.25, 0.0, -0.50]
     odom_topic: /odom
     odom_duration: 0.10
     deadband_velocity: [0.0, 0.0, 0.0]

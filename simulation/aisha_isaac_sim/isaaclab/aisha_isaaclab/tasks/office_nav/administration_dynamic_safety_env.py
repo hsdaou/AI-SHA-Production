@@ -48,6 +48,9 @@ PHASE3N_PRESENTATION_GOAL_TOLERANCES_M = (
 )
 
 PHASE4A_PEDESTRIAN_USD = SIM_PACKAGE_ROOT / "usd" / "aisha_pedestrian_showcase.usda"
+CENTRAL_DROP_NAVIGATION_BARRIER_PREFIX = (
+    "/Administration/Architecture/RestrictedAreas/CentralAtriumDrop/NavigationBarrier_"
+)
 
 
 def _showcase_person_proxy() -> RigidObjectCfg:
@@ -118,6 +121,39 @@ class AishaAdministrationSafetyPresentationSceneCfg(
 
 
 @configclass
+class AishaAdministrationMeasuredNav2SafetySceneCfg(
+    AishaAdministrationSafetyPresentationSceneCfg
+):
+    """Measured Nav2 scene with the mapped drop guard as the drop-edge authority.
+
+    The invisible central-drop barrier remains a physics collider and remains in
+    both occupancy maps.  It is excluded only from the learned crown scan so the
+    rectangular wall-collision envelope does not interpret the mapped perimeter
+    behind the valid home pose as an immediate wall strike.  The deterministic
+    mapped guard performs full-footprint, predicted-motion enforcement instead.
+    """
+
+    crown_lidar = MultiMeshRayCasterCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/base_link/lidar_link",
+        update_period=0.10,
+        offset=MultiMeshRayCasterCfg.OffsetCfg(),
+        ray_alignment="base",
+        pattern_cfg=patterns.LidarPatternCfg(
+            channels=1,
+            vertical_fov_range=(0.0, 0.0),
+            horizontal_fov_range=(-180.0, 180.0),
+            horizontal_res=10.0,
+        ),
+        max_distance=10.0,
+        mesh_prim_paths=administration_collision_raycast_targets(
+            excluded_path_prefixes=(CENTRAL_DROP_NAVIGATION_BARRIER_PREFIX,)
+        ),
+        reference_meshes=False,
+        debug_vis=False,
+    )
+
+
+@configclass
 class AishaAdministrationDynamicSafetyShowcaseSceneCfg(
     AishaAdministrationDynamicSafetySceneCfg
 ):
@@ -164,6 +200,27 @@ class AishaAdministrationSafetyPresentationEnvCfg(
     dynamic_crossing_creep_segment_ids = ()
     predictive_stop_segment_ids = (6, 11)
     goal_tolerance_m_by_segment = PHASE3N_PRESENTATION_GOAL_TOLERANCES_M
+
+
+@configclass
+class AishaAdministrationMeasuredNav2SafetyEnvCfg(
+    AishaAdministrationSafetyPresentationEnvCfg
+):
+    """Measured-site Nav2 coupling for the accepted Phase 3N brake actor."""
+
+    scene: AishaAdministrationMeasuredNav2SafetySceneCfg = (
+        AishaAdministrationMeasuredNav2SafetySceneCfg(
+            num_envs=1,
+            env_spacing=55.0,
+            replicate_physics=False,
+            clone_in_fabric=False,
+        )
+    )
+    # The generic 25 mm learned-task termination margin can turn sub-millimetre
+    # ray discretization at the exact 0.85 m jamb edge into a false collision.
+    # Keep the Nav2 footprint's separate 30 mm padding and use 15 mm only for
+    # this measured presentation task's ray-based termination envelope.
+    lidar_collision_margin_m = 0.015
 
 
 @configclass

@@ -1,0 +1,153 @@
+{
+  "report_type": "administration_nav2_bridge",
+  "generated_at_utc": "2026-08-23T18:35:58.546042+00:00",
+  "status": "bridge_smoke_completed",
+  "task": "Isaac-AISHA-Administration-Live-Measured-Nav2-DynamicSafety-Direct-v0",
+  "steps_completed": 18323,
+  "control_period_s": 0.03333333333333333,
+  "topics": {
+    "subscribed": [
+      "/cmd_vel"
+    ],
+    "published": [
+      "/clock",
+      "/odom",
+      "/tf",
+      "/tf_static",
+      "/scan",
+      "/front_scan"
+    ],
+    "message_counts": {
+      "clock": 18323,
+      "odom": 18323,
+      "tf": 18323,
+      "tf_static": 3,
+      "scan": 6108,
+      "front_scan": 9162
+    }
+  },
+  "command_constraints": {
+    "maximum_forward_mps": 0.3,
+    "reverse_allowed": false,
+    "lateral_motion_allowed": false,
+    "maximum_angular_rad_s": 0.55,
+    "minimum_in_place_angular_rad_s": 0.3,
+    "command_watchdog_s": 0.3,
+    "front_stop_trigger_m": 0.6,
+    "front_stop_release_m": 0.75,
+    "front_stop_half_angle_deg": 10.0,
+    "minimum_rotation_clearance_m": 0.08
+  },
+  "events": {
+    "rejected_reverse_commands": 0,
+    "rejected_lateral_commands": 0,
+    "watchdog_stops": 0,
+    "obstacle_stops": 0,
+    "in_place_deadband_compensations": 407,
+    "front_latch_rotation_escape_steps": 0,
+    "rotation_guard_stops": 0,
+    "mission_complete_signal_received": true,
+    "episode_reset_gate_detected": false
+  },
+  "termination_diagnostics": {
+    "minimum_clearance_ray_index": 2,
+    "minimum_clearance_ray_angle_deg": -160.0,
+    "minimum_exact_range_m": 2.752689,
+    "minimum_exact_clearance_m": 1.7214,
+    "minimum_hit_world_xyz_m": [
+      4.399632,
+      -2.500369,
+      1.179059
+    ],
+    "episode_outcomes": {
+      "success": false,
+      "waypoint_reached": false,
+      "collision": false,
+      "time_out": false,
+      "dynamic_obstacle_collision": false,
+      "static_collision": false,
+      "final_protective_stop_latched": false,
+      "final_peak_torque_active": false,
+      "final_recovery_supervisor_brake_active": false
+    }
+  },
+  "last_pre_step_snapshot": {
+    "position_xy_m": [
+      3.458898,
+      -0.416752
+    ],
+    "minimum_ring_clearance_m": 1.7214
+  },
+  "learned_safety": {
+    "enabled": true,
+    "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt",
+    "checkpoint_sha256": "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b",
+    "checkpoint_is_accepted_phase3n": true,
+    "base_command_source": "nav2_cmd_vel",
+    "authority_steps": 689,
+    "brake_steps": 192,
+    "mean_brake_fraction_while_active": 0.005138666278456915,
+    "maximum_brake_fraction": 0.0471661202609539,
+    "minimum_360_clearance_m": 0.00955,
+    "deterministic_static_integration_gate": true
+  },
+  "mapped_site_safety": {
+    "steps": 18323,
+    "doorway_active_steps": 9981,
+    "doorway_slow_steps": 5797,
+    "doorway_alignment_steps": 8484,
+    "doorway_alignment_hold_steps": 1728,
+    "doorway_overspeed_stops": 5,
+    "doorway_direction_rearms": 2,
+    "polygon_no_go_stops": 0,
+    "doorway_entries": {
+      "vice_principal": 2,
+      "principal": 2
+    },
+    "maximum_abs_speed_in_doorway_mps": 0.06257984042167664,
+    "maximum_abs_tangent_offset_in_doorway_m": 0.02150730077275781,
+    "minimum_polygon_full_footprint_clearance_m": 0.279585,
+    "enabled": true,
+    "architecture": "nav2_cmd_vel_then_mapped_doorway_and_polygon_guard",
+    "maximum_doorway_speed_mps": 0.1,
+    "target_doorway_speed_mps": 0.08,
+    "doorway_alignment_tolerance_deg": 0.7500000000000001,
+    "approach_alignment_tolerance_deg": 3.0000000000000004,
+    "overspeed_stop_mps": 0.095,
+    "traction_command_ceiling_mps": 0.18,
+    "traction_gain": 1.5,
+    "polygon_outer_radius_m": 2.3,
+    "polygon_body_circumscribed_radius_m": 0.8204151388169284,
+    "polygon_minimum_clearance_m": 0.05,
+    "physical_safety_credit": false,
+    "overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
+    "overlay_sha256": "e5b60981b6771158434fb160beac97b2d197643ab0520d198174c9846992298b",
+    "site_config": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
+    "site_config_sha256": "c06e1941e873ae88012844ee27be9e7614342412d5c51cccfe9358a9559ffe47"
+  },
+  "final_position_xy_m": [
+    3.45889,
+    -0.41417
+  ],
+  "minimum_front_range_m": 0.47256,
+  "minimum_central_front_range_m": 0.62088,
+  "minimum_ring_clearance_m": 0.00955,
+  "learned_policy_coupled": true,
+  "learned_360_safety_coupled": true,
+  "central_drop_safety_routing": {
+    "learned_crown_scan_excludes_navigation_barrier": true,
+    "occupancy_map_keeps_navigation_barrier": true,
+    "physics_collider_kept": true,
+    "mapped_full_footprint_guard_required": true
+  },
+  "measured_nav2_termination_envelope": {
+    "lidar_collision_margin_m": 0.015,
+    "nav2_footprint_padding_m": 0.03,
+    "physical_geometry_changed": false,
+    "physical_safety_credit": false
+  },
+  "frozen_phase3m_local_navigation_coupled": false,
+  "physical_release": false,
+  "claim_boundary": "With a Phase 3N checkpoint this run proves live Nav2-to-learned-safety arbitration in the Isaac scene. When enabled, the mapped-site guard adds simulation-only doorway alignment/speed and central-drop constraints before the learned brake actor. It does not couple the frozen Phase 3M local navigator, replace the formal dynamic-obstacle evaluation, prove stopping distance or sim-to-real performance, or authorize physical deployment. Without a checkpoint it proves Isaac physics/ROS exchange only.",
+  "passed": true
+}
