@@ -66,6 +66,7 @@ class MappedNav2SafetyGuard:
         tangent_half_extent_m: float = 1.10,
         alignment_tolerance_rad: float = math.radians(0.75),
         approach_alignment_tolerance_rad: float = math.radians(3.0),
+        approach_stage_capture_radius_m: float = 0.018,
         yaw_settle_rate_rad_s: float = 0.05,
         heading_gain: float = 4.0,
         yaw_damping_gain: float = 2.0,
@@ -91,6 +92,7 @@ class MappedNav2SafetyGuard:
         self.tangent_half_extent_m = tangent_half_extent_m
         self.alignment_tolerance_rad = alignment_tolerance_rad
         self.approach_alignment_tolerance_rad = approach_alignment_tolerance_rad
+        self.approach_stage_capture_radius_m = approach_stage_capture_radius_m
         self.yaw_settle_rate_rad_s = yaw_settle_rate_rad_s
         self.heading_gain = heading_gain
         self.yaw_damping_gain = yaw_damping_gain
@@ -273,13 +275,24 @@ class MappedNav2SafetyGuard:
                 direction_x = self._crossing_sign * normal_x
                 direction_y = self._crossing_sign * normal_y
                 on_approach_side = normal * self._crossing_sign < 0.0
+                approach_stage_x = (
+                    door.centre_x_m - self._crossing_sign * normal_x
+                )
+                approach_stage_y = (
+                    door.centre_y_m - self._crossing_sign * normal_y
+                )
+                approach_stage_distance = math.hypot(
+                    approach_stage_x - x_m, approach_stage_y - y_m
+                )
                 coarse_approach = (
                     on_approach_side
-                    and normal_distance > self.slow_zone_normal_half_extent_m
+                    and normal_distance
+                    > 1.0 - self.approach_stage_capture_radius_m
+                    and approach_stage_distance > self.approach_stage_capture_radius_m
                 )
                 if coarse_approach:
-                    stage_x = door.centre_x_m - self._crossing_sign * normal_x
-                    stage_y = door.centre_y_m - self._crossing_sign * normal_y
+                    stage_x = approach_stage_x
+                    stage_y = approach_stage_y
                 else:
                     stage_x = door.centre_x_m + self._crossing_sign * normal_x
                     stage_y = door.centre_y_m + self._crossing_sign * normal_y
@@ -378,9 +391,11 @@ class MappedNav2SafetyGuard:
                 "approach_alignment_tolerance_deg": math.degrees(
                     self.approach_alignment_tolerance_rad
                 ),
+                "approach_stage_capture_radius_m": self.approach_stage_capture_radius_m,
                 "overspeed_stop_mps": self.overspeed_stop_mps,
                 "traction_command_ceiling_mps": self.traction_command_ceiling_mps,
                 "traction_gain": self.traction_gain,
+                "breakaway_angular_rad_s": self.breakaway_angular_rad_s,
                 "polygon_outer_radius_m": self.polygon_outer_radius_m,
                 "polygon_body_circumscribed_radius_m": self.body_circumscribed_radius_m,
                 "polygon_minimum_clearance_m": self.polygon_minimum_clearance_m,

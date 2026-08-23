@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev O - 2026-08-23 - measured Nav2 plus learned-safety mission accepted**
+**Rev P - 2026-08-24 - Phase 6 measured Nav2 and RTX presentation accepted**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -13,17 +13,22 @@ safety certification. The unresolved hold points are listed below and in
 
 ## Latest presentation deliverable
 
-The latest accepted deliverable is a live Isaac Sim/Isaac Lab run in the
-plan- and capture-informed administration scene. The PPO checkpoint provides
-the route action at every one of 13,307 policy steps; a deterministic mapped
-doorway layer limits and aligns the wheel command through the tight openings.
-There is no turn/dwell supervisor, scripted trajectory, or robot-root animation.
+The latest accepted deliverable is the live ROS 2/Nav2 mission in Isaac Sim,
+with the accepted Phase 6 brake policy on straight high-speed legs 1 and 5 and
+the accepted Phase 3N policy on every other leg. The unchanged Rev D robot
+completed all 12 Principal/Vice-Principal legs, both office pivots and the
+return home. The paired integration gate passes 28/28 without a collision or
+episode reset. Minimum observed peak speed across the two high-speed legs was
+0.74339 m/s from a 0.80 m/s request. Doorway speed remained at or below
+0.05953 m/s, maximum doorway tangent offset was 0.01536 m, and the mapped
+central-drop footprint clearance remained 0.27959 m.
 
-The seed-10643 mission completed all 12 Principal/Vice-Principal waypoints in
-443.57 simulated seconds with zero static or dynamic collisions. Across 1,563
-in-door samples, maximum speed was 0.05671 m/s against the declared 0.10 m/s
-presentation limit. The full robot footprint remained at least 0.236 m outside
-the central polygon boundary.
+For clear presentation, the accepted live mission records a downsampled
+wheel-physics pose trace. Omniverse replays only those recorded poses in the
+PathTracing administration scene; it does not invent or interpolate a second
+route. The wider six-shot camera keeps the environment legible instead of
+filling the frame with the robot. This cinematic replay is distinct from the
+live-policy evidence and is labelled accordingly.
 
 Site facts and assumptions remain visible in both the video and reports:
 
@@ -38,15 +43,15 @@ Site facts and assumptions remain visible in both the video and reports:
   Omniverse RTX procedural presentation scene, not a photogrammetric/as-built
   digital twin or a physical-deployment release.
 
-Presentation video (3x, motion unchanged):
-`media/videos/AI-SHA_Measured_Administration_Live_Policy_3x.mp4` — 147.73 s,
-1280 x 720 at 30 fps, SHA-256
-`8edc5ce42a9f4a5f6a8d808826efa407d2856a1b6714d9641abc979b047cdf7f`.
-The acceptance evidence is
-`results/measured_administration_final_presentation_validation.json` (23/23
-checks passed). The accepted checkpoint is packaged as
-`isaaclab/checkpoints/aisha_measured_tight_door_model2350.pt`, SHA-256
-`6bf032350d36539d6e18651d8c3344c17951ff33dfade17a7910a694933d2d5f`.
+Presentation video:
+`media/videos/AI-SHA_Phase6_Nav2_LearnedSafety_RTX_Presentation.mp4` — 12.0 s,
+1280 x 720 at 20 fps, RTX PathTracing at 8 spp, SHA-256
+`34da79912934b1454a6f6a6b3592c172eadb7d089d6fdec3dda785b6d17c5d07`.
+`results/administration_nav2_phase6_rtx_presentation_acceptance.json` passes
+14/14; the source live-integration report
+`results/administration_nav2_phase6_high_speed_integration_gate.json` passes
+28/28. The Phase 6 checkpoint remains hash locked to
+`e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318`.
 
 ## Latest live autonomy gate
 
@@ -69,16 +74,18 @@ clearance from the inaccessible 0.20 m central drop was 0.27959 m. The learned
 Phase 3N layer had authority on 689 control steps and applied braking on 192.
 `results/administration_nav2_measured_integration_gate.json` passes 27/27.
 
-The measured-scene replay above remains the accepted 0.30 m/s hallway run, with
-a 0.08 m/s doorway target. Phase 6 has separately accepted a **simulation-only
-0.80 m/s hallway tier** on straight route segments 1 and 5: 126/128 unseen
+The earlier measured-scene gate remains accepted at 0.30 m/s. Phase 6 now also
+accepts a **simulation-only 0.80 m/s hallway tier** on straight route segments
+1 and 5: 126/128 unseen
 episodes succeeded, with one dynamic and one static collision. No chassis,
 footprint, URDF, USD, mass, track or sensor geometry changed, and the 0.10 m/s
 doorway limit remains fixed. The selected policy and 16/16 acceptance record are
 `isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt` and
-`results/phase6_high_speed_080_acceptance.json`. This new policy still requires
-measured-administration Nav2 replay before it can be used in the final Omniverse
-presentation run.
+`results/phase6_high_speed_080_acceptance.json`. Its measured-administration
+Nav2 integration and final RTX presentation gates are now complete. Ground
+truth Isaac odometry is used for the presentation Nav2 map transform because
+the assumed furnishing scene is not an AMCL benchmark; this earns no physical
+localisation credit.
 
 ## Architecture decision
 
@@ -867,10 +874,10 @@ can release the route. For physical operation, if clear width is below 0.920 m,
 change the route or narrow the mechanical design instead of tuning Nav2 to
 squeeze through.
 
-The measured-administration profile starts at 0.30 m/s. A separately trained
-simulation hallway tier now passes its formal 0.80 m/s gate on declared straight
-segments, while tight doors remain limited to 0.10 m/s. Its measured-scene Nav2
-and final RTX presentation replays are still pending. Physical operation at
+The measured-administration baseline starts at 0.30 m/s. The separately trained
+simulation hallway tier now passes its formal 0.80 m/s gate and the complete
+measured-scene Nav2/RTX presentation gates on declared straight segments, while
+tight doors remain limited to 0.10 m/s. Physical operation at
 0.80 m/s remains prohibited until measured stopping-distance, protective-field
 and supervised commissioning tests pass.
 

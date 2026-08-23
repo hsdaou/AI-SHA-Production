@@ -2637,6 +2637,7 @@ class AishaPhase3DynamicSafetyEnvCfg(AishaPhase3TargetedRecoveryEnvCfg):
     high_speed_segment_ids: tuple[int, ...] = ()
     non_high_speed_maximum_mps = 0.50
     high_speed_maximum_mps = 0.50
+    measured_route_scoped_phase3n_thresholds_enabled = False
 
 
 @configclass
@@ -3058,12 +3059,29 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
         safety_scan_closing_delta = (
             self._previous_safety_scan_clearance - ring_clearance
         ).clamp_min(0.0)
+        closing_distance = torch.full_like(
+            ring_clearance, float(self.cfg.safety_ring_closing_distance_m)
+        )
+        closing_delta = torch.full_like(
+            ring_clearance, float(self.cfg.safety_ring_closing_delta_m)
+        )
+        if self.cfg.measured_route_scoped_phase3n_thresholds_enabled:
+            closing_distance = torch.where(
+                self._high_speed_segment_scope,
+                closing_distance,
+                torch.full_like(closing_distance, 1.20),
+            )
+            closing_delta = torch.where(
+                self._high_speed_segment_scope,
+                closing_delta,
+                torch.full_like(closing_delta, 0.005),
+            )
         self._safety_authority_active = (
             self._safety_segment_scope
-            & (ring_clearance < self.cfg.safety_ring_closing_distance_m)
+            & (ring_clearance < closing_distance)
             & (
                 safety_scan_closing_delta
-                > self.cfg.safety_ring_closing_delta_m
+                > closing_delta
             )
         )
         self._previous_safety_scan_clearance.copy_(ring_clearance)

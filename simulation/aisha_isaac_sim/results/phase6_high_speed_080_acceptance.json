@@ -1,8 +1,8 @@
 {
   "report_type": "phase6_high_speed_080_simulation_acceptance",
-  "generated_at_utc": "2026-08-23T20:05:28.602096+00:00",
+  "generated_at_utc": "2026-08-23T21:23:47.898688+00:00",
   "passed": true,
-  "status": "accepted_simulation_hallway_tier_pending_measured_nav2_replay",
+  "status": "accepted_simulation_hallway_tier",
   "checks": {
     "checkpoint_hash_matches_both_formal_reports": true,
     "formal_protocol_is_64_unseen_episodes_per_high_speed_segment": true,
@@ -96,13 +96,13 @@
     "passed": true,
     "legs_completed": 12,
     "maximum_abs_speed_in_doorway_mps": 0.06257984042167664,
-    "note": "This is the already accepted 0.30 m/s measured-scene retention gate. The selected Phase 6 checkpoint has not yet been replayed through the measured Nav2/Omniverse mission."
+    "note": "This is the already accepted 0.30 m/s measured-scene retention gate. Phase 6 measured replay and presentation acceptance are evaluated by separate downstream validators."
   },
   "claim_boundary": {
     "supported": "Isaac Lab full-strength domain-randomized 0.80 m/s target on declared straight hallway segments 1 and 5",
     "not_yet_supported": [
-      "0.80 m/s measured-administration Nav2 mission replay",
-      "final RTX Omniverse presentation run at the new hallway tier",
+      "0.80 m/s measured-administration Nav2 mission replay by this formal training report",
+      "final RTX Omniverse presentation run by this formal training report",
       "sim-to-real performance",
       "emergency stopping or human protective-field validation",
       "physical robot release"

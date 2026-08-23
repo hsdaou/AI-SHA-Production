@@ -133,9 +133,9 @@ SHOTS = (
     },
     {
         "title": "Return through the hall - Principal suite turn",
-        "camera": (3.0, 2.50, 2.10),
-        "look_at": (9.0, -1.40, 0.62),
-        "focal_length": 14.0,
+        "camera": (3.0, 1.00, 1.85),
+        "look_at": (9.0, -0.45, 0.68),
+        "focal_length": 16.0,
         "cutaway": False,
         "segments": (5, 6),
     },
@@ -332,9 +332,18 @@ def main() -> int:
         "waypoints_completed": source_report.get("waypoints_completed"),
         "source_trace_record_count": len(trace),
         "source_trace_control_modes": dict(Counter(str(sample["control_mode"]) for sample in trace)),
-        "motion": "recorded pose samples from the successful Isaac Lab wheel-physics playback; no scripted route interpolation",
+        "motion": "recorded pose samples from the successful live Nav2/Isaac wheel-physics mission; no scripted route interpolation",
         "disclosure": "visual replay of a verified learned run in the presentation environment; not live policy execution",
-        "claim_boundary": source_report.get("claim_boundary"),
+        "claim_boundary": {
+            "supported": (
+                "PathTracing visual replay of recorded poses from the accepted "
+                "live Nav2/Isaac wheel-physics mission"
+            ),
+            "visual_replay_is_live_policy_execution": False,
+            "source_motion_was_live_policy_execution": True,
+            "physical_localization_credit": False,
+            "physical_release": False,
+        },
     }
     write_json(render_report_path, report)
     print(f"wrote {frame_number} learned-replay frames to {frame_dir}")

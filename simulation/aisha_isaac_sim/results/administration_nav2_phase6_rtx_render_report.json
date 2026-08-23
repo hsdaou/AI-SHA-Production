@@ -1,0 +1,180 @@
+{
+  "atrium_column_clearance": {
+    "column_radius_m": 0.19,
+    "columns": [
+      {
+        "closest_trace_segment_index": 4666,
+        "column_index": 0,
+        "minimum_surface_clearance_m": 5.726536,
+        "minimum_trace_centre_distance_m": 6.620493,
+        "passed": true,
+        "position_xy_m": [
+          -3.25,
+          -2.55
+        ]
+      },
+      {
+        "closest_trace_segment_index": 0,
+        "column_index": 1,
+        "minimum_surface_clearance_m": 6.260565,
+        "minimum_trace_centre_distance_m": 7.154523,
+        "passed": true,
+        "position_xy_m": [
+          -3.25,
+          2.55
+        ]
+      },
+      {
+        "closest_trace_segment_index": 4622,
+        "column_index": 2,
+        "minimum_surface_clearance_m": 1.499822,
+        "minimum_trace_centre_distance_m": 2.393779,
+        "passed": true,
+        "position_xy_m": [
+          1.25,
+          -4.2
+        ]
+      },
+      {
+        "closest_trace_segment_index": 0,
+        "column_index": 3,
+        "minimum_surface_clearance_m": 1.701721,
+        "minimum_trace_centre_distance_m": 2.595679,
+        "passed": true,
+        "position_xy_m": [
+          2.95,
+          2.55
+        ]
+      }
+    ],
+    "conservative_robot_radius_m": 0.703957,
+    "method": "minimum 2D distance to every interpolated learned-trace segment",
+    "required_trace_centre_distance_m": 0.95,
+    "robot_envelope_length_m": 1.18,
+    "robot_envelope_width_m": 0.768
+  },
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt",
+  "claim_boundary": {
+    "supported": "PathTracing visual replay of recorded poses from the accepted live Nav2/Isaac wheel-physics mission",
+    "visual_replay_is_live_policy_execution": false,
+    "source_motion_was_live_policy_execution": true,
+    "physical_localization_credit": false,
+    "physical_release": false
+  },
+  "clearance_validation_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase6_rtx_replay_validation.json",
+  "clearance_validation_report_sha256": "d72fe2877fb2d34b25ed7b38e5447630bb46c1474ec1001134ef52085c1a081e",
+  "completed_steps": 14281,
+  "disclosure": "visual replay of a verified learned run in the presentation environment; not live policy execution",
+  "duration_s": 12.0,
+  "encoded_duration_s": 12.0,
+  "encoded_fps": 20.0,
+  "encoded_frame_count": 240,
+  "encoder": "ffmpeg/libx264",
+  "encoder_crf": 18,
+  "encoder_preset": "slow",
+  "fps": 20,
+  "frame_count": 240,
+  "frame_directory": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/phase6_nav2_rtx_frames",
+  "motion": "recorded pose samples from the successful live Nav2/Isaac wheel-physics mission; no scripted route interpolation",
+  "path_tracing_spp": 8,
+  "renderer": "PathTracing",
+  "resolution": [
+    1280,
+    720
+  ],
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+  "scene_sha256": "40414d9841e384afb06394382a2688f540aeb61395644070d1781175a7cad011",
+  "shots": [
+    {
+      "first_elapsed_s": 0.066667,
+      "first_source_step": 3,
+      "last_elapsed_s": 4.466667,
+      "last_source_step": 135,
+      "rendered_frames": 40,
+      "segment_ids": [
+        0
+      ],
+      "source_trace_records": 45,
+      "title": "Departure - central atrium"
+    },
+    {
+      "first_elapsed_s": 4.566667,
+      "first_source_step": 138,
+      "last_elapsed_s": 74.166667,
+      "last_source_step": 2226,
+      "rendered_frames": 40,
+      "segment_ids": [
+        1,
+        2
+      ],
+      "source_trace_records": 697,
+      "title": "East administration hall - Vice-Principal approach"
+    },
+    {
+      "first_elapsed_s": 74.266667,
+      "first_source_step": 2229,
+      "last_elapsed_s": 236.866667,
+      "last_source_step": 7107,
+      "rendered_frames": 40,
+      "segment_ids": [
+        3,
+        4
+      ],
+      "source_trace_records": 1627,
+      "title": "Visit 1 - Vice-Principal office"
+    },
+    {
+      "first_elapsed_s": 236.966667,
+      "first_source_step": 7110,
+      "last_elapsed_s": 276.166667,
+      "last_source_step": 8286,
+      "rendered_frames": 40,
+      "segment_ids": [
+        5,
+        6
+      ],
+      "source_trace_records": 393,
+      "title": "Return through the hall - Principal suite turn"
+    },
+    {
+      "first_elapsed_s": 276.266667,
+      "first_source_step": 8289,
+      "last_elapsed_s": 422.166667,
+      "last_source_step": 12666,
+      "rendered_frames": 40,
+      "segment_ids": [
+        7,
+        8,
+        9
+      ],
+      "source_trace_records": 1460,
+      "title": "Visit 2 - Principal office"
+    },
+    {
+      "first_elapsed_s": 422.266667,
+      "first_source_step": 12669,
+      "last_elapsed_s": 475.966667,
+      "last_source_step": 14280,
+      "rendered_frames": 40,
+      "segment_ids": [
+        10,
+        11
+      ],
+      "source_trace_records": 538,
+      "title": "Mission complete - return to the atrium"
+    }
+  ],
+  "source_trace_control_modes": {
+    "nav2_phase6_and_phase3n_learned_safety": 4760
+  },
+  "source_trace_record_count": 4760,
+  "status": "route_video_encoded",
+  "trajectory_outcome": "success",
+  "trajectory_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase6_high_speed_mission.json",
+  "trajectory_report_sha256": "a2116102326cf78861b5a01952eea377642c927107a68ec6d7b1c5ac0afe30a4",
+  "trajectory_seed": 6084,
+  "video": "media/videos/AI-SHA_Phase6_Nav2_LearnedSafety_RTX_Presentation.mp4",
+  "video_sha256": "34da79912934b1454a6f6a6b3592c172eadb7d089d6fdec3dda785b6d17c5d07",
+  "video_size_bytes": 1433570,
+  "waypoints_completed": 12
+}

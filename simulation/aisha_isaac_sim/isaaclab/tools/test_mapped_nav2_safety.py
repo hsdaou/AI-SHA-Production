@@ -89,6 +89,36 @@ class MappedNav2SafetyTests(unittest.TestCase):
         self.assertFalse(result.doorway_alignment_hold)
         self.assertAlmostEqual(result.linear_mps, 0.18)
 
+    def test_near_stage_keeps_point_bearing_until_tightly_centred(self) -> None:
+        result = guard().apply(
+            x_m=17.058,
+            y_m=-3.848,
+            yaw_rad=math.radians(-80.14),
+            yaw_rate_rad_s=0.0,
+            forward_speed_mps=0.0,
+            requested_linear_mps=0.30,
+            requested_angular_rad_s=-0.07,
+        )
+        self.assertTrue(result.doorway_alignment_active)
+        self.assertFalse(result.doorway_alignment_hold)
+        self.assertGreater(result.linear_mps, 0.0)
+        self.assertGreater(result.yaw_error_rad, 0.0)
+        self.assertGreater(result.angular_rad_s, 0.0)
+
+    def test_tightly_centred_stage_switches_to_door_normal(self) -> None:
+        result = guard().apply(
+            x_m=17.105,
+            y_m=-4.035,
+            yaw_rad=math.radians(-80.0),
+            yaw_rate_rad_s=0.0,
+            forward_speed_mps=0.0,
+            requested_linear_mps=0.10,
+            requested_angular_rad_s=0.0,
+        )
+        self.assertTrue(result.doorway_alignment_hold)
+        self.assertAlmostEqual(result.yaw_error_rad, math.radians(-10.0), places=3)
+        self.assertAlmostEqual(result.angular_rad_s, -0.55)
+
     def test_post_crossing_guard_keeps_forward_heading(self) -> None:
         candidate = guard()
         candidate.apply(

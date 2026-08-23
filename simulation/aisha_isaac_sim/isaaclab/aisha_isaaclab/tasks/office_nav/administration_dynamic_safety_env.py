@@ -224,6 +224,27 @@ class AishaAdministrationMeasuredNav2SafetyEnvCfg(
 
 
 @configclass
+class AishaAdministrationMeasuredNav2Phase6HighSpeedEnvCfg(
+    AishaAdministrationMeasuredNav2SafetyEnvCfg
+):
+    """Measured Nav2 replay of the accepted Phase 6 straight-hallway tier."""
+
+    # Preserve the complete frozen stack's accepted 0.50 m/s normalization and
+    # expand only the final wheel mapping on the two formally gated straight
+    # hallway legs. The bridge supplies the mission segment explicitly.
+    high_speed_segment_ids = (1, 5)
+    non_high_speed_maximum_mps = 0.50
+    high_speed_maximum_mps = 0.80
+    safety_ring_closing_distance_m = 1.80
+    safety_ring_clear_distance_m = 2.20
+    safety_ring_low_clearance_m = 0.45
+    safety_ring_closing_delta_m = 0.007
+    # Phase 6 was trained for the fast straights; the accepted Phase 3N actor
+    # remains the learned safety authority elsewhere in this measured replay.
+    measured_route_scoped_phase3n_thresholds_enabled = True
+
+
+@configclass
 class AishaAdministrationMeasuredTightDoorEnvCfg(AishaMeasuredTightDoorEnvCfg):
     """Accepted two-action route policy with measured-door safety in the live USD."""
 

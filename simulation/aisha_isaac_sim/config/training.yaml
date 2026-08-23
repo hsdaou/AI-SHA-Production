@@ -1036,6 +1036,12 @@ release:
   measured_administration_live_route_passed: true
   measured_administration_presentation_available: true
   measured_administration_presentation_validated: true
-  nav2_integrated: false
+  phase6_high_speed_checkpoint_accepted: true
+  phase6_measured_nav2_integration_passed: true
+  phase6_rtx_presentation_available: true
+  phase6_rtx_presentation_validated: true
+  nav2_integrated_in_simulation: true
+  nav2_ground_truth_localization_only: true
+  nav2_integrated: true
   physical_robot_release: false
-  required_next_gate: "for higher visual fidelity, register the native RoomPlan sections and optionally capture the locked VP interior; physical deployment separately requires threshold and destination-specific clearance verification, Nav2 integration, sim-to-real testing, all-direction protective sensing, stopping-distance validation and hardware safety commissioning"
+  required_next_gate: "physical deployment separately requires threshold and destination-specific clearance verification, real localisation validation, sim-to-real testing, all-direction protective sensing, stopping-distance validation and hardware safety commissioning; higher visual fidelity may register the native RoomPlan sections and capture the locked VP interior"

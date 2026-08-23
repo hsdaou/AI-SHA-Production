@@ -365,10 +365,21 @@
 - The accepted Phase 3N checkpoint was loaded by hash. It had authority for 689
   steps and applied braking on 192. The aggregate evidence report
   `administration_nav2_measured_integration_gate.json` passes 27/27.
-- The current hallway profile remains 0.30 m/s and tight-doorway target/limit
-  remain 0.08/0.10 m/s. A 0.80 m/s hallway cruise is the next separately
-  trained simulation tier with unchanged robot geometry; the existing
-  policies and this gate do not validate that speed.
+- Phase 6 now couples the accepted 0.80 m/s brake policy on straight segments
+  1 and 5 with the accepted Phase 3N fallback elsewhere. The measured Nav2 run
+  completed 12/12 legs, both 180-degree office pivots and both door traversals
+  without reset. Minimum observed high-speed peak was 0.74339 m/s; maximum
+  doorway speed was 0.05953 m/s and tangent offset was 0.01536 m.
+  `administration_nav2_phase6_high_speed_integration_gate.json` passes 28/28.
+- The accepted live run contains a 4,760-record pose trace. Its six-shot
+  Omniverse replay rendered 240 frames at 1280 x 720 with RTX PathTracing at
+  8 spp. `AI-SHA_Phase6_Nav2_LearnedSafety_RTX_Presentation.mp4` is 12.0 s and
+  has SHA-256
+  `34da79912934b1454a6f6a6b3592c172eadb7d089d6fdec3dda785b6d17c5d07`;
+  `administration_nav2_phase6_rtx_presentation_acceptance.json` passes 14/14.
+- The presentation integration uses Isaac ground-truth odometry with an
+  identity map-to-odom transform. It evaluates Nav2 motion and learned safety,
+  not AMCL robustness, and earns no physical localisation or release credit.
 
 ## Deterministic contact tuning disclosure
 
@@ -457,11 +468,11 @@ These are evidence-based project-management estimates, not safety ratings:
 | Physical deployment readiness | 30% |
 | Overall end objective | 74% |
 
-The major increase is Nav2/localisation integration: a full measured static
-mission is now accepted. The remaining work is dominated by blocked-route
-dynamic replanning, the 0.80 m/s simulation curriculum and regression gate,
-native scan/visual refinement, operator-facing capture and physical sim-to-real
-commissioning.
+The major increase is Nav2/localisation integration: the full measured static
+mission, route-scoped 0.80 m/s simulation tier and final RTX replay are now
+accepted. The remaining work is dominated by blocked-route dynamic replanning,
+real localisation, native scan/visual refinement, operator-facing capture and
+physical sim-to-real commissioning.
 
 ## Evidence
 

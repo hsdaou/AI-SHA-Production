@@ -239,6 +239,16 @@ PHASE6_ACCEPTANCE_REPORT = (
     / "results"
     / "phase6_high_speed_080_acceptance.json"
 )
+PHASE6_MEASURED_NAV2_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "administration_nav2_phase6_high_speed_integration_gate.json"
+)
+PHASE6_RTX_PRESENTATION_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "administration_nav2_phase6_rtx_presentation_acceptance.json"
+)
 
 
 class TrainingConfigTests(unittest.TestCase):
@@ -317,7 +327,7 @@ class TrainingConfigTests(unittest.TestCase):
         report = json.loads(PHASE6_ACCEPTANCE_REPORT.read_text(encoding="utf-8"))
         self.assertEqual(
             self.phase6["status"],
-            "accepted_simulation_hallway_tier_pending_measured_nav2_replay",
+            "accepted_simulation_hallway_tier_with_measured_nav2_and_rtx_presentation",
         )
         self.assertTrue(PACKAGED_PHASE6_CHECKPOINT.is_file())
         self.assertEqual(
@@ -334,8 +344,41 @@ class TrainingConfigTests(unittest.TestCase):
             report["stage2_formal_gate"]["success_rate"],
             self.phase6["formal_gate"]["combined_high_speed_success_rate_min"],
         )
-        self.assertFalse(accepted["measured_nav2_replay_completed"])
-        self.assertFalse(accepted["final_omniverse_presentation_completed"])
+        self.assertTrue(accepted["measured_nav2_replay_completed"])
+        self.assertTrue(accepted["final_omniverse_presentation_completed"])
+        measured = json.loads(
+            PHASE6_MEASURED_NAV2_REPORT.read_text(encoding="utf-8")
+        )
+        presentation = json.loads(
+            PHASE6_RTX_PRESENTATION_REPORT.read_text(encoding="utf-8")
+        )
+        self.assertTrue(measured["passed"])
+        self.assertEqual(measured["checks_passed"], measured["checks_total"])
+        self.assertEqual(
+            accepted["measured_nav2_checks_passed"], measured["checks_passed"]
+        )
+        self.assertTrue(
+            math.isclose(
+                accepted["measured_nav2_minimum_observed_high_speed_mps"],
+                measured["speed_evidence"]["minimum_high_speed_observed_mps"],
+                abs_tol=1e-9,
+            )
+        )
+        self.assertTrue(
+            math.isclose(
+                accepted["measured_nav2_maximum_doorway_speed_mps"],
+                measured["mapped_guard"]["maximum_abs_speed_in_doorway_mps"],
+                abs_tol=1e-9,
+            )
+        )
+        self.assertTrue(presentation["passed"])
+        self.assertEqual(
+            presentation["checks_passed"], presentation["checks_total"]
+        )
+        self.assertEqual(
+            accepted["final_omniverse_presentation_video_sha256"],
+            presentation["video"]["sha256"],
+        )
         self.assertFalse(report["claim_boundary"]["physical_release"])
 
     def test_task_uses_wheel_control(self) -> None:
@@ -402,7 +445,13 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertTrue(release["phase4a_dynamic_showcase_presentation_available"])
         self.assertTrue(release["final_omniverse_presentation_reel_available"])
         self.assertTrue(release["final_omniverse_presentation_reel_validated"])
-        self.assertFalse(release["nav2_integrated"])
+        self.assertTrue(release["phase6_high_speed_checkpoint_accepted"])
+        self.assertTrue(release["phase6_measured_nav2_integration_passed"])
+        self.assertTrue(release["phase6_rtx_presentation_available"])
+        self.assertTrue(release["phase6_rtx_presentation_validated"])
+        self.assertTrue(release["nav2_integrated_in_simulation"])
+        self.assertTrue(release["nav2_ground_truth_localization_only"])
+        self.assertTrue(release["nav2_integrated"])
         self.assertFalse(release["physical_robot_release"])
 
     def test_selected_phase2_checkpoint_is_packaged_and_hash_locked(self) -> None:

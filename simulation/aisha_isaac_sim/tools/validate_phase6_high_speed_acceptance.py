@@ -192,7 +192,7 @@ def main() -> int:
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "passed": passed,
         "status": (
-            "accepted_simulation_hallway_tier_pending_measured_nav2_replay"
+            "accepted_simulation_hallway_tier"
             if passed
             else "not_accepted"
         ),
@@ -233,8 +233,8 @@ def main() -> int:
             ],
             "note": (
                 "This is the already accepted 0.30 m/s measured-scene retention "
-                "gate. The selected Phase 6 checkpoint has not yet been replayed "
-                "through the measured Nav2/Omniverse mission."
+                "gate. Phase 6 measured replay and presentation acceptance are "
+                "evaluated by separate downstream validators."
             ),
         },
         "claim_boundary": {
@@ -243,8 +243,10 @@ def main() -> int:
                 "declared straight hallway segments 1 and 5"
             ),
             "not_yet_supported": [
-                "0.80 m/s measured-administration Nav2 mission replay",
-                "final RTX Omniverse presentation run at the new hallway tier",
+                "0.80 m/s measured-administration Nav2 mission replay by this "
+                "formal training report",
+                "final RTX Omniverse presentation run by this formal training "
+                "report",
                 "sim-to-real performance",
                 "emergency stopping or human protective-field validation",
                 "physical robot release",
