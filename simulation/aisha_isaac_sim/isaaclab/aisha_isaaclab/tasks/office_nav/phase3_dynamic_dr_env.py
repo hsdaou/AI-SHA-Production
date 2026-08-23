@@ -2631,12 +2631,90 @@ class AishaPhase3DynamicSafetyEnvCfg(AishaPhase3TargetedRecoveryEnvCfg):
     safety_emergency_forward_trigger_clearance_m = 0.08
     safety_emergency_rotation_trigger_clearance_m = 0.04
 
+    # Empty preserves the accepted Phase 3N contract. High-speed continuation
+    # opts in only verified open, straight hallway legs; all other route legs
+    # remain at the accepted 0.50 m/s learned-command ceiling.
+    high_speed_segment_ids: tuple[int, ...] = ()
+    non_high_speed_maximum_mps = 0.50
+    high_speed_maximum_mps = 0.50
+
 
 @configclass
 class AishaPhase3DynamicSafetyStaticRegressionEnvCfg(
     AishaPhase3DynamicSafetyEnvCfg
 ):
     """Exercise the frozen stack with full DR but no pedestrian crossings."""
+
+    dynamic_obstacle_activation_probability = 0.0
+    dynamic_obstacle_social_retreat_speed_mps = 0.0
+
+
+@configclass
+class AishaPhase6HighSpeed65SafetyEnvCfg(AishaPhase3DynamicSafetyEnvCfg):
+    """First adaptation tier for the unchanged robot at 0.65 m/s in open halls."""
+
+    # Preserve the complete frozen stack's accepted 0.50 m/s normalization.
+    # Only the final wheel mapping expands on declared straight hallway legs.
+    high_speed_maximum_mps = 0.65
+    curriculum_warmup_policy_steps = 0
+    curriculum_ramp_policy_steps = 4_800
+    curriculum_minimum_strength = 0.35
+    high_speed_segment_ids = (1, 5)
+    non_high_speed_maximum_mps = 0.50
+    # Put most continuation experience on the two expanded-speed hallway
+    # directions while retaining non-zero rehearsal for every frozen route leg.
+    segment_sampling_weights = (
+        2.0,
+        36.0,
+        2.0,
+        1.0,
+        1.0,
+        36.0,
+        1.0,
+        2.0,
+        1.0,
+        1.0,
+        2.0,
+        2.0,
+    )
+
+    # The flat-floor 0.80 m/s gate measured a 0.638 m controlled stop. Expand
+    # learned authority upstream before the target tier while retaining the
+    # brake-only output boundary and full 360-degree observation contract.
+    safety_ring_closing_distance_m = 1.50
+    safety_ring_clear_distance_m = 1.90
+    safety_ring_low_clearance_m = 0.40
+    safety_ring_closing_delta_m = 0.006
+
+
+@configclass
+class AishaPhase6HighSpeed65StaticRegressionEnvCfg(
+    AishaPhase6HighSpeed65SafetyEnvCfg
+):
+    """Static-route retention gate for the 0.65 m/s adaptation tier."""
+
+    dynamic_obstacle_activation_probability = 0.0
+    dynamic_obstacle_social_retreat_speed_mps = 0.0
+
+
+@configclass
+class AishaPhase6HighSpeed80SafetyEnvCfg(AishaPhase6HighSpeed65SafetyEnvCfg):
+    """Target 0.80 m/s open-hall tier after 0.65 m/s adaptation succeeds."""
+
+    high_speed_maximum_mps = 0.80
+    curriculum_ramp_policy_steps = 6_400
+    curriculum_minimum_strength = 0.65
+    safety_ring_closing_distance_m = 1.80
+    safety_ring_clear_distance_m = 2.20
+    safety_ring_low_clearance_m = 0.45
+    safety_ring_closing_delta_m = 0.007
+
+
+@configclass
+class AishaPhase6HighSpeed80StaticRegressionEnvCfg(
+    AishaPhase6HighSpeed80SafetyEnvCfg
+):
+    """Static-route retention gate for the 0.80 m/s target tier."""
 
     dynamic_obstacle_activation_probability = 0.0
     dynamic_obstacle_social_retreat_speed_mps = 0.0
@@ -2779,6 +2857,9 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
         self._safety_segment_scope = torch.zeros_like(
             self._safety_authority_active
         )
+        self._high_speed_segment_scope = torch.zeros_like(
+            self._safety_authority_active
+        )
         self._safety_emergency_forward = torch.zeros_like(
             self._safety_authority_active
         )
@@ -2808,6 +2889,12 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
         )
         self._episode_minimum_ring_clearance = torch.full(
             (self.num_envs,), self.cfg.lidar_max_range_m, device=self.device
+        )
+        self._episode_maximum_forward_speed = torch.zeros(
+            self.num_envs, device=self.device
+        )
+        self._episode_maximum_high_speed_segment_speed = torch.zeros(
+            self.num_envs, device=self.device
         )
         for name in (
             "ring_brake_while_closing",
@@ -2876,7 +2963,10 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
 
     def _write_safety_wheel_targets(self) -> None:
         minimum, maximum = self.cfg.linear_velocity_range_mps
-        linear = minimum + (self._actions[:, 0] + 1.0) * 0.5 * (maximum - minimum)
+        route_maximum = self._route_scoped_maximum_speed()
+        linear = minimum + (self._actions[:, 0] + 1.0) * 0.5 * (
+            route_maximum - minimum
+        )
         angular = self._actions[:, 1] * self.cfg.angular_velocity_max_rad_s
         half_track = self.cfg.wheel_track_m * self._wheel_track_scale / 2.0
         wheel_radius = self.cfg.wheel_radius_m * self._wheel_radius_scale
@@ -2887,6 +2977,42 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
             -self.cfg.wheel_speed_limit_rad_s,
             self.cfg.wheel_speed_limit_rad_s,
         )
+
+    def _route_scoped_maximum_speed(self) -> torch.Tensor:
+        """Return the physical speed ceiling selected for each route leg."""
+        return torch.where(
+            self._high_speed_segment_scope,
+            torch.full(
+                (self.num_envs,),
+                float(self.cfg.high_speed_maximum_mps),
+                device=self.device,
+            ),
+            torch.full(
+                (self.num_envs,),
+                float(self.cfg.non_high_speed_maximum_mps),
+                device=self.device,
+            ),
+        )
+
+    def _apply_segment_speed_envelope(self) -> None:
+        """Select high-speed legs without changing frozen-stack normalization."""
+        segment_ids = tuple(int(value) for value in self.cfg.high_speed_segment_ids)
+        if not segment_ids:
+            self._high_speed_segment_scope.zero_()
+            return
+        declared = torch.tensor(segment_ids, dtype=torch.long, device=self.device)
+        self._high_speed_segment_scope = torch.any(
+            self._segment_ids.unsqueeze(1) == declared.unsqueeze(0), dim=1
+        )
+        minimum, accepted_maximum = self.cfg.linear_velocity_range_mps
+        if not math.isclose(
+            float(self.cfg.non_high_speed_maximum_mps),
+            float(accepted_maximum),
+            abs_tol=1.0e-9,
+        ):
+            raise ValueError("non-high-speed mapping must equal the frozen-stack ceiling")
+        if not minimum < accepted_maximum <= self.cfg.high_speed_maximum_mps:
+            raise ValueError("high-speed ceiling must expand the accepted action range")
 
     def _pre_physics_step(self, actions: torch.Tensor) -> None:
         self._safety_actions = actions.clone().clamp(-1.0, 1.0)
@@ -2905,6 +3031,7 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
             self._update_dynamic_obstacles()
             self._frozen_recovery_actions.zero_()
             self._actions = self._external_navigation_actions.clone()
+        self._apply_segment_speed_envelope()
         self._frozen_stack_actions.copy_(self._actions)
 
         self._safety_action_history[:, 2] = self._safety_action_history[:, 1]
@@ -2996,6 +3123,19 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
         self._episode_minimum_ring_clearance.copy_(
             torch.minimum(self._episode_minimum_ring_clearance, ring_clearance)
         )
+        forward_speed = torch.abs(self._robot.data.root_lin_vel_b[:, 0])
+        self._episode_maximum_forward_speed.copy_(
+            torch.maximum(self._episode_maximum_forward_speed, forward_speed)
+        )
+        self._episode_maximum_high_speed_segment_speed.copy_(
+            torch.where(
+                self._high_speed_segment_scope,
+                torch.maximum(
+                    self._episode_maximum_high_speed_segment_speed, forward_speed
+                ),
+                self._episode_maximum_high_speed_segment_speed,
+            )
+        )
 
     def _get_rewards(self) -> torch.Tensor:
         rewards = super()._get_rewards()
@@ -3071,6 +3211,12 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
                     "minimum_ring_clearance_m": (
                         self._episode_minimum_ring_clearance.clone()
                     ),
+                    "maximum_forward_speed_mps": (
+                        self._episode_maximum_forward_speed.clone()
+                    ),
+                    "maximum_high_speed_segment_speed_mps": (
+                        self._episode_maximum_high_speed_segment_speed.clone()
+                    ),
                 }
             )
         return terminated, time_out
@@ -3093,6 +3239,7 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
         self._safety_angular_attenuation[env_ids] = 0.0
         self._safety_authority_active[env_ids] = False
         self._safety_segment_scope[env_ids] = False
+        self._high_speed_segment_scope[env_ids] = False
         self._safety_emergency_forward[env_ids] = False
         self._safety_emergency_rotation[env_ids] = False
         ring_clearance = torch.amin(
@@ -3108,6 +3255,8 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
         self._episode_safety_emergency_forward_steps[env_ids] = 0
         self._episode_safety_emergency_rotation_steps[env_ids] = 0
         self._episode_minimum_ring_clearance[env_ids] = self.cfg.lidar_max_range_m
+        self._episode_maximum_forward_speed[env_ids] = 0.0
+        self._episode_maximum_high_speed_segment_speed[env_ids] = 0.0
         self.extras["dynamic_safety"] = {
             "architecture": "outer_recurrent_360_degree_lidar_safety_residual",
             "frozen_recovery_checkpoint": str(
@@ -3132,6 +3281,9 @@ class AishaPhase3DynamicSafetyEnv(AishaPhase3TargetedRecoveryEnv):
             "duplicate_outer_emergency_guard_enabled": (
                 self.cfg.safety_emergency_guard_enabled
             ),
+            "high_speed_segment_ids": tuple(self.cfg.high_speed_segment_ids),
+            "non_high_speed_maximum_mps": self.cfg.non_high_speed_maximum_mps,
+            "high_speed_maximum_mps": self.cfg.high_speed_maximum_mps,
         }
 
 

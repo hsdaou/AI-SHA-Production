@@ -214,12 +214,129 @@ FINAL_PRESENTATION_ACCEPTANCE = (
     / "results"
     / "final_omniverse_administration_presentation_acceptance.json"
 )
+PHASE6_CONFIG = (
+    Path(__file__).resolve().parents[2]
+    / "config"
+    / "phase6_high_speed_curriculum.yaml"
+)
+PHASE6_LAUNCHER = (
+    Path(__file__).resolve().parents[1]
+    / "scripts"
+    / "run_phase6_high_speed_safety.sh"
+)
+PHASE6_FLAT_FLOOR_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "validation_high_speed_loaded.json"
+)
+PACKAGED_PHASE6_CHECKPOINT = (
+    Path(__file__).resolve().parents[1]
+    / "checkpoints"
+    / "aisha_phase6_high_speed_080_model_223.pt"
+)
+PHASE6_ACCEPTANCE_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "phase6_high_speed_080_acceptance.json"
+)
 
 
 class TrainingConfigTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.data = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))
+        cls.phase6 = yaml.safe_load(PHASE6_CONFIG.read_text(encoding="utf-8"))
+
+    def test_phase6_high_speed_curriculum_is_staged_and_geometry_frozen(self) -> None:
+        phase6 = self.phase6
+        envelope = phase6["speed_envelope"]
+        geometry = phase6["geometry"]
+        curriculum = phase6["curriculum"]
+        self.assertEqual(envelope["adaptation_tiers_mps"], [0.65, 0.80])
+        self.assertEqual(envelope["target_open_hallway_mps"], 0.80)
+        self.assertEqual(envelope["high_speed_route_segment_ids"], [1, 5])
+        self.assertEqual(envelope["non_high_speed_route_ceiling_mps"], 0.50)
+        self.assertEqual(envelope["maximum_doorway_speed_mps"], 0.10)
+        self.assertFalse(envelope["reverse_allowed"])
+        self.assertFalse(geometry["urdf_change_allowed"])
+        self.assertFalse(geometry["usd_collision_change_allowed"])
+        self.assertFalse(geometry["mass_change_allowed"])
+        self.assertFalse(geometry["sensor_geometry_change_allowed"])
+        self.assertEqual(
+            curriculum["stage_2"]["entry_condition"], "stage_1_screen_passed"
+        )
+        for stage in curriculum.values():
+            self.assertEqual(stage["high_speed_route_segment_ids"], [1, 5])
+            self.assertEqual(stage["non_high_speed_route_ceiling_mps"], 0.50)
+        self.assertEqual(phase6["screen_gate"]["high_speed_route_segment_ids"], [1, 5])
+        self.assertTrue(phase6["screen_gate"]["measured_nav2_retention_required"])
+        self.assertEqual(phase6["formal_gate"]["high_speed_route_segment_ids"], [1, 5])
+        self.assertFalse(phase6["physical_release"])
+
+    def test_phase6_tasks_and_brake_only_continuation_are_declared(self) -> None:
+        environment = PHASE3_ENVIRONMENT.read_text(encoding="utf-8")
+        registry = TASK_REGISTRY.read_text(encoding="utf-8")
+        runner = PHASE3_RUNNER.read_text(encoding="utf-8")
+        launcher = PHASE6_LAUNCHER.read_text(encoding="utf-8")
+        for token in (
+            "AishaPhase6HighSpeed65SafetyEnvCfg",
+            "AishaPhase6HighSpeed80SafetyEnvCfg",
+            "high_speed_maximum_mps = 0.65",
+            "high_speed_maximum_mps = 0.80",
+            "_route_scoped_maximum_speed",
+        ):
+            self.assertIn(token, environment)
+        self.assertIn("Phase6-HighSpeed65-DynamicSafety", registry)
+        self.assertIn("Phase6-HighSpeed80-DynamicSafety", registry)
+        self.assertIn("AishaPhase6HighSpeedSafetyPPORunnerCfg", runner)
+        self.assertIn(
+            self.phase6["frozen_input"]["checkpoint_sha256"], launcher
+        )
+        self.assertIn("--resume", launcher)
+
+    def test_phase6_flat_floor_preflight_passed_without_physical_credit(self) -> None:
+        report = json.loads(PHASE6_FLAT_FLOOR_REPORT.read_text(encoding="utf-8"))
+        straight = report["physics"]["straight"][0]
+        stop = report["physics"]["high_speed_stop"]
+        gate = self.phase6["flat_floor_preflight"]
+        self.assertTrue(report["passed"])
+        self.assertEqual(straight["command"]["linear_mps"], 0.80)
+        self.assertLessEqual(
+            straight["steady_speed_error_pct"], gate["maximum_speed_error_percent"]
+        )
+        self.assertLessEqual(
+            stop["stopping_distance_m"], gate["maximum_controlled_stop_distance_m"]
+        )
+        self.assertLessEqual(
+            stop["stopped_after_s"], gate["maximum_controlled_stop_time_s"]
+        )
+        self.assertFalse(gate["physical_stopping_distance_credit"])
+
+    def test_phase6_selected_checkpoint_is_hash_locked_and_simulation_only(self) -> None:
+        accepted = self.phase6["accepted_output"]
+        report = json.loads(PHASE6_ACCEPTANCE_REPORT.read_text(encoding="utf-8"))
+        self.assertEqual(
+            self.phase6["status"],
+            "accepted_simulation_hallway_tier_pending_measured_nav2_replay",
+        )
+        self.assertTrue(PACKAGED_PHASE6_CHECKPOINT.is_file())
+        self.assertEqual(
+            hashlib.sha256(PACKAGED_PHASE6_CHECKPOINT.read_bytes()).hexdigest(),
+            accepted["checkpoint_sha256"],
+        )
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["checks_passed"], report["checks_total"])
+        self.assertEqual(
+            report["selected_checkpoint"]["sha256"],
+            accepted["checkpoint_sha256"],
+        )
+        self.assertGreaterEqual(
+            report["stage2_formal_gate"]["success_rate"],
+            self.phase6["formal_gate"]["combined_high_speed_success_rate_min"],
+        )
+        self.assertFalse(accepted["measured_nav2_replay_completed"])
+        self.assertFalse(accepted["final_omniverse_presentation_completed"])
+        self.assertFalse(report["claim_boundary"]["physical_release"])
 
     def test_task_uses_wheel_control(self) -> None:
         task = self.data["task"]
@@ -312,6 +429,7 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertIn('self.extras["episode_outcomes"]', environment_source)
         self.assertIn('outcomes = extras["episode_outcomes"]', evaluator_source)
         self.assertIn("deterministic_inference", evaluator_source)
+        self.assertIn("observations, _ = env.reset()", evaluator_source)
 
     def test_sensor_evaluation_can_enforce_balanced_segment_quotas(self) -> None:
         environment_source = SENSOR_ENVIRONMENT.read_text(encoding="utf-8")

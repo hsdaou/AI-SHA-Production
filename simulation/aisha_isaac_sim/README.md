@@ -69,12 +69,16 @@ clearance from the inaccessible 0.20 m central drop was 0.27959 m. The learned
 Phase 3N layer had authority on 689 control steps and applied braking on 192.
 `results/administration_nav2_measured_integration_gate.json` passes 27/27.
 
-The current hallway profile remains 0.30 m/s and the doorway target remains
-0.08 m/s. No chassis, footprint, URDF, USD, mass, track or sensor geometry was
-changed. A 0.80 m/s hallway cruise is the next **separately trained simulation
-target**, not a claim about this accepted run: it requires a staged speed and
-stopping-distance curriculum, dynamic-obstacle regression and a new formal
-gate. It must not raise the 0.10 m/s measured-doorway limit.
+The measured-scene replay above remains the accepted 0.30 m/s hallway run, with
+a 0.08 m/s doorway target. Phase 6 has separately accepted a **simulation-only
+0.80 m/s hallway tier** on straight route segments 1 and 5: 126/128 unseen
+episodes succeeded, with one dynamic and one static collision. No chassis,
+footprint, URDF, USD, mass, track or sensor geometry changed, and the 0.10 m/s
+doorway limit remains fixed. The selected policy and 16/16 acceptance record are
+`isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt` and
+`results/phase6_high_speed_080_acceptance.json`. This new policy still requires
+measured-administration Nav2 replay before it can be used in the final Omniverse
+presentation run.
 
 ## Architecture decision
 
@@ -863,10 +867,12 @@ can release the route. For physical operation, if clear width is below 0.920 m,
 change the route or narrow the mechanical design instead of tuning Nav2 to
 squeeze through.
 
-The accepted profile starts at 0.30 m/s. The next separately trained simulation
-hallway target is 0.80 m/s while tight doors remain limited to 0.10 m/s. Physical
-operation at 0.80 m/s remains prohibited until measured stopping-distance,
-protective-field and supervised commissioning tests pass.
+The measured-administration profile starts at 0.30 m/s. A separately trained
+simulation hallway tier now passes its formal 0.80 m/s gate on declared straight
+segments, while tight doors remain limited to 0.10 m/s. Its measured-scene Nav2
+and final RTX presentation replays are still pending. Physical operation at
+0.80 m/s remains prohibited until measured stopping-distance, protective-field
+and supervised commissioning tests pass.
 
 ## Perception is not the safety system
 

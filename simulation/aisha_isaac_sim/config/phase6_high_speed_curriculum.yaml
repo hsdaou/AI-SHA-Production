@@ -1,0 +1,122 @@
+schema_version: 1
+phase: "PHASE6-HIGH-SPEED-SAFETY"
+status: "accepted_simulation_hallway_tier_pending_measured_nav2_replay"
+objective: >
+  Adapt the accepted brake-only 360-degree safety layer to an unchanged Rev D
+  robot at a 0.80 m/s open-hall simulation target while preserving the measured
+  0.10 m/s doorway limit and every physical-release hold point.
+
+geometry:
+  configuration: "unchanged_rev_d"
+  transit_width_m: 0.768
+  front_extent_m: 0.725
+  rear_extent_m: 0.455
+  urdf_change_allowed: false
+  usd_collision_change_allowed: false
+  mass_change_allowed: false
+  sensor_geometry_change_allowed: false
+
+frozen_input:
+  checkpoint: "isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt"
+  checkpoint_sha256: "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b"
+  observation_count: 46
+  action_count: 1
+  authority: "brake_only; cannot accelerate, steer, reverse, or move the robot root"
+
+speed_envelope:
+  accepted_hallway_baseline_mps: 0.30
+  prior_learned_training_ceiling_mps: 0.50
+  adaptation_tiers_mps: [0.65, 0.80]
+  target_open_hallway_mps: 0.80
+  high_speed_route_segment_ids: [1, 5]
+  high_speed_route_segment_labels:
+    - "east_atrium_exit -> vice_principal_turn"
+    - "vice_principal_depart -> hallway_return"
+  non_high_speed_route_ceiling_mps: 0.50
+  frozen_stack_normalization_ceiling_mps: 0.50
+  expansion_point: "final wheel-target mapping on declared high-speed segments only"
+  maximum_doorway_speed_mps: 0.10
+  doorway_target_speed_mps: 0.08
+  maximum_controlled_acceleration_mps2: 0.50
+  reverse_allowed: false
+
+flat_floor_preflight:
+  report: "results/validation_high_speed_loaded.json"
+  commanded_speed_mps: 0.80
+  minimum_acceptable_measured_speed_mps: 0.752
+  maximum_speed_error_percent: 5.0
+  maximum_yaw_drift_deg: 2.0
+  maximum_controlled_stop_time_s: 2.25
+  maximum_controlled_stop_distance_m: 1.00
+  physical_stopping_distance_credit: false
+
+curriculum:
+  stage_1:
+    label: "0.65_mps_adaptation"
+    task: "Isaac-AISHA-BlockA-Phase6-HighSpeed65-DynamicSafety-SensorNav-Direct-v0"
+    static_task: "Isaac-AISHA-BlockA-Phase6-HighSpeed65-StaticRegression-SensorNav-Direct-v0"
+    continuation_iterations: 75
+    initial_checkpoint: "accepted_phase3n_model_50"
+    closing_authority_distance_m: 1.50
+    clear_release_distance_m: 1.90
+    high_speed_route_segment_ids: [1, 5]
+    non_high_speed_route_ceiling_mps: 0.50
+  stage_2:
+    label: "0.80_mps_target"
+    task: "Isaac-AISHA-BlockA-Phase6-HighSpeed80-DynamicSafety-SensorNav-Direct-v0"
+    static_task: "Isaac-AISHA-BlockA-Phase6-HighSpeed80-StaticRegression-SensorNav-Direct-v0"
+    continuation_iterations: 100
+    entry_condition: "stage_1_screen_passed"
+    closing_authority_distance_m: 1.80
+    clear_release_distance_m: 2.20
+    high_speed_route_segment_ids: [1, 5]
+    non_high_speed_route_ceiling_mps: 0.50
+
+screen_gate:
+  scope: "high_speed_route_segments_only"
+  high_speed_route_segment_ids: [1, 5]
+  episodes_per_high_speed_segment: 16
+  combined_success_rate_min: 0.90
+  dynamic_obstacle_collision_rate_max: 0.04
+  static_collision_rate_max: 0.05
+  maximum_high_speed_segment_speed_mps_min: 0.585
+  accepted_checkpoint_baseline_reports:
+    - "results/phase6_high_speed_065_segment1_accepted_baseline_seed10711.json"
+    - "results/phase6_high_speed_065_segment5_accepted_baseline_seed10712.json"
+  measured_nav2_retention_report: "results/administration_nav2_measured_integration_gate.json"
+  measured_nav2_retention_required: true
+
+formal_gate:
+  scope: "high_speed_route_segments_plus_measured_nav2_retention"
+  high_speed_route_segment_ids: [1, 5]
+  episodes_per_high_speed_segment: 64
+  combined_high_speed_success_rate_min: 0.90
+  dynamic_obstacle_collision_rate_max: 0.02
+  static_collision_rate_max: 0.05
+  every_high_speed_segment_success_rate_min: 0.85
+  maximum_high_speed_segment_speed_mps_min_by_tier:
+    stage_1: 0.585
+    stage_2: 0.720
+  measured_live_mission_required: true
+  measured_live_doorway_speed_limit_mps: 0.10
+  measured_live_episode_resets_allowed: 0
+
+accepted_output:
+  checkpoint: "isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt"
+  checkpoint_sha256: "e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318"
+  acceptance_report: "results/phase6_high_speed_080_acceptance.json"
+  training_iteration: 223
+  formal_episodes: 128
+  formal_success_rate: 0.984375
+  formal_dynamic_obstacle_collision_rate: 0.0078125
+  formal_static_collision_rate: 0.0078125
+  minimum_segment_success_rate: 0.96875
+  minimum_observed_peak_high_speed_mps: 0.8283237218856812
+  measured_nav2_replay_completed: false
+  final_omniverse_presentation_completed: false
+
+claim_boundary: >
+  Passing this curriculum can establish only a simulated high-speed hallway
+  tier. It cannot validate emergency stopping, human protective fields,
+  physical doorway passage, sim-to-real performance, or deployment safety.
+physical_release: false

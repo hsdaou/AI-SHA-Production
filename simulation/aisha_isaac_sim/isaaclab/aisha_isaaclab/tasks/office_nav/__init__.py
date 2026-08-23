@@ -370,6 +370,45 @@ gym.register(
 )
 
 
+def _register_phase6_high_speed_task(task_id: str, cfg_name: str) -> None:
+    gym.register(
+        id=task_id,
+        entry_point=(
+            "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+            "AishaPhase3DynamicSafetyEnv"
+        ),
+        disable_env_checker=True,
+        kwargs={
+            "env_cfg_entry_point": (
+                "aisha_isaaclab.tasks.office_nav.phase3_dynamic_dr_env:"
+                f"{cfg_name}"
+            ),
+            "rsl_rl_cfg_entry_point": (
+                "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+                "AishaPhase6HighSpeedSafetyPPORunnerCfg"
+            ),
+        },
+    )
+
+
+_register_phase6_high_speed_task(
+    "Isaac-AISHA-BlockA-Phase6-HighSpeed65-DynamicSafety-SensorNav-Direct-v0",
+    "AishaPhase6HighSpeed65SafetyEnvCfg",
+)
+_register_phase6_high_speed_task(
+    "Isaac-AISHA-BlockA-Phase6-HighSpeed65-StaticRegression-SensorNav-Direct-v0",
+    "AishaPhase6HighSpeed65StaticRegressionEnvCfg",
+)
+_register_phase6_high_speed_task(
+    "Isaac-AISHA-BlockA-Phase6-HighSpeed80-DynamicSafety-SensorNav-Direct-v0",
+    "AishaPhase6HighSpeed80SafetyEnvCfg",
+)
+_register_phase6_high_speed_task(
+    "Isaac-AISHA-BlockA-Phase6-HighSpeed80-StaticRegression-SensorNav-Direct-v0",
+    "AishaPhase6HighSpeed80StaticRegressionEnvCfg",
+)
+
+
 gym.register(
     id="Isaac-AISHA-Administration-Live-Phase3-DynamicSafety-Direct-v0",
     entry_point=(
