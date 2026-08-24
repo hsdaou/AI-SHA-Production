@@ -53,6 +53,16 @@ CENTRAL_DROP_NAVIGATION_BARRIER_PREFIX = (
 )
 
 
+def _dynamic_obstacle_raycast_target() -> MultiMeshRayCasterCfg.RaycastTargetCfg:
+    """Return a transform-tracked ray target for the live pedestrian proxies."""
+    return MultiMeshRayCasterCfg.RaycastTargetCfg(
+        prim_expr="{ENV_REGEX_NS}/DynamicObstacle_.*",
+        is_shared=False,
+        merge_prim_meshes=True,
+        track_mesh_transforms=True,
+    )
+
+
 def _showcase_person_proxy() -> RigidObjectCfg:
     """Create the presentation-only humanoid with a 0.48 m torso envelope."""
     return RigidObjectCfg(
@@ -154,6 +164,53 @@ class AishaAdministrationMeasuredNav2SafetySceneCfg(
 
 
 @configclass
+class AishaAdministrationMeasuredNav2DynamicSafetySceneCfg(
+    AishaAdministrationMeasuredNav2SafetySceneCfg
+):
+    """Measured scene whose learned and Nav2 scans see the moving pedestrian."""
+
+    dynamic_obstacle_0 = _showcase_person_proxy()
+    crown_lidar = MultiMeshRayCasterCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/base_link/lidar_link",
+        update_period=0.10,
+        offset=MultiMeshRayCasterCfg.OffsetCfg(),
+        ray_alignment="base",
+        pattern_cfg=patterns.LidarPatternCfg(
+            channels=1,
+            vertical_fov_range=(0.0, 0.0),
+            horizontal_fov_range=(-180.0, 180.0),
+            horizontal_res=10.0,
+        ),
+        max_distance=10.0,
+        mesh_prim_paths=administration_collision_raycast_targets(
+            excluded_path_prefixes=(CENTRAL_DROP_NAVIGATION_BARRIER_PREFIX,)
+        )
+        + [_dynamic_obstacle_raycast_target()],
+        reference_meshes=True,
+        update_mesh_ids=False,
+        debug_vis=False,
+    )
+    front_lidar = MultiMeshRayCasterCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/base_link/front_lidar_link",
+        update_period=0.05,
+        offset=MultiMeshRayCasterCfg.OffsetCfg(),
+        ray_alignment="base",
+        pattern_cfg=patterns.LidarPatternCfg(
+            channels=1,
+            vertical_fov_range=(0.0, 0.0),
+            horizontal_fov_range=(-60.0, 60.0),
+            horizontal_res=5.0,
+        ),
+        max_distance=10.0,
+        mesh_prim_paths=administration_collision_raycast_targets()
+        + [_dynamic_obstacle_raycast_target()],
+        reference_meshes=True,
+        update_mesh_ids=False,
+        debug_vis=False,
+    )
+
+
+@configclass
 class AishaAdministrationDynamicSafetyShowcaseSceneCfg(
     AishaAdministrationDynamicSafetySceneCfg
 ):
@@ -245,6 +302,30 @@ class AishaAdministrationMeasuredNav2Phase6HighSpeedEnvCfg(
 
 
 @configclass
+class AishaAdministrationMeasuredNav2Phase7DynamicCrossingEnvCfg(
+    AishaAdministrationMeasuredNav2Phase6HighSpeedEnvCfg
+):
+    """Phase 7 live Nav2 stop-wait-resume gate on high-speed segment 1."""
+
+    scene: AishaAdministrationMeasuredNav2DynamicSafetySceneCfg = (
+        AishaAdministrationMeasuredNav2DynamicSafetySceneCfg(
+            num_envs=1,
+            env_spacing=55.0,
+            replicate_physics=False,
+            clone_in_fabric=False,
+        )
+    )
+    maximum_active_obstacles = 1
+    dynamic_obstacle_activation_probability = 1.0
+    dynamic_obstacle_social_retreat_speed_mps = 0.0
+    showcase_segment_id = 1
+    showcase_route_fraction = 0.56
+    showcase_crossing_half_span_m = 1.10
+    showcase_crossing_speed_mps = 0.48
+    showcase_trigger_distance_m = 2.60
+
+
+@configclass
 class AishaAdministrationMeasuredTightDoorEnvCfg(AishaMeasuredTightDoorEnvCfg):
     """Accepted two-action route policy with measured-door safety in the live USD."""
 
@@ -317,6 +398,7 @@ class AishaAdministrationDynamicSafetyShowcaseEnvCfg(
     maximum_active_obstacles = 1
     dynamic_obstacle_activation_probability = 1.0
     dynamic_obstacle_social_retreat_speed_mps = 0.0
+    showcase_segment_id = 7
     showcase_route_fraction = 0.52
     showcase_crossing_half_span_m = 1.15
     showcase_crossing_speed_mps = 0.48
@@ -409,7 +491,12 @@ class AishaAdministrationDynamicSafetyShowcaseEnv(
     def _sample_dynamic_obstacles(self, env_ids: torch.Tensor) -> None:
         """Place one person off-route and arm a robot-proximity crossing trigger."""
         super()._sample_dynamic_obstacles(env_ids)
-        segment_ids = self._segment_ids[env_ids]
+        configured_segment_id = getattr(self.cfg, "showcase_segment_id", None)
+        segment_ids = (
+            torch.full_like(self._segment_ids[env_ids], configured_segment_id)
+            if configured_segment_id is not None
+            else self._segment_ids[env_ids]
+        )
         starts = self._segment_starts[segment_ids]
         goals = self._segment_goals[segment_ids]
         route_direction = goals - starts
@@ -445,6 +532,9 @@ class AishaAdministrationDynamicSafetyShowcaseEnv(
             torch.linalg.norm(robot_local_xy - centre, dim=1)
             <= self.cfg.showcase_trigger_distance_m
         )
+        configured_segment_id = getattr(self.cfg, "showcase_segment_id", None)
+        if configured_segment_id is not None:
+            trigger_now &= self._segment_ids[env_ids] == configured_segment_id
         self._obstacle_pause_phase[0, env_ids] = torch.maximum(
             self._obstacle_pause_phase[0, env_ids], trigger_now.float()
         )
@@ -510,3 +600,11 @@ class AishaAdministrationDynamicSafetyShowcaseEnv(
                 - self.scene.env_origins[:, :2]
             ).clone(),
         }
+
+
+class AishaAdministrationMeasuredNav2DynamicCrossingEnv(
+    AishaAdministrationDynamicSafetyShowcaseEnv
+):
+    """Full measured Nav2 mission with one deterministic sensed crossing."""
+
+    cfg: AishaAdministrationMeasuredNav2Phase7DynamicCrossingEnvCfg

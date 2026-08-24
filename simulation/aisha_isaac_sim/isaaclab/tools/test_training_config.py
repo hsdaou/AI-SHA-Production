@@ -249,6 +249,16 @@ PHASE6_RTX_PRESENTATION_REPORT = (
     / "results"
     / "administration_nav2_phase6_rtx_presentation_acceptance.json"
 )
+PHASE7_CONFIG = (
+    Path(__file__).resolve().parents[2]
+    / "config"
+    / "phase7_dynamic_nav2.yaml"
+)
+PHASE7_DYNAMIC_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "results"
+    / "administration_nav2_phase7_dynamic_integration_gate.json"
+)
 
 
 class TrainingConfigTests(unittest.TestCase):
@@ -256,6 +266,7 @@ class TrainingConfigTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.data = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))
         cls.phase6 = yaml.safe_load(PHASE6_CONFIG.read_text(encoding="utf-8"))
+        cls.phase7 = yaml.safe_load(PHASE7_CONFIG.read_text(encoding="utf-8"))
 
     def test_phase6_high_speed_curriculum_is_staged_and_geometry_frozen(self) -> None:
         phase6 = self.phase6
@@ -381,6 +392,52 @@ class TrainingConfigTests(unittest.TestCase):
         )
         self.assertFalse(report["claim_boundary"]["physical_release"])
 
+    def test_phase7_dynamic_crossing_is_accepted_and_scoped(self) -> None:
+        phase7 = self.phase7
+        report = json.loads(PHASE7_DYNAMIC_REPORT.read_text(encoding="utf-8"))
+        accepted = phase7["accepted_output"]
+        dynamic = report["dynamic_obstacle"]
+        registry = TASK_REGISTRY.read_text(encoding="utf-8")
+        bridge = NAV2_PHASE3N_BRIDGE.read_text(encoding="utf-8")
+        environment = PHASE3_DYNAMIC_SAFETY_LIVE_ENVIRONMENT.read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(
+            phase7["status"],
+            "accepted_simulation_stop_wait_resume_dynamic_crossing",
+        )
+        self.assertTrue(report["passed"])
+        self.assertEqual(report["checks_passed"], report["checks_total"])
+        self.assertEqual(accepted["checks_passed"], report["checks_passed"])
+        self.assertEqual(accepted["legs_completed"], 12)
+        self.assertEqual(dynamic["crossing_segment_id"], 1)
+        self.assertIn(
+            '"Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7-"',
+            registry,
+        )
+        self.assertIn('"DynamicCrossing-Safety-Direct-v0"', registry)
+        self.assertIn("PHASE7_MEASURED_NAV2_DYNAMIC_TASK", bridge)
+        self.assertIn(
+            "AishaAdministrationMeasuredNav2Phase7DynamicCrossingEnvCfg",
+            environment,
+        )
+        self.assertTrue(dynamic["controlled_stop_observed"])
+        self.assertTrue(dynamic["post_crossing_recovery_observed"])
+        self.assertGreater(
+            dynamic["learned_brake_steps_during_encounter"], 0
+        )
+        self.assertTrue(
+            math.isclose(
+                accepted["minimum_robot_pedestrian_centre_distance_m"],
+                dynamic["minimum_robot_pedestrian_centre_distance_m"],
+                abs_tol=1e-9,
+            )
+        )
+        boundary = report["claim_boundary"]
+        self.assertFalse(boundary["blocked_route_replanning_supported"])
+        self.assertFalse(boundary["physical_safety_credit"])
+        self.assertFalse(boundary["physical_release"])
+
     def test_task_uses_wheel_control(self) -> None:
         task = self.data["task"]
         self.assertEqual(task["control_mode"], "wheel_joint_velocity_targets")
@@ -449,6 +506,12 @@ class TrainingConfigTests(unittest.TestCase):
         self.assertTrue(release["phase6_measured_nav2_integration_passed"])
         self.assertTrue(release["phase6_rtx_presentation_available"])
         self.assertTrue(release["phase6_rtx_presentation_validated"])
+        self.assertTrue(release["phase7_dynamic_crossing_nav2_passed"])
+        self.assertTrue(
+            release["phase7_sensor_scoped_learned_handoff_observed"]
+        )
+        self.assertTrue(release["phase7_controlled_stop_wait_resume_passed"])
+        self.assertFalse(release["phase7_blocked_route_replanning_passed"])
         self.assertTrue(release["nav2_integrated_in_simulation"])
         self.assertTrue(release["nav2_ground_truth_localization_only"])
         self.assertTrue(release["nav2_integrated"])

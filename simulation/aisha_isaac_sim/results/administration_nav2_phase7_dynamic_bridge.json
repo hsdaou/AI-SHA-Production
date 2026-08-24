@@ -1,0 +1,972 @@
+{
+  "report_type": "administration_nav2_bridge",
+  "generated_at_utc": "2026-08-24T03:40:05.119634+00:00",
+  "status": "bridge_smoke_completed",
+  "task": "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7-DynamicCrossing-Safety-Direct-v0",
+  "steps_completed": 16829,
+  "control_period_s": 0.03333333333333333,
+  "topics": {
+    "subscribed": [
+      "/cmd_vel",
+      "/aisha/route_segment_id"
+    ],
+    "published": [
+      "/clock",
+      "/odom",
+      "/tf",
+      "/tf_static",
+      "/scan",
+      "/front_scan"
+    ],
+    "message_counts": {
+      "clock": 16829,
+      "odom": 16829,
+      "tf": 33658,
+      "tf_static": 3,
+      "scan": 5610,
+      "front_scan": 8415
+    }
+  },
+  "localization": {
+    "nav2_global_pose_source": "isaac_ground_truth_odom_with_identity_map_to_odom",
+    "bridge_publishes_map_to_odom": true,
+    "amcl_tf_broadcast_required": false,
+    "presentation_simulation_only": true,
+    "physical_localization_credit": false
+  },
+  "command_constraints": {
+    "maximum_forward_mps": 0.8,
+    "non_high_speed_navigation_maximum_mps": 0.3,
+    "high_speed_route_segment_ids": [
+      1,
+      5
+    ],
+    "route_scoped_phase3n_thresholds_enabled": true,
+    "reverse_allowed": false,
+    "lateral_motion_allowed": false,
+    "maximum_angular_rad_s": 0.55,
+    "minimum_in_place_angular_rad_s": 0.3,
+    "command_watchdog_s": 0.3,
+    "front_stop_trigger_m": 0.9,
+    "front_stop_release_m": 1.1,
+    "ring_stop_release_clearance_m": 0.35,
+    "front_stop_half_angle_deg": 10.0,
+    "minimum_rotation_clearance_m": 0.08
+  },
+  "events": {
+    "rejected_reverse_commands": 0,
+    "rejected_lateral_commands": 0,
+    "watchdog_stops": 0,
+    "obstacle_stops": 3,
+    "in_place_deadband_compensations": 363,
+    "front_latch_rotation_escape_steps": 232,
+    "rotation_guard_stops": 0,
+    "mission_complete_signal_received": true,
+    "episode_reset_gate_detected": false,
+    "route_segment_messages": 36,
+    "invalid_route_segment_messages": 0
+  },
+  "route_scoped_speed_evidence": {
+    "maximum_requested_linear_mps_by_segment": {
+      "0": 0.3,
+      "1": 0.8,
+      "2": 0.3,
+      "3": 0.3,
+      "4": 0.3,
+      "5": 0.8,
+      "6": 0.3,
+      "7": 0.3,
+      "8": 0.3,
+      "9": 0.3,
+      "10": 0.3,
+      "11": 0.3
+    },
+    "maximum_guarded_linear_mps_by_segment": {
+      "0": 0.3,
+      "1": 0.8,
+      "2": 0.3,
+      "3": 0.18,
+      "4": 0.3,
+      "5": 0.8,
+      "6": 0.3,
+      "7": 0.3,
+      "8": 0.18,
+      "9": 0.18,
+      "10": 0.3,
+      "11": 0.3
+    },
+    "maximum_observed_linear_mps_by_segment": {
+      "0": 0.25137659907341003,
+      "1": 0.7453755140304565,
+      "2": 0.24157604575157166,
+      "3": 0.05914674699306488,
+      "4": 0.2393735647201538,
+      "5": 0.7432804703712463,
+      "6": 0.2510789632797241,
+      "7": 0.2515474557876587,
+      "8": 0.05973361060023308,
+      "9": 0.05936121568083763,
+      "10": 0.24340668320655823,
+      "11": 0.24427148699760437
+    },
+    "mission_segment_source": "/aisha/route_segment_id"
+  },
+  "termination_diagnostics": {
+    "minimum_clearance_ray_index": 2,
+    "minimum_clearance_ray_angle_deg": -160.0,
+    "minimum_exact_range_m": 2.83674,
+    "minimum_exact_clearance_m": 1.80545,
+    "minimum_hit_world_xyz_m": [
+      4.355199,
+      -2.544802,
+      1.179269
+    ],
+    "episode_outcomes": {
+      "success": false,
+      "waypoint_reached": false,
+      "collision": false,
+      "time_out": false,
+      "dynamic_obstacle_collision": false,
+      "static_collision": false,
+      "final_protective_stop_latched": false,
+      "final_peak_torque_active": false,
+      "final_recovery_supervisor_brake_active": false
+    }
+  },
+  "last_pre_step_snapshot": {
+    "position_xy_m": [
+      3.396177,
+      -0.377539
+    ],
+    "minimum_ring_clearance_m": 1.80545
+  },
+  "learned_safety": {
+    "enabled": true,
+    "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt",
+    "checkpoint_sha256": "e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318",
+    "checkpoint_is_accepted_phase3n": false,
+    "checkpoint_is_accepted_phase6": true,
+    "accepted_checkpoint_profile": "phase6_high_speed_080",
+    "fallback_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt",
+    "fallback_checkpoint_sha256": "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b",
+    "fallback_checkpoint_is_accepted_phase3n": true,
+    "policy_selection": "phase6_on_declared_high_speed_segments_phase3n_elsewhere_plus_front_scan_scoped_phase3n_dynamic_handoff",
+    "dynamic_handoff_sensor": "central_front_scan_at_or_below_1.50_m_on_crossing_segment",
+    "primary_policy_steps": 1293,
+    "fallback_policy_steps": 15536,
+    "base_command_source": "nav2_cmd_vel",
+    "authority_steps": 251,
+    "brake_steps": 63,
+    "mean_brake_fraction_while_active": 0.06972606048225406,
+    "maximum_brake_fraction": 0.615482747554779,
+    "minimum_360_clearance_m": 0.0144,
+    "deterministic_static_integration_gate": false
+  },
+  "dynamic_obstacle": {
+    "enabled": true,
+    "scenario": "single_sensed_pedestrian_crossing_on_high_speed_segment_1",
+    "stylized_proxy_not_human_model": true,
+    "pedestrian_state_exposed_to_policy": false,
+    "crossing_segment_id": 1,
+    "triggered": true,
+    "crossing_completed": true,
+    "trigger_step": 2498,
+    "completion_step": 2635,
+    "crossing_steps": 429,
+    "sensor_scoped_phase3n_handoff_steps": 30,
+    "front_stop_latched_steps": 52,
+    "learned_authority_steps_during_encounter": 29,
+    "learned_brake_steps_during_encounter": 4,
+    "minimum_robot_pedestrian_centre_distance_m": 1.19046,
+    "minimum_central_front_range_m": 0.58889,
+    "minimum_360_clearance_m": 0.13938,
+    "maximum_pre_trigger_forward_speed_mps": 0.74538,
+    "minimum_encounter_forward_speed_mps": 0.0,
+    "maximum_post_crossing_recovery_speed_mps": 0.73196,
+    "controlled_stop_observed": true,
+    "post_crossing_recovery_observed": true,
+    "trace": [
+      {
+        "step": 2508,
+        "segment_id": 1,
+        "progress": 0.08,
+        "robot_xy_m": [
+          9.34652,
+          0.06582
+        ],
+        "pedestrian_xy_m": [
+          11.68123,
+          -0.64325
+        ],
+        "centre_distance_m": 2.44001,
+        "forward_speed_mps": 0.74267,
+        "central_front_range_m": 5.64967,
+        "ring_clearance_m": 0.83923,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2520,
+        "segment_id": 1,
+        "progress": 0.16727,
+        "robot_xy_m": [
+          9.64282,
+          0.07978
+        ],
+        "pedestrian_xy_m": [
+          11.67349,
+          -0.45141
+        ],
+        "centre_distance_m": 2.09899,
+        "forward_speed_mps": 0.74332,
+        "central_front_range_m": 5.55161,
+        "ring_clearance_m": 0.82472,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2532,
+        "segment_id": 1,
+        "progress": 0.25455,
+        "robot_xy_m": [
+          9.93939,
+          0.09436
+        ],
+        "pedestrian_xy_m": [
+          11.66576,
+          -0.25956
+        ],
+        "centre_distance_m": 1.76228,
+        "forward_speed_mps": 0.74163,
+        "central_front_range_m": 5.43964,
+        "ring_clearance_m": 0.79779,
+        "front_stop_latched": false,
+        "learned_authority": true,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2544,
+        "segment_id": 1,
+        "progress": 0.34182,
+        "robot_xy_m": [
+          10.23435,
+          0.10938
+        ],
+        "pedestrian_xy_m": [
+          11.65802,
+          -0.06772
+        ],
+        "centre_distance_m": 1.43464,
+        "forward_speed_mps": 0.73364,
+        "central_front_range_m": 5.32308,
+        "ring_clearance_m": 0.39965,
+        "front_stop_latched": false,
+        "learned_authority": true,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2556,
+        "segment_id": 1,
+        "progress": 0.42909,
+        "robot_xy_m": [
+          10.42448,
+          0.11905
+        ],
+        "pedestrian_xy_m": [
+          11.65029,
+          0.12413
+        ],
+        "centre_distance_m": 1.22582,
+        "forward_speed_mps": 0.11039,
+        "central_front_range_m": 0.60195,
+        "ring_clearance_m": 0.15175,
+        "front_stop_latched": true,
+        "learned_authority": true,
+        "learned_brake_fraction": 0.027546
+      },
+      {
+        "step": 2568,
+        "segment_id": 1,
+        "progress": 0.51636,
+        "robot_xy_m": [
+          10.43233,
+          0.11945
+        ],
+        "pedestrian_xy_m": [
+          11.64255,
+          0.31597
+        ],
+        "centre_distance_m": 1.22607,
+        "forward_speed_mps": 7e-05,
+        "central_front_range_m": 0.59826,
+        "ring_clearance_m": 0.15786,
+        "front_stop_latched": true,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2580,
+        "segment_id": 1,
+        "progress": 0.60364,
+        "robot_xy_m": [
+          10.43234,
+          0.11945
+        ],
+        "pedestrian_xy_m": [
+          11.63481,
+          0.50781
+        ],
+        "centre_distance_m": 1.26364,
+        "forward_speed_mps": 1e-05,
+        "central_front_range_m": 5.08207,
+        "ring_clearance_m": 0.19636,
+        "front_stop_latched": true,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2592,
+        "segment_id": 1,
+        "progress": 0.69091,
+        "robot_xy_m": [
+          10.43234,
+          0.11945
+        ],
+        "pedestrian_xy_m": [
+          11.62708,
+          0.69966
+        ],
+        "centre_distance_m": 1.32817,
+        "forward_speed_mps": 0.0001,
+        "central_front_range_m": 5.08208,
+        "ring_clearance_m": 0.24901,
+        "front_stop_latched": true,
+        "learned_authority": true,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2604,
+        "segment_id": 1,
+        "progress": 0.77818,
+        "robot_xy_m": [
+          10.44987,
+          0.1205
+        ],
+        "pedestrian_xy_m": [
+          11.61934,
+          0.8915
+        ],
+        "centre_distance_m": 1.40075,
+        "forward_speed_mps": 0.19541,
+        "central_front_range_m": 5.06967,
+        "ring_clearance_m": 0.31102,
+        "front_stop_latched": false,
+        "learned_authority": true,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2616,
+        "segment_id": 1,
+        "progress": 0.86545,
+        "robot_xy_m": [
+          10.62678,
+          0.13122
+        ],
+        "pedestrian_xy_m": [
+          11.61161,
+          1.08335
+        ],
+        "centre_distance_m": 1.36983,
+        "forward_speed_mps": 0.63495,
+        "central_front_range_m": 5.02492,
+        "ring_clearance_m": 0.34766,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2628,
+        "segment_id": 1,
+        "progress": 0.95273,
+        "robot_xy_m": [
+          10.90442,
+          0.14822
+        ],
+        "pedestrian_xy_m": [
+          11.60387,
+          1.27519
+        ],
+        "centre_distance_m": 1.32638,
+        "forward_speed_mps": 0.72621,
+        "central_front_range_m": 4.94143,
+        "ring_clearance_m": 0.49802,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2635,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          11.07386,
+          0.15853
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 1.32902,
+        "forward_speed_mps": 0.73196,
+        "central_front_range_m": 4.90763,
+        "ring_clearance_m": 0.55532,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2640,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          11.19423,
+          0.16571
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 1.27934,
+        "forward_speed_mps": 0.7227,
+        "central_front_range_m": 4.90137,
+        "ring_clearance_m": 0.60836,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2652,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          11.48183,
+          0.18129
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 1.2036,
+        "forward_speed_mps": 0.72527,
+        "central_front_range_m": 4.98868,
+        "ring_clearance_m": 0.61924,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2664,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          11.76961,
+          0.19532
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 1.19592,
+        "forward_speed_mps": 0.71835,
+        "central_front_range_m": 5.06937,
+        "ring_clearance_m": 0.65017,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2676,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          12.05542,
+          0.20769
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 1.25695,
+        "forward_speed_mps": 0.71794,
+        "central_front_range_m": 5.12721,
+        "ring_clearance_m": 0.69937,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2688,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          12.34199,
+          0.21899
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 1.37727,
+        "forward_speed_mps": 0.71805,
+        "central_front_range_m": 5.1613,
+        "ring_clearance_m": 0.68954,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2700,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          12.6291,
+          0.2297
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 1.54299,
+        "forward_speed_mps": 0.72138,
+        "central_front_range_m": 5.14477,
+        "ring_clearance_m": 0.67941,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2712,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          12.91659,
+          0.23973
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 1.74138,
+        "forward_speed_mps": 0.72103,
+        "central_front_range_m": 5.1765,
+        "ring_clearance_m": 0.6707,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2724,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          13.20346,
+          0.24882
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 1.96205,
+        "forward_speed_mps": 0.71617,
+        "central_front_range_m": 5.20942,
+        "ring_clearance_m": 0.66285,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2736,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          13.49048,
+          0.25753
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 2.19842,
+        "forward_speed_mps": 0.71864,
+        "central_front_range_m": 5.18505,
+        "ring_clearance_m": 0.65443,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2748,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          13.77946,
+          0.2677
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 2.44677,
+        "forward_speed_mps": 0.72831,
+        "central_front_range_m": 4.86211,
+        "ring_clearance_m": 0.63957,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2760,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          14.0666,
+          0.28148
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 2.70009,
+        "forward_speed_mps": 0.71435,
+        "central_front_range_m": 4.58593,
+        "ring_clearance_m": 0.62198,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2772,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          14.35121,
+          0.2969
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 2.9567,
+        "forward_speed_mps": 0.72336,
+        "central_front_range_m": 4.419,
+        "ring_clearance_m": 0.60417,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2784,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          14.63919,
+          0.3146
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 3.22053,
+        "forward_speed_mps": 0.7218,
+        "central_front_range_m": 4.11187,
+        "ring_clearance_m": 0.57935,
+        "front_stop_latched": false,
+        "learned_authority": true,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2796,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          14.92695,
+          0.33567
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 3.48705,
+        "forward_speed_mps": 0.7218,
+        "central_front_range_m": 3.84919,
+        "ring_clearance_m": 0.55232,
+        "front_stop_latched": false,
+        "learned_authority": true,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2808,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          15.21391,
+          0.3591
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 3.7554,
+        "forward_speed_mps": 0.72094,
+        "central_front_range_m": 3.62542,
+        "ring_clearance_m": 0.52414,
+        "front_stop_latched": false,
+        "learned_authority": true,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2820,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          15.5016,
+          0.38482
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 4.02661,
+        "forward_speed_mps": 0.72126,
+        "central_front_range_m": 3.40611,
+        "ring_clearance_m": 0.49358,
+        "front_stop_latched": false,
+        "learned_authority": true,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2832,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          15.78187,
+          0.41145
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 4.29268,
+        "forward_speed_mps": 0.64656,
+        "central_front_range_m": 3.27306,
+        "ring_clearance_m": 0.46559,
+        "front_stop_latched": false,
+        "learned_authority": true,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2844,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          16.00942,
+          0.43313
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 4.51006,
+        "forward_speed_mps": 0.50301,
+        "central_front_range_m": 3.14314,
+        "ring_clearance_m": 0.44115,
+        "front_stop_latched": false,
+        "learned_authority": true,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2856,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          16.1888,
+          0.45021
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 4.68218,
+        "forward_speed_mps": 0.40102,
+        "central_front_range_m": 3.06878,
+        "ring_clearance_m": 0.42347,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2868,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          16.33343,
+          0.46422
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 4.82134,
+        "forward_speed_mps": 0.31858,
+        "central_front_range_m": 3.03218,
+        "ring_clearance_m": 0.40986,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2880,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          16.45005,
+          0.47556
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 4.93381,
+        "forward_speed_mps": 0.2526,
+        "central_front_range_m": 3.02266,
+        "ring_clearance_m": 0.39977,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2892,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          16.53908,
+          0.48388
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 5.01987,
+        "forward_speed_mps": 0.20378,
+        "central_front_range_m": 3.04821,
+        "ring_clearance_m": 0.39378,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2904,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          16.61551,
+          0.4907
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 5.0939,
+        "forward_speed_mps": 0.18886,
+        "central_front_range_m": 3.0817,
+        "ring_clearance_m": 0.38958,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      },
+      {
+        "step": 2916,
+        "segment_id": 1,
+        "progress": 1.0,
+        "robot_xy_m": [
+          16.67429,
+          0.49558
+        ],
+        "pedestrian_xy_m": [
+          11.59968,
+          1.37911
+        ],
+        "centre_distance_m": 5.15095,
+        "forward_speed_mps": 0.12113,
+        "central_front_range_m": 3.14451,
+        "ring_clearance_m": 0.38788,
+        "front_stop_latched": false,
+        "learned_authority": false,
+        "learned_brake_fraction": 0.0
+      }
+    ]
+  },
+  "mapped_site_safety": {
+    "steps": 16829,
+    "doorway_active_steps": 10135,
+    "doorway_slow_steps": 6157,
+    "doorway_alignment_steps": 8027,
+    "doorway_alignment_hold_steps": 828,
+    "doorway_overspeed_stops": 6,
+    "doorway_direction_rearms": 2,
+    "polygon_no_go_stops": 0,
+    "doorway_entries": {
+      "vice_principal": 2,
+      "principal": 2
+    },
+    "maximum_abs_speed_in_doorway_mps": 0.05926848575472832,
+    "maximum_abs_tangent_offset_in_doorway_m": 0.01564941406250142,
+    "minimum_polygon_full_footprint_clearance_m": 0.279585,
+    "enabled": true,
+    "architecture": "nav2_cmd_vel_then_mapped_doorway_and_polygon_guard",
+    "maximum_doorway_speed_mps": 0.1,
+    "target_doorway_speed_mps": 0.08,
+    "doorway_alignment_tolerance_deg": 0.7500000000000001,
+    "approach_alignment_tolerance_deg": 3.0000000000000004,
+    "approach_stage_capture_radius_m": 0.018,
+    "overspeed_stop_mps": 0.095,
+    "traction_command_ceiling_mps": 0.18,
+    "traction_gain": 1.5,
+    "breakaway_angular_rad_s": 0.42,
+    "polygon_outer_radius_m": 2.3,
+    "polygon_body_circumscribed_radius_m": 0.8204151388169284,
+    "polygon_minimum_clearance_m": 0.05,
+    "physical_safety_credit": false,
+    "overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
+    "overlay_sha256": "e5b60981b6771158434fb160beac97b2d197643ab0520d198174c9846992298b",
+    "site_config": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
+    "site_config_sha256": "c06e1941e873ae88012844ee27be9e7614342412d5c51cccfe9358a9559ffe47"
+  },
+  "final_position_xy_m": [
+    3.39619,
+    -0.37499
+  ],
+  "minimum_front_range_m": 0.47801,
+  "minimum_central_front_range_m": 0.58889,
+  "minimum_ring_clearance_m": 0.0144,
+  "learned_policy_coupled": true,
+  "learned_360_safety_coupled": true,
+  "central_drop_safety_routing": {
+    "learned_crown_scan_excludes_navigation_barrier": true,
+    "occupancy_map_keeps_navigation_barrier": true,
+    "physics_collider_kept": true,
+    "mapped_full_footprint_guard_required": true
+  },
+  "measured_nav2_termination_envelope": {
+    "lidar_collision_margin_m": 0.015,
+    "nav2_footprint_padding_m": 0.03,
+    "physical_geometry_changed": false,
+    "physical_safety_credit": false
+  },
+  "frozen_phase3m_local_navigation_coupled": false,
+  "physical_release": false,
+  "claim_boundary": "With a Phase 3N checkpoint this run proves live Nav2-to-learned-safety arbitration in the Isaac scene. When enabled, the mapped-site guard adds simulation-only doorway alignment/speed and central-drop constraints before the learned brake actor. It does not couple the frozen Phase 3M local navigator, replace the formal dynamic-obstacle evaluation, prove stopping distance or sim-to-real performance, or authorize physical deployment. Without a checkpoint it proves Isaac physics/ROS exchange only.",
+  "passed": true
+}

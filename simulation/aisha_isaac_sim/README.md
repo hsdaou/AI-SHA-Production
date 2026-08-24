@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev P - 2026-08-24 - Phase 6 measured Nav2 and RTX presentation accepted**
+**Rev Q - 2026-08-24 - Phase 7A live Nav2 dynamic crossing accepted**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -52,6 +52,36 @@ Presentation video:
 `results/administration_nav2_phase6_high_speed_integration_gate.json` passes
 28/28. The Phase 6 checkpoint remains hash locked to
 `e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318`.
+
+## Latest dynamic-autonomy gate
+
+Phase 7A freezes the accepted Phase 6 static mission and adds one separate,
+deterministic, sensor-visible pedestrian crossing on high-speed hallway segment
+1. The full live Nav2 mission again completed 12/12 legs, both office pivots and
+the return home without collision or episode reset; its acceptance report passes
+24/24.
+
+The robot reached 0.74538 m/s before the encounter, stopped completely, waited
+for the crossing and recovered to 0.73196 m/s. Minimum robot–pedestrian centre
+distance was 1.19046 m. Both crown and front LiDAR see the proxy; its position is
+evaluation telemetry only and is not supplied to either learned policy. A
+front-scan threshold hands the encounter from the Phase 6 actor to the accepted
+Phase 3N dynamic actor for 30 steps. That actor had learned authority for 29
+encounter steps and requested braking on four; the independent protective latch
+held the final stop for 52 steps and used the 360-degree scan to prevent an early
+restart as the pedestrian cleared the robot's corner.
+
+This establishes one repeatable stop-wait-resume simulation scenario—not crowd
+navigation, a human-behaviour model, physical stopping distance, or blocked-route
+global replanning. The latter is the Phase 7B gate. Reproduce this stage with:
+
+```bash
+tools/run_administration_nav2_phase7_dynamic_integration.sh
+```
+
+Evidence: `results/administration_nav2_phase7_dynamic_mission.json`,
+`results/administration_nav2_phase7_dynamic_bridge.json` and
+`results/administration_nav2_phase7_dynamic_integration_gate.json`.
 
 ## Latest live autonomy gate
 

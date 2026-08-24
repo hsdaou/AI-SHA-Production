@@ -44,6 +44,10 @@ APPROACH_DOOR_BY_WAYPOINT = {
     "vice_principal_approach": "vice_principal",
     "principal_approach": "principal",
 }
+PHASE6_CONTROL_STACKS = {
+    "nav2_mapped_doorway_phase6_high_speed_safety",
+    "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
+}
 
 
 def yaw_quaternion(yaw_radians: float) -> tuple[float, float]:
@@ -496,6 +500,7 @@ def main() -> int:
             "nav2_phase3n_safety",
             "nav2_mapped_doorway_phase3n_safety",
             "nav2_mapped_doorway_phase6_high_speed_safety",
+            "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
         ),
         default="nav2",
         help="declare the independently launched bridge command-arbitration mode",
@@ -539,9 +544,11 @@ def main() -> int:
                 failure = "nav2_action_servers_not_ready_after_initial_pose"
             mission.trace_enabled = failure is None
             mission.trace_control_mode = (
-                "nav2_phase6_and_phase3n_learned_safety"
+                "nav2_phase6_and_phase3n_learned_safety_with_dynamic_crossing"
                 if args.control_stack
-                == "nav2_mapped_doorway_phase6_high_speed_safety"
+                == "nav2_mapped_doorway_phase7_dynamic_crossing_safety"
+                else "nav2_phase6_and_phase3n_learned_safety"
+                if args.control_stack in PHASE6_CONTROL_STACKS
                 else args.control_stack
             )
             for index, waypoint in enumerate(waypoints[1:], start=1):
@@ -556,8 +563,7 @@ def main() -> int:
                 navigation_waypoint["y_m"] = float(waypoint["y_m"]) + offset[1]
                 mapped_stage = None
                 if (
-                    args.control_stack
-                    == "nav2_mapped_doorway_phase6_high_speed_safety"
+                    args.control_stack in PHASE6_CONTROL_STACKS
                     and waypoint["id"] in PHASE6_PRE_DOOR_ALIGNMENT_WAYPOINTS
                 ):
                     door_name = APPROACH_DOOR_BY_WAYPOINT[waypoint["id"]]
@@ -638,8 +644,7 @@ def main() -> int:
                     failure = f"{waypoint['id']}:{execution_status}"
                     break
                 if (
-                    args.control_stack
-                    == "nav2_mapped_doorway_phase6_high_speed_safety"
+                    args.control_stack in PHASE6_CONTROL_STACKS
                     and waypoint["id"] in PHASE6_PRE_DOOR_ALIGNMENT_WAYPOINTS
                 ):
                     stage_convergence = mission.converge_to_stage(
@@ -766,16 +771,14 @@ def main() -> int:
             "route_control": mission.trace_control_mode,
             "checkpoint": (
                 str(PHASE6_CHECKPOINT.resolve())
-                if args.control_stack
-                == "nav2_mapped_doorway_phase6_high_speed_safety"
+                if args.control_stack in PHASE6_CONTROL_STACKS
                 else None
             ),
             "seed": 6084,
             "root_transform_animation": False,
             "policy_architecture": (
                 "nav2_global_and_dwb_plus_phase6_phase3n_learned_brake_safety"
-                if args.control_stack
-                == "nav2_mapped_doorway_phase6_high_speed_safety"
+                if args.control_stack in PHASE6_CONTROL_STACKS
                 else args.control_stack
             ),
             "map_status": (
@@ -790,6 +793,7 @@ def main() -> int:
                 "nav2_phase3n_safety",
                 "nav2_mapped_doorway_phase3n_safety",
                 "nav2_mapped_doorway_phase6_high_speed_safety",
+                "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
             },
             "learned_360_safety_coupled": (
                 args.control_stack
@@ -797,6 +801,7 @@ def main() -> int:
                     "nav2_phase3n_safety",
                     "nav2_mapped_doorway_phase3n_safety",
                     "nav2_mapped_doorway_phase6_high_speed_safety",
+                    "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
                 }
             ),
             "mapped_doorway_safety_coupled": (
@@ -804,11 +809,15 @@ def main() -> int:
                 in {
                     "nav2_mapped_doorway_phase3n_safety",
                     "nav2_mapped_doorway_phase6_high_speed_safety",
+                    "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
                 }
             ),
             "phase6_high_speed_safety_coupled": (
+                args.control_stack in PHASE6_CONTROL_STACKS
+            ),
+            "phase7_dynamic_crossing_safety_coupled": (
                 args.control_stack
-                == "nav2_mapped_doorway_phase6_high_speed_safety"
+                == "nav2_mapped_doorway_phase7_dynamic_crossing_safety"
             ),
             "frozen_phase3m_local_navigation_coupled": False,
             "physical_release": False,
