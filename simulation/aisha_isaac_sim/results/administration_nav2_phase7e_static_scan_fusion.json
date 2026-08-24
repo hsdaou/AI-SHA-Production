@@ -1,0 +1,40 @@
+{
+  "report_type": "administration_nav2_phase7e_static_scan_fusion",
+  "generated_at_utc": "2026-08-24T09:16:52.363997+00:00",
+  "status": "completed",
+  "architecture": {
+    "raw_scan_role": "native_costmap_clearing_only",
+    "filtered_scan_role": "native_costmap_dynamic_marking_only",
+    "static_map_role": "mapped_static_obstacle_authority",
+    "static_match_tolerance_m": 0.035,
+    "masked_returns_remain_represented_by_static_layer": true,
+    "mapped_free_obstacle_returns_preserved": true
+  },
+  "map": {
+    "yaml": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/maps/administration_measured_presentation_1cm/administration_measured_presentation_1cm.yaml",
+    "sha256": "eddc6eee4badcd984c35e877f6e6abb8c707eeafa681cc564f7b21473e43640a"
+  },
+  "statistics": {
+    "map_messages": 1,
+    "crown": {
+      "messages": 1059,
+      "published_messages": 1059,
+      "finite_returns": 38124,
+      "static_returns_masked": 33448,
+      "mapped_free_returns_preserved": 4676,
+      "map_unavailable_messages": 0,
+      "transform_failures": 0
+    },
+    "front": {
+      "messages": 1059,
+      "published_messages": 1059,
+      "finite_returns": 128139,
+      "static_returns_masked": 124552,
+      "mapped_free_returns_preserved": 3587,
+      "map_unavailable_messages": 0,
+      "transform_failures": 0
+    }
+  },
+  "physical_release": false,
+  "claim_boundary": "This map-aware fusion gate prevents duplicate inflation of known static geometry in the presentation twin. It does not validate localization error, an unmeasured real office, or physical safety."
+}

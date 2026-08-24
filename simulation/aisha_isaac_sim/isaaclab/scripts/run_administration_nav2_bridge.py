@@ -105,6 +105,10 @@ PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK = (
     "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7D-"
     "NativeCostmap-SafeWait-Safety-Direct-v0"
 )
+PHASE7E_ADMINISTRATION_STATIC_FUSION_TASK = (
+    "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7E-"
+    "StaticFusion-FullOffice-Safety-Direct-v0"
+)
 PHASE7C_NATIVE_COSTMAP_DETOUR_TASK = (
     "Isaac-AISHA-Phase7C-NativeCostmap-Detour-Safety-Direct-v0"
 )
@@ -115,6 +119,7 @@ PHASE3N_COMPATIBLE_TASKS = {
     PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
     PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
     PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK,
+    PHASE7E_ADMINISTRATION_STATIC_FUSION_TASK,
     PHASE7C_NATIVE_COSTMAP_DETOUR_TASK,
 }
 ACCEPTED_PHASE3N_CHECKPOINT = "aisha_phase3n_dynamic_safety_model_50.pt"
@@ -130,6 +135,7 @@ PHASE6_NAV2_TASKS = {
     PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
     PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
     PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK,
+    PHASE7E_ADMINISTRATION_STATIC_FUSION_TASK,
 }
 MEASURED_NAV2_TASKS = {PHASE3N_MEASURED_NAV2_TASK, *PHASE6_NAV2_TASKS}
 
@@ -784,6 +790,7 @@ def main() -> int:
                     PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
                     PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
                     PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK,
+                    PHASE7E_ADMINISTRATION_STATIC_FUSION_TASK,
                 }
                 else 0.0
             ),
@@ -865,9 +872,14 @@ def main() -> int:
     blocked_route_replay = task in {
         PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
         PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK,
+        PHASE7E_ADMINISTRATION_STATIC_FUSION_TASK,
     }
     administration_native_costmap_replay = (
-        task == PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK
+        task
+        in {
+            PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK,
+            PHASE7E_ADMINISTRATION_STATIC_FUSION_TASK,
+        }
     )
     native_detour_replay = task == PHASE7C_NATIVE_COSTMAP_DETOUR_TASK
     blockage_replay = blocked_route_replay or native_detour_replay

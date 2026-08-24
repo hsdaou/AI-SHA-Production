@@ -191,6 +191,45 @@ classification/refinement is therefore required before the final operator-facing
 capture. This earns no physical-localization, stopping-distance, sim-to-real,
 safety-certification or deployment credit.
 
+## Latest full-office static-map/live-LiDAR fusion gate
+
+Phase 7E closes the Phase 7D office-departure limitation without changing
+AI-SHA's physical footprint, 0.030 m Nav2 padding, the reported 0.85 m minimum
+door, or the learned checkpoints. The failure was traced to the same 0.85 m
+jamb being inflated once by the static layer and again from dense live returns.
+The fused profile now gives raw `/scan` and `/front_scan` clearing-only
+authority, while map-filtered outputs give marking-only authority to endpoints
+in mapped-free space. Known static returns are never removed from safety: their
+obstacles remain present through the static layer.
+
+The accepted live run completed 12/12 legs through the Vice-Principal and
+Principal offices and returned home. Both in-office pivots are followed by a
+zero-translation departure alignment inside the mapped pivot-clearance zone;
+the final heading errors were 1.845 and 1.981 degrees. The full-width temporary
+barrier still changed 0/33 east-hallway samples to 33/33 lethal/inscribed. The
+36.5018 m unauthorized detour was rejected, safe-wait speed stayed below
+0.000125 m/s with negligible displacement, clearing returned the samples to
+0/33, and a fresh 12.7877 m direct plan executed. Observed straight-hallway
+speeds reached 0.74572 and 0.74342 m/s, while doorway body speed remained below
+0.05940 m/s. The formal gate passes 40/40 and retains Phase 6 28/28, Phase 7A
+24/24, Phase 7B 26/26, Phase 7C 29/29 and Phase 7D 32/32.
+
+Reproduce it with:
+
+```bash
+tools/run_administration_nav2_phase7e_static_fusion_integration.sh
+```
+
+Evidence: `results/administration_nav2_phase7e_static_fusion_mission.json`,
+`results/administration_nav2_phase7e_static_fusion_bridge.json`,
+`results/administration_nav2_phase7e_static_scan_fusion.json` and
+`results/administration_nav2_phase7e_static_fusion_integration_gate.json`.
+
+This is presentation-simulation evidence, not proof that an unmeasured physical
+site is correctly mapped. It earns no physical localisation, stopping-distance,
+sim-to-real, safety-certification or deployment credit. The next simulation
+gate is the operator-facing Omniverse/Nav2 capture of this accepted stack.
+
 ## Latest live autonomy gate
 
 The unchanged Rev D robot now also passes the measured-presentation static

@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, the 26/26 Phase 7B registered-LiDAR blocked-route gate, the isolated 29/29 Phase 7C native-costmap spatial-detour gate, and the scoped 32/32 Phase 7D administration native-costmap safe-wait/fresh-plan gate. Physical release remains pending.**
+**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, the 26/26 Phase 7B registered-LiDAR blocked-route gate, the isolated 29/29 Phase 7C native-costmap spatial-detour gate, the scoped 32/32 Phase 7D administration native-costmap gate, and the 40/40 Phase 7E full-office static-map/live-LiDAR fusion gate. Physical release remains pending.**
 
 ## Completed
 
@@ -420,6 +420,20 @@
   A diagnostic full-mission attempt exposed unresolved office-clutter planning
   after the Vice-Principal visit; therefore Phase 7D is not a complete 12-leg
   native-costmap or physical-release result.
+- Phase 7E traces that office-departure failure to duplicate inflation of the
+  exact 0.85 m jamb by the static layer and dense live returns. It retains the
+  unchanged physical footprint and 0.030 m padding, uses raw scans for clearing,
+  and permits only mapped-free filtered returns to add dynamic marks. The live
+  temporary blocker still changed the sampled hallway from 0/33 to 33/33
+  lethal/inscribed; the 36.5018 m unauthorized route was refused, safe-wait
+  speed stayed below 0.000125 m/s, and a fresh 12.7877 m route executed after
+  clearance. The robot then completed all 12/12 administration legs, including
+  both office pivots, explicit zero-translation departure alignments at 1.845
+  and 1.981 degrees error, both departures and home return. Hallway speeds
+  reached 0.74572/0.74342 m/s and doorway speed remained below 0.05940 m/s.
+  The gate passes 40/40 while retaining every Phase 6 through Phase 7D gate.
+  This is presentation-simulation fusion evidence, not physical mapping,
+  localisation, stopping-distance, sim-to-real or deployment evidence.
 
 ## Deterministic contact tuning disclosure
 
@@ -448,8 +462,8 @@ claim. See `config/physics_materials.yaml`.
 - The 12-segment Principal/Vice-Principal policy, declared Phase 3 dynamic
   safety, measured static Nav2 mission, separate Phase 7A sensed crossing,
   Phase 7B registered-LiDAR safe wait, Phase 7C isolated native detour and the
-  scoped Phase 7D administration native mark/clear gate pass. Full 12-leg
-  operation under the new native obstacle profile, broader office-directory
+  scoped Phase 7D administration native mark/clear gate pass. Phase 7E now also
+  passes all 12 legs under static-map/live-LiDAR fusion. Broader office-directory
   coverage, physical localisation and sim-to-real commissioning remain
   subsequent gates.
 - The administration USD has been rebuilt around the walkthrough's primary
@@ -502,21 +516,20 @@ These are evidence-based project-management estimates, not safety ratings:
 
 | Workstream | Progress |
 |---|---:|
-| Presentation-ready Omniverse simulation | 94% |
+| Presentation-ready Omniverse simulation | 95% |
 | Learned navigation and doorway handling | 92% |
 | Measured digital twin | 68% |
-| Nav2/localisation integration | 92% |
-| Dynamic-obstacle simulation safety | 92% |
+| Nav2/localisation integration | 96% |
+| Dynamic-obstacle simulation safety | 94% |
 | Physical deployment readiness | 30% |
-| Overall end objective | 85% |
+| Overall end objective | 88% |
 
-The latest increase comes from applying the corrected native-costmap profile
-to the administration scene and passing mark, route-refusal, safe wait, clear,
-fresh-plan and execution behavior while retaining the earlier full-mission and
-dynamic gates. The remaining simulation work is dominated by reconciling
-native scan-visible office clutter with the complete 12-leg mission, followed
-by scan/visual refinement and the operator-facing capture. Real localisation
-and physical sim-to-real commissioning remain separate major gates.
+The latest increase comes from reconciling static-map and live-LiDAR authority,
+passing the complete 12-leg native-costmap mission, and retaining dynamic
+mark/refusal/wait/clear/fresh-plan behavior with the unchanged padded footprint.
+The immediate simulation work is now operator-facing Omniverse/Nav2 capture and
+visual/sensor polish. Real localisation and physical sim-to-real commissioning
+remain separate major gates.
 
 ## Evidence
 
@@ -545,6 +558,10 @@ and physical sim-to-real commissioning remain separate major gates.
 - `administration_nav2_phase7d_native_costmap_mission.json`
 - `administration_nav2_phase7d_native_costmap_bridge.json`
 - `administration_nav2_phase7d_native_costmap_integration_gate.json`
+- `administration_nav2_phase7e_static_fusion_mission.json`
+- `administration_nav2_phase7e_static_fusion_bridge.json`
+- `administration_nav2_phase7e_static_scan_fusion.json`
+- `administration_nav2_phase7e_static_fusion_integration_gate.json`
 - `phase2_administration_visual_upgrade_render_report.json`
 - `phase2_administration_live_cinematic_report.json`
 - `phase2_administration_live_cinematic_3x_presentation_report.json`
