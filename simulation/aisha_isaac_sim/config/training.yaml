@@ -1055,9 +1055,16 @@ release:
   phase7d_mission_authorized_safe_wait_fresh_plan_passed: true
   phase7d_scoped_two_leg_gate_passed: true
   phase7d_full_12_leg_native_costmap_mission_passed: false
-  phase7d_office_clutter_reconciliation_pending: true
+  phase7d_office_clutter_reconciliation_pending: false
+  phase7e_static_map_live_lidar_fusion_available: true
+  phase7e_known_static_returns_represented_by_static_layer: true
+  phase7e_mapped_free_dynamic_returns_preserved: true
+  phase7e_native_dynamic_mark_wait_clear_replan_passed: true
+  phase7e_full_12_leg_native_costmap_mission_passed: true
+  phase7e_gate_checks_passed: "40/40"
+  phase7e_unchanged_footprint_and_padding: true
   nav2_integrated_in_simulation: true
   nav2_ground_truth_localization_only: true
   nav2_integrated: true
   physical_robot_release: false
-  required_next_gate: "Reconcile native obstacle-layer office clutter and doorway feasibility in the new Phase 7D profile, pass the complete 12-leg administration mission under native mark/clear behavior, then produce the operator-facing Omniverse/Nav2 presentation capture; physical deployment separately requires threshold and destination-specific clearance verification, real localisation validation, sim-to-real testing, all-direction protective sensing, stopping-distance validation and hardware safety commissioning"
+  required_next_gate: "Produce and validate the operator-facing Omniverse/Nav2 presentation capture from the accepted Phase 7E full-office stack; physical deployment separately requires threshold and destination-specific clearance verification, real localisation validation, sim-to-real testing, all-direction protective sensing, stopping-distance validation and hardware safety commissioning"

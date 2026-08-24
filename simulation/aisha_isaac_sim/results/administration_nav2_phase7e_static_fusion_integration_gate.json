@@ -1,0 +1,550 @@
+{
+  "report_type": "administration_nav2_phase7e_static_fusion_integration_gate",
+  "generated_at_utc": "2026-08-24T09:19:16.003032+00:00",
+  "passed": true,
+  "status": "accepted_full_office_native_costmap_static_scan_fusion",
+  "checks": {
+    "phase6_static_baseline_retained": true,
+    "phase7a_crossing_baseline_retained": true,
+    "phase7b_safe_wait_baseline_retained": true,
+    "phase7c_native_detour_baseline_retained": true,
+    "phase7d_native_costmap_baseline_retained": true,
+    "bridge_passed": true,
+    "phase7e_task_selected": true,
+    "full_12_leg_mission_passed": true,
+    "phase7e_control_stack_declared": true,
+    "no_planning_failure_diagnostics_triggered": true,
+    "both_office_visits_and_departures_completed": true,
+    "both_in_office_pivots_completed": true,
+    "both_departure_headings_aligned_in_pivot_zones": true,
+    "episode_never_reset": true,
+    "mission_completion_reached_bridge": true,
+    "accepted_phase6_primary_loaded": true,
+    "accepted_phase3n_fallback_loaded": true,
+    "native_laserscan_planner_observation_retained": true,
+    "raw_scans_are_clearing_only": true,
+    "filtered_scans_are_dynamic_marking_only": true,
+    "source_height_and_no_return_limits_retained": true,
+    "physical_footprint_and_padding_unchanged": true,
+    "filter_received_map_without_tf_failures": true,
+    "static_returns_were_masked_from_duplicate_marking": true,
+    "mapped_free_returns_were_preserved": true,
+    "filter_published_both_scan_streams": true,
+    "clear_baseline_corridor_was_free": true,
+    "native_costmap_still_marked_full_width_dynamic_barrier": true,
+    "native_costmap_cleared_after_physical_removal": true,
+    "clear_baseline_path_was_direct_and_authorized": true,
+    "blocked_detour_was_rejected_by_route_authorization": true,
+    "fresh_direct_path_computed_after_clearance": true,
+    "safe_wait_held_robot_stationary": true,
+    "high_speed_hallway_tiers_retained": true,
+    "mapped_doorway_limits_retained": true,
+    "central_drop_clearance_retained": true,
+    "no_collision_with_blocker_or_static_scene": true,
+    "both_live_scan_streams_exercised": true,
+    "reverse_remains_disabled": true,
+    "physical_release_remains_false": true
+  },
+  "checks_passed": 40,
+  "checks_total": 40,
+  "retention": {
+    "phase6": "28/28",
+    "phase7a": "24/24",
+    "phase7b": "26/26",
+    "phase7c": "29/29",
+    "phase7d": "32/32"
+  },
+  "mission": {
+    "completed_legs": 12,
+    "expected_legs": 12,
+    "waypoints": [
+      "east_atrium_exit",
+      "vice_principal_turn",
+      "vice_principal_approach",
+      "vice_principal",
+      "vice_principal_depart",
+      "hallway_return",
+      "principal_turn",
+      "principal_approach",
+      "principal",
+      "principal_depart",
+      "atrium_return",
+      "home_return"
+    ]
+  },
+  "fusion": {
+    "architecture": {
+      "raw_scan_role": "native_costmap_clearing_only",
+      "filtered_scan_role": "native_costmap_dynamic_marking_only",
+      "static_map_role": "mapped_static_obstacle_authority",
+      "static_match_tolerance_m": 0.035,
+      "masked_returns_remain_represented_by_static_layer": true,
+      "mapped_free_obstacle_returns_preserved": true
+    },
+    "statistics": {
+      "map_messages": 1,
+      "crown": {
+        "messages": 1059,
+        "published_messages": 1059,
+        "finite_returns": 38124,
+        "static_returns_masked": 33448,
+        "mapped_free_returns_preserved": 4676,
+        "map_unavailable_messages": 0,
+        "transform_failures": 0
+      },
+      "front": {
+        "messages": 1059,
+        "published_messages": 1059,
+        "finite_returns": 128139,
+        "static_returns_masked": 124552,
+        "mapped_free_returns_preserved": 3587,
+        "map_unavailable_messages": 0,
+        "transform_failures": 0
+      }
+    }
+  },
+  "native_costmap": {
+    "before": {
+      "available": true,
+      "topic_samples_received": 6,
+      "sample_x_m": 10.62,
+      "sample_count": 33,
+      "maximum_cost": 0,
+      "lethal_or_inscribed_samples": 0,
+      "nonzero_samples": 0,
+      "samples_y_cost": [
+        [
+          -0.8,
+          0
+        ],
+        [
+          -0.75,
+          0
+        ],
+        [
+          -0.7,
+          0
+        ],
+        [
+          -0.65,
+          0
+        ],
+        [
+          -0.6,
+          0
+        ],
+        [
+          -0.55,
+          0
+        ],
+        [
+          -0.5,
+          0
+        ],
+        [
+          -0.45,
+          0
+        ],
+        [
+          -0.4,
+          0
+        ],
+        [
+          -0.35,
+          0
+        ],
+        [
+          -0.3,
+          0
+        ],
+        [
+          -0.25,
+          0
+        ],
+        [
+          -0.2,
+          0
+        ],
+        [
+          -0.15,
+          0
+        ],
+        [
+          -0.1,
+          0
+        ],
+        [
+          -0.05,
+          0
+        ],
+        [
+          0.0,
+          0
+        ],
+        [
+          0.05,
+          0
+        ],
+        [
+          0.1,
+          0
+        ],
+        [
+          0.15,
+          0
+        ],
+        [
+          0.2,
+          0
+        ],
+        [
+          0.25,
+          0
+        ],
+        [
+          0.3,
+          0
+        ],
+        [
+          0.35,
+          0
+        ],
+        [
+          0.4,
+          0
+        ],
+        [
+          0.45,
+          0
+        ],
+        [
+          0.5,
+          0
+        ],
+        [
+          0.55,
+          0
+        ],
+        [
+          0.6,
+          0
+        ],
+        [
+          0.65,
+          0
+        ],
+        [
+          0.7,
+          0
+        ],
+        [
+          0.75,
+          0
+        ],
+        [
+          0.8,
+          0
+        ]
+      ]
+    },
+    "blocked": {
+      "available": true,
+      "topic_samples_received": 7,
+      "sample_x_m": 10.62,
+      "sample_count": 33,
+      "maximum_cost": 254,
+      "lethal_or_inscribed_samples": 33,
+      "nonzero_samples": 33,
+      "samples_y_cost": [
+        [
+          -0.8,
+          253
+        ],
+        [
+          -0.75,
+          254
+        ],
+        [
+          -0.7,
+          253
+        ],
+        [
+          -0.65,
+          254
+        ],
+        [
+          -0.6,
+          253
+        ],
+        [
+          -0.55,
+          254
+        ],
+        [
+          -0.5,
+          253
+        ],
+        [
+          -0.45,
+          253
+        ],
+        [
+          -0.4,
+          253
+        ],
+        [
+          -0.35,
+          253
+        ],
+        [
+          -0.3,
+          253
+        ],
+        [
+          -0.25,
+          253
+        ],
+        [
+          -0.2,
+          253
+        ],
+        [
+          -0.15,
+          253
+        ],
+        [
+          -0.1,
+          253
+        ],
+        [
+          -0.05,
+          253
+        ],
+        [
+          0.0,
+          253
+        ],
+        [
+          0.05,
+          253
+        ],
+        [
+          0.1,
+          253
+        ],
+        [
+          0.15,
+          253
+        ],
+        [
+          0.2,
+          253
+        ],
+        [
+          0.25,
+          253
+        ],
+        [
+          0.3,
+          253
+        ],
+        [
+          0.35,
+          253
+        ],
+        [
+          0.4,
+          253
+        ],
+        [
+          0.45,
+          253
+        ],
+        [
+          0.5,
+          253
+        ],
+        [
+          0.55,
+          253
+        ],
+        [
+          0.6,
+          253
+        ],
+        [
+          0.65,
+          253
+        ],
+        [
+          0.7,
+          253
+        ],
+        [
+          0.75,
+          253
+        ],
+        [
+          0.8,
+          253
+        ]
+      ]
+    },
+    "cleared": {
+      "available": true,
+      "topic_samples_received": 9,
+      "sample_x_m": 10.62,
+      "sample_count": 33,
+      "maximum_cost": 0,
+      "lethal_or_inscribed_samples": 0,
+      "nonzero_samples": 0,
+      "samples_y_cost": [
+        [
+          -0.8,
+          0
+        ],
+        [
+          -0.75,
+          0
+        ],
+        [
+          -0.7,
+          0
+        ],
+        [
+          -0.65,
+          0
+        ],
+        [
+          -0.6,
+          0
+        ],
+        [
+          -0.55,
+          0
+        ],
+        [
+          -0.5,
+          0
+        ],
+        [
+          -0.45,
+          0
+        ],
+        [
+          -0.4,
+          0
+        ],
+        [
+          -0.35,
+          0
+        ],
+        [
+          -0.3,
+          0
+        ],
+        [
+          -0.25,
+          0
+        ],
+        [
+          -0.2,
+          0
+        ],
+        [
+          -0.15,
+          0
+        ],
+        [
+          -0.1,
+          0
+        ],
+        [
+          -0.05,
+          0
+        ],
+        [
+          0.0,
+          0
+        ],
+        [
+          0.05,
+          0
+        ],
+        [
+          0.1,
+          0
+        ],
+        [
+          0.15,
+          0
+        ],
+        [
+          0.2,
+          0
+        ],
+        [
+          0.25,
+          0
+        ],
+        [
+          0.3,
+          0
+        ],
+        [
+          0.35,
+          0
+        ],
+        [
+          0.4,
+          0
+        ],
+        [
+          0.45,
+          0
+        ],
+        [
+          0.5,
+          0
+        ],
+        [
+          0.55,
+          0
+        ],
+        [
+          0.6,
+          0
+        ],
+        [
+          0.65,
+          0
+        ],
+        [
+          0.7,
+          0
+        ],
+        [
+          0.75,
+          0
+        ],
+        [
+          0.8,
+          0
+        ]
+      ]
+    }
+  },
+  "safe_wait": {
+    "measurement_start": "after_native_costmap_marking",
+    "odometry_samples": 90,
+    "maximum_absolute_linear_velocity_mps": 0.00012470110959839076,
+    "displacement_m": 9.982228820164276e-07,
+    "elapsed_wall_s": 4.359
+  },
+  "fresh_planning": {
+    "baseline_path_length_m": 12.7877,
+    "blocked_path_length_m": 36.5018,
+    "fresh_path_length_m": 12.7877
+  },
+  "claim_boundary": "Accepted only as a measured-administration presentation-simulation gate. Known static LiDAR endpoints are represented by the static map instead of being inflated twice; raw rays still clear, mapped-free returns still mark native Nav2 obstacles, and the unchanged padded AI-SHA footprint completed all 12 legs. This provides no physical localization, stopping-distance, sim-to-real, certification, or deployment credit."
+}

@@ -562,6 +562,29 @@ gym.register(
 
 
 gym.register(
+    id=(
+        "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7E-"
+        "StaticFusion-FullOffice-Safety-Direct-v0"
+    ),
+    entry_point=(
+        "aisha_isaaclab.tasks.office_nav.administration_dynamic_safety_env:"
+        "AishaAdministrationMeasuredNav2BlockedRouteEnv"
+    ),
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.administration_dynamic_safety_env:"
+            "AishaAdministrationMeasuredNav2Phase7BBlockedRouteEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "aisha_isaaclab.tasks.office_nav.agents.rsl_rl_ppo_phase3_cfg:"
+            "AishaPhase6HighSpeedSafetyPPORunnerCfg"
+        ),
+    },
+)
+
+
+gym.register(
     id="Isaac-AISHA-Phase7C-NativeCostmap-Detour-Safety-Direct-v0",
     entry_point=(
         "aisha_isaaclab.tasks.office_nav.phase7c_native_detour_env:"

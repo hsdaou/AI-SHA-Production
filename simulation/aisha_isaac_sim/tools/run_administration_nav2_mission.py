@@ -58,6 +58,7 @@ PHASE6_CONTROL_STACKS = {
     "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
     "nav2_mapped_doorway_phase7b_blocked_route_replanning_safety",
     "nav2_mapped_doorway_phase7d_native_costmap_safe_wait_safety",
+    "nav2_mapped_doorway_phase7e_static_fusion_full_office_safety",
 }
 PHASE7B_CONTROL_STACK = (
     "nav2_mapped_doorway_phase7b_blocked_route_replanning_safety"
@@ -65,6 +66,13 @@ PHASE7B_CONTROL_STACK = (
 PHASE7D_CONTROL_STACK = (
     "nav2_mapped_doorway_phase7d_native_costmap_safe_wait_safety"
 )
+PHASE7E_CONTROL_STACK = (
+    "nav2_mapped_doorway_phase7e_static_fusion_full_office_safety"
+)
+ADMINISTRATION_NATIVE_COSTMAP_CONTROL_STACKS = {
+    PHASE7D_CONTROL_STACK,
+    PHASE7E_CONTROL_STACK,
+}
 
 
 def yaw_quaternion(yaw_radians: float) -> tuple[float, float]:
@@ -158,11 +166,13 @@ class MissionNode:
         self.blockage_transitions: list[dict[str, object]] = []
         self.global_costmap: Costmap | None = None
         self.global_costmap_samples = 0
+        self.static_map: OccupancyGrid | None = None
         self.registered_front_points: list[tuple[float, float, float]] = []
         self.registered_front_pointcloud_samples = 0
         self.node.create_subscription(Twist, "/cmd_vel", self._command, 10)
 
-    def _map(self, _message: OccupancyGrid) -> None:
+    def _map(self, message: OccupancyGrid) -> None:
+        self.static_map = message
         self.map_received = True
 
     def _amcl_pose(self, _message: PoseWithCovarianceStamped) -> None:
@@ -280,6 +290,256 @@ class MissionNode:
             ),
             "nonzero_samples": sum(value > 0 for _, value in samples),
             "samples_y_cost": [list(item) for item in samples],
+        }
+
+    @staticmethod
+    def _occupancy_value(message: OccupancyGrid, x_m: float, y_m: float) -> int | None:
+        metadata = message.info
+        resolution = float(metadata.resolution)
+        x_index = int(
+            math.floor((x_m - float(metadata.origin.position.x)) / resolution)
+        )
+        y_index = int(
+            math.floor((y_m - float(metadata.origin.position.y)) / resolution)
+        )
+        if not (0 <= x_index < int(metadata.width) and 0 <= y_index < int(metadata.height)):
+            return None
+        return int(message.data[y_index * int(metadata.width) + x_index])
+
+    @staticmethod
+    def _costmap_value(message: Costmap, x_m: float, y_m: float) -> int | None:
+        metadata = message.metadata
+        resolution = float(metadata.resolution)
+        x_index = int(
+            math.floor((x_m - float(metadata.origin.position.x)) / resolution)
+        )
+        y_index = int(
+            math.floor((y_m - float(metadata.origin.position.y)) / resolution)
+        )
+        if not (0 <= x_index < int(metadata.size_x) and 0 <= y_index < int(metadata.size_y)):
+            return None
+        return int(message.data[y_index * int(metadata.size_x) + x_index])
+
+    def costmap_window_profile(
+        self, centre_x_m: float, centre_y_m: float, half_extent_m: float = 1.5
+    ) -> dict[str, object]:
+        """Summarize native costs and isolate lethal cells absent from the static map."""
+        message = self.global_costmap
+        if message is None:
+            return {"available": False, "reason": "no_global_costmap"}
+        metadata = message.metadata
+        resolution = float(metadata.resolution)
+        origin_x = float(metadata.origin.position.x)
+        origin_y = float(metadata.origin.position.y)
+        size_x = int(metadata.size_x)
+        size_y = int(metadata.size_y)
+        min_x_index = max(
+            0, int(math.floor((centre_x_m - half_extent_m - origin_x) / resolution))
+        )
+        max_x_index = min(
+            size_x - 1,
+            int(math.floor((centre_x_m + half_extent_m - origin_x) / resolution)),
+        )
+        min_y_index = max(
+            0, int(math.floor((centre_y_m - half_extent_m - origin_y) / resolution))
+        )
+        max_y_index = min(
+            size_y - 1,
+            int(math.floor((centre_y_m + half_extent_m - origin_y) / resolution)),
+        )
+        counts = {"free": 0, "inflated": 0, "lethal_or_inscribed": 0, "unknown": 0}
+        lethal_cells = []
+        live_only_lethal_cells = []
+        for y_index in range(min_y_index, max_y_index + 1):
+            y_m = origin_y + (y_index + 0.5) * resolution
+            row_offset = y_index * size_x
+            for x_index in range(min_x_index, max_x_index + 1):
+                value = int(message.data[row_offset + x_index])
+                x_m = origin_x + (x_index + 0.5) * resolution
+                distance_m = math.hypot(x_m - centre_x_m, y_m - centre_y_m)
+                if value == 255:
+                    counts["unknown"] += 1
+                elif value >= 253:
+                    counts["lethal_or_inscribed"] += 1
+                    static_value = (
+                        self._occupancy_value(self.static_map, x_m, y_m)
+                        if self.static_map is not None
+                        else None
+                    )
+                    sample = (distance_m, x_m, y_m, value, static_value)
+                    lethal_cells.append(sample)
+                    if static_value is not None and static_value < 50:
+                        live_only_lethal_cells.append(sample)
+                elif value > 0:
+                    counts["inflated"] += 1
+                else:
+                    counts["free"] += 1
+
+        def nearest(samples: list[tuple], limit: int = 24) -> list[dict[str, object]]:
+            return [
+                {
+                    "distance_m": round(float(distance), 4),
+                    "xy_m": [round(float(x_m), 4), round(float(y_m), 4)],
+                    "cost": int(cost),
+                    "static_occupancy": static_value,
+                }
+                for distance, x_m, y_m, cost, static_value in sorted(samples)[:limit]
+            ]
+
+        return {
+            "available": True,
+            "topic_samples_received": self.global_costmap_samples,
+            "centre_xy_m": [centre_x_m, centre_y_m],
+            "half_extent_m": half_extent_m,
+            "resolution_m": resolution,
+            "cell_counts": counts,
+            "live_only_lethal_cell_count": len(live_only_lethal_cells),
+            "nearest_lethal_cells": nearest(lethal_cells),
+            "nearest_live_only_lethal_cells": nearest(live_only_lethal_cells),
+        }
+
+    def route_cross_section_profile(
+        self,
+        start_xy_m: tuple[float, float],
+        goal_xy_m: tuple[float, float],
+        half_width_m: float = 1.20,
+        along_step_m: float = 0.05,
+    ) -> dict[str, object]:
+        """Find lethal native-costmap barriers across a straight route envelope."""
+        message = self.global_costmap
+        if message is None:
+            return {"available": False, "reason": "no_global_costmap"}
+        start_x, start_y = start_xy_m
+        goal_x, goal_y = goal_xy_m
+        delta_x = goal_x - start_x
+        delta_y = goal_y - start_y
+        route_length = math.hypot(delta_x, delta_y)
+        if route_length <= 1.0e-6:
+            return {"available": False, "reason": "zero_length_route"}
+        tangent_x = delta_x / route_length
+        tangent_y = delta_y / route_length
+        normal_x = -tangent_y
+        normal_y = tangent_x
+        lateral_step_m = min(0.025, float(message.metadata.resolution))
+        section_count = max(1, int(math.ceil(route_length / along_step_m)))
+        profiles = []
+        for section_index in range(section_count + 1):
+            distance_along_m = min(route_length, section_index * along_step_m)
+            centre_x = start_x + tangent_x * distance_along_m
+            centre_y = start_y + tangent_y * distance_along_m
+            passable_offsets = []
+            live_only_lethal = 0
+            lateral_offset_m = -half_width_m
+            while lateral_offset_m <= half_width_m + lateral_step_m * 0.5:
+                x_m = centre_x + normal_x * lateral_offset_m
+                y_m = centre_y + normal_y * lateral_offset_m
+                cost = self._costmap_value(message, x_m, y_m)
+                if cost is not None and cost < 253:
+                    passable_offsets.append(lateral_offset_m)
+                elif cost is not None and self.static_map is not None:
+                    static_value = self._occupancy_value(self.static_map, x_m, y_m)
+                    if static_value is not None and static_value < 50:
+                        live_only_lethal += 1
+                lateral_offset_m += lateral_step_m
+            widest_passage_m = 0.0
+            run_start = None
+            previous = None
+            for offset_m in passable_offsets:
+                if previous is None or offset_m - previous > lateral_step_m * 1.5:
+                    run_start = offset_m
+                widest_passage_m = max(
+                    widest_passage_m,
+                    offset_m - float(run_start) + lateral_step_m,
+                )
+                previous = offset_m
+            profiles.append(
+                {
+                    "distance_along_m": round(distance_along_m, 3),
+                    "centre_xy_m": [round(centre_x, 3), round(centre_y, 3)],
+                    "widest_passable_cross_section_m": round(widest_passage_m, 3),
+                    "live_only_lethal_samples": live_only_lethal,
+                }
+            )
+        narrowest = min(
+            profiles, key=lambda item: item["widest_passable_cross_section_m"]
+        )
+        obstructed = [
+            item for item in profiles if item["widest_passable_cross_section_m"] <= 0.025
+        ]
+        live_only_sections = [item for item in profiles if item["live_only_lethal_samples"]]
+        return {
+            "available": True,
+            "start_xy_m": list(start_xy_m),
+            "goal_xy_m": list(goal_xy_m),
+            "route_length_m": route_length,
+            "half_width_m": half_width_m,
+            "narrowest_cross_section": narrowest,
+            "fully_obstructed_section_count": len(obstructed),
+            "first_fully_obstructed_sections": obstructed[:12],
+            "live_only_lethal_section_count": len(live_only_sections),
+            "first_live_only_lethal_sections": live_only_sections[:24],
+        }
+
+    def planning_failure_diagnostics(self, waypoint: dict) -> dict[str, object]:
+        start_pose = self.odom_samples[-1] if self.odom_samples else None
+        if start_pose is None:
+            return {"available": False, "reason": "no_odometry"}
+        start_xy = (float(start_pose[0]), float(start_pose[1]))
+        goal_xy = (float(waypoint["x_m"]), float(waypoint["y_m"]))
+        route_delta_x = goal_xy[0] - start_xy[0]
+        route_delta_y = goal_xy[1] - start_xy[1]
+        route_length = math.hypot(route_delta_x, route_delta_y)
+        registered_route_points = []
+        if route_length > 1.0e-6:
+            for point_x, point_y, point_z in self.registered_front_points:
+                relative_x = point_x - start_xy[0]
+                relative_y = point_y - start_xy[1]
+                distance_along = (
+                    relative_x * route_delta_x + relative_y * route_delta_y
+                ) / route_length
+                tangent_offset = abs(
+                    relative_x * -route_delta_y + relative_y * route_delta_x
+                ) / route_length
+                if -0.5 <= distance_along <= route_length + 0.5 and tangent_offset <= 1.5:
+                    registered_route_points.append(
+                        (distance_along, tangent_offset, point_x, point_y, point_z)
+                    )
+        return {
+            "available": self.global_costmap is not None,
+            "robot_xy_yaw": [start_xy[0], start_xy[1], float(start_pose[3])],
+            "goal_xy_m": list(goal_xy),
+            "robot_centre_cost": (
+                self._costmap_value(self.global_costmap, *start_xy)
+                if self.global_costmap is not None
+                else None
+            ),
+            "robot_centre_static_occupancy": (
+                self._occupancy_value(self.static_map, *start_xy)
+                if self.static_map is not None
+                else None
+            ),
+            "robot_window": self.costmap_window_profile(*start_xy),
+            "goal_window": self.costmap_window_profile(*goal_xy),
+            "straight_route_cross_sections": self.route_cross_section_profile(
+                start_xy, goal_xy
+            ),
+            "registered_front_pointcloud_samples": self.registered_front_pointcloud_samples,
+            "registered_front_point_count": len(self.registered_front_points),
+            "registered_front_route_point_count": len(registered_route_points),
+            "registered_front_route_points": [
+                {
+                    "distance_along_m": round(distance_along, 4),
+                    "tangent_offset_m": round(tangent_offset, 4),
+                    "xyz_m": [
+                        round(point_x, 4),
+                        round(point_y, 4),
+                        round(point_z, 4),
+                    ],
+                }
+                for distance_along, tangent_offset, point_x, point_y, point_z in sorted(
+                    registered_route_points
+                )
+            ],
         }
 
     @staticmethod
@@ -980,6 +1240,7 @@ class MissionNode:
         tolerance_deg: float = 2.9,
         angular_rad_s: float = 0.42,
         timeout_s: float = 20.0,
+        rotation_location: str = "open_approach_corridor_before_doorway",
     ) -> dict:
         """Align in the open approach corridor before a straight door crossing."""
         if not self.odom_samples:
@@ -1002,7 +1263,7 @@ class MissionNode:
                     "tolerance_deg": tolerance_deg,
                     "final_error_deg": math.degrees(final_error),
                     "elapsed_wall_s": round(time.monotonic() - started, 3),
-                    "rotation_location": "open_approach_corridor_before_doorway",
+                    "rotation_location": rotation_location,
                 }
             command = Twist()
             command.angular.z = math.copysign(abs(angular_rad_s), final_error)
@@ -1016,7 +1277,7 @@ class MissionNode:
             "tolerance_deg": tolerance_deg,
             "final_error_deg": math.degrees(final_error),
             "elapsed_wall_s": round(time.monotonic() - started, 3),
-            "rotation_location": "open_approach_corridor_before_doorway",
+            "rotation_location": rotation_location,
         }
 
     def converge_to_stage(
@@ -1117,6 +1378,7 @@ def main() -> int:
             "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
             PHASE7B_CONTROL_STACK,
             PHASE7D_CONTROL_STACK,
+            PHASE7E_CONTROL_STACK,
         ),
         default="nav2",
         help="declare the independently launched bridge command-arbitration mode",
@@ -1167,6 +1429,8 @@ def main() -> int:
                 if args.control_stack == PHASE7B_CONTROL_STACK
                 else "nav2_phase6_and_phase3n_learned_safety_with_native_costmap_safe_wait"
                 if args.control_stack == PHASE7D_CONTROL_STACK
+                else "nav2_phase6_and_phase3n_learned_safety_with_static_fused_native_costmap"
+                if args.control_stack == PHASE7E_CONTROL_STACK
                 else "nav2_phase6_and_phase3n_learned_safety"
                 if args.control_stack in PHASE6_CONTROL_STACKS
                 else args.control_stack
@@ -1217,7 +1481,7 @@ def main() -> int:
                         stage_y - float(waypoint["y_m"]),
                     )
                 if (
-                    args.control_stack == PHASE7D_CONTROL_STACK
+                    args.control_stack in ADMINISTRATION_NATIVE_COSTMAP_CONTROL_STACKS
                     and route_segment_id == 1
                 ):
                     mission.hold_stopped(1.5)
@@ -1234,10 +1498,14 @@ def main() -> int:
                 mission.publish_route_segment(route_segment_id)
                 blocked_route_replanning = None
                 if (
-                    args.control_stack in {PHASE7B_CONTROL_STACK, PHASE7D_CONTROL_STACK}
+                    args.control_stack
+                    in {
+                        PHASE7B_CONTROL_STACK,
+                        *ADMINISTRATION_NATIVE_COSTMAP_CONTROL_STACKS,
+                    }
                     and route_segment_id == 1
                 ):
-                    if args.control_stack == PHASE7D_CONTROL_STACK:
+                    if args.control_stack in ADMINISTRATION_NATIVE_COSTMAP_CONTROL_STACKS:
                         path, planning_status, blocked_route_replanning = (
                             mission.exercise_native_costmap_blocked_route_replan(
                                 navigation_waypoint,
@@ -1279,6 +1547,9 @@ def main() -> int:
                     "blocked_route_replanning": blocked_route_replanning,
                 }
                 if path is None:
+                    record["planning_failure_diagnostics"] = (
+                        mission.planning_failure_diagnostics(navigation_waypoint)
+                    )
                     record["execution_status"] = "not_started"
                     record["elapsed_wall_s"] = round(time.monotonic() - leg_started, 3)
                     legs.append(record)
@@ -1349,6 +1620,29 @@ def main() -> int:
                     if not pivot["passed"]:
                         failure = f"{waypoint['id']}:post_visit_pivot_{pivot['status']}"
                         break
+                    if args.control_stack == PHASE7E_CONTROL_STACK:
+                        departure_alignment = mission.align_to_yaw(
+                            float(waypoint["yaw_deg"]) + 180.0,
+                            tolerance_deg=2.0,
+                            timeout_s=30.0,
+                            rotation_location=(
+                                "mapped_in_office_pivot_clearance_zone"
+                            ),
+                        )
+                        record["post_visit_departure_alignment"] = (
+                            departure_alignment
+                        )
+                        print(
+                            f"AISHA_NAV2_DEPARTURE_ALIGNMENT waypoint={waypoint['id']} "
+                            f"status={departure_alignment['status']} "
+                            f"error_deg={departure_alignment.get('final_error_deg', float('nan')):.3f}"
+                        )
+                        if not departure_alignment["passed"]:
+                            failure = (
+                                f"{waypoint['id']}:post_visit_departure_alignment_"
+                                f"{departure_alignment['status']}"
+                            )
+                            break
     finally:
         mission.stop()
         end_position = mission.odom_samples[-1][:2] if mission.odom_samples else None
@@ -1380,6 +1674,9 @@ def main() -> int:
                     key: list(value) for key, value in OFFICE_STAGING_OFFSETS_M.items()
                 },
                 "post_visit_pivots": sorted(POST_VISIT_PIVOTS),
+                "phase7e_post_visit_departure_alignment": (
+                    args.control_stack == PHASE7E_CONTROL_STACK
+                ),
                 "phase6_pre_door_alignment_waypoints": sorted(
                     PHASE6_PRE_DOOR_ALIGNMENT_WAYPOINTS
                 ),
@@ -1491,6 +1788,9 @@ def main() -> int:
             ),
             "phase7d_administration_native_costmap_coupled": (
                 args.control_stack == PHASE7D_CONTROL_STACK
+            ),
+            "phase7e_administration_static_fusion_coupled": (
+                args.control_stack == PHASE7E_CONTROL_STACK
             ),
             "blocked_route_replanning": next(
                 (

@@ -1,0 +1,64 @@
+phase: "7E"
+date: "2026-08-24"
+status: accepted_full_office_native_costmap_static_scan_fusion
+
+objective:
+  description: "Reconcile mapped-static and live-LiDAR obstacle authority, then pass the complete administration mission."
+  predecessor: phase7d_administration_native_costmap
+  physical_release: false
+
+geometry_contract:
+  robot_footprint_changed: false
+  nav2_footprint_padding_m: 0.03
+  vice_principal_reported_clear_width_m: 0.85
+  principal_presentation_clear_width_m: 0.90
+  doorway_geometry_changed: false
+
+fusion_contract:
+  static_map_role: mapped_static_obstacle_authority
+  raw_laserscan_role: native_costmap_clearing_only
+  filtered_laserscan_role: native_costmap_dynamic_marking_only
+  static_match_tolerance_m: 0.035
+  known_static_returns_remain_in_static_layer: true
+  mapped_free_returns_preserved_for_dynamic_marking: true
+  crown_max_obstacle_height_m: 2.20
+  front_max_obstacle_height_m: 2.00
+  valid_no_return_clearing: true
+
+departure_contract:
+  pivot_direction: counterclockwise
+  post_pivot_translation_during_alignment_mps: 0.0
+  maximum_alignment_error_deg: 2.0
+  vice_principal_final_error_deg: 1.845153382830766
+  principal_final_error_deg: 1.9808513838698822
+  alignment_location: mapped_in_office_pivot_clearance_zone
+
+acceptance:
+  checks: 40
+  checks_passed: 40
+  mission_legs: 12
+  mission_legs_passed: 12
+  full_width_barrier_samples_before: "0/33"
+  full_width_barrier_samples_blocked: "33/33"
+  full_width_barrier_samples_cleared: "0/33"
+  baseline_path_length_m: 12.7877
+  blocked_unauthorized_path_length_m: 36.5018
+  fresh_path_length_m: 12.7877
+  safe_wait_maximum_absolute_linear_velocity_mps: 0.00012470110959839076
+  safe_wait_displacement_m: 0.0000009982228820164276
+  maximum_hallway_speed_segment_1_mps: 0.7457199096679688
+  maximum_hallway_speed_segment_5_mps: 0.7434210777282715
+  maximum_doorway_body_speed_mps: 0.059399235993623734
+  maximum_doorway_tangent_offset_m: 0.01577148437500142
+  phase6_retained: "28/28"
+  phase7a_retained: "24/24"
+  phase7b_retained: "26/26"
+  phase7c_retained: "29/29"
+  phase7d_retained: "32/32"
+  report: results/administration_nav2_phase7e_static_fusion_integration_gate.json
+
+claim_boundary: >-
+  Accepted only as measured-administration presentation-simulation evidence.
+  It does not validate an unmeasured physical map, localization error,
+  stopping distance, sim-to-real transfer, protective sensing, safety
+  certification, or deployment readiness.
