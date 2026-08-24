@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, the 26/26 Phase 7B registered-LiDAR blocked-route gate, the isolated 29/29 Phase 7C native-costmap spatial-detour gate, the scoped 32/32 Phase 7D administration native-costmap gate, and the 40/40 Phase 7E full-office static-map/live-LiDAR fusion gate. Physical release remains pending.**
+**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, the 26/26 Phase 7B registered-LiDAR blocked-route gate, the isolated 29/29 Phase 7C native-costmap spatial-detour gate, the scoped 32/32 Phase 7D administration native-costmap gate, the 40/40 Phase 7E full-office static-map/live-LiDAR fusion gate, and the 19/19 Phase 7F operator-presentation gate. Physical release remains pending.**
 
 ## Completed
 
@@ -434,6 +434,18 @@
   The gate passes 40/40 while retaining every Phase 6 through Phase 7D gate.
   This is presentation-simulation fusion evidence, not physical mapping,
   localisation, stopping-distance, sim-to-real or deployment evidence.
+- Phase 7F hash-links the accepted Phase 7E live mission to an eight-shot Full
+  HD Omniverse PathTracing replay. The 11.5-16 mm human-height cameras show each of
+  the 12 route legs once, with separate Vice-Principal and Principal
+  entry/departure coverage and no black or uniform environment frames. The
+  renderer selects recorded wheel-physics poses without route interpolation;
+  every frame labels the result as visual replay rather than live execution.
+  The resulting 24.0 s, 1920 x 1080 video passes 19/19 presentation checks and
+  has SHA-256
+  `6fcc87d6faa91fe45ef8795e8a32e083f68af66f594763351eaaf39e150780e8`.
+  The source motion remains the 40/40 live Phase 7E run. The environment is a
+  plan-, scan- and walkthrough-informed presentation twin, not photogrammetry,
+  an as-built survey or physical-release evidence.
 
 ## Deterministic contact tuning disclosure
 
@@ -463,7 +475,8 @@ claim. See `config/physics_materials.yaml`.
   safety, measured static Nav2 mission, separate Phase 7A sensed crossing,
   Phase 7B registered-LiDAR safe wait, Phase 7C isolated native detour and the
   scoped Phase 7D administration native mark/clear gate pass. Phase 7E now also
-  passes all 12 legs under static-map/live-LiDAR fusion. Broader office-directory
+  passes all 12 legs under static-map/live-LiDAR fusion, and Phase 7F packages
+  that evidence as an operator-facing Omniverse film. Broader office-directory
   coverage, physical localisation and sim-to-real commissioning remain
   subsequent gates.
 - The administration USD has been rebuilt around the walkthrough's primary
@@ -516,20 +529,20 @@ These are evidence-based project-management estimates, not safety ratings:
 
 | Workstream | Progress |
 |---|---:|
-| Presentation-ready Omniverse simulation | 95% |
+| Presentation-ready Omniverse simulation | 98% |
 | Learned navigation and doorway handling | 92% |
 | Measured digital twin | 68% |
 | Nav2/localisation integration | 96% |
 | Dynamic-obstacle simulation safety | 94% |
 | Physical deployment readiness | 30% |
-| Overall end objective | 88% |
+| Overall end objective | 89% |
 
-The latest increase comes from reconciling static-map and live-LiDAR authority,
-passing the complete 12-leg native-costmap mission, and retaining dynamic
-mark/refusal/wait/clear/fresh-plan behavior with the unchanged padded footprint.
-The immediate simulation work is now operator-facing Omniverse/Nav2 capture and
-visual/sensor polish. Real localisation and physical sim-to-real commissioning
-remain separate major gates.
+The latest increase comes from completing the operator-facing Full HD
+PathTracing capture and its 19/19 hash-linked acceptance gate on top of the
+accepted 12-leg native-costmap mission. The immediate next gate is real
+localisation and physical sim-to-real commissioning; this includes measured
+threshold/destination review, all-direction protective sensing, stopping
+distance and hardware safety validation.
 
 ## Evidence
 
@@ -638,6 +651,14 @@ remain separate major gates.
 - `phase7c_native_costmap_detour_mission.json`
 - `phase7c_native_costmap_detour_bridge.json`
 - `phase7c_native_costmap_detour_integration_gate.json`
+- `administration_nav2_phase7d_native_costmap_integration_gate.json`
+- `administration_nav2_phase7e_static_fusion_mission.json`
+- `administration_nav2_phase7e_static_fusion_bridge.json`
+- `administration_nav2_phase7e_static_scan_fusion.json`
+- `administration_nav2_phase7e_static_fusion_integration_gate.json`
+- `administration_nav2_phase7f_operator_replay_validation.json`
+- `administration_nav2_phase7f_operator_rtx_render_report.json`
+- `administration_nav2_phase7f_operator_presentation_acceptance.json`
 - `administration_nav2_phase6_rtx_presentation_acceptance.json`
 - `administration_nav2_phase7_dynamic_mission.json`
 - `administration_nav2_phase7_dynamic_bridge.json`
@@ -677,3 +698,4 @@ remain separate major gates.
 - `../media/videos/phase4a_administration_dynamic_showcase_final/aisha-phase4a-dynamic-showcase-step-0.mp4`
 - `../media/videos/AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4`
 - `../media/videos/AI-SHA_Final_Omniverse_Administration_Presentation.mp4`
+- `../media/videos/AI-SHA_Phase7F_Operator_Omniverse_Presentation.mp4`

@@ -1,0 +1,67 @@
+{
+  "report_type": "administration_nav2_phase7f_operator_presentation_acceptance",
+  "generated_at_utc": "2026-08-24T11:14:06.764120+00:00",
+  "passed": true,
+  "status": "accepted_operator_presentation_simulation",
+  "checks": {
+    "phase7e_full_office_gate_retained_40_of_40": true,
+    "successful_live_source_completed_all_12_legs": true,
+    "replay_clearance_evidence_passed": true,
+    "render_hash_links_current_phase7e_mission": true,
+    "render_hash_links_current_operator_profile": true,
+    "eight_human_height_shots_cover_each_leg_once": true,
+    "wide_environmental_lenses_and_human_camera_heights": true,
+    "path_traced_full_hd_presentation_profile": true,
+    "encoded_video_matches_render_contract": true,
+    "encoded_video_hash_and_size_match": true,
+    "visual_qa_contact_sheet_packaged": true,
+    "no_black_or_uniform_environment_frames": true,
+    "both_offices_entered_and_departed": true,
+    "office_departure_alignment_and_doorway_speed_retained": true,
+    "accepted_hallway_speed_tier_retained": true,
+    "native_lidar_block_wait_clear_replan_retained": true,
+    "learned_360_safety_was_live_in_source": true,
+    "replay_and_environment_limitations_are_disclosed": true,
+    "simulation_only_no_physical_release": true
+  },
+  "checks_passed": 19,
+  "checks_total": 19,
+  "video": {
+    "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase7F_Operator_Omniverse_Presentation.mp4",
+    "sha256": "6fcc87d6faa91fe45ef8795e8a32e083f68af66f594763351eaaf39e150780e8",
+    "size_bytes": 4221540,
+    "frames": 576,
+    "fps": 24.0,
+    "resolution": [
+      1920,
+      1080
+    ],
+    "duration_s": 24.0,
+    "visual_frame_statistics": {
+      "sampled_frames": 576,
+      "minimum_content_mean": 55.69723831861663,
+      "minimum_content_stddev": 37.299792848471604
+    }
+  },
+  "contact_sheet": {
+    "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/AI-SHA_Phase7F_Operator_Omniverse_contact_sheet.jpg",
+    "sha256": "570ba9a3bc9228a051f08b51b991ef0bc616dae5845d7c1597a23af8b20a4613"
+  },
+  "source_evidence": {
+    "integration": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7e_static_fusion_integration_gate.json",
+    "mission": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7e_static_fusion_mission.json",
+    "bridge": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7e_static_fusion_bridge.json",
+    "replay_validation": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7f_operator_replay_validation.json",
+    "render_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7f_operator_rtx_render_report.json",
+    "profile": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/phase7f_operator_presentation.yaml"
+  },
+  "claim_boundary": {
+    "supported": "Operator-facing Full HD PathTracing replay of recorded poses from the accepted Phase 7E live Nav2/learned-safety full-office simulation mission.",
+    "visual_replay_is_live_policy_execution": false,
+    "source_motion_was_live_policy_execution": true,
+    "environment_is_photogrammetric_or_as_built": false,
+    "physical_localization_credit": false,
+    "physical_safety_credit": false,
+    "physical_release": false
+  }
+}

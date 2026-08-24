@@ -12,6 +12,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import yaml
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--headless", action="store_true")
@@ -26,6 +29,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--path-tracing-spp", type=int, default=16)
     parser.add_argument("--trajectory-report", type=Path)
+    parser.add_argument(
+        "--presentation-profile",
+        type=Path,
+        help="YAML camera/overlay profile; omit to retain the original six-shot replay.",
+    )
     parser.add_argument("--frame-directory", type=Path)
     parser.add_argument("--render-report", type=Path)
     parser.add_argument(
@@ -106,7 +114,7 @@ if ARGS.renderer == "PathTracing":
     settings.set_int("/rtx/pathtracing/totalSpp", max(1, ARGS.path_tracing_spp))
 
 
-SHOTS = (
+DEFAULT_SHOTS = (
     {
         "title": "Departure - central atrium",
         "camera": (-4.35, 0.0, 1.72),
@@ -156,6 +164,44 @@ SHOTS = (
         "segments": (10, 11),
     },
 )
+
+
+def load_presentation_profile(path: Path | None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    if path is None:
+        return [dict(shot) for shot in DEFAULT_SHOTS], {}
+    profile = yaml.safe_load(path.resolve().read_text(encoding="utf-8"))
+    if not isinstance(profile, dict):
+        raise ValueError(f"presentation profile must contain a YAML object: {path}")
+    raw_shots = profile.get("shots")
+    if not isinstance(raw_shots, list) or not raw_shots:
+        raise ValueError(f"presentation profile has no shots: {path}")
+    shots: list[dict[str, Any]] = []
+    for index, raw in enumerate(raw_shots, start=1):
+        if not isinstance(raw, dict):
+            raise ValueError(f"presentation shot {index} must be an object")
+        required = {"title", "camera", "look_at", "focal_length_mm", "segments"}
+        if not required.issubset(raw):
+            raise ValueError(f"presentation shot {index} is missing {sorted(required - set(raw))}")
+        camera = tuple(float(value) for value in raw["camera"])
+        look_at = tuple(float(value) for value in raw["look_at"])
+        segments = tuple(int(value) for value in raw["segments"])
+        if len(camera) != 3 or len(look_at) != 3 or not segments:
+            raise ValueError(f"invalid camera, look_at, or segments in presentation shot {index}")
+        shots.append(
+            {
+                "title": str(raw["title"]),
+                "operator_label": str(raw.get("operator_label", "VERIFIED NAVIGATION")),
+                "camera": camera,
+                "look_at": look_at,
+                "focal_length": float(raw["focal_length_mm"]),
+                "cutaway": bool(raw.get("cutaway", False)),
+                "segments": segments,
+                "source_fraction": tuple(
+                    float(value) for value in raw.get("source_fraction", (0.0, 1.0))
+                ),
+            }
+        )
+    return shots, profile
 
 
 def load_verified_trace(path: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
@@ -222,27 +268,27 @@ def font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     return ImageFont.truetype(str(path), size) if path.exists() else ImageFont.load_default()
 
 
-def mode_label(mode: str) -> str:
-    return {
-        "learned_sensor_policy": "learned sensor policy",
-        "physics_supervisor_turn": "physical turn supervisor",
-        "presentation_dwell": "office dwell",
-    }.get(mode, mode.replace("_", " "))
-
-
-def add_overlay(image: Image.Image, title: str, shot_index: int, sample: dict[str, Any]) -> Image.Image:
+def add_overlay(
+    image: Image.Image,
+    title: str,
+    operator_label: str,
+    shot_index: int,
+    shot_count: int,
+    sample: dict[str, Any],
+    disclosure: str,
+) -> Image.Image:
     canvas = image.convert("RGBA")
     draw = ImageDraw.Draw(canvas, "RGBA")
     box_width = min(canvas.width - 52, 890)
     draw.rounded_rectangle((26, 24, 26 + box_width, 118), radius=14, fill=(8, 18, 25, 196))
     draw.text((48, 36), title, font=font(26), fill=(255, 255, 255, 255))
+    speed_mps = abs(float(sample.get("linear_velocity_mps", 0.0)))
     evidence = (
-        f"Verified learned trajectory replay | shot {shot_index}/{len(SHOTS)} | "
-        f"segment {int(sample['segment_id']) + 1}/12 | {mode_label(str(sample['control_mode']))}"
+        f"PHASE 7E SOURCE | {operator_label} | shot {shot_index}/{shot_count} | "
+        f"leg {int(sample['segment_id']) + 1}/12 | {speed_mps:.2f} m/s"
     )
     draw.text((49, 75), evidence, font=font(16), fill=(142, 222, 199, 255))
     draw.rectangle((0, canvas.height - 42, canvas.width, canvas.height), fill=(8, 18, 25, 184))
-    disclosure = "Recorded wheel-physics pose trace replayed in Omniverse • visual replay, not live policy execution"
     draw.text((26, canvas.height - 32), disclosure, font=font(15), fill=(232, 235, 237, 255))
     return canvas.convert("RGB")
 
@@ -254,6 +300,15 @@ def main() -> int:
     frame_dir = ARGS.frame_directory or PACKAGE_ROOT / "media" / "learned_route_replay_frames"
     render_report_path = ARGS.render_report or RESULTS_DIR / "administration_learned_replay_render_report.json"
     source_report, trace = load_verified_trace(trajectory_path.resolve())
+    profile_path = ARGS.presentation_profile.resolve() if ARGS.presentation_profile else None
+    shots, presentation_profile = load_presentation_profile(profile_path)
+    presentation_disclosures = presentation_profile.get("presentation_disclosures", {})
+    disclosure = str(
+        presentation_disclosures.get(
+            "overlay",
+            "Recorded wheel-physics pose trace replayed in Omniverse • visual replay, not live policy execution",
+        )
+    ).replace("\n", " ")
 
     if not scene.exists():
         raise FileNotFoundError(f"missing {scene}; run build_administration.py first")
@@ -267,11 +322,21 @@ def main() -> int:
     frames_per_shot = max(12, round(ARGS.fps * ARGS.seconds_per_shot))
     frame_number = 0
     rendered_shots: list[dict[str, Any]] = []
-    for shot_index, shot in enumerate(SHOTS, start=1):
+    for shot_index, shot in enumerate(shots, start=1):
         segment_ids = set(shot["segments"])
         source_samples = [sample for sample in trace if int(sample["segment_id"]) in segment_ids]
         if not source_samples:
             raise ValueError(f"no learned trace records for shot segments {sorted(segment_ids)}")
+        available_source_records = len(source_samples)
+        source_fraction = shot.get("source_fraction", (0.0, 1.0))
+        if (
+            len(source_fraction) != 2
+            or not 0.0 <= source_fraction[0] < source_fraction[1] <= 1.0
+        ):
+            raise ValueError(f"invalid source_fraction for shot {shot_index}: {source_fraction}")
+        first_source_index = int(math.floor(source_fraction[0] * (len(source_samples) - 1)))
+        last_source_index = int(math.ceil(source_fraction[1] * (len(source_samples) - 1)))
+        source_samples = source_samples[first_source_index : last_source_index + 1]
         samples = resample_trace(source_samples, frames_per_shot)
         set_cutaway(stage, bool(shot["cutaway"]))
         camera = rep.create.camera(
@@ -290,7 +355,15 @@ def main() -> int:
             rgba = np.asarray(rgb.get_data())
             if rgba.size == 0:
                 raise RuntimeError(f"renderer returned no RGB data for shot {shot_index}")
-            image = add_overlay(Image.fromarray(rgba).convert("RGB"), str(shot["title"]), shot_index, sample)
+            image = add_overlay(
+                Image.fromarray(rgba).convert("RGB"),
+                str(shot["title"]),
+                str(shot.get("operator_label", "VERIFIED NAVIGATION")),
+                shot_index,
+                len(shots),
+                sample,
+                disclosure,
+            )
             image.save(frame_dir / f"frame_{frame_number:05d}.png", compress_level=2)
             frame_number += 1
         rgb.detach()
@@ -299,7 +372,12 @@ def main() -> int:
             {
                 "title": shot["title"],
                 "segment_ids": list(shot["segments"]),
+                "camera": list(shot["camera"]),
+                "look_at": list(shot["look_at"]),
+                "focal_length_mm": float(shot["focal_length"]),
                 "source_trace_records": len(source_samples),
+                "available_source_trace_records": available_source_records,
+                "source_fraction": list(source_fraction),
                 "rendered_frames": len(samples),
                 "first_source_step": int(source_samples[0]["step"]),
                 "last_source_step": int(source_samples[-1]["step"]),
@@ -307,7 +385,7 @@ def main() -> int:
                 "last_elapsed_s": float(source_samples[-1]["elapsed_s"]),
             }
         )
-        print(f"rendered learned-trace shot {shot_index}/{len(SHOTS)}: {shot['title']}")
+        print(f"rendered learned-trace shot {shot_index}/{len(shots)}: {shot['title']}")
 
     set_cutaway(stage, False)
 
@@ -323,6 +401,11 @@ def main() -> int:
         "resolution": [ARGS.width, ARGS.height],
         "duration_s": frame_number / ARGS.fps,
         "shots": rendered_shots,
+        "presentation_profile": str(profile_path) if profile_path else None,
+        "presentation_profile_sha256": sha256_file(profile_path) if profile_path else None,
+        "presentation_phase": presentation_profile.get("phase"),
+        "camera_style": presentation_profile.get("render_contract", {}).get("camera_style"),
+        "presentation_disclosures": presentation_disclosures,
         "trajectory_report": str(trajectory_path.resolve()),
         "trajectory_report_sha256": sha256_file(trajectory_path.resolve()),
         "trajectory_outcome": source_report["outcome"],
