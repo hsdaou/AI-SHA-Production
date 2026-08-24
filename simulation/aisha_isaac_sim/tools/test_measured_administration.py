@@ -209,6 +209,16 @@ class MeasuredAdministrationTests(unittest.TestCase):
             overlay["capture_limitations"]["vice_principal_office_interior"]["status"],
             "not_captured_locked_during_site_visit",
         )
+        twin = overlay["measured_visual_twin"]
+        self.assertTrue(twin["enabled"])
+        self.assertEqual(twin["registration"]["principal"]["metric_scale"], 1.0)
+        self.assertEqual(
+            twin["registration"]["principal"]["world_anchor_xy_m"],
+            [6.978, -7.628],
+        )
+        self.assertEqual(len(twin["principal"]["walls"]), 9)
+        self.assertGreaterEqual(len(twin["principal"]["floor_polygon_xy_m"]), 8)
+        self.assertFalse(twin["raw_media_committed"])
 
     def test_tight_door_overlay_cannot_claim_production_route_gate(self) -> None:
         overlay = yaml.safe_load(PRESENTATION_OVERLAY.read_text(encoding="utf-8"))

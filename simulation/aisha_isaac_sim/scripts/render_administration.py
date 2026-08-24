@@ -20,6 +20,12 @@ def parse_args() -> argparse.Namespace:
         default="PathTracing",
     )
     parser.add_argument("--path-tracing-spp", type=int, default=64)
+    parser.add_argument(
+        "--shot",
+        action="append",
+        default=[],
+        help="Render only the named PNG shot; repeat to select more than one.",
+    )
     return parser.parse_args()
 
 
@@ -40,6 +46,7 @@ if ARGS.renderer == "PathTracing":
     settings = carb.settings.get_settings()
     settings.set_int("/rtx/pathtracing/spp", max(1, ARGS.path_tracing_spp))
     settings.set_int("/rtx/pathtracing/totalSpp", max(1, ARGS.path_tracing_spp))
+    settings.set_float("/rtx/post/tonemap/exposureBias", 0.65)
 
 
 SHOTS = (
@@ -53,10 +60,10 @@ SHOTS = (
     },
     {
         "name": "administration_atrium.png",
-        "position": (-4.35, 0.0, 1.72),
-        "look_at": (0.75, 0.40, 0.82),
-        "focal_length": 22.0,
-        "robot": (0.40, 0.25, 20.0),
+        "position": (4.20, -4.00, 1.72),
+        "look_at": (-1.20, 1.10, 0.82),
+        "focal_length": 18.0,
+        "robot": (3.40, 0.00, 180.0),
         "hide_ceilings": False,
     },
     {
@@ -65,6 +72,14 @@ SHOTS = (
         "look_at": (14.40, -0.05, 0.82),
         "focal_length": 27.0,
         "robot": (14.30, 0.0, 0.0),
+        "hide_ceilings": False,
+    },
+    {
+        "name": "administration_principal_approach.png",
+        "position": (2.60, -2.70, 1.82),
+        "look_at": (6.80, -7.45, 0.78),
+        "focal_length": 16.0,
+        "robot": (6.42, -7.18, -45.0),
         "hide_ceilings": False,
     },
     {
@@ -77,9 +92,9 @@ SHOTS = (
     },
     {
         "name": "administration_principal.png",
-        "position": (10.85, -9.78, 1.82),
-        "look_at": (8.25, -9.00, 0.72),
-        "focal_length": 15.0,
+        "position": (10.70, -6.10, 2.05),
+        "look_at": (9.00, -9.80, 0.82),
+        "focal_length": 12.0,
         "robot": (8.01, -8.66, -45.0),
         "hide_ceilings": False,
     },
@@ -118,7 +133,10 @@ def main() -> int:
     stage = omni.usd.get_context().get_stage()
     output_dir = PACKAGE_ROOT / "media" / "screenshots"
 
+    selected_shots = set(ARGS.shot)
     for shot in SHOTS:
+        if selected_shots and shot["name"] not in selected_shots:
+            continue
         set_robot_pose(stage, *shot["robot"])
         set_group_visibility(
             stage,

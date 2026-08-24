@@ -113,6 +113,9 @@ def build_presentation(args: argparse.Namespace) -> int:
             measured_overlay = load_measured_overlay(args.measured_geometry)
             measured_overlay_hash = sha256_file(args.measured_geometry)
             config = deep_merge(config, measured_overlay)
+        visual_twin = config.get("measured_visual_twin", {})
+        visual_twin_enabled = bool(visual_twin.get("enabled", False))
+        principal_twin = visual_twin.get("principal", {}) if visual_twin_enabled else {}
         refinement_path = CONFIG_DIR / "geometry_rtx_refinement.yaml"
         refinement = load_yaml(refinement_path)
         physics = load_yaml(CONFIG_DIR / "physics_materials.yaml")
@@ -266,6 +269,9 @@ def build_presentation(args: argparse.Namespace) -> int:
                 "oak_albedo.png",
                 "oak_roughness.png",
                 "oak_normal.png",
+                "grey_oak_albedo.png",
+                "grey_oak_roughness.png",
+                "grey_oak_normal.png",
                 "mottled_grey_albedo.png",
                 "mottled_grey_roughness.png",
                 "mottled_grey_normal.png",
@@ -279,8 +285,10 @@ def build_presentation(args: argparse.Namespace) -> int:
         timber = visual_material("WarmTimber", (0.15, 0.047, 0.018), roughness=0.31)
         timber_light = visual_material("LightTimber", (0.29, 0.105, 0.033), roughness=0.35)
         oak = visual_material("LightOakFloor", (0.58, 0.49, 0.36), roughness=0.43)
+        grey_oak = visual_material("GreyOakFloor", (0.53, 0.52, 0.49), roughness=0.46)
         green = visual_material("SchoolGreen", (0.055, 0.255, 0.14), roughness=0.46)
         green_accent = visual_material("SchoolGreenAccent", (0.035, 0.39, 0.21), roughness=0.32)
+        cabinet_mint = visual_material("CabinetMint", (0.28, 0.49, 0.39), roughness=0.38)
         leaf_green = visual_material("PlantGreen", (0.035, 0.20, 0.07), roughness=0.72)
         leaf_light = visual_material("PlantLightGreen", (0.08, 0.31, 0.12), roughness=0.68)
         glass = visual_material("FrostedGlass", (0.52, 0.64, 0.68), roughness=0.23, opacity=0.34)
@@ -313,6 +321,13 @@ def build_presentation(args: argparse.Namespace) -> int:
             roughness_path=texture_dir / "oak_roughness.png",
             normal_path=texture_dir / "oak_normal.png",
             roughness=0.43,
+        )
+        grey_oak_finish = textured_material(
+            "GreyOakFinish",
+            texture_dir / "grey_oak_albedo.png",
+            roughness_path=texture_dir / "grey_oak_roughness.png",
+            normal_path=texture_dir / "grey_oak_normal.png",
+            roughness=0.46,
         )
         mottled_grey_finish = textured_material(
             "MottledGreyFinish",
@@ -754,6 +769,159 @@ def build_presentation(args: argparse.Namespace) -> int:
                     rotate_z_deg=angle,
                 )
 
+        def glazed_partition(
+            name: str,
+            start_xy: tuple[float, float],
+            end_xy: tuple[float, float],
+            *,
+            blinds: bool = False,
+        ) -> None:
+            """Grey-framed full-height glazing used in the captured office suite."""
+            dx, dy = end_xy[0] - start_xy[0], end_xy[1] - start_xy[1]
+            length = math.hypot(dx, dy)
+            if length <= 1.0e-4:
+                return
+            yaw = math.degrees(math.atan2(dy, dx))
+            centre = ((start_xy[0] + end_xy[0]) / 2.0, (start_xy[1] + end_xy[1]) / 2.0)
+            box(
+                f"/World/Architecture/Glass/{name}/Pane",
+                (length, 0.055, 2.42),
+                (*centre, 1.42),
+                glass,
+                rotate_z_deg=yaw,
+            )
+            for label, point in (("Start", start_xy), ("End", end_xy)):
+                box(
+                    f"/World/Architecture/Glass/{name}/Frame{label}",
+                    (0.055, 0.085, 2.72),
+                    (*point, 1.36),
+                    metal,
+                    collision=False,
+                    rotate_z_deg=yaw,
+                )
+            for z in (0.22, 1.18, 2.62):
+                box(
+                    f"/World/Architecture/Glass/{name}/Rail_{int(z * 100):03d}",
+                    (length, 0.075, 0.045),
+                    (*centre, z),
+                    metal,
+                    collision=False,
+                    rotate_z_deg=yaw,
+                )
+            mullions = max(1, int(length / 1.05))
+            tangent = (dx / length, dy / length)
+            for index in range(1, mullions + 1):
+                offset = -length / 2.0 + length * index / (mullions + 1)
+                point = (centre[0] + tangent[0] * offset, centre[1] + tangent[1] * offset)
+                box(
+                    f"/World/Architecture/Glass/{name}/Mullion_{index:02d}",
+                    (0.040, 0.080, 2.42),
+                    (*point, 1.42),
+                    metal,
+                    collision=False,
+                    rotate_z_deg=yaw,
+                )
+            if blinds:
+                for index in range(18):
+                    z = 0.62 + index * 0.105
+                    box(
+                        f"/World/Architecture/Glass/{name}/Blind_{index:02d}",
+                        (max(0.10, length - 0.10), 0.018, 0.045),
+                        (*centre, z),
+                        paper,
+                        collision=False,
+                        rotate_z_deg=yaw,
+                    )
+
+        def registered_wall(name: str, values: dict[str, object]) -> None:
+            start = tuple(float(value) for value in values["start_xy_m"])
+            end = tuple(float(value) for value in values["end_xy_m"])
+            style = str(values.get("style", "warm_white"))
+            if style == "grey_frame_glass":
+                glazed_partition(name, start, end)
+            elif style == "white_blinds":
+                glazed_partition(name, start, end, blinds=True)
+            elif style in {"walnut_slatted", "walnut_and_warm_white"}:
+                slatted_wall(name, start, end)
+            elif style == "walnut_tv_wall":
+                wall_segment(name, start, end, timber)
+                textured_wall_surface(name + "_WalnutFinish", start, end, walnut_finish)
+            else:
+                wall_segment(name, start, end, warm_white)
+
+        def registered_table(name: str, values: dict[str, object]) -> None:
+            centre = tuple(float(value) for value in values["centre_xy_m"])
+            sx, sy, height = (float(value) for value in values["size_xyz_m"])
+            yaw = float(values["yaw_deg"])
+            top_thickness = 0.085
+            box(
+                f"/World/Furniture/PrincipalMeasured/{name}/Top",
+                (sx, sy, top_thickness),
+                (*centre, height - top_thickness / 2.0),
+                timber_light,
+                rotate_z_deg=yaw,
+            )
+            textured_rect_surface(
+                f"PrincipalMeasured_{name}_TopFinish",
+                (max(0.10, sx - 0.04), max(0.10, sy - 0.04)),
+                centre,
+                walnut_finish,
+                z=height + 0.004,
+                rotate_z_deg=yaw,
+                metres_per_tile=1.5,
+            )
+            for index, (local_x, local_y) in enumerate(
+                ((-sx * 0.38, -sy * 0.36), (-sx * 0.38, sy * 0.36), (sx * 0.38, -sy * 0.36), (sx * 0.38, sy * 0.36))
+            ):
+                point = local_to_world(centre, (local_x, local_y), yaw)
+                box(
+                    f"/World/Furniture/PrincipalMeasured/{name}/Leg_{index:02d}",
+                    (0.055, 0.055, max(0.20, height - top_thickness)),
+                    (*point, max(0.20, height - top_thickness) / 2.0),
+                    metal,
+                    rotate_z_deg=yaw,
+                )
+
+        def registered_storage(name: str, values: dict[str, object]) -> None:
+            centre = tuple(float(value) for value in values["centre_xy_m"])
+            sx, sy, height = (float(value) for value in values["size_xyz_m"])
+            yaw = float(values["yaw_deg"])
+            role = str(values.get("role", "storage"))
+            material = cabinet_mint if role == "tv_award_cabinet" else timber
+            box(
+                f"/World/Furniture/PrincipalMeasured/{name}/Body",
+                (sx, max(0.12, sy), height),
+                (*centre, height / 2.0),
+                material,
+                rotate_z_deg=yaw,
+            )
+            door_count = max(1, int(sx / 0.42))
+            for index in range(door_count):
+                local_x = -sx / 2.0 + sx * (index + 0.5) / door_count
+                face_xy = local_to_world(centre, (local_x, -max(0.12, sy) / 2.0 - 0.012), yaw)
+                box(
+                    f"/World/Furniture/PrincipalMeasured/{name}/Door_{index:02d}",
+                    (max(0.12, sx / door_count - 0.025), 0.018, max(0.15, height - 0.10)),
+                    (*face_xy, height / 2.0),
+                    cabinet_mint if role == "tv_award_cabinet" else timber_light,
+                    collision=False,
+                    rotate_z_deg=yaw,
+                )
+
+        def sofa(
+            name: str,
+            centre_xy: tuple[float, float],
+            yaw_deg: float,
+            *,
+            floor_z: float = 0.0,
+        ) -> None:
+            box(f"/World/Furniture/{name}/Seat", (1.70, 0.72, 0.18), (*centre_xy, floor_z + 0.42), black, rotate_z_deg=yaw_deg)
+            back_xy = local_to_world(centre_xy, (0.0, 0.31), yaw_deg)
+            box(f"/World/Furniture/{name}/Back", (1.70, 0.16, 0.68), (*back_xy, floor_z + 0.70), black, rotate_z_deg=yaw_deg)
+            for side, local_x in (("L", -0.79), ("R", 0.79)):
+                arm_xy = local_to_world(centre_xy, (local_x, 0.0), yaw_deg)
+                box(f"/World/Furniture/{name}/Arm{side}", (0.14, 0.70, 0.42), (*arm_xy, floor_z + 0.48), black, rotate_z_deg=yaw_deg)
+
         def desk(name: str, centre_xy: tuple[float, float], yaw_deg: float = 0.0) -> None:
             box(f"/World/Furniture/{name}/Top", (2.00, 0.82, 0.09), (*centre_xy, 0.76), timber_light, rotate_z_deg=yaw_deg)
             textured_rect_surface(
@@ -1039,6 +1207,10 @@ def build_presentation(args: argparse.Namespace) -> int:
         principal_size = tuple(float(value) for value in principal_room["size_xy_m"])
         principal_centre = tuple(float(value) for value in principal_room["centre_xy_m"])
         principal_rotation = float(principal_room["rotation_deg"])
+        principal_floor_polygon = [
+            tuple(float(value) for value in point)
+            for point in principal_twin.get("floor_polygon_xy_m", [])
+        ]
         box("/World/Architecture/Floors/VicePrincipal", (*vice_size, 0.055), (*vice_centre, -0.027), oak, physics_binding=tile_physics, rotate_z_deg=vice_rotation)
         principal_passage_width = float(
             config["known_dimensions"].get(
@@ -1046,7 +1218,15 @@ def build_presentation(args: argparse.Namespace) -> int:
             )["value"]
         )
         box("/World/Architecture/Floors/PrincipalAccess", (5.80, principal_passage_width, 0.055), (5.45, -5.45, -0.027), terrazzo, physics_binding=tile_physics, rotate_z_deg=-45.0)
-        box("/World/Architecture/Floors/Principal", (*principal_size, 0.055), (*principal_centre, -0.027), oak, physics_binding=tile_physics, rotate_z_deg=principal_rotation)
+        if visual_twin_enabled and principal_floor_polygon:
+            polygon_floor(
+                "/World/Architecture/Floors/PrincipalMeasured",
+                principal_floor_polygon,
+                grey_oak,
+                z=-0.027,
+            )
+        else:
+            box("/World/Architecture/Floors/Principal", (*principal_size, 0.055), (*principal_centre, -0.027), oak, physics_binding=tile_physics, rotate_z_deg=principal_rotation)
 
         # Render-only PBR finish meshes sit just above the already validated
         # collision floors. They add the dense terrazzo and light timber visible
@@ -1074,7 +1254,15 @@ def build_presentation(args: argparse.Namespace) -> int:
         textured_rect_surface("ViceAccessTerrazzo", vice_access_size, vice_access_centre, terrazzo_finish, metres_per_tile=2.2)
         textured_rect_surface("PrincipalAccessTerrazzo", (5.80, principal_passage_width), (5.45, -5.45), terrazzo_finish, rotate_z_deg=-45.0, metres_per_tile=2.2)
         textured_rect_surface("ViceOfficeOak", vice_size, vice_centre, oak_finish, rotate_z_deg=vice_rotation, metres_per_tile=2.6)
-        textured_rect_surface("PrincipalOfficeOak", principal_size, principal_centre, oak_finish, rotate_z_deg=principal_rotation, metres_per_tile=2.6)
+        if visual_twin_enabled and principal_floor_polygon:
+            textured_polygon_surface(
+                "PrincipalOfficeGreyOakMeasured",
+                principal_floor_polygon,
+                grey_oak_finish,
+                metres_per_tile=2.25,
+            )
+        else:
+            textured_rect_surface("PrincipalOfficeOak", principal_size, principal_centre, oak_finish, rotate_z_deg=principal_rotation, metres_per_tile=2.6)
 
         for room_name in ("office_manager", "meeting_room_1", "meeting_room_2"):
             room = cluster[room_name]
@@ -1162,38 +1350,50 @@ def build_presentation(args: argparse.Namespace) -> int:
                 material,
             )
 
-        principal_corners = [
-            local_to_world(principal_centre, (-principal_size[0] / 2.0, -principal_size[1] / 2.0), principal_rotation),
-            local_to_world(principal_centre, (principal_size[0] / 2.0, -principal_size[1] / 2.0), principal_rotation),
-            local_to_world(principal_centre, (principal_size[0] / 2.0, principal_size[1] / 2.0), principal_rotation),
-            local_to_world(principal_centre, (-principal_size[0] / 2.0, principal_size[1] / 2.0), principal_rotation),
-        ]
-        derived_principal_door_centre = local_to_world(
-            principal_centre, (-principal_size[0] / 2.0, 0.0), principal_rotation
-        )
         principal_values = config["doors"]["principal"]
-        if principal_values.get("width_status") == "manual_site_measurement":
+        if visual_twin_enabled:
             principal_door_centre = tuple(
                 float(value) for value in principal_values["centre_xy_m"]
             )
         else:
-            principal_door_centre = derived_principal_door_centre
-            principal_values["centre_xy_m"] = [
-                round(principal_door_centre[0], 3),
-                round(principal_door_centre[1], 3),
+            principal_corners = [
+                local_to_world(principal_centre, (-principal_size[0] / 2.0, -principal_size[1] / 2.0), principal_rotation),
+                local_to_world(principal_centre, (principal_size[0] / 2.0, -principal_size[1] / 2.0), principal_rotation),
+                local_to_world(principal_centre, (principal_size[0] / 2.0, principal_size[1] / 2.0), principal_rotation),
+                local_to_world(principal_centre, (-principal_size[0] / 2.0, principal_size[1] / 2.0), principal_rotation),
             ]
-            principal_values["wall_rotation_deg"] = principal_rotation + 90.0
-        split_wall(
-            "Principal_West",
-            principal_corners[0],
-            principal_corners[3],
-            principal_door_centre,
-            float(config["doors"]["principal"]["clear_width_m"]),
-            warm_white,
-        )
-        slatted_wall("Principal_South", principal_corners[0], principal_corners[1])
-        wall_segment("Principal_East", principal_corners[1], principal_corners[2], warm_white)
-        wall_segment("Principal_North", principal_corners[2], principal_corners[3], warm_white)
+            derived_principal_door_centre = local_to_world(
+                principal_centre, (-principal_size[0] / 2.0, 0.0), principal_rotation
+            )
+            if principal_values.get("width_status") == "manual_site_measurement":
+                principal_door_centre = tuple(
+                    float(value) for value in principal_values["centre_xy_m"]
+                )
+            else:
+                principal_door_centre = derived_principal_door_centre
+                principal_values["centre_xy_m"] = [
+                    round(principal_door_centre[0], 3),
+                    round(principal_door_centre[1], 3),
+                ]
+                principal_values["wall_rotation_deg"] = principal_rotation + 90.0
+
+        if visual_twin_enabled:
+            for values in principal_twin.get("walls", []):
+                registered_wall(f"PrincipalMeasured_{values['id']}", values)
+            for values in principal_twin.get("approach_partitions", []):
+                registered_wall(f"PrincipalApproachMeasured_{values['id']}", values)
+        else:
+            split_wall(
+                "Principal_West",
+                principal_corners[0],
+                principal_corners[3],
+                principal_door_centre,
+                float(config["doors"]["principal"]["clear_width_m"]),
+                warm_white,
+            )
+            slatted_wall("Principal_South", principal_corners[0], principal_corners[1])
+            wall_segment("Principal_East", principal_corners[1], principal_corners[2], warm_white)
+            wall_segment("Principal_North", principal_corners[2], principal_corners[3], warm_white)
 
         doors = {
             "vice_principal": doorway(
@@ -1223,10 +1423,38 @@ def build_presentation(args: argparse.Namespace) -> int:
                 box(f"/World/Furniture/Reception/GlassFrame_{index:02d}_{side}", (0.025, 0.040, 0.80), (x + offset, 3.43, 1.52), metal, collision=False)
         box("/World/Furniture/Reception/Monitor", (0.055, 0.52, 0.34), (-0.35, 3.18, 1.37), black, collision=False)
         box("/World/Furniture/Reception/MonitorStand", (0.08, 0.08, 0.22), (-0.35, 3.18, 1.18), metal, collision=False)
+        if visual_twin_enabled:
+            # The capture shows an angled, wraparound reception rather than a
+            # single loose desk. This west return and upper fascia reproduce the
+            # first 45 seconds of the walkthrough without copying visible signs.
+            box("/World/Furniture/Reception/WestReturnBase", (3.35, 0.78, 1.08), (-4.15, 1.55, 0.54), timber, rotate_z_deg=90.0)
+            box("/World/Furniture/Reception/WestReturnCounter", (3.48, 0.92, 0.09), (-4.15, 1.55, 1.10), timber_light, rotate_z_deg=90.0)
+            textured_rect_surface("ReceptionWestCounterFinish", (3.40, 0.84), (-4.15, 1.55), walnut_finish, z=1.147, rotate_z_deg=90.0, metres_per_tile=2.1)
+            for index in range(31):
+                y = 0.05 + index * 0.10
+                box(f"/World/Furniture/Reception/WestSlat_{index:02d}", (0.055, 0.035, 0.86), (-4.59, y, 0.50), timber_light, collision=False)
+            for index in range(42):
+                x = -3.20 + index * 0.10
+                box(f"/World/Appearance/ReceptionFascia/North_{index:02d}", (0.035, 0.10, 0.78), (x, 3.02, 2.47), timber_light, collision=False)
+            for index in range(30):
+                y = 0.15 + index * 0.10
+                box(f"/World/Appearance/ReceptionFascia/West_{index:02d}", (0.10, 0.035, 0.78), (-4.58, y, 2.47), timber_light, collision=False)
+            for index, y in enumerate((0.45, 1.55, 2.65)):
+                box(f"/World/Furniture/Reception/WestGlass_{index:02d}", (0.025, 0.96, 0.72), (-4.16, y, 1.51), glass, collision=False)
+                box(f"/World/Furniture/Reception/WestGlassFrame_{index:02d}", (0.04, 0.035, 0.78), (-4.16, y - 0.50, 1.51), metal, collision=False)
         box("/World/Furniture/AtriumBench/Seat", (2.60, 0.70, 0.16), (-1.00, -3.35, 0.46), black)
         box("/World/Furniture/AtriumBench/Back", (2.60, 0.12, 0.70), (-1.00, -3.68, 0.78), black)
         for index, x in enumerate((-2.05, 0.05)):
             box(f"/World/Furniture/AtriumBench/Leg_{index}", (0.10, 0.58, 0.38), (x, -3.35, 0.20), metal, collision=False)
+        if visual_twin_enabled:
+            sofa("CentralAtriumSofaNorth", (-0.62, 0.68), 180.0, floor_z=-central_step_down)
+            sofa("CentralAtriumSofaSouth", (0.62, -0.68), 0.0, floor_z=-central_step_down)
+            box("/World/Furniture/CentralAtriumCoffeeTable", (0.95, 0.52, 0.08), (0.0, 0.0, -central_step_down + 0.39), timber_light)
+            for index, (x, y, yaw) in enumerate(((-1.48, 0.05, -18.0), (1.42, 0.12, 16.0))):
+                box(f"/World/Furniture/CentralAtriumDisplay/Easel_{index:02d}/Board", (0.64, 0.045, 0.88), (x, y, -central_step_down + 1.12), paper, collision=False, rotate_z_deg=yaw)
+                for leg_index, local_x in enumerate((-0.22, 0.22)):
+                    leg_xy = local_to_world((x, y), (local_x, 0.10), yaw)
+                    box(f"/World/Furniture/CentralAtriumDisplay/Easel_{index:02d}/Leg_{leg_index}", (0.035, 0.035, 1.18), (*leg_xy, -central_step_down + 0.59), timber_light, collision=False, rotate_z_deg=yaw)
         plant("AtriumPlant", (2.20, 3.45))
         plant("EastHallPlant", (20.70, 0.70))
 
@@ -1254,32 +1482,75 @@ def build_presentation(args: argparse.Namespace) -> int:
             box(f"/World/Furniture/ViceCabinetHandle_{index:02d}", (0.08, 0.020, 0.018), (x, -7.486, 0.49), metal, collision=False)
         plant("VicePlant", (19.70, -7.35))
 
-        desk_local = local_to_world(principal_centre, (0.95, -0.95), principal_rotation)
-        desk("PrincipalDesk", desk_local, principal_rotation)
-        principal_chair = local_to_world(principal_centre, (1.20, -1.15), principal_rotation)
-        chair("PrincipalDeskChair", principal_chair, principal_rotation + 180.0)
-        # Visitor chairs remain on the desk side of the room, outside the
-        # disclosed 1.64 m in-room pivot circle around the presentation stop.
-        for name, local in (("PrincipalVisitorLeft", (0.40, 1.20)), ("PrincipalVisitorRight", (0.40, -1.20))):
-            chair(name, local_to_world(principal_centre, local, principal_rotation), principal_rotation)
-        principal_cabinet = local_to_world(principal_centre, (1.90, 0.80), principal_rotation)
-        box("/World/Furniture/PrincipalCabinet", (0.40, 1.60, 0.86), (*principal_cabinet, 0.43), timber, rotate_z_deg=principal_rotation)
-        for index, local_y in enumerate((-0.54, -0.18, 0.18, 0.54)):
-            door_xy = local_to_world(principal_cabinet, (0.215, local_y), principal_rotation)
-            box(f"/World/Furniture/PrincipalCabinetDoor_{index:02d}", (0.025, 0.32, 0.72), (*door_xy, 0.44), timber_light, collision=False, rotate_z_deg=principal_rotation)
-            handle_xy = local_to_world(door_xy, (0.018, 0.0), principal_rotation)
-            box(f"/World/Furniture/PrincipalCabinetHandle_{index:02d}", (0.016, 0.08, 0.018), (*handle_xy, 0.50), metal, collision=False, rotate_z_deg=principal_rotation)
-        # Keep the walkthrough-derived plant in a furnished corner rather than
-        # inside the robot's in-room pivot envelope. Its previous offset put
-        # foliage at crown-lidar height only about 1.0 m from the visit stop,
-        # even though that offset was never dimensioned by the floor plan.
-        plant("PrincipalPlant", local_to_world(principal_centre, (1.65, 1.30), principal_rotation))
-        principal_logo = local_to_world(principal_centre, (0.60, -1.72), principal_rotation)
-        ellipsoid("/World/Furniture/PrincipalWallEmblem", (0.62, 0.045, 0.62), (*principal_logo, 1.72), bronze, rotate_z_deg=principal_rotation)
-        emblem_front = local_to_world(principal_logo, (0.0, -0.030), principal_rotation)
-        ellipsoid("/World/Furniture/PrincipalWallEmblemInset", (0.47, 0.025, 0.47), (*emblem_front, 1.72), green, rotate_z_deg=principal_rotation)
-        for bar_index, z in enumerate((1.64, 1.72, 1.80)):
-            box(f"/World/Furniture/PrincipalWallEmblemBar_{bar_index}", (0.25, 0.018, 0.025), (*emblem_front, z), paper, collision=False, rotate_z_deg=principal_rotation)
+        if visual_twin_enabled:
+            # Reconstruct the captured Principal suite from the registered
+            # RoomPlan semantic footprints. The older invented rectangular
+            # furniture layout and emblem are intentionally not authored.
+            meeting_values = None
+            for values in principal_twin.get("tables", []):
+                if values.get("role") == "meeting_table":
+                    meeting_values = values
+                    centre = tuple(float(value) for value in values["centre_xy_m"])
+                    sx, sy, _ = (float(value) for value in values["size_xyz_m"])
+                    round_meeting_table("PrincipalMeasuredMeetingTable", centre, min(0.76, max(sx, sy) * 0.43))
+                else:
+                    registered_table(str(values["id"]), values)
+            for values in principal_twin.get("chairs", []):
+                centre = tuple(float(value) for value in values["centre_xy_m"])
+                yaw = float(values["yaw_deg"])
+                if values.get("role") == "executive":
+                    chair("PrincipalMeasuredExecutiveChair", centre, yaw)
+                else:
+                    cantilever_chair(f"PrincipalMeasured{values['id']}", centre, yaw)
+            for values in principal_twin.get("storage", []):
+                registered_storage(str(values["id"]), values)
+
+            # The round-table chairs were occluded in the RoomPlan mesh but are
+            # plainly visible in the walkthrough and still images.
+            if meeting_values is not None:
+                meeting_centre = tuple(float(value) for value in meeting_values["centre_xy_m"])
+                for index, angle_deg in enumerate((150.0, 225.0, 315.0)):
+                    angle = math.radians(angle_deg)
+                    seat_xy = (
+                        meeting_centre[0] + 1.02 * math.cos(angle),
+                        meeting_centre[1] + 1.02 * math.sin(angle),
+                    )
+                    cantilever_chair(f"PrincipalMeasuredMeetingChair_{index:02d}", seat_xy, angle_deg + 180.0)
+
+            main_desk = next(
+                values for values in principal_twin["tables"] if values.get("role") == "executive_desk_main"
+            )
+            desk_centre = tuple(float(value) for value in main_desk["centre_xy_m"])
+            desk_yaw = float(main_desk["yaw_deg"])
+            monitor_xy = local_to_world(desk_centre, (0.28, 0.03), desk_yaw)
+            box("/World/Furniture/PrincipalMeasured/ExecutiveMonitor", (0.055, 0.62, 0.37), (*monitor_xy, 1.10), black, collision=False, rotate_z_deg=desk_yaw)
+            box("/World/Furniture/PrincipalMeasured/ExecutiveMonitorStand", (0.06, 0.06, 0.24), (*monitor_xy, 0.92), metal, collision=False, rotate_z_deg=desk_yaw)
+
+            tv_storage = next(
+                values for values in principal_twin["storage"] if values.get("role") == "tv_award_cabinet"
+            )
+            tv_centre = tuple(float(value) for value in tv_storage["centre_xy_m"])
+            tv_yaw = float(tv_storage["yaw_deg"])
+            tv_face = local_to_world(tv_centre, (0.0, -0.31), tv_yaw)
+            box("/World/Furniture/PrincipalMeasured/Television", (1.48, 0.055, 0.82), (*tv_face, 1.72), black, collision=False, rotate_z_deg=tv_yaw)
+            box("/World/Furniture/PrincipalMeasured/TelevisionInset", (1.38, 0.018, 0.72), (*local_to_world(tv_face, (0.0, -0.038), tv_yaw), 1.72), dark_grey, collision=False, rotate_z_deg=tv_yaw)
+            for index in range(4):
+                local_x = -0.68 + index * 0.45
+                award_xy = local_to_world(tv_centre, (local_x, 0.0), tv_yaw)
+                cylinder(f"/World/Furniture/PrincipalMeasured/Award_{index:02d}/Base", 0.07, 0.07, (*award_xy, 1.06), bronze, collision=False)
+                ellipsoid(f"/World/Furniture/PrincipalMeasured/Award_{index:02d}/Top", (0.13, 0.07, 0.20), (*award_xy, 1.22), bronze, collision=False, rotate_xyz_deg=(0.0, 0.0, index * 21.0))
+            plant("PrincipalMeasuredPlant", (10.35, -7.15))
+            framed_panel("PrincipalMeasuredAbstractPortrait", (10.86, -7.25, 1.72), size_xz=(0.62, 0.82), rotate_z_deg=90.0, inset_material=paper)
+        else:
+            desk_local = local_to_world(principal_centre, (0.95, -0.95), principal_rotation)
+            desk("PrincipalDesk", desk_local, principal_rotation)
+            principal_chair = local_to_world(principal_centre, (1.20, -1.15), principal_rotation)
+            chair("PrincipalDeskChair", principal_chair, principal_rotation + 180.0)
+            for name, local in (("PrincipalVisitorLeft", (0.40, 1.20)), ("PrincipalVisitorRight", (0.40, -1.20))):
+                chair(name, local_to_world(principal_centre, local, principal_rotation), principal_rotation)
+            principal_cabinet = local_to_world(principal_centre, (1.90, 0.80), principal_rotation)
+            box("/World/Furniture/PrincipalCabinet", (0.40, 1.60, 0.86), (*principal_cabinet, 0.43), timber, rotate_z_deg=principal_rotation)
+            plant("PrincipalPlant", local_to_world(principal_centre, (1.65, 1.30), principal_rotation))
 
         # White columns are walkthrough-derived visual anchors rather than
         # surveyed plan geometry. Their disclosed positions are kept in config
@@ -1321,7 +1592,15 @@ def build_presentation(args: argparse.Namespace) -> int:
         box("/World/Architecture/Ceilings/ViceAccess", (*vice_access_size, 0.08), (*vice_access_centre, ceiling_z), warm_white, collision=False)
         box("/World/Architecture/Ceilings/Vice", (*vice_size, 0.08), (*vice_centre, ceiling_z), warm_white, collision=False, rotate_z_deg=vice_rotation)
         box("/World/Architecture/Ceilings/PrincipalAccess", (5.80, principal_passage_width, 0.08), (5.45, -5.45, ceiling_z), warm_white, collision=False, rotate_z_deg=-45.0)
-        box("/World/Architecture/Ceilings/Principal", (*principal_size, 0.08), (*principal_centre, ceiling_z), warm_white, collision=False, rotate_z_deg=principal_rotation)
+        if visual_twin_enabled:
+            ceiling_bounds = principal_twin["ceiling_bounds"]
+            measured_ceiling_centre = tuple(float(value) for value in ceiling_bounds["centre_xy_m"])
+            measured_ceiling_size = tuple(float(value) for value in ceiling_bounds["size_xy_m"])
+            box("/World/Architecture/Ceilings/PrincipalMeasured", (*measured_ceiling_size, 0.08), (*measured_ceiling_centre, ceiling_z), warm_white, collision=False)
+        else:
+            measured_ceiling_centre = principal_centre
+            measured_ceiling_size = principal_size
+            box("/World/Architecture/Ceilings/Principal", (*principal_size, 0.08), (*principal_centre, ceiling_z), warm_white, collision=False, rotate_z_deg=principal_rotation)
 
         light_positions = [
             (-3.0, -2.5), (-3.0, 0.0), (-3.0, 2.5),
@@ -1335,7 +1614,7 @@ def build_presentation(args: argparse.Namespace) -> int:
             box(f"/World/Lighting/Panels/Frame_{index:02d}", (0.92, 0.62, 0.018), (x, y, wall_height - 0.013), metal, collision=False)
             box(f"/World/Lighting/Panels/Panel_{index:02d}", (0.84, 0.54, 0.018), (x, y, wall_height - 0.026), light_panel, collision=False)
             light = UsdLux.RectLight.Define(stage, f"/World/Lighting/Fixtures/Light_{index:02d}")
-            light.CreateIntensityAttr(11000.0)
+            light.CreateIntensityAttr(28000.0 if visual_twin_enabled else 11000.0)
             light.CreateColorAttr(Gf.Vec3f(0.96, 0.98, 1.0))
             light.CreateWidthAttr(0.84)
             light.CreateHeightAttr(0.54)
@@ -1349,10 +1628,17 @@ def build_presentation(args: argparse.Namespace) -> int:
         ceiling_grid("ViceAccess", vice_access_centre, (vice_access_size[0] - 0.08, vice_access_size[1] - 0.08))
         ceiling_grid("Vice", vice_centre, (vice_size[0] - 0.08, vice_size[1] - 0.08), rotate_z_deg=vice_rotation)
         ceiling_grid("PrincipalAccess", (5.45, -5.45), (5.72, principal_passage_width - 0.08), rotate_z_deg=-45.0)
-        ceiling_grid("Principal", principal_centre, (principal_size[0] - 0.08, principal_size[1] - 0.08), rotate_z_deg=principal_rotation)
+        if visual_twin_enabled:
+            ceiling_grid("PrincipalMeasured", measured_ceiling_centre, (measured_ceiling_size[0] - 0.08, measured_ceiling_size[1] - 0.08))
+        else:
+            ceiling_grid("Principal", principal_centre, (principal_size[0] - 0.08, principal_size[1] - 0.08), rotate_z_deg=principal_rotation)
         ceiling_vent("Vice", (18.05, -6.02))
-        principal_vent = local_to_world(principal_centre, (-0.65, 0.70), principal_rotation)
-        ceiling_vent("Principal", principal_vent, rotate_z_deg=principal_rotation)
+        if visual_twin_enabled:
+            principal_vent = (8.75, -9.15)
+            ceiling_vent("PrincipalMeasured", principal_vent)
+        else:
+            principal_vent = local_to_world(principal_centre, (-0.65, 0.70), principal_rotation)
+            ceiling_vent("Principal", principal_vent, rotate_z_deg=principal_rotation)
         ceiling_vent("EastHall", (12.25, 0.55))
         for index, location in enumerate(((3.7, 1.2), (10.1, -0.6), (17.1, -3.7), (18.6, -6.5), (8.55, -9.25))):
             ceiling_sensor(f"Camera_{index:02d}", location)
@@ -1361,7 +1647,7 @@ def build_presentation(args: argparse.Namespace) -> int:
             cylinder(f"/World/Architecture/Ceilings/Devices/SmokeRing_{index:02d}", 0.057, 0.010, (*location, wall_height - 0.058), dark_grey, collision=False)
 
         dome = UsdLux.DomeLight.Define(stage, "/World/Lighting/Ambient")
-        dome.CreateIntensityAttr(280.0)
+        dome.CreateIntensityAttr(720.0 if visual_twin_enabled else 280.0)
         dome.CreateColorAttr(Gf.Vec3f(0.82, 0.87, 0.93))
         sun = UsdLux.DistantLight.Define(stage, "/World/Lighting/Sun")
         sun.CreateIntensityAttr(700.0)
@@ -1549,12 +1835,22 @@ def build_presentation(args: argparse.Namespace) -> int:
                 if measured_overlay is not None
                 else {}
             ),
+            "measured_visual_twin": visual_twin if visual_twin_enabled else None,
             "visual_upgrade": {
-                "version": "administration_walkthrough_procedural_pbr_v1",
-                "rtx_material_version": "administration_rtx_pbr_v2",
+                "version": (
+                    "administration_roomplan_registered_walkthrough_matched_v2"
+                    if visual_twin_enabled
+                    else "administration_walkthrough_procedural_pbr_v1"
+                ),
+                "rtx_material_version": "administration_rtx_pbr_v3" if visual_twin_enabled else "administration_rtx_pbr_v2",
                 "texture_maps": ["albedo", "perceptual_roughness", "tangent_space_normal"],
-                "reference_policy": "walkthrough appearance only; approved plan remains the geometry authority",
-                "collision_geometry_changed": False,
+                "reference_policy": (
+                    "approved page-2 global topology; independently registered RoomPlan Principal geometry and atrium scale; walkthrough materials and occluded visual detail"
+                    if visual_twin_enabled
+                    else "walkthrough appearance only; approved plan remains the geometry authority"
+                ),
+                "collision_geometry_changed": visual_twin_enabled,
+                "revalidation_required": visual_twin_enabled,
                 "texture_assets": [
                     {
                         "path": str(texture_path.resolve()),
@@ -1601,7 +1897,24 @@ def build_presentation(args: argparse.Namespace) -> int:
                 and central_polygon["simulation_boundary"]
                 == "mapped_no_go_with_invisible_lidar_collision_proxy",
                 "all_visual_texture_assets_present": all(texture_path.is_file() for texture_path in texture_paths),
-                "visual_upgrade_preserves_collision_geometry": True,
+                "registered_geometry_has_metric_scale": (
+                    not visual_twin_enabled
+                    or float(visual_twin["registration"]["principal"]["metric_scale"]) == 1.0
+                ),
+                "registered_principal_entrance_matches_door": (
+                    not visual_twin_enabled
+                    or all(
+                        abs(float(left) - float(right)) <= 0.002
+                        for left, right in zip(
+                            visual_twin["registration"]["principal"]["world_anchor_xy_m"],
+                            principal_values["centre_xy_m"],
+                        )
+                    )
+                ),
+                "registered_principal_shell_and_floor_present": (
+                    not visual_twin_enabled
+                    or (len(principal_twin.get("walls", [])) >= 9 and len(principal_floor_polygon) >= 8)
+                ),
                 "scene_reopens": Usd.Stage.Open(str(path)) is not None,
             },
             "presentation_ready": True,
@@ -1612,7 +1925,7 @@ def build_presentation(args: argparse.Namespace) -> int:
                     if measured_overlay is not None
                     else "both door clear widths and thresholds remain unmeasured"
                 ),
-                "wall thickness, office furniture offsets and some traced PDF offsets remain presentation assumptions",
+                "wall thickness, occluded decorative detail, locked VP furniture and some traced PDF offsets remain presentation assumptions",
                 "threshold contact requires the articulated compliant carrier and measured caster/spring properties",
                 "sensors are not a protective safety system",
             ],

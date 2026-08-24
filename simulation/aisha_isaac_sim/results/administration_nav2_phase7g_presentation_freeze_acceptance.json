@@ -1,6 +1,6 @@
 {
   "report_type": "administration_nav2_phase7g_presentation_freeze_acceptance",
-  "generated_at_utc": "2026-08-24T13:49:17.653059+00:00",
+  "generated_at_utc": "2026-08-24T16:08:02.584304+00:00",
   "passed": true,
   "status": "presentation_frozen_and_operator_ready",
   "checks": {
@@ -32,8 +32,8 @@
   "checks_total": 23,
   "video": {
     "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase7G_Omniverse_Presentation_Freeze.mp4",
-    "sha256": "d920ff1b847592c4927566570092f7d3f829eeefc7a57ca55cda314f92ec8cac",
-    "size_bytes": 7241941,
+    "sha256": "aae04646b5bddd569e2b6231736e9e24db9352a19c5e9007a6c4d661eb72f170",
+    "size_bytes": 7397362,
     "width": 1920,
     "height": 1080,
     "fps": 24.0,
@@ -42,18 +42,18 @@
     "visual_statistics": {
       "sampled_frames": 93,
       "minimum_mean": 15.263482831790125,
-      "minimum_stddev": 28.64777344994265
+      "minimum_stddev": 29.54844963957809
     }
   },
   "contact_sheet": {
     "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/AI-SHA_Phase7G_Omniverse_Presentation_Freeze_contact_sheet.jpg",
-    "sha256": "560780547f05eeccfe81757443ad56fabdd184a9c7e7a6ac64eb0d9829239c5e"
+    "sha256": "bc085df0453cd95c0e28e9b08a6414a1515019a581528310275f6a770987be7c"
   },
   "operator_package": {
     "live_launcher": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/tools/run_phase7g_live_omniverse.sh",
     "live_player": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scripts/play_phase7g_presentation_live.py",
     "live_smoke_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7g_live_omniverse_smoke.json",
-    "live_smoke_report_sha256": "50c88ca70374e9fa950aef607a70e449ac2058be2ca53c19905efc52f77a309b",
+    "live_smoke_report_sha256": "e93e13dc09c6435855800e6dff47e5caca29029952a1ea352e8034fd723678ab",
     "runbook": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/PHASE7G_PRESENTATION_RUNBOOK.md",
     "backup_video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase7G_Omniverse_Presentation_Freeze.mp4"
   },

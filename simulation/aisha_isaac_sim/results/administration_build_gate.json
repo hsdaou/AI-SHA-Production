@@ -1,7 +1,7 @@
 {
   "authoritative_blockers": [
     "measured-site candidate has not completed threshold contact and stopping-distance validation",
-    "wall thickness, office furniture offsets and some traced PDF offsets remain presentation assumptions",
+    "wall thickness, occluded decorative detail, locked VP furniture and some traced PDF offsets remain presentation assumptions",
     "threshold contact requires the articulated compliant carrier and measured caster/spring properties",
     "sensors are not a protective safety system"
   ],
@@ -9,5 +9,5 @@
   "presentation_ready": true,
   "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
   "status": "plan_geometry_accepted_presentation_assumptions_disclosed",
-  "timestamp_utc": "2026-08-23T16:53:01.137034+00:00"
+  "timestamp_utc": "2026-08-24T15:23:24.512514+00:00"
 }

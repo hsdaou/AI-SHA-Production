@@ -48,7 +48,7 @@ class MeasuredRouteConstraintTests(unittest.TestCase):
             ],
         }
 
-    def test_centred_vp_door_pose_has_eleven_mm_padded_clearance(self) -> None:
+    def test_centred_vp_door_pose_has_twenty_three_mm_padded_clearance(self) -> None:
         result = self.tool.audit(
             self.config,
             self.overlay,
@@ -56,16 +56,16 @@ class MeasuredRouteConstraintTests(unittest.TestCase):
         )
         self.assertAlmostEqual(
             result["doors"]["vice_principal"]["minimum_padded_clearance_m"],
-            0.011,
+            0.0235,
             places=3,
         )
         self.assertTrue(result["doors"]["vice_principal"]["passed"])
 
-    def test_two_centimetre_vp_lateral_offset_fails_aperture(self) -> None:
+    def test_three_centimetre_vp_lateral_offset_fails_aperture(self) -> None:
         result = self.tool.audit(
             self.config,
             self.overlay,
-            self.trace_at(17.12, -5.05, -math.pi / 2.0, 3),
+            self.trace_at(17.13, -5.05, -math.pi / 2.0, 3),
         )
         self.assertFalse(result["doors"]["vice_principal"]["passed"])
         self.assertLess(
@@ -79,6 +79,29 @@ class MeasuredRouteConstraintTests(unittest.TestCase):
             self.trace_at(0.0, 0.0, 0.0, 0),
         )
         self.assertFalse(result["checks"]["central_atrium_no_go_respected"])
+
+    def test_registered_principal_visit_pose_clears_shell_and_furniture(self) -> None:
+        result = self.tool.audit(
+            self.config,
+            self.overlay,
+            self.trace_at(8.01, -8.66, -math.pi / 4.0, 8),
+        )
+        self.assertTrue(
+            result["checks"]["registered_principal_shell_and_furniture_clear"]
+        )
+
+    def test_pose_on_registered_principal_desk_is_rejected(self) -> None:
+        result = self.tool.audit(
+            self.config,
+            self.overlay,
+            self.trace_at(9.50, -9.10, -math.pi / 2.0, 8),
+        )
+        self.assertFalse(
+            result["checks"]["registered_principal_shell_and_furniture_clear"]
+        )
+        self.assertGreater(
+            result["registered_principal_geometry"]["violation_count_capped"], 0
+        )
 
 
 if __name__ == "__main__":

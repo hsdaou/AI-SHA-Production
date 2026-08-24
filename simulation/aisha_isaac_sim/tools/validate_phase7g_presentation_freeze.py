@@ -248,8 +248,12 @@ def main() -> int:
             "vice_principal_interior_assumed_because_locked"
         )
         is True
-        and "not a photogrammetric or as-built survey"
-        in str(disclosure.get("environment", "")),
+        and "not photogrammetric" in str(disclosure.get("environment", ""))
+        and "not a whole-building as-built survey"
+        in str(disclosure.get("environment", ""))
+        and disclosure.get("narrowest_administration_reported_door_width_m") == 0.85
+        and disclosure.get("vice_principal_presentation_assumption_m") == 0.875
+        and disclosure.get("principal_door_width_presentation_assumption_m") == 0.90,
         "presentation_player_does_not_claim_live_policy_execution": live.get(
             "source_motion_was_live_nav2_and_learned_safety"
         )

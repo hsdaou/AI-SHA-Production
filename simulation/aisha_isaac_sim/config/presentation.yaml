@@ -29,7 +29,7 @@ overlay:
 disclosures:
   - Castors use fixed low-friction sphere proxies in the deterministic baseline.
   - The drive carrier is rigid in the baseline asset; contact-load claims require the articulated asset.
-  - Door widths and thresholds are presentation assumptions, not site measurements.
+  - The administration-wide narrowest door is user-reported as 0.85 m x 2.12 m; the locked VP and captured Principal clear widths are disclosed 0.875 m and 0.90 m presentation assumptions.
   - Block A room topology and printed dimensions are derived from approved plan page 2; PDF trace offsets are not survey-grade geometry.
-  - Finishes and furniture are walkthrough-video appearance references, not measured dimensions.
+  - The Principal wall/furniture footprints are route-scoped 1:1 RoomPlan registrations; finishes and occluded detail are walkthrough appearance references.
   - The LD19, RealSense D435 and BNO055 contracts come from AI-SHA-Production commit 8893535.

@@ -110,10 +110,10 @@
   ],
   "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
   "scene_build_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_build_report.json",
-  "scene_build_report_sha256": "f74a849d9f10f2f0b3ccea998d712f09eae804c3d92ddbbe8b4787ebabd1f490",
-  "scene_sha256": "40414d9841e384afb06394382a2688f540aeb61395644070d1781175a7cad011",
+  "scene_build_report_sha256": "aa5c9067bca4d6d760d46f9ea5b73fe4969911070538f83f66f8489a1dc4c528",
+  "scene_sha256": "0d1a6c6939c18d4dc21a4468479295f3788491f55a6027f63a08579014c0b3eb",
   "status": "passed",
-  "timestamp_utc": "2026-08-24T10:09:27.161694+00:00",
+  "timestamp_utc": "2026-08-24T15:27:10.411451+00:00",
   "trajectory": {
     "completed_steps": 15061,
     "control_mode_records": {

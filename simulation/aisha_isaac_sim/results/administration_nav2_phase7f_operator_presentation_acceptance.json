@@ -1,6 +1,6 @@
 {
   "report_type": "administration_nav2_phase7f_operator_presentation_acceptance",
-  "generated_at_utc": "2026-08-24T11:14:06.764120+00:00",
+  "generated_at_utc": "2026-08-24T16:07:59.285839+00:00",
   "passed": true,
   "status": "accepted_operator_presentation_simulation",
   "checks": {
@@ -28,8 +28,8 @@
   "checks_total": 19,
   "video": {
     "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase7F_Operator_Omniverse_Presentation.mp4",
-    "sha256": "6fcc87d6faa91fe45ef8795e8a32e083f68af66f594763351eaaf39e150780e8",
-    "size_bytes": 4221540,
+    "sha256": "36f16371361d7c54b9031aa854fe244be0dd40e629b9f5ea68c4bc0b49f5e557",
+    "size_bytes": 4311314,
     "frames": 576,
     "fps": 24.0,
     "resolution": [
@@ -39,13 +39,13 @@
     "duration_s": 24.0,
     "visual_frame_statistics": {
       "sampled_frames": 576,
-      "minimum_content_mean": 55.69723831861663,
-      "minimum_content_stddev": 37.299792848471604
+      "minimum_content_mean": 56.00439029157469,
+      "minimum_content_stddev": 48.35116465897276
     }
   },
   "contact_sheet": {
     "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/AI-SHA_Phase7F_Operator_Omniverse_contact_sheet.jpg",
-    "sha256": "570ba9a3bc9228a051f08b51b991ef0bc616dae5845d7c1597a23af8b20a4613"
+    "sha256": "9712b650bb9fd31a01a1a91b8a4d62b062727a789cec130aa791f6012eae012b"
   },
   "source_evidence": {
     "integration": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7e_static_fusion_integration_gate.json",

@@ -35,8 +35,10 @@ PathTracing footage as its wide-camera visual source.
   and learned 360-degree safety stack in Isaac Sim/Isaac Lab.
 - The dynamic encounter demonstrates learned brake authority followed by a
   controlled protective stop, wait and resume with zero contacts.
-- The displayed environment is a plan-, iPhone-capture- and walkthrough-informed
-  presentation twin. It is not a photogrammetric or as-built survey.
+- The displayed environment uses approved-plan global topology plus independently
+  registered 1:1 RoomPlan geometry for the Principal suite and atrium scale,
+  with walkthrough-matched materials. It is not a whole-site photogrammetric or
+  as-built survey.
 - The Vice Principal office interior is a disclosed presentation assumption
   because the room was locked during capture.
 

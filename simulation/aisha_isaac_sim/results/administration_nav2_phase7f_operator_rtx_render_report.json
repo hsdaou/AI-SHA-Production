@@ -63,7 +63,7 @@
     "visual_replay_is_live_policy_execution": false
   },
   "clearance_validation_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7f_operator_replay_validation.json",
-  "clearance_validation_report_sha256": "04f6289e6953dbfbd586fe66c084f2f1115c06f2ccf3da6567c0879278862a1d",
+  "clearance_validation_report_sha256": "6b590e49519fc56974be3180878d8461c3d865cf90d600f91daeda1cef257a26",
   "completed_steps": 15061,
   "disclosure": "visual replay of a verified learned run in the presentation environment; not live policy execution",
   "duration_s": 24.0,
@@ -80,7 +80,8 @@
   "path_tracing_spp": 16,
   "presentation_disclosures": {
     "central_polygon_step_down_m": 0.2,
-    "environment": "Measured-presentation digital twin informed by the approved plan, iPhone capture and walkthrough; not photogrammetric or as-built.",
+    "environment": "Route-scoped digital twin using independently registered iPhone RoomPlan geometry for the atrium scale and Principal suite, approved page-2 global topology, and walkthrough-matched materials; not photogrammetric and not a whole-building as-built survey.",
+    "narrowest_administration_reported_door_width_m": 0.85,
     "overlay": "Recorded live-policy wheel-physics poses replayed in Omniverse; visual replay, not live policy execution.",
     "physical_localization_credit": false,
     "physical_release": false,
@@ -88,35 +89,35 @@
     "principal_door_width_presentation_assumption_m": 0.9,
     "reported_door_height_m": 2.12,
     "vice_principal_interior_assumed_because_locked": true,
-    "vice_principal_reported_door_width_m": 0.85
+    "vice_principal_presentation_assumption_m": 0.875
   },
   "presentation_phase": "PHASE7F-OPERATOR-OMNIVERSE-CAPTURE",
   "presentation_profile": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/phase7f_operator_presentation.yaml",
-  "presentation_profile_sha256": "28af2e2739caea3e1e192eaa36be1ce0fd73008fbaabf7f9f308575aa656c3f9",
+  "presentation_profile_sha256": "45a6cb722f4e18ec8b94ae1ea1eb52e0492909d8c24aa74ba7b894d4f93efba4",
   "renderer": "PathTracing",
   "resolution": [
     1920,
     1080
   ],
   "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
-  "scene_sha256": "40414d9841e384afb06394382a2688f540aeb61395644070d1781175a7cad011",
+  "scene_sha256": "0d1a6c6939c18d4dc21a4468479295f3788491f55a6027f63a08579014c0b3eb",
   "shots": [
     {
       "available_source_trace_records": 56,
       "camera": [
-        -4.35,
-        0.0,
+        4.2,
+        -4.0,
         1.76
       ],
       "first_elapsed_s": 0.066667,
       "first_source_step": 3,
-      "focal_length_mm": 16.0,
+      "focal_length_mm": 18.0,
       "last_elapsed_s": 5.566667,
       "last_source_step": 168,
       "look_at": [
-        2.3,
-        0.0,
-        0.7
+        -1.2,
+        1.1,
+        0.74
       ],
       "rendered_frames": 72,
       "segment_ids": [
@@ -184,7 +185,7 @@
         1.0
       ],
       "source_trace_records": 1407,
-      "title": "Vice-Principal doorway - measured 0.85 m"
+      "title": "Vice-Principal doorway - assumed 0.875 m"
     },
     {
       "available_source_trace_records": 890,
@@ -246,8 +247,8 @@
     {
       "available_source_trace_records": 361,
       "camera": [
-        3.15,
-        -4.2,
+        2.6,
+        -2.7,
         1.82
       ],
       "first_elapsed_s": 317.666667,
@@ -256,8 +257,8 @@
       "last_elapsed_s": 333.866667,
       "last_source_step": 10017,
       "look_at": [
-        6.65,
-        -7.3,
+        6.8,
+        -7.45,
         0.7
       ],
       "rendered_frames": 72,
@@ -274,19 +275,19 @@
     {
       "available_source_trace_records": 1147,
       "camera": [
-        10.85,
-        -9.78,
-        1.86
+        10.7,
+        -6.1,
+        1.92
       ],
       "first_elapsed_s": 333.966667,
       "first_source_step": 10020,
-      "focal_length_mm": 11.5,
+      "focal_length_mm": 12.0,
       "last_elapsed_s": 448.566667,
       "last_source_step": 13458,
       "look_at": [
-        8.05,
-        -8.65,
-        0.58
+        9.0,
+        -9.8,
+        0.72
       ],
       "rendered_frames": 72,
       "segment_ids": [
@@ -303,19 +304,19 @@
     {
       "available_source_trace_records": 534,
       "camera": [
-        -4.35,
-        0.0,
+        4.2,
+        -4.0,
         1.76
       ],
       "first_elapsed_s": 448.666667,
       "first_source_step": 13461,
-      "focal_length_mm": 16.0,
+      "focal_length_mm": 18.0,
       "last_elapsed_s": 501.966667,
       "last_source_step": 15060,
       "look_at": [
-        2.5,
-        -2.0,
-        0.7
+        -1.05,
+        0.8,
+        0.74
       ],
       "rendered_frames": 72,
       "segment_ids": [
@@ -340,7 +341,7 @@
   "trajectory_report_sha256": "6463b80bfc1015063c5805c555f43d5986fe3f0c0517848735d093d92c759bf5",
   "trajectory_seed": 6084,
   "video": "media/videos/AI-SHA_Phase7F_Operator_Omniverse_Presentation.mp4",
-  "video_sha256": "6fcc87d6faa91fe45ef8795e8a32e083f68af66f594763351eaaf39e150780e8",
-  "video_size_bytes": 4221540,
+  "video_sha256": "36f16371361d7c54b9031aa854fe244be0dd40e629b9f5ea68c4bc0b49f5e557",
+  "video_size_bytes": 4311314,
   "waypoints_completed": 12
 }

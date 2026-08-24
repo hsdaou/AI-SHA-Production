@@ -54,15 +54,17 @@ live_omniverse_contract:
 
 presentation_disclosures:
   environment: >-
-    Plan-, iPhone-capture- and walkthrough-informed presentation twin; not a
-    photogrammetric or as-built survey.
+    Approved-plan global topology with independently registered iPhone RoomPlan
+    geometry for the atrium scale and Principal suite and walkthrough-matched
+    materials; not photogrammetric and not a whole-building as-built survey.
   motion: >-
     Wide mission footage and live Omniverse player replay recorded poses from
     the accepted live Nav2/learned-safety simulation source; the presentation
     player itself does not execute the policy.
   vice_principal_interior_assumed_because_locked: true
   principal_door_width_presentation_assumption_m: 0.90
-  vice_principal_reported_door_width_m: 0.85
+  narrowest_administration_reported_door_width_m: 0.85
+  vice_principal_presentation_assumption_m: 0.875
   reported_door_height_m: 2.12
   central_polygon_step_down_m: 0.20
   physical_localization_credit: false

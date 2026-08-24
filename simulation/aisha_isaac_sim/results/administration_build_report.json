@@ -49,7 +49,7 @@
   },
   "blocked_for_physical_release": [
     "measured-site candidate has not completed threshold contact and stopping-distance validation",
-    "wall thickness, office furniture offsets and some traced PDF offsets remain presentation assumptions",
+    "wall thickness, occluded decorative detail, locked VP furniture and some traced PDF offsets remain presentation assumptions",
     "threshold contact requires the articulated compliant carrier and measured caster/spring properties",
     "sensors are not a protective safety system"
   ],
@@ -74,9 +74,11 @@
     "central_atrium_drop_is_mapped_no_go": true,
     "hallway_supports_pivot_circle": true,
     "plan_hash_matches_reviewed_source": true,
+    "registered_geometry_has_metric_scale": true,
+    "registered_principal_entrance_matches_door": true,
+    "registered_principal_shell_and_floor_present": true,
     "scene_reopens": true,
-    "vice_principal_is_east_of_principal": true,
-    "visual_upgrade_preserves_collision_geometry": true
+    "vice_principal_is_east_of_principal": true
   },
   "config_file": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
   "config_sha256": "c06e1941e873ae88012844ee27be9e7614342412d5c51cccfe9358a9559ffe47",
@@ -93,7 +95,7 @@
     ]
   },
   "door_survey": {
-    "status": "administration_minimum_applied_to_locked_vp_door; principal_door_0.90m_presentation_assumption",
+    "status": "administration_minimum_0.85m; locked_vp_door_0.875m_and_principal_door_0.90m_presentation_assumptions",
     "survey_argument": null
   },
   "doors": {
@@ -124,20 +126,20 @@
         -5.05
       ],
       "clear_height_m": 2.12,
-      "clear_width_m": 0.85,
+      "clear_width_m": 0.875,
       "frame_depth_m": 0.16,
       "high_fidelity_threshold_validation": "blocked",
       "hinge": "left",
       "minimum_required_m": 0.828,
-      "nominal_padded_side_clearance_m": 0.010999999999999982,
-      "nominal_physical_side_clearance_m": 0.04099999999999998,
+      "nominal_padded_side_clearance_m": 0.023499999999999993,
+      "nominal_physical_side_clearance_m": 0.05349999999999999,
       "open_leaf_collision": "visual_only_secured_fully_open",
       "presentation_width_gate_passed": true,
       "swing": "outward_for_camera_and_route_clearance",
       "threshold_height_mm": 0,
       "threshold_status": "flush_presentation_assumption_from_walkthrough_not_measured",
       "wall_rotation_deg": 0.0,
-      "width_status": "user_reported_administration_minimum_conservative_destination_assumption"
+      "width_status": "reasonable_locked_room_presentation_assumption_0.025m_above_user_reported_administration_minimum"
     }
   },
   "geometry_rtx_refinement": {
@@ -325,7 +327,7 @@
   },
   "measured_geometry": {
     "overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
-    "overlay_sha256": "e5b60981b6771158434fb160beac97b2d197643ab0520d198174c9846992298b",
+    "overlay_sha256": "af2d751d579c52e6779e9338c01b74838518f114a17d56c68604eb205f16dd5a",
     "physical_release": false,
     "presentation_clearance_profile": {
       "footprint_padding_per_side_m": 0.03,
@@ -341,7 +343,7 @@
       "simulation_only": true,
       "straight_centreline_approach_required": true
     },
-    "registration_status": "approved_page_2_topology_with_roomplan_scale_and_appearance_evidence; native_scan_alignment_pending",
+    "registration_status": "independent_route_scoped_roomplan_to_page_2_registration_complete_for_atrium_and_principal_cluster; cross_scan_stitch_not_required",
     "source_capture_hashes": [
       "d12576bf72c1a5ccf51706501bc8d65f16ea2a22353a9cf7cf287c3f58f9e13b",
       "d94287e3562344e634889a94aba1ea39d359e29666dd6389673bd8a12599d6cb",
@@ -349,6 +351,518 @@
       "9e83e1325bf96afbe467b91c5c660e567a4d233486c0a6c08f40851a0decf3c8"
     ],
     "status": "measured_site_presentation_candidate"
+  },
+  "measured_visual_twin": {
+    "atrium": {
+      "appearance_status": "walkthrough_matched_on_roomplan_checked_page_2_envelope",
+      "central_display_treatment": "privacy_safe_abstract_easels_and_seating_on_prohibited_lower_polygon",
+      "principal_route_treatment": "terrazzo_secretary_approach_with_walnut_and_grey_frame_glass_partitions",
+      "reception_treatment": "two-segment_glazed_walnut_slatted_counter_and_upper_fascia"
+    },
+    "enabled": true,
+    "principal": {
+      "approach_partitions": [
+        {
+          "end_xy_m": [
+            6.2723,
+            -8.3198
+          ],
+          "id": "Wall10",
+          "start_xy_m": [
+            4.8231,
+            -7.2708
+          ],
+          "style": "grey_frame_glass"
+        }
+      ],
+      "ceiling_bounds": {
+        "centre_xy_m": [
+          8.03,
+          -8.27
+        ],
+        "size_xy_m": [
+          7.35,
+          8.05
+        ]
+      },
+      "chairs": [
+        {
+          "centre_xy_m": [
+            10.5012,
+            -9.0075
+          ],
+          "id": "Chair0",
+          "role": "executive",
+          "size_xyz_m": [
+            0.643189,
+            0.711914,
+            1.107687
+          ],
+          "yaw_deg": 96.5849
+        },
+        {
+          "centre_xy_m": [
+            9.1505,
+            -9.749
+          ],
+          "id": "Chair2",
+          "role": "visitor",
+          "size_xyz_m": [
+            0.506164,
+            0.626831,
+            0.641747
+          ],
+          "yaw_deg": -84.3099
+        },
+        {
+          "centre_xy_m": [
+            9.0297,
+            -8.5367
+          ],
+          "id": "Chair4",
+          "role": "visitor",
+          "size_xyz_m": [
+            0.506165,
+            0.626831,
+            0.641747
+          ],
+          "yaw_deg": -84.3099
+        }
+      ],
+      "floor_finish": "walkthrough_matched_grey_wood_plank",
+      "floor_polygon_xy_m": [
+        [
+          9.4075,
+          -4.6518
+        ],
+        [
+          9.4226,
+          -4.7639
+        ],
+        [
+          7.4512,
+          -7.349
+        ],
+        [
+          6.4806,
+          -7.9026
+        ],
+        [
+          6.2549,
+          -8.2074
+        ],
+        [
+          4.5677,
+          -10.6651
+        ],
+        [
+          4.6777,
+          -10.6436
+        ],
+        [
+          6.4221,
+          -11.888
+        ],
+        [
+          6.3931,
+          -11.8494
+        ],
+        [
+          7.9012,
+          -11.86
+        ],
+        [
+          7.8369,
+          -11.8268
+        ],
+        [
+          8.8182,
+          -10.5065
+        ],
+        [
+          8.7619,
+          -10.5384
+        ],
+        [
+          11.4908,
+          -10.2665
+        ],
+        [
+          11.4033,
+          -10.1948
+        ],
+        [
+          10.9615,
+          -5.7613
+        ],
+        [
+          10.942,
+          -5.8221
+        ]
+      ],
+      "storage": [
+        {
+          "centre_xy_m": [
+            5.6798,
+            -10.9461
+          ],
+          "id": "Storage2",
+          "role": "tv_award_cabinet",
+          "size_xyz_m": [
+            1.984971,
+            0.511364,
+            1.004302
+          ],
+          "yaw_deg": -35.5026
+        },
+        {
+          "centre_xy_m": [
+            5.6911,
+            -9.3698
+          ],
+          "id": "Storage3",
+          "role": "curved_display_cabinet",
+          "size_xyz_m": [
+            1.975601,
+            0.226234,
+            1.004302
+          ],
+          "yaw_deg": -124.4674
+        },
+        {
+          "centre_xy_m": [
+            10.3127,
+            -6.2764
+          ],
+          "id": "Storage4",
+          "role": "tall_storage",
+          "size_xyz_m": [
+            0.667237,
+            0.627441,
+            1.675615
+          ],
+          "yaw_deg": 142.6699
+        },
+        {
+          "centre_xy_m": [
+            9.7899,
+            -5.3816
+          ],
+          "id": "Storage5",
+          "role": "low_storage",
+          "size_xyz_m": [
+            1.173378,
+            0.53682,
+            1.031319
+          ],
+          "yaw_deg": 142.67
+        },
+        {
+          "centre_xy_m": [
+            6.282,
+            -8.5836
+          ],
+          "id": "Storage7",
+          "role": "slatted_partition_return",
+          "size_xyz_m": [
+            0.473873,
+            0.310677,
+            1.69675
+          ],
+          "yaw_deg": -124.4675
+        }
+      ],
+      "tables": [
+        {
+          "centre_xy_m": [
+            9.5014,
+            -9.1019
+          ],
+          "id": "Table0",
+          "role": "executive_desk_main",
+          "size_xyz_m": [
+            2.436593,
+            1.01462,
+            0.802184
+          ],
+          "yaw_deg": -84.31
+        },
+        {
+          "centre_xy_m": [
+            7.8333,
+            -10.133
+          ],
+          "id": "Table1",
+          "role": "meeting_table",
+          "size_xyz_m": [
+            1.60279,
+            0.803974,
+            0.796203
+          ],
+          "yaw_deg": -36.6215
+        },
+        {
+          "centre_xy_m": [
+            10.6842,
+            -9.8466
+          ],
+          "id": "Table2",
+          "role": "executive_desk_return",
+          "size_xyz_m": [
+            1.201952,
+            0.835423,
+            0.802184
+          ],
+          "yaw_deg": 5.69
+        }
+      ],
+      "walls": [
+        {
+          "end_xy_m": [
+            9.4075,
+            -4.6518
+          ],
+          "id": "Wall11",
+          "start_xy_m": [
+            10.942,
+            -5.8221
+          ],
+          "style": "grey_frame_glass"
+        },
+        {
+          "end_xy_m": [
+            7.603,
+            -7.15
+          ],
+          "id": "Wall13",
+          "start_xy_m": [
+            9.4226,
+            -4.7639
+          ],
+          "status": "roomplan_wall_with_0.25m_presentation_jamb_trim",
+          "style": "warm_white"
+        },
+        {
+          "end_xy_m": [
+            6.2549,
+            -8.2074
+          ],
+          "id": "Wall16",
+          "start_xy_m": [
+            6.4806,
+            -7.9026
+          ],
+          "style": "walnut_slatted"
+        },
+        {
+          "end_xy_m": [
+            4.5677,
+            -10.6651
+          ],
+          "id": "Wall17",
+          "start_xy_m": [
+            6.2532,
+            -8.2097
+          ],
+          "style": "walnut_slatted"
+        },
+        {
+          "end_xy_m": [
+            6.4221,
+            -11.888
+          ],
+          "id": "Wall21",
+          "start_xy_m": [
+            4.6777,
+            -10.6436
+          ],
+          "style": "walnut_tv_wall"
+        },
+        {
+          "end_xy_m": [
+            7.9012,
+            -11.86
+          ],
+          "id": "Wall14",
+          "start_xy_m": [
+            6.3931,
+            -11.8494
+          ],
+          "style": "warm_white"
+        },
+        {
+          "end_xy_m": [
+            8.8182,
+            -10.5065
+          ],
+          "id": "Wall12",
+          "start_xy_m": [
+            7.8369,
+            -11.8268
+          ],
+          "style": "white_blinds"
+        },
+        {
+          "end_xy_m": [
+            11.4908,
+            -10.2665
+          ],
+          "id": "Wall8",
+          "start_xy_m": [
+            8.7619,
+            -10.5384
+          ],
+          "style": "white_blinds"
+        },
+        {
+          "end_xy_m": [
+            10.9615,
+            -5.7613
+          ],
+          "id": "Wall4",
+          "start_xy_m": [
+            11.4033,
+            -10.1948
+          ],
+          "style": "walnut_and_warm_white"
+        }
+      ],
+      "windows": [
+        {
+          "centre_xy_m": [
+            10.1899,
+            -5.349
+          ],
+          "height_m": 1.708712,
+          "id": "Window3",
+          "treatment": "grey_frame_glass",
+          "width_m": 1.588011,
+          "yaw_deg": 142.67
+        },
+        {
+          "centre_xy_m": [
+            8.511,
+            -10.7857
+          ],
+          "height_m": 1.005488,
+          "id": "Window4",
+          "treatment": "white_blinds",
+          "width_m": 0.645847,
+          "yaw_deg": 53.3785
+        },
+        {
+          "centre_xy_m": [
+            8.0083,
+            -11.462
+          ],
+          "height_m": 0.986982,
+          "id": "Window5",
+          "treatment": "white_blinds",
+          "width_m": 0.633544,
+          "yaw_deg": 53.3785
+        },
+        {
+          "centre_xy_m": [
+            9.2105,
+            -10.4133
+          ],
+          "height_m": 0.894452,
+          "id": "Window2",
+          "treatment": "white_blinds",
+          "width_m": 0.693146,
+          "yaw_deg": 5.69
+        }
+      ]
+    },
+    "raw_media_committed": false,
+    "registration": {
+      "atrium": {
+        "absolute_span_residual_m": 0.029,
+        "approved_plan_atrium_diagonal_m": 12.75,
+        "confidence": "route_scoped; plan remains global topology authority",
+        "method": "native wall-chain span and dominant-axis registration to approved page-2 atrium",
+        "metric_scale": 1.0,
+        "native_dominant_axis_deg": -3.56,
+        "native_wall_chain_span_m": 12.779,
+        "source_section": "unidentified4",
+        "source_sha256": "d12576bf72c1a5ccf51706501bc8d65f16ea2a22353a9cf7cf287c3f58f9e13b",
+        "world_yaw_correction_deg": 3.56
+      },
+      "principal": {
+        "anchor_role": "centre of the 1.12 m RoomPlan entrance gap between Wall13 and Wall16",
+        "method": "open entrance gap to page-2 Principal approach centreline plus walkthrough topology",
+        "metric_scale": 1.0,
+        "native_anchor_xz_m": [
+          -6.0,
+          1.1
+        ],
+        "presentation_jamb_adjustment": {
+          "reason": "retain the accepted 0.90 m clear doorway and padded reverse-departure sweep despite RoomPlan jamb-edge noise",
+          "resulting_structural_gap_m": 1.35,
+          "trim_m": 0.25,
+          "wall": "Wall13"
+        },
+        "selected_semantic_ids": {
+          "chairs": [
+            "Chair0",
+            "Chair2",
+            "Chair4"
+          ],
+          "storage": [
+            "Storage2",
+            "Storage3",
+            "Storage4",
+            "Storage5",
+            "Storage7"
+          ],
+          "tables": [
+            "Table0",
+            "Table1",
+            "Table2"
+          ],
+          "walls": [
+            "Wall11",
+            "Wall13",
+            "Wall16",
+            "Wall17",
+            "Wall21",
+            "Wall14",
+            "Wall12",
+            "Wall8",
+            "Wall4"
+          ],
+          "windows": [
+            "Window3",
+            "Window4",
+            "Window5",
+            "Window2"
+          ]
+        },
+        "source_section": "diningRoom0",
+        "source_sha256": "d94287e3562344e634889a94aba1ea39d359e29666dd6389673bd8a12599d6cb",
+        "world_anchor_xy_m": [
+          6.978,
+          -7.628
+        ],
+        "world_yaw_deg": -146.0
+      }
+    },
+    "schema_version": 1,
+    "status": "route_scoped_registered_visual_and_collision_candidate",
+    "walkthrough_timestamps": {
+      "atrium_and_reception_s": [
+        0,
+        45
+      ],
+      "principal_approach_s": [
+        165,
+        180
+      ],
+      "principal_office_s": [
+        180,
+        220
+      ]
+    }
   },
   "passed": true,
   "payload": "loaded",
@@ -597,11 +1111,12 @@
     }
   ],
   "status": "measured_site_presentation_candidate_scene_built",
-  "timestamp_utc": "2026-08-23T16:53:01.137034+00:00",
+  "timestamp_utc": "2026-08-24T15:23:24.512514+00:00",
   "visual_upgrade": {
-    "collision_geometry_changed": false,
-    "reference_policy": "walkthrough appearance only; approved plan remains the geometry authority",
-    "rtx_material_version": "administration_rtx_pbr_v2",
+    "collision_geometry_changed": true,
+    "reference_policy": "approved page-2 global topology; independently registered RoomPlan Principal geometry and atrium scale; walkthrough materials and occluded visual detail",
+    "revalidation_required": true,
+    "rtx_material_version": "administration_rtx_pbr_v3",
     "texture_assets": [
       {
         "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/terrazzo_albedo.png",
@@ -640,6 +1155,18 @@
         "sha256": "2a459614774b0402034ce1d6fb279901a32649d29e2590fb6ea59ba258b4acf7"
       },
       {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/grey_oak_albedo.png",
+        "sha256": "d88a5e9c2f4c33702dccff43acf776d21b3f4cafa829efe982f17beaf7948860"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/grey_oak_roughness.png",
+        "sha256": "739dbeaeeaeec3b1384f96184af493c8ddb8bd3e1981d3c41d484ccb70518e9f"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/grey_oak_normal.png",
+        "sha256": "0f77204746ffe0b16d8791660e452d07344c4b2e4447070155b4bdc8f989570e"
+      },
+      {
         "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/mottled_grey_albedo.png",
         "sha256": "004965baae1199c739905bea6170041d1a92105a6461548ecc57c69ea5f4c1c4"
       },
@@ -657,6 +1184,6 @@
       "perceptual_roughness",
       "tangent_space_normal"
     ],
-    "version": "administration_walkthrough_procedural_pbr_v1"
+    "version": "administration_roomplan_registered_walkthrough_matched_v2"
   }
 }
