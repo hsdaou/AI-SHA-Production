@@ -1,6 +1,6 @@
 {
   "report_type": "phase8a_physical_localization_offline_preflight",
-  "generated_at_utc": "2026-08-24T11:57:20.600240+00:00",
+  "generated_at_utc": "2026-08-24T13:27:50.255555+00:00",
   "passed": true,
   "preparation_passed": true,
   "status": "accepted_offline_preflight_runtime_blocked",
@@ -109,7 +109,7 @@
     },
     {
       "id": "rev_d_differential_encoder_hardware_validation_pending",
-      "detail": "the new adapter passes replay/protocol checks and supports read-only RS485, but physical scale, loaded radius, per-side signs and exact V4.2 protocol compatibility remain unverified"
+      "detail": "the new adapter passes replay/protocol checks and Phase 8C supplier documentary compatibility, but the received V4.2 label, physical scale, loaded radius and per-side signs remain unverified"
     },
     {
       "id": "encoder_scale_not_calibrated",
@@ -133,8 +133,8 @@
     }
   ],
   "source_hashes": {
-    "profile": "ee84cfd2945588ec9878a34673f987cd8877ab20eeb7ac8138f2a0c41987c234",
-    "drive_contract": "af28f6bac76536c8f80aee815e55e4146bb259b72307f92393227641ec336235",
+    "profile": "984142ab0a9848dbf74864fc0a6b98e247d92f09383c5fbf36630d522c959f42",
+    "drive_contract": "6a15d5667661fb8a0bcebe5f49131429189e49c9531d7d91479aab43a7b92987",
     "amcl_config": "8cdcd83985fd6925a1cce8f1e4d6028ea58663f6635f56ccc973e3f64785d133",
     "ekf_config": "b342ecf8a844b82e4ac04f120f1b1f121fd5937ec34af83f2e464fa77a0deb78",
     "localization_urdf": "00d189bee269dd5c609a705bf1fec40369923ff0bc3b7ad89c016c389621d90d",

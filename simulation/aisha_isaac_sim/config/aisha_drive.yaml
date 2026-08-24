@@ -283,7 +283,7 @@ safety:
     Removing drive power may still allow coasting, so stopping performance must be measured.
 
 fabrication_hold_points:
-  - "obtain the exact V2.18 single-shaft dimensioned drawing and exact driver V4.2 manual"
+  - "obtain the exact V2.18 single-shaft dimensioned drawing and retain the hash-registered supplier-attested V4 Series manual with the V4.2 order"
   - "measure both received wheels: OD, loaded circumference, tread/body width and mounting-face stack"
   - "measure caster mounting-face height, trail, plate pattern and actual swivel-axis coordinates"
   - "inspect/photograph the NF-301 underside and have the dynamic load path/fasteners reviewed"

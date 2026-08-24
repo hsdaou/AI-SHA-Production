@@ -151,7 +151,7 @@ hard_blockers:
   - id: ros_dependencies_missing_on_current_workstation
     detail: nav2_amcl, nav2_map_server, nav2_lifecycle_manager and robot_localization are not installed
   - id: rev_d_differential_encoder_hardware_validation_pending
-    detail: the new adapter passes replay/protocol checks and supports read-only RS485, but physical scale, loaded radius, per-side signs and exact V4.2 protocol compatibility remain unverified
+    detail: the new adapter passes replay/protocol checks and Phase 8C supplier documentary compatibility, but the received V4.2 label, physical scale, loaded radius and per-side signs remain unverified
   - id: encoder_scale_not_calibrated
     detail: confirm delivered wheel loaded rolling circumference and whether the driver count is 4096 or 16384 per revolution
   - id: map_not_as_built

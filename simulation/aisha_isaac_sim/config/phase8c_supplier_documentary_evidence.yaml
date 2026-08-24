@@ -1,0 +1,68 @@
+schema_version: 1
+phase: "8C"
+date: "2026-08-24"
+status: documentary_evidence_passed_physical_intake_blocked
+objective: >-
+  Register a sanitized, hash-bound supplier evidence chain for the ordered
+  ZLAC8015D V4.2 driver and its applicable V4 Series RS485 manual without
+  claiming that the delivered unit or USB-RS485 adapter has been inspected.
+
+privacy_boundary:
+  source_documents_committed: false
+  email_body_committed: false
+  personal_contact_details_committed: false
+  local_source_paths_committed: false
+  sanitized_derivative_only: true
+
+expected_hardware:
+  driver_model_and_revision: "ZLAC8015D V4.2"
+  motor_model_and_revision: "ZLLG80ASM250-4096 V2.18"
+  driver_quantity: 2
+  motor_quantity: 2
+
+documentary_evidence:
+  procurement_record:
+    logical_id: procurement_record
+    sha256: 1ddc55331e7adae275958e9ed203108b28310955699ea5925b5ea375ead203fb
+    record_date: "2026-08-20"
+    confirms_driver_model_and_revision: true
+    confirms_motor_model_and_revision: true
+  shipping_record:
+    logical_id: shipping_record
+    sha256: 0623f6e03e7033f3b1c58e8013e4aa69fc6d876ca0ba2dacc640cceb9cb0021e
+    record_date: "2026-08-20"
+    confirms_driver_model_and_revision: true
+    confirms_motor_model_and_revision: true
+  rs485_manual:
+    logical_id: rs485_manual
+    title: "ZLAC8015D V4 Series RS485 Communication"
+    version: "1.06-20251111"
+    pages: 25
+    sha256: 79f6e112d6820d4740ec8b507ccfde8840b71811e1c2bee36d7d82a3b4a31aa7
+    modbus_rtu_documented: true
+    read_holding_register_function_0x03_documented: true
+    default_baud: 115200
+    serial_format: 8N1
+
+supplier_attestation:
+  source_role: supplier_representative
+  channel: email
+  attestation_date: "2026-08-21"
+  thread_subject: "ZLTECH hub motor for robot"
+  v4_series_manual_compatible_with_zlac8015d_v4_2: true
+  candidate_encoder_counts_per_wheel_revolution: 16384
+  candidate_encoder_scale_physically_verified: false
+
+gate:
+  procurement_model_v4_2_confirmed: true
+  shipping_model_v4_2_confirmed: true
+  supplier_manual_compatibility_attested: true
+  documentary_compatibility_passed: true
+  received_driver_label_verified: false
+  usb_rs485_identity_verified: false
+  rs485_read_only_runtime_passed: false
+  wheel_motion_authorized: false
+  physical_release: false
+  remaining_blockers:
+    - received_driver_label_not_provided
+    - no_stable_usb_rs485_device

@@ -27,8 +27,9 @@ occupied-building operation, or physical release.
   `/cmd_vel` subscription and no TF broadcaster.
 - Its Linux pseudo-terminal loopback passes without a motor device. The
   separate passive attachment audit opens no serial port and currently records
-  the missing received-unit label photo, exact V4.2 manual and stable
-  USB-RS485 `/dev/serial/by-id` device.
+  only the missing received-unit label photo and stable USB-RS485
+  `/dev/serial/by-id` device. Phase 8C supplier evidence now resolves the
+  V4.2/V4 Series manual compatibility question at the documentary level.
 
 Run the offline preparation check at any time:
 
@@ -49,9 +50,10 @@ simulation/aisha_isaac_sim/tools/run_phase8a_physical_localization_preflight.sh
    Rev D robot.
 3. The Rev D differential encoder adapter now passes its 30/30 offline gate,
    but its physical odometry output remains intentionally suppressed. The
-   delivered driver label must be matched to an exact manual, the loaded wheel
-   circumference measured, one marked revolution must resolve 4096 versus
-   16384 counts, and both encoder signs must be verified before
+   delivered driver label must be confirmed as V4.2 against the hash-registered,
+   supplier-attested manual contract, the loaded wheel circumference measured,
+   one marked revolution must resolve 4096 versus 16384 counts, and both
+   encoder signs must be verified before
    `/wheel/odom_raw` can be supplied to the EKF.
 4. The current administration occupancy map is a plan/RoomPlan/walkthrough-
    informed presentation map, not an as-built map. It may be observed in a
@@ -83,7 +85,7 @@ Do this only on the physical robot with an operator and an independent spotter:
 
 3. Before the localization graph, complete the passive checklist in
    `PHASE8B_HARDWARE_ATTACHMENT.md`. The audit must identify the exact received
-   driver label, its matching RS485 manual and the USB adapter's stable
+   V4.2 driver label, the registered RS485 manual and the USB adapter's stable
    `/dev/serial/by-id/...` path. It does not open the device or send a frame.
 4. After human review of that evidence, pass the separate Phase 8B read-only
    RS485 probe with motor leads isolated. It can read only Modbus function

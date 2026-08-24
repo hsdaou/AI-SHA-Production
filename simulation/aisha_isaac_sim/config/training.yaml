@@ -1088,8 +1088,18 @@ release:
   phase8b_motor_write_transport_available: false
   phase8b_wheels_lifted_gate_passed: false
   phase8b_floor_motion_authorized: false
+  phase8c_supplier_documentary_evidence_available: true
+  phase8c_supplier_documentary_evidence_passed: true
+  phase8c_supplier_documentary_checks_passed: "17/17"
+  phase8c_procurement_model_v4_2_confirmed: true
+  phase8c_shipping_model_v4_2_confirmed: true
+  phase8c_supplier_manual_compatibility_attested: true
+  phase8c_registered_manual_hash_verified: true
+  phase8c_received_hardware_label_verified: false
+  phase8c_usb_rs485_identity_verified: false
+  phase8c_physical_runtime_passed: false
   nav2_integrated_in_simulation: true
   nav2_ground_truth_localization_only: true
   nav2_integrated: true
   physical_robot_release: false
-  required_next_gate: "Photograph and match the exact delivered ZLAC8015D label to its RS485 manual, then pass the motor-leads-isolated Phase 8B read-only telemetry probe; measure loaded circumference and one marked revolution, verify both encoder signs in a separately approved 5 RPM wheels-lifted test, freeze one ROS 2 distribution, and only then attempt the drive-isolated 14/14 stationary sensor/TF gate"
+  required_next_gate: "Photograph the exact delivered ZLAC8015D V4.2 label and inventory the USB-RS485 adapter under /dev/serial/by-id, then pass the motor-leads-isolated Phase 8B read-only telemetry probe against the supplier-attested, hash-registered V4 Series manual; measure loaded circumference and one marked revolution, verify both encoder signs in a separately approved 5 RPM wheels-lifted test, freeze one ROS 2 distribution, and only then attempt the drive-isolated 14/14 stationary sensor/TF gate"
