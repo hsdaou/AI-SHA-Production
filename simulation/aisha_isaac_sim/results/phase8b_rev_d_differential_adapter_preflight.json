@@ -1,6 +1,6 @@
 {
   "report_type": "phase8b_rev_d_differential_adapter_offline_preflight",
-  "generated_at_utc": "2026-08-24T12:00:52.492247+00:00",
+  "generated_at_utc": "2026-08-24T12:21:30.095051+00:00",
   "passed": true,
   "status": "accepted_offline_replay_physical_blocked",
   "checks": {
@@ -80,12 +80,16 @@
       "detail": "no robot or ZLAC RS485 device is connected to this development host"
     },
     {
+      "id": "hardware_attachment_identity_pending",
+      "detail": "passive inventory found no received-unit label photo, exact V4.2 manual or stable USB-RS485 by-id device; no serial port was opened"
+    },
+    {
       "id": "physical_route_release_blockers_retained",
       "detail": "as-built map, doorway conflict, protective stop and ROS distribution gates remain unresolved"
     }
   ],
   "source_hashes": {
-    "profile": "3ec7fbc1cd11a0d3b889ce24ba268bd88c45527843e8780918a0d0346b6db8b6",
+    "profile": "53083b5e5a9e8d8c8ce3b0eb3edf58cdba5f0ea5568c927a202105146259abba",
     "drive_contract": "af28f6bac76536c8f80aee815e55e4146bb259b72307f92393227641ec336235",
     "node": "26f80ae5fcd06be8fe91ba2a1f1e1d620d4036a8c76af353fdd38a708676af85",
     "transport": "4bdb1c68dbba273382cc6559f74012b2833bffd296fef4fa4817b6ce6609d3b8",

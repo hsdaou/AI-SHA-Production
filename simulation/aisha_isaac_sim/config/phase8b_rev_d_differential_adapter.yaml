@@ -1,7 +1,7 @@
 schema_version: 1
 phase: "8B"
 date: "2026-08-24"
-status: offline_replay_accepted_physical_read_and_wheels_lifted_blocked
+status: offline_replay_and_pty_accepted_physical_identity_and_read_blocked
 objective: >-
   Replace the legacy mecanum assumption with a fail-safe Rev D differential
   encoder/odometry foundation, prove its kinematics and supplier protocol
@@ -126,6 +126,8 @@ hard_blockers:
     detail: Phase 8B intentionally provides no path that can enable or command a motor
   - id: physical_runtime_not_observed
     detail: no robot or ZLAC RS485 device is connected to this development host
+  - id: hardware_attachment_identity_pending
+    detail: passive inventory found no received-unit label photo, exact V4.2 manual or stable USB-RS485 by-id device; no serial port was opened
   - id: physical_route_release_blockers_retained
     detail: as-built map, doorway conflict, protective stop and ROS distribution gates remain unresolved
 
@@ -136,5 +138,9 @@ artifacts:
   replay_fixture: src/aisha_rev_d_driver/config/phase8b_encoder_replay.jsonl
   replay_launch: src/aisha_rev_d_driver/launch/phase8b_replay.launch.py
   read_only_probe: simulation/aisha_isaac_sim/tools/probe_phase8b_rs485_read_only.py
+  passive_attachment_profile: simulation/aisha_isaac_sim/config/phase8b_hardware_attachment_gate.yaml
+  passive_attachment_audit: simulation/aisha_isaac_sim/tools/audit_phase8b_hardware_attachment.py
+  passive_attachment_report: simulation/aisha_isaac_sim/results/phase8b_hardware_attachment_inventory.json
+  serial_pseudoterminal_test: src/aisha_rev_d_driver/test/test_serial_loopback.py
   offline_validator: simulation/aisha_isaac_sim/tools/validate_phase8b_rev_d_adapter.py
   offline_report: simulation/aisha_isaac_sim/results/phase8b_rev_d_differential_adapter_preflight.json

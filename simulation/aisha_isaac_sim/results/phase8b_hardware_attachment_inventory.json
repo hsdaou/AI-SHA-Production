@@ -1,0 +1,67 @@
+{
+  "report_type": "phase8b_passive_hardware_attachment_inventory",
+  "generated_at_utc": "2026-08-24T12:24:10.966376+00:00",
+  "passed": false,
+  "status": "blocked_missing_hardware_evidence",
+  "expected_driver_label": "ZLAC8015D V4.2",
+  "identity_checks": {
+    "supplier_archive_readable": true,
+    "v4_0_supplier_material_identified": true,
+    "v4_2_specific_supplier_material_found": false,
+    "received_driver_label_photo_hashed": false,
+    "received_driver_label_text_matches_expected": false,
+    "matching_rs485_manual_hashed": false,
+    "operator_confirmed_manual_matches_label": false,
+    "stable_usb_rs485_device_found": false,
+    "expected_usb_serial_matches_stable_device": false
+  },
+  "supplier_archive": {
+    "provided": true,
+    "path": "/home/robot-wst/Downloads/wetransfer_zllg80asm250-4096-v2-18-zip_2026-08-20_0753.zip",
+    "readable": true,
+    "sha256": "cc361c78447bcfd9af738251cbf09929f77b37d6aea175cb951105b294e539c1",
+    "entries": [
+      "ZLAC8015D V4.0.zip"
+    ],
+    "nested_archives": [
+      {
+        "entry": "ZLAC8015D V4.0.zip",
+        "readable": true,
+        "total_entries": 517,
+        "evidence_entries": [
+          "ZLAC8015D V4.0/ZLAC8015D V4.0 Manuals 2025.11.11/ZLAC8015D V4 English version/ZLAC8015D V4 Series Manual Version 1.03-20251111.pdf",
+          "ZLAC8015D V4.0/ZLAC8015D V4.0 Manuals 2025.11.11/ZLAC8015D V4 English version/ZLAC8015D V4 Series RS485 Communication Quick Start Guide  Version 1.00-20251111.pdf",
+          "ZLAC8015D V4.0/ZLAC8015D V4.0 Manuals 2025.11.11/ZLAC8015D V4 English version/ZLAC8015D V4 Series RS485 Communication Version 1.06-20251111.pdf",
+          "ZLAC8015D V4.0/ZLAC8015D V4.0 Manuals 2025.11.11/ZLAC8015D V4.0 \u4e2d\u6587\u7248\u672c 2025.11.11/ZLAC8015D V4\u7cfb\u5217  RS485\u901a\u4fe1\u4f8b\u7a0bVersion 1.00-20251111.pdf",
+          "ZLAC8015D V4.0/ZLAC8015D V4.0 Manuals 2025.11.11/ZLAC8015D V4.0 \u4e2d\u6587\u7248\u672c 2025.11.11/ZLAC8015D V4\u7cfb\u5217  RS485\u901a\u4fe1\u5feb\u901f\u4e0a\u624b\u8bf4\u660eVersion 1.00-20251111.pdf"
+        ],
+        "v4_0_named_material_present": true,
+        "v4_2_named_material_present": false
+      }
+    ],
+    "v4_0_named_material_present": true,
+    "v4_2_named_material_present": false
+  },
+  "driver_label_photo": {
+    "provided": false,
+    "readable": false
+  },
+  "matching_rs485_manual": {
+    "provided": false,
+    "readable": false
+  },
+  "serial_by_id_root": "/dev/serial/by-id",
+  "serial_devices": [],
+  "blockers": [
+    "v4_2_manual_absent_from_supplier_archive",
+    "received_driver_label_not_provided",
+    "exact_matching_manual_not_provided",
+    "no_stable_usb_rs485_device"
+  ],
+  "serial_port_opened": false,
+  "modbus_frames_sent": 0,
+  "motor_write_available": false,
+  "motion_authorized": false,
+  "physical_release": false,
+  "next_gate": "provide_exact_label_photo_matching_manual_and_stable_usb_rs485_identity"
+}

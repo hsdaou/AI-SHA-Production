@@ -1075,9 +1075,15 @@ release:
   phase8b_rev_d_adapter_available: true
   phase8b_rev_d_adapter_offline_preflight_passed: true
   phase8b_rev_d_adapter_offline_checks_passed: "30/30"
-  phase8b_rev_d_adapter_focused_tests_passed: "12/12"
+  phase8b_rev_d_adapter_focused_tests_passed: "13/13"
   phase8b_replay_odometry_passed: true
   phase8b_rs485_read_only_transport_prepared: true
+  phase8b_rs485_pseudoterminal_loopback_passed: true
+  phase8b_hardware_attachment_audit_available: true
+  phase8b_hardware_attachment_audit_completed: true
+  phase8b_hardware_attachment_gate_passed: false
+  phase8b_v4_2_manual_found: false
+  phase8b_stable_usb_rs485_device_found: false
   phase8b_rs485_read_only_runtime_passed: false
   phase8b_motor_write_transport_available: false
   phase8b_wheels_lifted_gate_passed: false
