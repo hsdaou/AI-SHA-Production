@@ -1,0 +1,83 @@
+schema_version: 1
+phase: "PHASE7A-LIVE-NAV2-DYNAMIC-CROSSING"
+status: "accepted_simulation_stop_wait_resume_dynamic_crossing"
+objective: >
+  Exercise the frozen Phase 6 high-speed policy and accepted Phase 3N dynamic
+  actor in one full measured-presentation Nav2 mission with a deterministic,
+  sensor-visible pedestrian crossing on straight hallway segment 1.
+
+frozen_inputs:
+  robot_geometry: "unchanged_rev_d"
+  phase6_checkpoint: "isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt"
+  phase6_checkpoint_sha256: "e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318"
+  phase3n_checkpoint: "isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt"
+  phase3n_checkpoint_sha256: "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b"
+  phase6_static_retention_report: "results/administration_nav2_phase6_high_speed_integration_gate.json"
+  phase6_static_retention_checks: "28/28"
+
+scenario:
+  task: "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7-DynamicCrossing-Safety-Direct-v0"
+  route_segment_id: 1
+  requested_hallway_speed_mps: 0.80
+  crossing_route_fraction: 0.56
+  crossing_half_span_m: 1.10
+  crossing_speed_mps: 0.48
+  trigger_distance_m: 2.60
+  proxy: "stylized kinematic pedestrian with a 0.48 m torso collision envelope"
+  proxy_state_exposed_to_policy: false
+  sensed_by: [crown_lidar, front_lidar]
+  controller_order:
+    - "Nav2 global path and DWB local command"
+    - "mapped doorway and central-drop guard"
+    - "Phase 6 actor on declared high-speed legs"
+    - "front-scan-scoped handoff to accepted Phase 3N actor during encounter"
+    - "independent front protective stop with 360-degree clearance release hold"
+    - "articulated wheel/contact physics"
+  dynamic_handoff_trigger: "central front scan at or below 1.50 m on segment 1"
+  front_stop_trigger_m: 0.90
+  front_stop_release_m: 1.10
+  ring_stop_release_clearance_m: 0.35
+  stopping_distance_physical_credit: false
+
+accepted_output:
+  mission_report: "results/administration_nav2_phase7_dynamic_mission.json"
+  bridge_report: "results/administration_nav2_phase7_dynamic_bridge.json"
+  acceptance_report: "results/administration_nav2_phase7_dynamic_integration_gate.json"
+  checks_passed: 24
+  checks_total: 24
+  legs_completed: 12
+  elapsed_wall_s: 234.383
+  maximum_pre_trigger_forward_speed_mps: 0.74538
+  minimum_encounter_forward_speed_mps: 0.0
+  maximum_post_crossing_recovery_speed_mps: 0.73196
+  minimum_robot_pedestrian_centre_distance_m: 1.19046
+  minimum_central_front_range_m: 0.58889
+  minimum_360_clearance_during_encounter_m: 0.13938
+  sensor_scoped_phase3n_handoff_steps: 30
+  learned_authority_steps_during_encounter: 29
+  learned_brake_steps_during_encounter: 4
+  front_stop_latched_steps: 52
+  maximum_doorway_speed_mps: 0.05926848575472832
+  maximum_doorway_tangent_offset_m: 0.01564941406250142
+  minimum_polygon_full_footprint_clearance_m: 0.279585
+  collisions: 0
+  episode_resets: 0
+
+claim_boundary:
+  supported: >
+    One repeatable sensor-visible crossing with live Nav2, learned-safety
+    handoff, controlled stop, wait and resume in the measured-presentation
+    Isaac scene.
+  blocked_route_replanning_supported: false
+  crowd_behavior_supported: false
+  human_behavior_or_biomechanics_model: false
+  physical_localization_credit: false
+  physical_stopping_distance_credit: false
+  physical_safety_credit: false
+  physical_release: false
+
+next_gate:
+  phase: "PHASE7B-BLOCKED-ROUTE-REPLANNING"
+  objective: >
+    Introduce a temporary route blockage, require a fresh global path, verify
+    detour or safe wait behavior, then complete the unchanged 12-leg mission.

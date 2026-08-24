@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-23. The unchanged Rev D robot now passes the measured-presentation 12-leg live Nav2 mission through both offices with the accepted Phase 3N learned 360-degree brake layer. The aggregate gate passes 27/27. Phase 4A and the accepted Omniverse evidence reel remain the dynamic-obstacle presentation evidence. This is not a physical safety or deployment release.**
+**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier and now also passes a separate 24/24 Phase 7A sensor-visible pedestrian stop-wait-resume gate. Blocked-route replanning and physical release remain pending.**
 
 ## Completed
 
@@ -380,6 +380,15 @@
 - The presentation integration uses Isaac ground-truth odometry with an
   identity map-to-odom transform. It evaluates Nav2 motion and learned safety,
   not AMCL robustness, and earns no physical localisation or release credit.
+- Phase 7A adds one sensor-visible 0.48 m/s pedestrian crossing on high-speed
+  segment 1 without changing the accepted static mission. The 12-leg dynamic
+  run passes 24/24 with no collision or reset. AI-SHA approached at 0.74538
+  m/s, stopped, waited and recovered to 0.73196 m/s while maintaining 1.19046 m
+  minimum centre distance. A front-LiDAR threshold handed control to the
+  accepted Phase 3N actor for 30 steps; learned authority was active for 29
+  encounter steps with four learned-brake steps, while the independent
+  protective latch held the final stop for 52 steps. This is not physical
+  stopping-distance or human-safety evidence.
 
 ## Deterministic contact tuning disclosure
 
@@ -405,11 +414,11 @@ claim. See `config/physics_materials.yaml`.
 - The LD19, D435 and BNO055 models/interfaces are known, but the low front LiDAR
   model and exact camera intrinsics remain hold points. The trained ray ranges
   are scalable geometric sensing, not a validated RTX LD19 noise model.
-- The 12-segment Principal/Vice-Principal sensor policy and declared Phase 3
-  dynamic-safety gate pass. The measured-presentation static Nav2 integration
-  now also passes. Blocked-route dynamic replanning, broader office-directory
-  coverage, native scan registration and sim-to-real commissioning remain
-  subsequent gates.
+- The 12-segment Principal/Vice-Principal policy, declared Phase 3 dynamic
+  safety, measured static Nav2 mission and separate Phase 7A sensed crossing
+  pass. Blocked-route global replanning, broader office-directory coverage,
+  native scan registration and sim-to-real commissioning remain subsequent
+  gates.
 - The administration USD has been rebuilt around the walkthrough's primary
   visual anchors: brighter polished terrazzo and aggregate, white atrium
   columns, dark timber/slatted walls, office glazing, a round timber meeting
@@ -460,19 +469,19 @@ These are evidence-based project-management estimates, not safety ratings:
 
 | Workstream | Progress |
 |---|---:|
-| Presentation-ready Omniverse simulation | 90% |
-| Learned navigation and doorway handling | 87% |
-| Measured digital twin | 66% |
-| Nav2/localisation integration | 72% |
-| Dynamic-obstacle simulation safety | 79% |
+| Presentation-ready Omniverse simulation | 93% |
+| Learned navigation and doorway handling | 91% |
+| Measured digital twin | 68% |
+| Nav2/localisation integration | 82% |
+| Dynamic-obstacle simulation safety | 84% |
 | Physical deployment readiness | 30% |
-| Overall end objective | 74% |
+| Overall end objective | 79% |
 
-The major increase is Nav2/localisation integration: the full measured static
-mission, route-scoped 0.80 m/s simulation tier and final RTX replay are now
-accepted. The remaining work is dominated by blocked-route dynamic replanning,
-real localisation, native scan/visual refinement, operator-facing capture and
-physical sim-to-real commissioning.
+The latest increase comes from coupling a sensed dynamic crossing to the full
+measured-scene Nav2 mission while retaining the 0.80 m/s static tier, doorway
+and central-drop gates. The remaining work is dominated by Phase 7B
+blocked-route global replanning, real localisation, native scan/visual
+refinement, operator-facing capture and physical sim-to-real commissioning.
 
 ## Evidence
 
@@ -567,6 +576,11 @@ physical sim-to-real commissioning.
 - `administration_nav2_measured_bridge.json`
 - `administration_nav2_measured_mission.json`
 - `administration_nav2_measured_integration_gate.json`
+- `administration_nav2_phase6_high_speed_integration_gate.json`
+- `administration_nav2_phase6_rtx_presentation_acceptance.json`
+- `administration_nav2_phase7_dynamic_mission.json`
+- `administration_nav2_phase7_dynamic_bridge.json`
+- `administration_nav2_phase7_dynamic_integration_gate.json`
 - `phase3_geometry_rtx_refinement_validation.json`
 - `phase3_launch_status.json`
 - `PRODUCTION_REPOSITORY_REVIEW.md`

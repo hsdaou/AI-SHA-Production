@@ -212,6 +212,28 @@ trace and is available at
 14/14. It is a cinematic replay of live source motion, not a second live-policy
 execution.
 
+### Phase 7A sensed dynamic crossing
+
+The accepted static Phase 6 mission remains immutable regression evidence.
+Phase 7A runs a separate task with one deterministic 0.48 m/s stylized
+pedestrian crossing on hallway segment 1:
+
+```bash
+tools/run_administration_nav2_phase7_dynamic_integration.sh
+```
+
+The live run passes 24/24, completes all 12 legs without reset, stops from a
+0.74538 m/s approach, maintains 1.19046 m minimum centre distance and recovers
+to 0.73196 m/s. The controller handoff is derived from the front LiDAR only;
+pedestrian position remains evaluation telemetry and is not policy input. The
+front protective latch uses a 360-degree clearance release hold so the robot
+does not restart while the person is beside its front corner.
+
+This gate proves one controlled stop-wait-resume simulation encounter. It does
+not yet prove blocked-route global replanning, crowd navigation, human
+behaviour, physical stopping distance, physical localization or deployment
+safety. Those boundaries are recorded in `config/phase7_dynamic_nav2.yaml`.
+
 ## 5. Architecture and claim boundary
 
 Two authentic controller paths are now verified:

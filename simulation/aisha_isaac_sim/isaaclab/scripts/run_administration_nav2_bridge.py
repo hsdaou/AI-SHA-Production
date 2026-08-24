@@ -92,10 +92,15 @@ PHASE6_MEASURED_NAV2_TASK = (
     "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase6-"
     "HighSpeed80-DynamicSafety-Direct-v0"
 )
+PHASE7_MEASURED_NAV2_DYNAMIC_TASK = (
+    "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7-"
+    "DynamicCrossing-Safety-Direct-v0"
+)
 PHASE3N_COMPATIBLE_TASKS = {
     PHASE3N_PRESENTATION_TASK,
     PHASE3N_MEASURED_NAV2_TASK,
     PHASE6_MEASURED_NAV2_TASK,
+    PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
 }
 ACCEPTED_PHASE3N_CHECKPOINT = "aisha_phase3n_dynamic_safety_model_50.pt"
 ACCEPTED_PHASE3N_SHA256 = (
@@ -105,7 +110,11 @@ ACCEPTED_PHASE6_CHECKPOINT = "aisha_phase6_high_speed_080_model_223.pt"
 ACCEPTED_PHASE6_SHA256 = (
     "e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318"
 )
-MEASURED_NAV2_TASKS = {PHASE3N_MEASURED_NAV2_TASK, PHASE6_MEASURED_NAV2_TASK}
+PHASE6_NAV2_TASKS = {
+    PHASE6_MEASURED_NAV2_TASK,
+    PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
+}
+MEASURED_NAV2_TASKS = {PHASE3N_MEASURED_NAV2_TASK, *PHASE6_NAV2_TASKS}
 
 
 def sha256_file(path: Path) -> str:
@@ -191,6 +200,7 @@ class AishaSimulationBridge:
         self.stop_latched = False
         self.front_stop_trigger_m = 0.60
         self.front_stop_release_m = 0.75
+        self.ring_stop_release_clearance_m: float | None = None
         self.front_stop_half_angle_deg = 10.0
         self.command_watchdog_s = 0.30
         self.maximum_forward_mps = maximum_forward_mps
@@ -220,6 +230,9 @@ class AishaSimulationBridge:
         self.minimum_front_range_m = math.inf
         self.minimum_central_front_range_m = math.inf
         self.minimum_ring_clearance_m = math.inf
+        self.current_front_range_m = math.inf
+        self.current_central_front_range_m = math.inf
+        self.current_ring_clearance_m = math.inf
         self.current_route_segment_id = 0
         self.route_segment_messages = 0
         self.invalid_route_segment_messages = 0
@@ -329,8 +342,16 @@ class AishaSimulationBridge:
         self.minimum_ring_clearance_m = min(
             self.minimum_ring_clearance_m, ring_clearance
         )
+        self.current_front_range_m = front_min
+        self.current_central_front_range_m = central_front_min
+        self.current_ring_clearance_m = ring_clearance
         if self.stop_latched:
-            self.stop_latched = central_front_min < self.front_stop_release_m
+            central_blocked = central_front_min < self.front_stop_release_m
+            ring_blocked = (
+                self.ring_stop_release_clearance_m is not None
+                and ring_clearance < self.ring_stop_release_clearance_m
+            )
+            self.stop_latched = central_blocked or ring_blocked
         elif central_front_min <= self.front_stop_trigger_m:
             self.stop_latched = True
             self.obstacle_stops += 1
@@ -609,7 +630,7 @@ def main() -> int:
             and checkpoint_sha256 == ACCEPTED_PHASE6_SHA256
         ):
             accepted_checkpoint_profile = "phase6_high_speed_080"
-        if task == PHASE6_MEASURED_NAV2_TASK and accepted_checkpoint_profile != (
+        if task in PHASE6_NAV2_TASKS and accepted_checkpoint_profile != (
             "phase6_high_speed_080"
         ):
             raise ValueError(
@@ -622,7 +643,7 @@ def main() -> int:
         if not fallback_checkpoint.is_file():
             raise FileNotFoundError(fallback_checkpoint)
         fallback_checkpoint_sha256 = sha256_file(fallback_checkpoint)
-        if task != PHASE6_MEASURED_NAV2_TASK:
+        if task not in PHASE6_NAV2_TASKS:
             raise ValueError(
                 "fallback learned safety is supported only by the Phase 6 "
                 "measured Nav2 task"
@@ -656,7 +677,9 @@ def main() -> int:
         # unchanged and hash-verified; its formal randomized evaluations remain
         # separate evidence.
         deterministic_overrides = {
-            "dynamic_obstacle_activation_probability": 0.0,
+            "dynamic_obstacle_activation_probability": (
+                1.0 if task == PHASE7_MEASURED_NAV2_DYNAMIC_TASK else 0.0
+            ),
             "action_latency_steps_range": (0, 0),
             "motor_strength_scale_range": (1.0, 1.0),
             "wheel_radius_scale_range": (1.0, 1.0),
@@ -727,7 +750,8 @@ def main() -> int:
         ]
         for name in ("crown_lidar", "front_lidar", "imu")
     }
-    phase6_high_speed_replay = task == PHASE6_MEASURED_NAV2_TASK
+    phase6_high_speed_replay = task in PHASE6_NAV2_TASKS
+    dynamic_crossing_replay = task == PHASE7_MEASURED_NAV2_DYNAMIC_TASK
     if phase6_high_speed_replay and mapped_guard is not None:
         # The furnished wheel contacts need the same proven 0.42 rad/s
         # breakaway command used by the office pivots. Translation remains
@@ -742,6 +766,15 @@ def main() -> int:
         non_high_speed_navigation_maximum_mps=0.30,
         publish_ground_truth_map_to_odom=phase6_high_speed_replay,
     )
+    if dynamic_crossing_replay:
+        # Begin the presentation-only protective stop earlier than the static
+        # obstacle default so the 0.8 m/s approach remains outside the frozen
+        # rectangular LiDAR envelope while the pedestrian completes crossing.
+        # This is a simulation gate and provides no physical stopping-distance
+        # credit.
+        bridge.front_stop_trigger_m = 0.90
+        bridge.front_stop_release_m = 1.10
+        bridge.ring_stop_release_clearance_m = 0.35
     steps_completed = 0
     reset_detected = False
     safety_authority_steps = 0
@@ -751,6 +784,24 @@ def main() -> int:
     minimum_ring_clearance_m = math.inf
     primary_policy_steps = 0
     fallback_policy_steps = 0
+    dynamic_triggered = False
+    dynamic_crossing_completed = False
+    dynamic_trigger_step = None
+    dynamic_completion_step = None
+    dynamic_crossing_steps = 0
+    dynamic_policy_handoff_steps = 0
+    dynamic_stop_latched_steps = 0
+    dynamic_authority_steps = 0
+    dynamic_brake_steps = 0
+    dynamic_minimum_centre_distance_m = math.inf
+    dynamic_minimum_central_front_range_m = math.inf
+    dynamic_minimum_ring_clearance_m = math.inf
+    dynamic_minimum_forward_speed_mps = math.inf
+    dynamic_maximum_pre_trigger_speed_mps = 0.0
+    dynamic_maximum_recovery_speed_mps = 0.0
+    dynamic_stop_observed = False
+    dynamic_recovery_observed = False
+    dynamic_trace = []
     last_pre_step_position_xy_m = None
     last_pre_step_minimum_ring_clearance_m = None
     try:
@@ -762,6 +813,8 @@ def main() -> int:
             and (args.max_steps <= 0 or steps_completed < args.max_steps)
         ):
             bridge.spin()
+            authority = False
+            brake_fraction = 0.0
             if args.self_test:
                 if 15 <= steps_completed < 75:
                     bridge.set_self_test_command(0.05)
@@ -789,6 +842,15 @@ def main() -> int:
                         use_primary = bridge.current_route_segment_id in tuple(
                             int(value) for value in raw_env.cfg.high_speed_segment_ids
                         )
+                        dynamic_policy_handoff = (
+                            dynamic_crossing_replay
+                            and bridge.current_route_segment_id
+                            == int(raw_env.cfg.showcase_segment_id)
+                            and bridge.current_central_front_range_m <= 1.50
+                        )
+                        if dynamic_policy_handoff:
+                            use_primary = False
+                            dynamic_policy_handoff_steps += 1
                         safety_action = (
                             primary_safety_action
                             if use_primary
@@ -823,6 +885,89 @@ def main() -> int:
             else:
                 _, _, terminated, truncated, _ = env.step(navigation_action)
                 terminated_or_truncated = terminated | truncated
+            if dynamic_crossing_replay and hasattr(raw_env, "showcase_state"):
+                state = raw_env.showcase_state()
+                triggered = bool(state["triggered"][0].item())
+                progress = float(state["crossing_progress"][0].item())
+                robot_xy = raw_env._local_xy()[0]
+                person_xy = state["person_position_xy_m"][0]
+                centre_distance = float(
+                    torch.linalg.norm(robot_xy - person_xy).item()
+                )
+                forward_speed = abs(
+                    float(raw_env._robot.data.root_lin_vel_b[0, 0].item())
+                )
+                crossing_segment_id = int(raw_env.cfg.showcase_segment_id)
+                on_crossing_segment = (
+                    bridge.current_route_segment_id == crossing_segment_id
+                )
+                if on_crossing_segment and not triggered:
+                    dynamic_maximum_pre_trigger_speed_mps = max(
+                        dynamic_maximum_pre_trigger_speed_mps, forward_speed
+                    )
+                if triggered and on_crossing_segment:
+                    if not dynamic_triggered:
+                        dynamic_triggered = True
+                        dynamic_trigger_step = steps_completed
+                    dynamic_crossing_steps += 1
+                    dynamic_minimum_centre_distance_m = min(
+                        dynamic_minimum_centre_distance_m, centre_distance
+                    )
+                    dynamic_minimum_central_front_range_m = min(
+                        dynamic_minimum_central_front_range_m,
+                        bridge.current_central_front_range_m,
+                    )
+                    dynamic_minimum_ring_clearance_m = min(
+                        dynamic_minimum_ring_clearance_m,
+                        bridge.current_ring_clearance_m,
+                    )
+                    dynamic_minimum_forward_speed_mps = min(
+                        dynamic_minimum_forward_speed_mps, forward_speed
+                    )
+                    dynamic_stop_latched_steps += int(bridge.stop_latched)
+                    dynamic_authority_steps += int(authority)
+                    dynamic_brake_steps += int(brake_fraction > 1.0e-6)
+                    dynamic_stop_observed |= forward_speed <= 0.05
+                    if progress >= 0.999 and not dynamic_crossing_completed:
+                        dynamic_crossing_completed = True
+                        dynamic_completion_step = steps_completed
+                    if dynamic_crossing_completed:
+                        dynamic_maximum_recovery_speed_mps = max(
+                            dynamic_maximum_recovery_speed_mps, forward_speed
+                        )
+                        dynamic_recovery_observed |= forward_speed >= 0.30
+                    if (
+                        steps_completed % 12 == 0
+                        or steps_completed == dynamic_completion_step
+                    ):
+                        dynamic_trace.append(
+                            {
+                                "step": steps_completed,
+                                "segment_id": bridge.current_route_segment_id,
+                                "progress": round(progress, 5),
+                                "robot_xy_m": [
+                                    round(float(value), 5)
+                                    for value in robot_xy.detach().cpu().tolist()
+                                ],
+                                "pedestrian_xy_m": [
+                                    round(float(value), 5)
+                                    for value in person_xy.detach().cpu().tolist()
+                                ],
+                                "centre_distance_m": round(centre_distance, 5),
+                                "forward_speed_mps": round(forward_speed, 5),
+                                "central_front_range_m": round(
+                                    bridge.current_central_front_range_m, 5
+                                ),
+                                "ring_clearance_m": round(
+                                    bridge.current_ring_clearance_m, 5
+                                ),
+                                "front_stop_latched": bridge.stop_latched,
+                                "learned_authority": authority,
+                                "learned_brake_fraction": round(
+                                    brake_fraction, 6
+                                ),
+                            }
+                        )
             bridge.simulation_time_s += control_period_s
             bridge.publish(steps_completed)
             steps_completed += 1
@@ -911,6 +1056,9 @@ def main() -> int:
                 "command_watchdog_s": bridge.command_watchdog_s,
                 "front_stop_trigger_m": bridge.front_stop_trigger_m,
                 "front_stop_release_m": bridge.front_stop_release_m,
+                "ring_stop_release_clearance_m": (
+                    bridge.ring_stop_release_clearance_m
+                ),
                 "front_stop_half_angle_deg": bridge.front_stop_half_angle_deg,
                 "minimum_rotation_clearance_m": bridge.minimum_rotation_clearance_m,
             },
@@ -977,9 +1125,19 @@ def main() -> int:
                     and fallback_checkpoint_sha256 == ACCEPTED_PHASE3N_SHA256
                 ),
                 "policy_selection": (
-                    "phase6_on_declared_high_speed_segments_phase3n_elsewhere"
+                    (
+                        "phase6_on_declared_high_speed_segments_phase3n_elsewhere_"
+                        "plus_front_scan_scoped_phase3n_dynamic_handoff"
+                    )
+                    if dynamic_crossing_replay
+                    else "phase6_on_declared_high_speed_segments_phase3n_elsewhere"
                     if fallback_checkpoint is not None
                     else "single_checkpoint"
+                ),
+                "dynamic_handoff_sensor": (
+                    "central_front_scan_at_or_below_1.50_m_on_crossing_segment"
+                    if dynamic_crossing_replay
+                    else None
                 ),
                 "primary_policy_steps": primary_policy_steps,
                 "fallback_policy_steps": fallback_policy_steps,
@@ -997,7 +1155,64 @@ def main() -> int:
                     if math.isfinite(minimum_ring_clearance_m)
                     else None
                 ),
-                "deterministic_static_integration_gate": learned_safety_enabled,
+                "deterministic_static_integration_gate": (
+                    learned_safety_enabled and not dynamic_crossing_replay
+                ),
+            },
+            "dynamic_obstacle": {
+                "enabled": dynamic_crossing_replay,
+                "scenario": (
+                    "single_sensed_pedestrian_crossing_on_high_speed_segment_1"
+                    if dynamic_crossing_replay
+                    else None
+                ),
+                "stylized_proxy_not_human_model": dynamic_crossing_replay,
+                "pedestrian_state_exposed_to_policy": False,
+                "crossing_segment_id": (
+                    int(cfg.showcase_segment_id)
+                    if dynamic_crossing_replay
+                    else None
+                ),
+                "triggered": dynamic_triggered,
+                "crossing_completed": dynamic_crossing_completed,
+                "trigger_step": dynamic_trigger_step,
+                "completion_step": dynamic_completion_step,
+                "crossing_steps": dynamic_crossing_steps,
+                "sensor_scoped_phase3n_handoff_steps": (
+                    dynamic_policy_handoff_steps
+                ),
+                "front_stop_latched_steps": dynamic_stop_latched_steps,
+                "learned_authority_steps_during_encounter": dynamic_authority_steps,
+                "learned_brake_steps_during_encounter": dynamic_brake_steps,
+                "minimum_robot_pedestrian_centre_distance_m": (
+                    round(dynamic_minimum_centre_distance_m, 5)
+                    if math.isfinite(dynamic_minimum_centre_distance_m)
+                    else None
+                ),
+                "minimum_central_front_range_m": (
+                    round(dynamic_minimum_central_front_range_m, 5)
+                    if math.isfinite(dynamic_minimum_central_front_range_m)
+                    else None
+                ),
+                "minimum_360_clearance_m": (
+                    round(dynamic_minimum_ring_clearance_m, 5)
+                    if math.isfinite(dynamic_minimum_ring_clearance_m)
+                    else None
+                ),
+                "maximum_pre_trigger_forward_speed_mps": round(
+                    dynamic_maximum_pre_trigger_speed_mps, 5
+                ),
+                "minimum_encounter_forward_speed_mps": (
+                    round(dynamic_minimum_forward_speed_mps, 5)
+                    if math.isfinite(dynamic_minimum_forward_speed_mps)
+                    else None
+                ),
+                "maximum_post_crossing_recovery_speed_mps": round(
+                    dynamic_maximum_recovery_speed_mps, 5
+                ),
+                "controlled_stop_observed": dynamic_stop_observed,
+                "post_crossing_recovery_observed": dynamic_recovery_observed,
+                "trace": dynamic_trace,
             },
             "mapped_site_safety": (
                 {
