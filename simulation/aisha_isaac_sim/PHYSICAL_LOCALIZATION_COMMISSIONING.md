@@ -25,6 +25,10 @@ occupied-building operation, or physical release.
   kinematics, signed/rollover-safe encoder integration, deterministic replay and
   read-only ZLAC8015D Modbus telemetry. It has no motor-write transport, no
   `/cmd_vel` subscription and no TF broadcaster.
+- Its Linux pseudo-terminal loopback passes without a motor device. The
+  separate passive attachment audit opens no serial port and currently records
+  the missing received-unit label photo, exact V4.2 manual and stable
+  USB-RS485 `/dev/serial/by-id` device.
 
 Run the offline preparation check at any time:
 
@@ -77,9 +81,14 @@ Do this only on the physical robot with an operator and an independent spotter:
    source install/setup.bash
    ```
 
-3. Before the localization graph, pass the separate Phase 8B read-only RS485
-   probe with motor leads isolated. It can read only Modbus function `0x03` and
-   cannot enable or command the drive. Do not bypass any confirmation flag:
+3. Before the localization graph, complete the passive checklist in
+   `PHASE8B_HARDWARE_ATTACHMENT.md`. The audit must identify the exact received
+   driver label, its matching RS485 manual and the USB adapter's stable
+   `/dev/serial/by-id/...` path. It does not open the device or send a frame.
+4. After human review of that evidence, pass the separate Phase 8B read-only
+   RS485 probe with motor leads isolated. It can read only Modbus function
+   `0x03` and cannot enable or command the drive. Do not bypass any confirmation
+   flag:
 
    ```bash
    simulation/aisha_isaac_sim/tools/probe_phase8b_rs485_read_only.py \
@@ -92,21 +101,21 @@ Do this only on the physical robot with an operator and an independent spotter:
      --confirm-independent-spotter-present
    ```
 
-4. After a separately approved wheels-lifted direction/count calibration, start
+5. After a separately approved wheels-lifted direction/count calibration, start
    the LD19 as `/scan` with `frame_id:=lidar_link`, the BNO055 as `/imu/data`
    with `frame_id:=imu_link`, and the calibrated Rev D adapter on
    `/wheel/odom_raw`. Do not substitute dummy odometry, RF2O, or the mecanum
    driver.
-5. Start the localization-only graph, providing an explicit map path:
+6. Start the localization-only graph, providing an explicit map path:
 
    ```bash
    ros2 launch robot_bringup phase8a_localization_preflight.launch.py \
      map:=/absolute/path/to/administration.yaml
    ```
 
-6. Give AMCL one initial pose using RViz. Do not send a navigation goal. Confirm
+7. Give AMCL one initial pose using RViz. Do not send a navigation goal. Confirm
    that no node publishes `/cmd_vel`.
-7. With the robot still chocked and drive-disabled, collect the 20-second gate:
+8. With the robot still chocked and drive-disabled, collect the 20-second gate:
 
    ```bash
    simulation/aisha_isaac_sim/tools/run_phase8a_physical_localization_preflight.sh \

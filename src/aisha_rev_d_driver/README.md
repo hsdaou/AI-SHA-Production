@@ -17,9 +17,16 @@ RS485 profile keeps all physical confirmations false and `publish_odom: false`.
 The hardware transport permits only Modbus function `0x03`; it cannot set the
 control mode, enable the driver, stop it, or write target velocities.
 
+The test suite exercises that transport against a Linux pseudo-terminal. The
+emulated driver receives exactly the configured position/speed, status and
+fault reads, rejects any non-`0x03` request in the test, and returns signed
+sample values through the real serial byte path.
+
 Do not switch to the physical profile until the exact delivered driver label is
 matched to its manual, motor leads are isolated, the hardwired emergency stop
 is verified, and the operator checklist in
 `simulation/aisha_isaac_sim/PHYSICAL_LOCALIZATION_COMMISSIONING.md` is complete.
+First complete the passive identity checklist in
+`simulation/aisha_isaac_sim/PHASE8B_HARDWARE_ATTACHMENT.md`.
 The 16384-count and 0.100 m values are replay/design candidates, not calibrated
 physical odometry.

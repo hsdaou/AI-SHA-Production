@@ -1,0 +1,55 @@
+schema_version: 1
+phase: "8B-H"
+date: "2026-08-24"
+status: passive_audit_complete_physical_attachment_blocked
+objective: >-
+  Identify the exact received ZLAC8015D hardware/manual pair and a stable
+  USB-RS485 device before any serial port is opened or any Modbus request is
+  transmitted.
+
+authorization_boundary:
+  filesystem_inventory: true
+  usb_metadata_inventory: true
+  supplier_archive_name_inventory: true
+  image_hashing: true
+  serial_port_open: false
+  modbus_read: false
+  modbus_write: false
+  motor_enable: false
+  wheel_motion: false
+  physical_release: false
+
+required_identity_evidence:
+  exact_received_driver_label: "ZLAC8015D V4.2"
+  driver_label_photo_required: true
+  driver_label_photo_must_show:
+    - complete_model_and_hardware_revision
+    - serial_number
+    - rated_input_voltage
+    - connector_side_context
+  matching_rs485_manual_required: true
+  manual_match_requires_operator_review: true
+  stable_usb_path_required: /dev/serial/by-id
+  usb_adapter_serial_identity_required: true
+  ttyUSB_index_paths_accepted: false
+
+known_local_evidence:
+  supplier_archive_basename: wetransfer_zllg80asm250-4096-v2-18-zip_2026-08-20_0753.zip
+  nested_driver_archive: ZLAC8015D V4.0.zip
+  v4_0_material_present: true
+  v4_2_specific_manual_present: false
+  received_driver_label_photo_present: false
+  usb_rs485_device_present: false
+
+runtime_boundary:
+  attachment_audit_opens_serial: false
+  attachment_audit_sends_modbus_frames: false
+  successful_identity_audit_authorizes_only: operator_review_before_read_only_probe
+  read_only_probe: simulation/aisha_isaac_sim/tools/probe_phase8b_rs485_read_only.py
+  motor_write_transport_available: false
+
+artifacts:
+  audit_tool: simulation/aisha_isaac_sim/tools/audit_phase8b_hardware_attachment.py
+  audit_report: simulation/aisha_isaac_sim/results/phase8b_hardware_attachment_inventory.json
+  operator_checklist: simulation/aisha_isaac_sim/PHASE8B_HARDWARE_ATTACHMENT.md
+  serial_loopback_test: src/aisha_rev_d_driver/test/test_serial_loopback.py

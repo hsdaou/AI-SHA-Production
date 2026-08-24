@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev X - 2026-08-24 - Phase 8B Rev D encoder adapter accepted offline**
+**Rev X - 2026-08-24 - Phase 8B passive hardware-attachment audit complete**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -91,9 +91,9 @@ tools/run_phase8a_physical_localization_preflight.sh
 ## Phase 8B Rev D differential encoder adapter
 
 The new `src/aisha_rev_d_driver` package passes 30/30 offline acceptance checks
-and 12/12 focused unit tests. It implements Rev D differential command math,
+and 13/13 focused unit tests. It implements Rev D differential command math,
 signed 32-bit encoder integration with rollover handling, and the verified
-ZLAC8015D V4 Series Modbus register layout. Supplier example frames for enable,
+supplied ZLAC8015D V4 Series Modbus register layout. Supplier example frames for enable,
 positive/negative target velocity and encoder reads reproduce byte-for-byte,
 including CRC.
 
@@ -107,6 +107,20 @@ target-velocity transport. Run the offline gate with:
 ```bash
 tools/run_phase8b_rev_d_adapter_preflight.sh
 ```
+
+The read-only transport also passes a Linux pseudo-terminal loopback: it sends
+exactly three function-`0x03` requests for the configured position/speed,
+status and fault ranges, then decodes signed position and speed values from the
+returned byte stream. This is serial-path evidence, not physical-driver
+evidence.
+
+The passive hardware-attachment audit opened no serial port and sent zero
+Modbus frames. It found only `ZLAC8015D V4.0.zip` in the supplied archive, no
+received-unit label photo, no exact V4.2 manual and no stable
+`/dev/serial/by-id` USB-RS485 device on this workstation. Follow
+`PHASE8B_HARDWARE_ATTACHMENT.md` and rerun the passive audit after those items
+are available. A passing audit authorizes only operator review before the
+separate guarded read-only probe.
 
 The expected driver label is V4.2 while the supplied communication document is
 for the V4 Series, so exact hardware/manual compatibility is not assumed. The

@@ -329,7 +329,7 @@ conflict.
 Phase 8B replaces the software-level mecanum gap with a dedicated Rev D
 differential package. Its deterministic replay, kinematics, int32 rollover,
 encoder word order, 0.1 RPM scale, Modbus CRC and fail-safe timeout pass 30/30
-offline checks plus 12/12 focused package tests:
+offline checks plus 13/13 focused package tests:
 
 ```bash
 tools/run_phase8b_rev_d_adapter_preflight.sh
@@ -339,9 +339,12 @@ The accepted transport boundary is deliberately narrow. Replay never opens a
 device; physical RS485 permits function `0x03` reads only and suppresses
 `/wheel/odom_raw` until encoder scale, loaded radius and both signs are verified.
 There is no motor-write transport, `/cmd_vel` subscriber or TF broadcaster.
-The V4 Series manual versus expected V4.2 label mismatch, read-only physical
-probe and 5 RPM wheels-lifted direction/count test remain open. No floor motion
-or physical route claim follows from this offline gate.
+A Linux pseudo-terminal loopback proves that the serial transport emits only
+the three expected function-`0x03` reads and decodes the replies. A separate
+passive attachment audit opened no serial port and found no received-unit label
+photo, exact V4.2 manual or stable USB-RS485 by-id device. The physical
+read-only probe and 5 RPM wheels-lifted direction/count test therefore remain
+open. No floor motion or physical route claim follows from these offline gates.
 
 ## 5. Architecture and claim boundary
 
