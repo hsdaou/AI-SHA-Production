@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+  TF-only Rev D localization model. Dimensions are design coordinates from
+  simulation/aisha_isaac_sim/config/aisha_drive.yaml, not as-built measurements.
+  It intentionally contains no transmission, ros2_control, or drive plugin.
+-->
+<robot name="aisha_rev_d_localization">
+  <link name="base_link"/>
+
+  <link name="lidar_link"/>
+  <joint name="crown_lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0.500 0.000 1.170" rpy="0 0 0"/>
+  </joint>
+
+  <link name="front_lidar_link"/>
+  <joint name="front_lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_lidar_link"/>
+    <origin xyz="0.455 0.000 0.250" rpy="0 0 0"/>
+  </joint>
+
+  <link name="imu_link"/>
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="-0.120 0.120 0.230" rpy="0 0 0"/>
+  </joint>
+</robot>

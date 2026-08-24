@@ -1,0 +1,29 @@
+# Rev D physical-localization preflight. This file deliberately contains no
+# planner, controller, behavior, velocity smoother, or cmd_vel configuration.
+# The current administration map is a stationary localization candidate only.
+
+amcl:
+  ros__parameters:
+    use_sim_time: false
+    base_frame_id: base_link
+    odom_frame_id: odom
+    global_frame_id: map
+    scan_topic: /scan
+    robot_model_type: nav2_amcl::DifferentialMotionModel
+    laser_model_type: likelihood_field
+    laser_min_range: 0.12
+    laser_max_range: 10.0
+    max_beams: 60
+    min_particles: 500
+    max_particles: 2000
+    update_min_d: 0.05
+    update_min_a: 0.05
+    transform_tolerance: 0.30
+    tf_broadcast: true
+    save_pose_rate: 0.5
+    set_initial_pose: false
+
+map_server:
+  ros__parameters:
+    use_sim_time: false
+    yaml_filename: ""

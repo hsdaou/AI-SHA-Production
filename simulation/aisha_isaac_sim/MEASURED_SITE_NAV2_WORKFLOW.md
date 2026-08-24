@@ -302,6 +302,27 @@ shot QA sheet and runs the hash-linked presentation gate. The output is
 artifact passes 19/19 checks and has SHA-256
 `6fcc87d6faa91fe45ef8795e8a32e083f68af66f594763351eaaf39e150780e8`.
 
+### Phase 8A stationary physical-localization preflight
+
+Phase 8A is a fail-safe boundary between accepted simulation and physical
+commissioning. Its offline 23/23 gate validates the Rev D differential AMCL/EKF
+contracts, real-time configuration, map hashes, TF ownership, sensor frames,
+production footprint padding and zero-motion launch graph. The accompanying
+runtime observer subscribes to the live sensor/odometry graph but has no ROS
+publisher and explicitly verifies that `/cmd_vel` has no publisher.
+
+```bash
+tools/run_phase8a_physical_localization_preflight.sh
+```
+
+The current workstation probe is expectedly blocked at 1/14 because no physical
+robot graph is present. On the robot, use the drive-isolated procedure in
+`PHYSICAL_LOCALIZATION_COMMISSIONING.md`. Passing it authorizes only a later,
+separate wheels-lifted encoder-direction test—not floor motion. Physical route
+planning remains blocked by the non-as-built map, missing Rev D differential
+encoder adapter, unresolved Jazzy/Humble production baseline, uncommissioned
+protective stop, and the 0.85 m versus 0.92 m doorway-release conflict.
+
 ## 5. Architecture and claim boundary
 
 Two authentic controller paths are now verified:

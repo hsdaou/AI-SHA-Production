@@ -1,0 +1,172 @@
+schema_version: 1
+phase: "8A"
+date: "2026-08-24"
+status: offline_preflight_prepared_runtime_blocked
+objective: >-
+  Establish a fail-safe, stationary real-sensor localization preflight for the
+  Rev D differential-drive AI-SHA without publishing motion commands or claiming
+  that the presentation map is an as-built navigation map.
+
+authorization_boundary:
+  stationary_sensor_and_tf_observation: true
+  motor_power_authorized: false
+  wheel_motion_authorized: false
+  cmd_vel_publication_authorized: false
+  autonomous_navigation_authorized: false
+  doorway_traversal_authorized: false
+  occupied_building_operation_authorized: false
+  physical_release: false
+
+robot_contract:
+  revision: "D"
+  architecture: differential_drive
+  wheel_radius_design_m: 0.100
+  wheel_track_design_m: 0.720
+  physical_width_design_m: 0.768
+  physical_length_design_m: 1.180
+  raw_footprint_xy_m:
+    - [-0.455, -0.384]
+    - [0.725, -0.384]
+    - [0.725, 0.384]
+    - [-0.455, 0.384]
+  physical_nav2_padding_per_side_m: 0.080
+  padded_transit_width_m: 0.928
+  reverse_enabled: false
+  source: config/aisha_drive.yaml
+
+localization_contract:
+  use_sim_time: false
+  map_frame: map
+  odom_frame: odom
+  base_frame: base_link
+  crown_lidar_frame: lidar_link
+  imu_frame: imu_link
+  crown_scan_topic: /scan
+  raw_wheel_odometry_topic: /wheel/odom_raw
+  filtered_odometry_topic: /odometry/filtered
+  imu_topic: /imu/data
+  amcl_motion_model: nav2_amcl::DifferentialMotionModel
+  map_to_odom_owner: amcl
+  odom_to_base_owner: robot_localization_ekf
+  sensor_tf_owner: robot_state_publisher
+  duplicate_tf_publishers_allowed: false
+  dummy_odometry_allowed: false
+  laser_only_odometry_allowed_for_release: false
+
+ros_distribution_boundary:
+  simulation_workstation_baseline: jazzy
+  existing_pi_jetson_launch_contract: humble
+  target_physical_distribution: unresolved
+  cross_distribution_nav2_operation_authorized: false
+  resolution: >-
+    Freeze one supported ROS 2 distribution across the Pi, Jetson and operator
+    workstation before the stationary distributed graph test. Rebuild and test
+    every Phase 8A package on that baseline; do not mix Humble and Jazzy Nav2.
+
+sensor_contract:
+  crown_lidar:
+    model: LDLiDAR LD19
+    expected_rate_hz: 10.0
+    minimum_observed_rate_hz: 8.0
+    frame: lidar_link
+    scan_height_m: 1.170
+  imu:
+    model: Bosch BNO055
+    expected_rate_hz: 50.0
+    minimum_observed_rate_hz: 40.0
+    frame: imu_link
+    relative_heading_in_ekf: true
+  wheel_odometry:
+    minimum_observed_rate_hz: 20.0
+    frame: odom
+    child_frame: base_link
+    maximum_stationary_linear_speed_mps: 0.02
+    maximum_stationary_angular_speed_rad_s: 0.05
+    required_source: rev_d_differential_encoder_adapter
+
+map_candidate:
+  yaml: maps/administration_measured_presentation_1cm/administration_measured_presentation_1cm.yaml
+  image: maps/administration_measured_presentation_1cm/administration_measured_presentation_1cm.pgm
+  yaml_sha256: eddc6eee4badcd984c35e877f6e6abb8c707eeafa681cc564f7b21473e43640a
+  image_sha256: cc71dc27d1843c7bde0669b1d571ded2bd9c9ffda43ae024de9753afe7daceca
+  status: presentation_candidate_not_as_built
+  accepted_for_stationary_localization_observation: true
+  accepted_for_motion_planning: false
+  physical_clearance_authority: false
+
+doorway_release_conflict:
+  reported_narrowest_clear_width_m: 0.850
+  rev_d_physical_minimum_demo_width_m: 0.920
+  production_padded_transit_width_m: 0.928
+  padded_width_excess_over_reported_door_m: 0.078
+  physical_passage_authorized: false
+  resolution: >-
+    Measure the actual clear opening and threshold, select a wider physical
+    route, or change the physical envelope and repeat the complete safety and
+    navigation validation. The simulation-only 0.030 m padding exception must
+    not be transferred to the physical robot.
+
+stationary_runtime_gate:
+  observation_duration_s: 20.0
+  required_topics:
+    /scan: sensor_msgs/msg/LaserScan
+    /imu/data: sensor_msgs/msg/Imu
+    /wheel/odom_raw: nav_msgs/msg/Odometry
+    /odometry/filtered: nav_msgs/msg/Odometry
+  required_transforms:
+    - [map, odom]
+    - [odom, base_link]
+    - [base_link, lidar_link]
+    - [base_link, imu_link]
+  initial_pose_required: true
+  motors_physically_isolated_required: true
+  wheels_chocked_required: true
+  emergency_stop_verified_required: true
+  operator_and_independent_spotter_required: true
+
+commissioning_sequence:
+  - id: phase8a_offline_contract
+    status: prepared
+    motion_allowed: false
+  - id: phase8a_dependency_install
+    status: pending
+    motion_allowed: false
+  - id: phase8a_stationary_sensor_tf
+    status: pending_physical_robot
+    motion_allowed: false
+  - id: phase8b_wheels_lifted_direction_encoder
+    status: blocked
+    motion_allowed: false
+  - id: phase8c_tethered_open_area_0_10_mps
+    status: blocked
+    motion_allowed: false
+  - id: phase8d_closed_route_localization_repeatability
+    status: blocked
+    motion_allowed: false
+  - id: phase8e_measured_stopping_and_protective_fields
+    status: blocked
+    motion_allowed: false
+
+hard_blockers:
+  - id: ros_dependencies_missing_on_current_workstation
+    detail: nav2_amcl, nav2_map_server, nav2_lifecycle_manager and robot_localization are not installed
+  - id: rev_d_differential_encoder_adapter_missing
+    detail: existing production mecanum_driver uses four-wheel mecanum kinematics and cannot command or estimate the Rev D two-wheel differential drive
+  - id: encoder_scale_not_calibrated
+    detail: confirm delivered wheel loaded rolling circumference and whether the driver count is 4096 or 16384 per revolution
+  - id: map_not_as_built
+    detail: current occupancy map is plan/capture-informed presentation geometry and is not physical-clearance authority
+  - id: physical_door_width_conflict
+    detail: reported 0.85 m opening is below the Rev D 0.92 m physical minimum and below the 0.928 m production padded width
+  - id: protective_stop_not_commissioned
+    detail: all-direction sensing, hardwired emergency stop, bumpers and measured stopping distance remain unverified
+  - id: ros_distribution_contract_unresolved
+    detail: simulation is pinned to Jazzy while existing Pi/Jetson production launch documentation requires Humble; cross-distro Nav2 is prohibited
+
+artifacts:
+  amcl_config: src/robot_bringup/config/amcl_rev_d_preflight.yaml
+  ekf_config: src/robot_bringup/config/ekf_rev_d.yaml
+  localization_urdf: src/robot_description/urdf/aisha_rev_d_localization.urdf
+  launch: src/robot_bringup/launch/phase8a_localization_preflight.launch.py
+  stationary_probe: simulation/aisha_isaac_sim/tools/probe_phase8a_stationary_localization.py
+  offline_validation: results/phase8a_physical_localization_preflight.json
