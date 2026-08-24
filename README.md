@@ -90,6 +90,9 @@ The [simulation package](simulation/README.md) contains the separate Rev D
 differential-drive Isaac Sim 5.1 model, deterministic validation evidence, and a
 route-scoped Administration presentation proxy. Phase 3N freezes the successful
 office pivot/clearance controller and adds an accepted simulation-only,
-360-degree brake layer for moving-obstacle encounters. The source A1 page-2 plan
+360-degree brake layer for moving-obstacle encounters. Phase 7C additionally
+proves native Nav2 costmap marking and learned-safety-coupled spatial detouring
+in an isolated two-route Isaac loop, without claiming an alternate route in the
+single-path administration hallway. The source A1 page-2 plan
 is not redistributed in this repository, so all assumed door/threshold values
 remain explicitly labelled and are not a physical-route or safety release.

@@ -101,12 +101,16 @@ PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK = (
     "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7B-"
     "BlockedRoute-Replanning-Safety-Direct-v0"
 )
+PHASE7C_NATIVE_COSTMAP_DETOUR_TASK = (
+    "Isaac-AISHA-Phase7C-NativeCostmap-Detour-Safety-Direct-v0"
+)
 PHASE3N_COMPATIBLE_TASKS = {
     PHASE3N_PRESENTATION_TASK,
     PHASE3N_MEASURED_NAV2_TASK,
     PHASE6_MEASURED_NAV2_TASK,
     PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
     PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
+    PHASE7C_NATIVE_COSTMAP_DETOUR_TASK,
 }
 ACCEPTED_PHASE3N_CHECKPOINT = "aisha_phase3n_dynamic_safety_model_50.pt"
 ACCEPTED_PHASE3N_SHA256 = (
@@ -212,6 +216,12 @@ class AishaSimulationBridge:
             self._blockage_release_callback,
             10,
         )
+        self.blockage_activation_subscription = self.node.create_subscription(
+            Bool,
+            "/aisha/activate_blocked_route",
+            self._blockage_activation_callback,
+            10,
+        )
         self.command_linear_mps = 0.0
         self.command_angular_rad_s = 0.0
         self.command_received_at_s = -math.inf
@@ -261,6 +271,7 @@ class AishaSimulationBridge:
         self.invalid_route_segment_messages = 0
         self.blockage_active = False
         self.blockage_release_requests = 0
+        self.blockage_activation_requests = 0
         self.maximum_requested_linear_mps_by_segment: dict[int, float] = {}
         self.maximum_guarded_linear_mps_by_segment: dict[int, float] = {}
         self.maximum_observed_linear_mps_by_segment: dict[int, float] = {}
@@ -292,6 +303,13 @@ class AishaSimulationBridge:
         self.blockage_release_requests += 1
         if hasattr(self.raw_env, "release_temporary_blockage"):
             self.raw_env.release_temporary_blockage()
+
+    def _blockage_activation_callback(self, message) -> None:
+        if not bool(message.data):
+            return
+        self.blockage_activation_requests += 1
+        if hasattr(self.raw_env, "activate_temporary_blockage"):
+            self.raw_env.activate_temporary_blockage()
 
     def publish_static_transforms(self, sensor_positions: dict[str, list[float]]) -> None:
         from geometry_msgs.msg import TransformStamped
@@ -705,9 +723,10 @@ def main() -> int:
             and checkpoint_sha256 == ACCEPTED_PHASE6_SHA256
         ):
             accepted_checkpoint_profile = "phase6_high_speed_080"
-        if task in PHASE6_NAV2_TASKS and accepted_checkpoint_profile != (
-            "phase6_high_speed_080"
-        ):
+        if (
+            task in PHASE6_NAV2_TASKS
+            or task == PHASE7C_NATIVE_COSTMAP_DETOUR_TASK
+        ) and accepted_checkpoint_profile != "phase6_high_speed_080":
             raise ValueError(
                 "Phase 6 measured Nav2 task requires the accepted Phase 6 checkpoint"
             )
@@ -831,9 +850,14 @@ def main() -> int:
         ]
         for name in ("crown_lidar", "front_lidar", "imu")
     }
-    phase6_high_speed_replay = task in PHASE6_NAV2_TASKS
+    phase6_high_speed_replay = (
+        task in PHASE6_NAV2_TASKS
+        or task == PHASE7C_NATIVE_COSTMAP_DETOUR_TASK
+    )
     dynamic_crossing_replay = task == PHASE7_MEASURED_NAV2_DYNAMIC_TASK
     blocked_route_replay = task == PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK
+    native_detour_replay = task == PHASE7C_NATIVE_COSTMAP_DETOUR_TASK
+    blockage_replay = blocked_route_replay or native_detour_replay
     if phase6_high_speed_replay and mapped_guard is not None:
         # The furnished wheel contacts need the same proven 0.42 rad/s
         # breakaway command used by the office pivots. Translation remains
@@ -857,17 +881,18 @@ def main() -> int:
         bridge.front_stop_trigger_m = 0.90
         bridge.front_stop_release_m = 1.10
         bridge.ring_stop_release_clearance_m = 0.35
-    if blocked_route_replay:
-        # The measured global map is roughly six million 1 cm cells. Match the
-        # temporary-blockage sensors to its 2 Hz update rate so the executor's
-        # TF filter consumes current samples rather than accumulating a stale
-        # high-rate scan queue while recomputing the full global costmap.
+    if blockage_replay:
+        # Match temporary-blockage sensing to a conservative 2 Hz processing
+        # rate so the executor's TF filter consumes current samples rather than
+        # accumulating a stale high-rate queue. This is required by the large
+        # administration map and retained for the compact reproducibility gate.
         bridge.crown_scan_period_s = 0.50
         bridge.front_scan_period_s = 0.50
-        bridge.publish_phase7b_front_points = True
         bridge.publish_blockage_state = True
-        bridge.messages["phase7b_front_points"] = 0
         bridge.messages["blocked_route_active"] = 0
+    if blocked_route_replay:
+        bridge.publish_phase7b_front_points = True
+        bridge.messages["phase7b_front_points"] = 0
     steps_completed = 0
     reset_detected = False
     safety_authority_steps = 0
@@ -1072,7 +1097,7 @@ def main() -> int:
                                 ),
                             }
                         )
-            if blocked_route_replay and hasattr(raw_env, "blockage_state"):
+            if blockage_replay and hasattr(raw_env, "blockage_state"):
                 state = raw_env.blockage_state()
                 triggered = bool(state["triggered"][0].item())
                 active = bool(state["active"][0].item())
@@ -1113,7 +1138,7 @@ def main() -> int:
             bridge.simulation_time_s += control_period_s
             bridge.publish(steps_completed)
             steps_completed += 1
-            if blocked_route_replay:
+            if blockage_replay:
                 # Nav2 consumes the LiDAR through timestamped TF filters.  Keep
                 # the Phase 7B bridge at or below wall-clock rate so a fast
                 # workstation cannot advance /clock beyond the transform cache
@@ -1170,8 +1195,11 @@ def main() -> int:
                     "/aisha/route_segment_id",
                 ]
                 + (
-                    ["/aisha/clear_blocked_route"]
-                    if blocked_route_replay
+                    [
+                        "/aisha/activate_blocked_route",
+                        "/aisha/clear_blocked_route",
+                    ]
+                    if blockage_replay
                     else []
                 ),
                 "published": [
@@ -1183,11 +1211,13 @@ def main() -> int:
                     "/front_scan",
                 ]
                 + (
-                    [
-                        "/aisha/blocked_route_active",
-                        "/aisha/phase7b/front_points",
-                    ]
-                    if blocked_route_replay
+                    ["/aisha/blocked_route_active"]
+                    + (
+                        ["/aisha/phase7b/front_points"]
+                        if blocked_route_replay
+                        else []
+                    )
+                    if blockage_replay
                     else []
                 ),
                 "message_counts": bridge.messages,
@@ -1246,6 +1276,9 @@ def main() -> int:
                     bridge.invalid_route_segment_messages
                 ),
                 "blockage_release_requests": bridge.blockage_release_requests,
+                "blockage_activation_requests": (
+                    bridge.blockage_activation_requests
+                ),
             },
             "route_scoped_speed_evidence": {
                 "maximum_requested_linear_mps_by_segment": {
@@ -1328,7 +1361,7 @@ def main() -> int:
                 "deterministic_static_integration_gate": (
                     learned_safety_enabled
                     and not dynamic_crossing_replay
-                    and not blocked_route_replay
+                    and not blockage_replay
                 ),
             },
             "dynamic_obstacle": {
@@ -1387,44 +1420,50 @@ def main() -> int:
                 "trace": dynamic_trace,
             },
             "blocked_route": {
-                "enabled": blocked_route_replay,
+                "enabled": blockage_replay,
                 "scenario": (
-                    "temporary_full_width_single_path_hallway_blockage"
+                    "temporary_top_branch_blockage_with_bottom_branch_detour"
+                    if native_detour_replay
+                    else "temporary_full_width_single_path_hallway_blockage"
                     if blocked_route_replay
                     else None
                 ),
                 "planner_observation_source": (
-                    "registered_front_lidar_supervisory_path_validator"
+                    "native_nav2_obstacle_layer_from_live_isaac_laserscan"
+                    if native_detour_replay
+                    else "registered_front_lidar_supervisory_path_validator"
                     if blocked_route_replay
                     else None
                 ),
-                "simulation_time_paced_to_wall_clock": blocked_route_replay,
+                "simulation_time_paced_to_wall_clock": blockage_replay,
                 "sensor_publish_rate_hz": (
                     {
                         "crown_lidar": round(1.0 / bridge.crown_scan_period_s, 3),
                         "front_lidar": round(1.0 / bridge.front_scan_period_s, 3),
                     }
-                    if blocked_route_replay
+                    if blockage_replay
                     else None
                 ),
                 "registered_pointcloud_topic": (
                     "/aisha/phase7b/front_points" if blocked_route_replay else None
                 ),
                 "blocker_state_exposed_to_policy": False,
-                "coordination_state_exposed_to_mission_only": blocked_route_replay,
+                "coordination_state_exposed_to_mission_only": blockage_replay,
                 "route_topology": (
-                    "single_path_safe_wait_required_no_detour_available"
+                    "two_route_loop_spatial_detour_available"
+                    if native_detour_replay
+                    else "single_path_safe_wait_required_no_detour_available"
                     if blocked_route_replay
                     else None
                 ),
                 "blockage_segment_id": (
                     int(cfg.temporary_blockage_segment_id)
-                    if blocked_route_replay
+                    if blockage_replay
                     else None
                 ),
                 "blockage_size_xyz_m": (
                     list(cfg.temporary_blockage_size_xyz_m)
-                    if blocked_route_replay
+                    if blockage_replay
                     else None
                 ),
                 "blockage_position_xy_m": blockage_position_xy_m,
