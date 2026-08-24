@@ -2,8 +2,8 @@
 # This file describes a real physics-driven learning task. It is not a claim of
 # physical release or successful sim-to-real transfer.
 
-revision: "TRAINING-MEASURED-ADMIN-O"
-date: "2026-08-23"
+revision: "TRAINING-PHASE7F-OPERATOR-P"
+date: "2026-08-24"
 
 software_baseline:
   isaac_sim_version: "5.1.0-rc.19+release.26219.9c81211b.gl"
@@ -1063,8 +1063,11 @@ release:
   phase7e_full_12_leg_native_costmap_mission_passed: true
   phase7e_gate_checks_passed: "40/40"
   phase7e_unchanged_footprint_and_padding: true
+  phase7f_operator_omniverse_presentation_available: true
+  phase7f_operator_omniverse_presentation_validated: true
+  phase7f_operator_presentation_checks_passed: "19/19"
   nav2_integrated_in_simulation: true
   nav2_ground_truth_localization_only: true
   nav2_integrated: true
   physical_robot_release: false
-  required_next_gate: "Produce and validate the operator-facing Omniverse/Nav2 presentation capture from the accepted Phase 7E full-office stack; physical deployment separately requires threshold and destination-specific clearance verification, real localisation validation, sim-to-real testing, all-direction protective sensing, stopping-distance validation and hardware safety commissioning"
+  required_next_gate: "Begin physical localization and sim-to-real commissioning; validate thresholds and destination-specific clearances, real localization, all-direction protective sensing, stopping distance and hardware safety before any physical release"

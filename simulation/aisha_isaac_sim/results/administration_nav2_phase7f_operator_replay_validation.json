@@ -1,0 +1,148 @@
+{
+  "atrium_column_clearance": {
+    "column_radius_m": 0.19,
+    "columns": [
+      {
+        "closest_trace_segment_index": 4924,
+        "column_index": 0,
+        "minimum_surface_clearance_m": 5.750797,
+        "minimum_trace_centre_distance_m": 6.644754,
+        "passed": true,
+        "position_xy_m": [
+          -3.25,
+          -2.55
+        ]
+      },
+      {
+        "closest_trace_segment_index": 0,
+        "column_index": 1,
+        "minimum_surface_clearance_m": 6.261226,
+        "minimum_trace_centre_distance_m": 7.155183,
+        "passed": true,
+        "position_xy_m": [
+          -3.25,
+          2.55
+        ]
+      },
+      {
+        "closest_trace_segment_index": 4883,
+        "column_index": 2,
+        "minimum_surface_clearance_m": 1.491833,
+        "minimum_trace_centre_distance_m": 2.38579,
+        "passed": true,
+        "position_xy_m": [
+          1.25,
+          -4.2
+        ]
+      },
+      {
+        "closest_trace_segment_index": 0,
+        "column_index": 3,
+        "minimum_surface_clearance_m": 1.701853,
+        "minimum_trace_centre_distance_m": 2.595811,
+        "passed": true,
+        "position_xy_m": [
+          2.95,
+          2.55
+        ]
+      }
+    ],
+    "conservative_robot_radius_m": 0.703957,
+    "method": "minimum 2D distance to every interpolated learned-trace segment",
+    "required_trace_centre_distance_m": 0.95,
+    "robot_envelope_length_m": 1.18,
+    "robot_envelope_width_m": 0.768
+  },
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt",
+  "checkpoint_sha256": "e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318",
+  "checks": {
+    "all_atrium_columns_clear_conservative_robot_sweep": true,
+    "both_door_width_gates_pass": true,
+    "both_thresholds_assumed_flush": true,
+    "checkpoint_exists": true,
+    "physical_release_remains_false": true,
+    "policy_only_trace_has_no_supervisor_or_dwell": true,
+    "render_shots_cover_each_segment_once": true,
+    "scene_build_passed": true,
+    "scene_build_records_current_column_layout": true,
+    "scene_built_from_current_presentation_config": true,
+    "scene_file_exists": true,
+    "scene_presentation_ready": true,
+    "scene_reopened_during_build": true,
+    "trajectory_completed_steps_positive": true,
+    "trajectory_control_step_sum_matches": true,
+    "trajectory_has_expected_segments": true,
+    "trajectory_has_only_disclosed_control_modes": true,
+    "trajectory_outcome_success": true,
+    "trajectory_trace_nonempty": true,
+    "trajectory_trace_poses_finite": true,
+    "trajectory_trace_steps_monotonic": true,
+    "trajectory_trace_time_monotonic": true,
+    "trajectory_waypoints_completed": true
+  },
+  "motion_contract": "renderer selects recorded wheel-physics pose samples; it does not generate a second route",
+  "passed": true,
+  "render_shot_segments": [
+    [
+      0
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      3,
+      4
+    ],
+    [
+      5,
+      6
+    ],
+    [
+      7,
+      8,
+      9
+    ],
+    [
+      10,
+      11
+    ]
+  ],
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+  "scene_build_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_build_report.json",
+  "scene_build_report_sha256": "f74a849d9f10f2f0b3ccea998d712f09eae804c3d92ddbbe8b4787ebabd1f490",
+  "scene_sha256": "40414d9841e384afb06394382a2688f540aeb61395644070d1781175a7cad011",
+  "status": "passed",
+  "timestamp_utc": "2026-08-24T10:09:27.161694+00:00",
+  "trajectory": {
+    "completed_steps": 15061,
+    "control_mode_records": {
+      "nav2_phase6_and_phase3n_learned_safety_with_static_fused_native_costmap": 5020
+    },
+    "control_steps": {
+      "nav2_phase6_and_phase3n_learned_safety_with_static_fused_native_costmap": 15061
+    },
+    "duration_s": 501.966667,
+    "pose_trace_records": 5020,
+    "route_control": "nav2_phase6_and_phase3n_learned_safety_with_static_fused_native_costmap",
+    "seed": 6084,
+    "segment_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "waypoints_completed": 12
+  },
+  "trajectory_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7e_static_fusion_mission.json",
+  "trajectory_report_sha256": "6463b80bfc1015063c5805c555f43d5986fe3f0c0517848735d093d92c759bf5",
+  "visual_claim_boundary": "walkthrough-matched presentation environment; visual replay is not live policy execution"
+}

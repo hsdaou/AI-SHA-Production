@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev T - 2026-08-24 - Phase 7D administration native-costmap safe wait accepted**
+**Rev V - 2026-08-24 - Phase 7F operator Omniverse capture accepted**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -13,22 +13,23 @@ safety certification. The unresolved hold points are listed below and in
 
 ## Latest presentation deliverable
 
-The latest accepted deliverable is the live ROS 2/Nav2 mission in Isaac Sim,
-with the accepted Phase 6 brake policy on straight high-speed legs 1 and 5 and
-the accepted Phase 3N policy on every other leg. The unchanged Rev D robot
-completed all 12 Principal/Vice-Principal legs, both office pivots and the
-return home. The paired integration gate passes 28/28 without a collision or
-episode reset. Minimum observed peak speed across the two high-speed legs was
-0.74339 m/s from a 0.80 m/s request. Doorway speed remained at or below
-0.05953 m/s, maximum doorway tangent offset was 0.01536 m, and the mapped
-central-drop footprint clearance remained 0.27959 m.
+The current source is the accepted live Phase 7E ROS 2/Nav2 mission in Isaac
+Sim. The native Nav2 costmap uses the static map for known architecture, raw
+LiDAR rays for clearing and mapped-free filtered LiDAR endpoints for dynamic
+marking. The unchanged Rev D robot and unchanged 0.030 m footprint padding
+completed all 12 Principal/Vice-Principal legs, both office pivots, both office
+departures and the return home. The live integration gate passes 40/40 without
+a collision or episode reset. High-speed legs reached 0.74572 and 0.74342 m/s
+from a 0.80 m/s request; doorway speed remained below 0.060 m/s.
 
-For clear presentation, the accepted live mission records a downsampled
-wheel-physics pose trace. Omniverse replays only those recorded poses in the
-PathTracing administration scene; it does not invent or interpolate a second
-route. The wider six-shot camera keeps the environment legible instead of
-filling the frame with the robot. This cinematic replay is distinct from the
-live-policy evidence and is labelled accordingly.
+Phase 7F turns that accepted motion into the operator-facing film. Omniverse
+selects only recorded wheel-physics pose samples from the successful Phase 7E
+run; it does not interpolate or invent a second route. Eight fixed,
+human-height 11.5-16 mm cameras separately show the atrium departure, high-speed
+east hall, Vice-Principal entry and departure, return hall, Principal approach,
+Principal visit/departure and home return. The environment remains legible and
+AI-SHA does not occupy most of the frame. Every frame says that this is a
+visual replay of live source motion, not a second live-policy execution.
 
 Site facts and assumptions remain visible in both the video and reports:
 
@@ -44,14 +45,20 @@ Site facts and assumptions remain visible in both the video and reports:
   digital twin or a physical-deployment release.
 
 Presentation video:
-`media/videos/AI-SHA_Phase6_Nav2_LearnedSafety_RTX_Presentation.mp4` — 12.0 s,
-1280 x 720 at 20 fps, RTX PathTracing at 8 spp, SHA-256
-`34da79912934b1454a6f6a6b3592c172eadb7d089d6fdec3dda785b6d17c5d07`.
-`results/administration_nav2_phase6_rtx_presentation_acceptance.json` passes
-14/14; the source live-integration report
-`results/administration_nav2_phase6_high_speed_integration_gate.json` passes
-28/28. The Phase 6 checkpoint remains hash locked to
-`e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318`.
+`media/videos/AI-SHA_Phase7F_Operator_Omniverse_Presentation.mp4` — 24.0 s,
+1920 x 1080 at 24 fps, RTX PathTracing at 16 samples per pixel, SHA-256
+`6fcc87d6faa91fe45ef8795e8a32e083f68af66f594763351eaaf39e150780e8`.
+The presentation gate passes 19/19 and the visual QA contact sheet is
+`media/AI-SHA_Phase7F_Operator_Omniverse_contact_sheet.jpg`. The acceptance record is
+`results/administration_nav2_phase7f_operator_presentation_acceptance.json`;
+the source live-integration record is
+`results/administration_nav2_phase7e_static_fusion_integration_gate.json`.
+Reproduce the complete replay, encode, contact-sheet and acceptance pipeline
+with:
+
+```bash
+tools/run_administration_nav2_phase7f_operator_presentation.sh
+```
 
 ## Latest dynamic-autonomy gate
 

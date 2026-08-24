@@ -259,6 +259,49 @@ detour exists, or that persistent blockage, physical localization, stopping
 distance or deployment safety is proven. The exact boundary is recorded in
 `config/phase7b_blocked_route.yaml`.
 
+### Phase 7C-7E native costmap and full-office fusion
+
+Phase 7C first proves native live-LiDAR marking, spatial replanning and
+learned-safety-coupled detour execution in an isolated two-route Isaac loop.
+Phase 7D then applies the corrected per-source obstacle heights and valid
+no-return clearing to the administration. Because the actual administration
+east hall has no approved alternate route, the 36.46 m map-connected detour is
+correctly rejected by the mission route envelope and AI-SHA waits for a fresh
+direct path after the obstruction is removed.
+
+Phase 7E resolves duplicate inflation at the exact 0.85 m jamb: the static map
+retains authority for known structure, raw scans clear, and only mapped-free
+filtered endpoints dynamically mark. Reproduce the complete retained mission:
+
+```bash
+tools/run_administration_nav2_phase7e_static_fusion_integration.sh
+```
+
+The resulting live gate passes 40/40. It marks the temporary barrier at 33/33
+sample points, rejects the unauthorized plan, holds below 0.000125 m/s, clears
+to 0/33 after removal, computes a fresh 12.7877 m path and completes all 12
+office legs. The original robot footprint, 0.030 m padding, office pivots,
+doorway limits and 0.80 m/s hallway tier remain unchanged.
+
+### Phase 7F operator-facing Omniverse capture
+
+The final presentation renderer selects recorded poses from that accepted live
+Phase 7E mission and replays them in the PathTracing administration scene. It
+does not interpolate a cinematic route or claim that replay is live execution.
+Eight 11.5-16 mm human-height cameras cover the 12 legs exactly once while showing
+both office visits and departures without close follow-camera framing.
+
+```bash
+tools/run_administration_nav2_phase7f_operator_presentation.sh
+```
+
+The command validates the trajectory evidence chain, renders 576 Full HD
+frames at 16 samples per pixel, encodes the 24 s film, builds a two-frame-per-
+shot QA sheet and runs the hash-linked presentation gate. The output is
+`media/videos/AI-SHA_Phase7F_Operator_Omniverse_Presentation.mp4`. The accepted
+artifact passes 19/19 checks and has SHA-256
+`6fcc87d6faa91fe45ef8795e8a32e083f68af66f594763351eaaf39e150780e8`.
+
 ## 5. Architecture and claim boundary
 
 Two authentic controller paths are now verified:
@@ -275,14 +318,16 @@ Nav2 and the frozen learned local navigator are not placed in series because
 they are both local motion authorities; doing that without a deliberate
 arbitration design would obscure which controller caused a command.
 
-This now closes the measured-presentation static, controlled-crossing and
-single-path temporary-blockage simulation gates. It does not close native Nav2
-dynamic-costmap marking, alternate-route, persistent-blockage or physical
-release gates. The supplied iPhone mesh sections and manual door dimensions
-inform the procedural scene, but native section-to-stage registration and an
-as-built survey are still incomplete. Physical work still requires measured
-clearance/threshold review, sim-to-real validation, a hardware emergency stop
-and supervised commissioning.
+This now closes the measured-presentation static, controlled-crossing,
+single-path temporary-blockage, isolated native-costmap detour, full-office
+static/live-scan fusion and operator-video simulation gates. It does not close
+crowd behavior, persistent blockage, physical localization, stopping distance,
+sim-to-real or physical release. The supplied iPhone mesh sections and manual
+door dimensions inform the procedural scene, but native section-to-stage
+registration and an as-built survey are still incomplete. Physical work still
+requires measured clearance/threshold review, all-direction protective
+sensing, localization validation, a hardware emergency stop and supervised
+commissioning.
 
 Check measured-site preparation at any time with:
 

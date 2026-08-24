@@ -1,0 +1,103 @@
+schema_version: 1
+phase: "PHASE7F-OPERATOR-OMNIVERSE-CAPTURE"
+status: render_profile_ready
+objective: >-
+  Produce a presentation-facing RTX PathTracing replay of the accepted Phase 7E
+  full-office Nav2 and learned-safety mission with legible human-height framing.
+
+source_evidence:
+  integration: results/administration_nav2_phase7e_static_fusion_integration_gate.json
+  mission: results/administration_nav2_phase7e_static_fusion_mission.json
+  bridge: results/administration_nav2_phase7e_static_fusion_bridge.json
+  phase7e_checks: "40/40"
+  mission_legs: 12
+
+render_contract:
+  renderer: PathTracing
+  path_tracing_spp: 16
+  resolution: [1920, 1080]
+  fps: 24
+  seconds_per_shot: 3.0
+  expected_shots: 8
+  expected_frames: 576
+  focal_length_max_mm: 18.0
+  camera_height_range_m: [1.70, 1.92]
+  camera_style: fixed_human_height_wide_environmental
+  robot_should_not_dominate_frame: true
+  replay_motion: recorded_pose_selection_without_route_interpolation
+
+shots:
+  - title: "Mission start - administration atrium"
+    operator_label: "NAV2 + LEARNED 360 SAFETY"
+    camera: [-4.35, 0.0, 1.76]
+    look_at: [2.30, 0.0, 0.70]
+    focal_length_mm: 16.0
+    segments: [0]
+  - title: "East hall - 0.80 m/s tier"
+    operator_label: "HIGH-SPEED HALLWAY POLICY"
+    camera: [6.0, 1.08, 1.78]
+    look_at: [15.0, -0.40, 0.70]
+    focal_length_mm: 16.0
+    segments: [1]
+    source_fraction: [0.62, 1.0]
+  - title: "Vice-Principal doorway - measured 0.85 m"
+    operator_label: "MAPPED DOORWAY SAFETY"
+    camera: [19.55, -7.55, 1.88]
+    look_at: [16.85, -5.30, 0.58]
+    focal_length_mm: 11.5
+    segments: [2, 3]
+  - title: "Vice-Principal visit and departure"
+    operator_label: "OFFICE PIVOT + CLEARANCE"
+    camera: [19.55, -7.55, 1.88]
+    look_at: [16.75, -6.15, 0.58]
+    focal_length_mm: 11.5
+    segments: [4]
+  - title: "Return hall - Principal suite turn"
+    operator_label: "NAV2 + STATIC/LIVE LIDAR FUSION"
+    camera: [3.0, 1.00, 1.86]
+    look_at: [9.0, -0.45, 0.68]
+    focal_length_mm: 16.0
+    segments: [5, 6]
+  - title: "Principal office approach"
+    operator_label: "MAPPED APPROACH CONTROL"
+    camera: [3.15, -4.20, 1.82]
+    look_at: [6.65, -7.30, 0.70]
+    focal_length_mm: 16.0
+    segments: [7]
+    source_fraction: [0.55, 1.0]
+  - title: "Principal visit, pivot and departure"
+    operator_label: "OFFICE PIVOT + CLEARANCE"
+    camera: [10.85, -9.78, 1.86]
+    look_at: [8.05, -8.65, 0.58]
+    focal_length_mm: 11.5
+    segments: [8, 9]
+  - title: "Mission complete - return home"
+    operator_label: "12/12 LEGS COMPLETE"
+    camera: [-4.35, 0.0, 1.76]
+    look_at: [2.50, -2.0, 0.70]
+    focal_length_mm: 16.0
+    segments: [10, 11]
+
+presentation_disclosures:
+  overlay: >-
+    Recorded live-policy wheel-physics poses replayed in Omniverse; visual
+    replay, not live policy execution.
+  environment: >-
+    Measured-presentation digital twin informed by the approved plan, iPhone
+    capture and walkthrough; not photogrammetric or as-built.
+  vice_principal_interior_assumed_because_locked: true
+  principal_door_width_presentation_assumption_m: 0.90
+  vice_principal_reported_door_width_m: 0.85
+  reported_door_height_m: 2.12
+  central_polygon_step_down_m: 0.20
+  physical_localization_credit: false
+  physical_safety_credit: false
+  physical_release: false
+
+outputs:
+  replay_validation: results/administration_nav2_phase7f_operator_replay_validation.json
+  render_report: results/administration_nav2_phase7f_operator_rtx_render_report.json
+  frames: outputs/phase7f_operator_rtx_frames
+  video: media/videos/AI-SHA_Phase7F_Operator_Omniverse_Presentation.mp4
+  contact_sheet: media/AI-SHA_Phase7F_Operator_Omniverse_contact_sheet.jpg
+  acceptance: results/administration_nav2_phase7f_operator_presentation_acceptance.json
