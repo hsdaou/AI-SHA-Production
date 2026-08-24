@@ -1,0 +1,59 @@
+phase: 7D
+status: accepted_administration_native_costmap_safe_wait_replanning
+accepted_at: "2026-08-24"
+
+scope:
+  scene: measured_presentation_administration
+  live_mission_legs: 2
+  blocked_segment_id: 1
+  full_12_leg_native_profile_accepted: false
+  phase7b_full_12_leg_retention: true
+
+runtime_profile:
+  file: config/nav2_administration_native_costmap_params.yaml
+  frozen_source_profile: config/nav2_sim_tight_door_params.yaml
+  isolated_changes:
+    crown_max_obstacle_height_m: 2.20
+    front_max_obstacle_height_m: 2.00
+    no_return_ray_clearing: true
+  accepted_drive_footprint_speed_and_reverse_contract_changed: false
+
+native_costmap_evidence:
+  sampled_corridor_cells: 33
+  before_lethal_or_inscribed_samples: 0
+  blocked_lethal_or_inscribed_samples: 33
+  cleared_lethal_or_inscribed_samples: 0
+  post_removal_global_costmap_clear_used: true
+
+planning_evidence:
+  clear_baseline_path_length_m: 12.7977
+  blocked_map_connected_candidate_length_m: 36.4601
+  blocked_candidate_authorized: false
+  authorization: approved_mission_east_hallway_route_envelope
+  fresh_path_length_m: 12.7977
+  fresh_path_authorized: true
+  executed: true
+
+safe_wait_evidence:
+  maximum_absolute_linear_velocity_mps: 0.0001910964638227597
+  displacement_m: 0.000000003259629011154175
+  maximum_observed_segment_1_speed_after_clearance_mps: 0.7455907464027405
+  minimum_360_clearance_m: 0.37798
+
+acceptance:
+  phase7d_checks: 32
+  phase7d_checks_passed: 32
+  phase6_retention: 28/28
+  phase7a_retention: 24/24
+  phase7b_retention: 26/26
+  phase7c_retention: 29/29
+  report: results/administration_nav2_phase7d_native_costmap_integration_gate.json
+
+claim_boundary:
+  native_nav2_dynamic_mark_and_clear: true
+  mission_authorized_safe_wait_and_fresh_plan: true
+  full_administration_native_costmap_mission: false
+  office_clutter_native_costmap_reconciliation_pending: true
+  physical_localization_credit: false
+  physical_safety_credit: false
+  physical_release: false

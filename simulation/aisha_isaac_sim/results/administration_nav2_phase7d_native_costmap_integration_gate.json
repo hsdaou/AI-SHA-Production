@@ -1,0 +1,496 @@
+{
+  "report_type": "administration_nav2_phase7d_native_costmap_integration_gate",
+  "generated_at_utc": "2026-08-24T08:01:06.877077+00:00",
+  "passed": true,
+  "status": "accepted_administration_native_costmap_safe_wait_replanning",
+  "checks": {
+    "phase6_static_baseline_retained": true,
+    "phase7a_crossing_baseline_retained": true,
+    "phase7b_safe_wait_baseline_retained": true,
+    "phase7c_native_detour_baseline_retained": true,
+    "bridge_passed": true,
+    "administration_native_costmap_task_selected": true,
+    "scoped_administration_mission_passed_both_legs": true,
+    "phase7d_control_stack_declared": true,
+    "episode_never_reset": true,
+    "mission_completion_reached_bridge": true,
+    "ground_truth_localization_boundary_retained": true,
+    "accepted_phase6_primary_loaded": true,
+    "accepted_phase3n_fallback_loaded": true,
+    "native_laserscan_observation_without_privileged_policy_state": true,
+    "mission_authorized_route_scope_disclosed": true,
+    "blockage_triggered_and_cleared_on_segment_1": true,
+    "clear_baseline_corridor_was_free": true,
+    "native_costmap_marked_full_width_barrier": true,
+    "native_costmap_cleared_after_physical_removal": true,
+    "clear_baseline_path_was_direct_and_authorized": true,
+    "native_costmap_detour_was_rejected_by_route_authorization": true,
+    "fresh_global_path_computed_after_clearance": true,
+    "safe_wait_held_robot_stationary": true,
+    "replanned_leg_executed_successfully": true,
+    "high_speed_resumed_after_fresh_plan": true,
+    "no_collision_with_blocker_or_static_scene": true,
+    "central_drop_clearance_retained": true,
+    "per_source_obstacle_height_fix_applied_to_both_costmaps": true,
+    "new_profile_retains_frozen_profile_behavior": true,
+    "both_live_scan_streams_exercised": true,
+    "reverse_remains_disabled": true,
+    "physical_release_remains_false": true
+  },
+  "checks_passed": 32,
+  "checks_total": 32,
+  "retention": {
+    "phase6": "28/28",
+    "phase7a": "24/24",
+    "phase7b": "26/26",
+    "phase7c": "29/29"
+  },
+  "native_costmap": {
+    "before": {
+      "available": true,
+      "topic_samples_received": 7,
+      "sample_x_m": 10.62,
+      "sample_count": 33,
+      "maximum_cost": 0,
+      "lethal_or_inscribed_samples": 0,
+      "nonzero_samples": 0,
+      "samples_y_cost": [
+        [
+          -0.8,
+          0
+        ],
+        [
+          -0.75,
+          0
+        ],
+        [
+          -0.7,
+          0
+        ],
+        [
+          -0.65,
+          0
+        ],
+        [
+          -0.6,
+          0
+        ],
+        [
+          -0.55,
+          0
+        ],
+        [
+          -0.5,
+          0
+        ],
+        [
+          -0.45,
+          0
+        ],
+        [
+          -0.4,
+          0
+        ],
+        [
+          -0.35,
+          0
+        ],
+        [
+          -0.3,
+          0
+        ],
+        [
+          -0.25,
+          0
+        ],
+        [
+          -0.2,
+          0
+        ],
+        [
+          -0.15,
+          0
+        ],
+        [
+          -0.1,
+          0
+        ],
+        [
+          -0.05,
+          0
+        ],
+        [
+          0.0,
+          0
+        ],
+        [
+          0.05,
+          0
+        ],
+        [
+          0.1,
+          0
+        ],
+        [
+          0.15,
+          0
+        ],
+        [
+          0.2,
+          0
+        ],
+        [
+          0.25,
+          0
+        ],
+        [
+          0.3,
+          0
+        ],
+        [
+          0.35,
+          0
+        ],
+        [
+          0.4,
+          0
+        ],
+        [
+          0.45,
+          0
+        ],
+        [
+          0.5,
+          0
+        ],
+        [
+          0.55,
+          0
+        ],
+        [
+          0.6,
+          0
+        ],
+        [
+          0.65,
+          0
+        ],
+        [
+          0.7,
+          0
+        ],
+        [
+          0.75,
+          0
+        ],
+        [
+          0.8,
+          0
+        ]
+      ]
+    },
+    "blocked": {
+      "available": true,
+      "topic_samples_received": 8,
+      "sample_x_m": 10.62,
+      "sample_count": 33,
+      "maximum_cost": 254,
+      "lethal_or_inscribed_samples": 33,
+      "nonzero_samples": 33,
+      "samples_y_cost": [
+        [
+          -0.8,
+          253
+        ],
+        [
+          -0.75,
+          253
+        ],
+        [
+          -0.7,
+          253
+        ],
+        [
+          -0.65,
+          253
+        ],
+        [
+          -0.6,
+          253
+        ],
+        [
+          -0.55,
+          254
+        ],
+        [
+          -0.5,
+          253
+        ],
+        [
+          -0.45,
+          254
+        ],
+        [
+          -0.4,
+          253
+        ],
+        [
+          -0.35,
+          254
+        ],
+        [
+          -0.3,
+          253
+        ],
+        [
+          -0.25,
+          254
+        ],
+        [
+          -0.2,
+          253
+        ],
+        [
+          -0.15,
+          254
+        ],
+        [
+          -0.1,
+          253
+        ],
+        [
+          -0.05,
+          253
+        ],
+        [
+          0.0,
+          253
+        ],
+        [
+          0.05,
+          253
+        ],
+        [
+          0.1,
+          253
+        ],
+        [
+          0.15,
+          253
+        ],
+        [
+          0.2,
+          253
+        ],
+        [
+          0.25,
+          253
+        ],
+        [
+          0.3,
+          253
+        ],
+        [
+          0.35,
+          253
+        ],
+        [
+          0.4,
+          253
+        ],
+        [
+          0.45,
+          253
+        ],
+        [
+          0.5,
+          253
+        ],
+        [
+          0.55,
+          253
+        ],
+        [
+          0.6,
+          253
+        ],
+        [
+          0.65,
+          253
+        ],
+        [
+          0.7,
+          253
+        ],
+        [
+          0.75,
+          253
+        ],
+        [
+          0.8,
+          253
+        ]
+      ]
+    },
+    "cleared": {
+      "available": true,
+      "topic_samples_received": 10,
+      "sample_x_m": 10.62,
+      "sample_count": 33,
+      "maximum_cost": 0,
+      "lethal_or_inscribed_samples": 0,
+      "nonzero_samples": 0,
+      "samples_y_cost": [
+        [
+          -0.8,
+          0
+        ],
+        [
+          -0.75,
+          0
+        ],
+        [
+          -0.7,
+          0
+        ],
+        [
+          -0.65,
+          0
+        ],
+        [
+          -0.6,
+          0
+        ],
+        [
+          -0.55,
+          0
+        ],
+        [
+          -0.5,
+          0
+        ],
+        [
+          -0.45,
+          0
+        ],
+        [
+          -0.4,
+          0
+        ],
+        [
+          -0.35,
+          0
+        ],
+        [
+          -0.3,
+          0
+        ],
+        [
+          -0.25,
+          0
+        ],
+        [
+          -0.2,
+          0
+        ],
+        [
+          -0.15,
+          0
+        ],
+        [
+          -0.1,
+          0
+        ],
+        [
+          -0.05,
+          0
+        ],
+        [
+          0.0,
+          0
+        ],
+        [
+          0.05,
+          0
+        ],
+        [
+          0.1,
+          0
+        ],
+        [
+          0.15,
+          0
+        ],
+        [
+          0.2,
+          0
+        ],
+        [
+          0.25,
+          0
+        ],
+        [
+          0.3,
+          0
+        ],
+        [
+          0.35,
+          0
+        ],
+        [
+          0.4,
+          0
+        ],
+        [
+          0.45,
+          0
+        ],
+        [
+          0.5,
+          0
+        ],
+        [
+          0.55,
+          0
+        ],
+        [
+          0.6,
+          0
+        ],
+        [
+          0.65,
+          0
+        ],
+        [
+          0.7,
+          0
+        ],
+        [
+          0.75,
+          0
+        ],
+        [
+          0.8,
+          0
+        ]
+      ]
+    },
+    "source": "native_nav2_obstacle_layer_from_live_isaac_laserscan"
+  },
+  "safe_wait": {
+    "measurement_start": "after_native_costmap_marking",
+    "odometry_samples": 91,
+    "maximum_absolute_linear_velocity_mps": 0.0001910964638227597,
+    "displacement_m": 3.259629011154175e-09,
+    "elapsed_wall_s": 3.941
+  },
+  "fresh_planning": {
+    "baseline_path_length_m": 12.7977,
+    "blocked_status": "succeeded",
+    "blocked_path_length_m": 36.4601,
+    "blocked_route_authorized": false,
+    "fresh_status": "succeeded",
+    "fresh_path_pose_count": 2558
+  },
+  "claim_boundary": "Accepted only as a measured-administration presentation simulation gate: live Isaac LaserScan data marked and cleared Nav2's native costmap, the planner produced a long map-connected detour outside the authorized east-hallway mission envelope, AI-SHA rejected it and waited, and a fresh direct plan was executed after removal. The live gate is intentionally scoped to the first two administration legs; the accepted Phase 7B 12-leg mission retains office-doorway and pivot evidence. This provides no physical localization, stopping-distance, sim-to-real, protective-sensor, safety-certification, or deployment credit."
+}
