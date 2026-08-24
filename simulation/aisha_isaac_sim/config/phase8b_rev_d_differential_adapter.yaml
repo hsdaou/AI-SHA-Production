@@ -1,0 +1,140 @@
+schema_version: 1
+phase: "8B"
+date: "2026-08-24"
+status: offline_replay_accepted_physical_read_and_wheels_lifted_blocked
+objective: >-
+  Replace the legacy mecanum assumption with a fail-safe Rev D differential
+  encoder/odometry foundation, prove its kinematics and supplier protocol
+  offline, and prepare a read-only stationary RS485 gate without energizing or
+  commanding either motor.
+
+authorization_boundary:
+  offline_protocol_and_replay: true
+  rs485_register_reads_after_operator_gate: true
+  rs485_register_writes: false
+  motor_enable: false
+  wheel_motion: false
+  floor_motion: false
+  autonomous_navigation: false
+  occupied_building_operation: false
+  doorway_traversal: false
+  physical_release: false
+
+hardware_contract:
+  robot_revision: "D"
+  drive_architecture: differential_drive
+  driver_model: ZLAC8015D_dual_channel
+  ordered_hardware_label_expected: "V4.2 - verify on received unit"
+  supplied_rs485_manual_family: "ZLAC8015D V4 Series"
+  supplied_rs485_manual_version: "1.06-20251111"
+  manual_to_hardware_exact_match_verified: false
+  motor_model: ZLLG80ASM250-4096_V2.18
+  wheel_radius_design_m: 0.100
+  wheel_track_design_m: 0.720
+  encoder_lines_per_rev: 4096
+  encoder_counts_per_rev_candidate: 16384
+  encoder_counts_per_rev_verified: false
+  loaded_rolling_radius_verified: false
+  left_encoder_sign_verified: false
+  right_encoder_sign_verified: false
+
+supplier_protocol:
+  protocol: Modbus_RTU
+  unit_address_range: [1, 127]
+  default_unit_address: 1
+  default_baud_rate: 115200
+  serial_format: 8N1
+  read_function: 0x03
+  write_single_function_offline_codec_only: 0x06
+  live_transport_allowed_functions: [0x03]
+  registers:
+    control_mode: {address: 0x200D, access: RW, live_access: prohibited}
+    control_word: {address: 0x200E, access: RW, live_access: prohibited}
+    target_velocity_left: {address: 0x2088, type: I16, live_access: prohibited}
+    target_velocity_right: {address: 0x2089, type: I16, live_access: prohibited}
+    status_word: {address: 0x20A2, type: U16, live_access: read_only}
+    fault_left: {address: 0x20A5, type: U16, live_access: read_only}
+    fault_right: {address: 0x20A6, type: U16, live_access: read_only}
+    position_left_high: {address: 0x20A7, type: I16, live_access: read_only}
+    position_left_low: {address: 0x20A8, type: I16, live_access: read_only}
+    position_right_high: {address: 0x20A9, type: I16, live_access: read_only}
+    position_right_low: {address: 0x20AA, type: I16, live_access: read_only}
+    actual_velocity_left: {address: 0x20AB, type: I16_0.1_RPM, live_access: read_only}
+    actual_velocity_right: {address: 0x20AC, type: I16_0.1_RPM, live_access: read_only}
+  position_word_order: high_16_then_low_16
+  position_range: signed_int32
+  crc_wire_order: low_byte_then_high_byte
+
+adapter_contract:
+  package: src/aisha_rev_d_driver
+  default_transport: replay
+  available_transports: [replay, rs485_read_only]
+  motor_write_transport_implemented: false
+  subscribes_cmd_vel: false
+  broadcasts_tf: false
+  raw_physical_odom_topic: /wheel/odom_raw
+  replay_odom_topic: /phase8b/replay/wheel_odom_raw
+  telemetry_topic: /wheel/encoder_telemetry
+  replay_uses_candidate_scale_for_math_only: true
+  physical_odom_requires_verified_scale_radius_and_signs: true
+  ekf_remains_odom_to_base_tf_owner: true
+
+dry_run_safety_contract:
+  maximum_wheel_speed_rpm: 5.0
+  equivalent_straight_speed_design_mps: 0.0523598776
+  command_timeout_s: 0.20
+  reverse_enabled: false
+  lateral_commands_rejected: true
+  timeout_output_rpm: [0.0, 0.0]
+  hardware_output_exists: false
+
+rs485_read_only_operator_gate:
+  exact_hardware_label_photographed_and_matched: false
+  exact_rs485_manual_matched_to_label: false
+  motor_power_leads_physically_isolated: false
+  wheels_chocked: false
+  external_hardwired_estop_verified: false
+  operator_present: false
+  independent_spotter_present: false
+  usb_rs485_device_by_id_confirmed: false
+  gate_passed: false
+
+wheels_lifted_direction_encoder_gate:
+  status: blocked
+  maximum_wheel_speed_rpm: 5.0
+  floor_motion_allowed: false
+  prerequisites:
+    - pass_rs485_read_only_stationary_probe
+    - resolve_v4_manual_to_v4_2_label_match
+    - measure_loaded_rolling_circumference
+    - resolve_4096_versus_16384_counts_with_one_marked_revolution
+    - verify_left_and_right_encoder_signs_individually
+    - verify_hardwired_estop_removes_motor_torque
+    - approve_separate_minimal_motor_write_transport
+  completion_claimed: false
+
+hard_blockers:
+  - id: exact_driver_protocol_match_pending
+    detail: supplied manual is V4 Series while ordered hardware is expected to be V4.2; verify the delivered label and matching manual before any register write
+  - id: physical_encoder_scale_pending
+    detail: one marked wheel revolution must resolve 4096 versus 16384 reported counts
+  - id: loaded_rolling_radius_pending
+    detail: replace the 0.100 m design value with measured loaded rolling circumference
+  - id: encoder_direction_pending
+    detail: each side sign must be checked independently with wheels lifted
+  - id: live_motor_write_transport_not_implemented
+    detail: Phase 8B intentionally provides no path that can enable or command a motor
+  - id: physical_runtime_not_observed
+    detail: no robot or ZLAC RS485 device is connected to this development host
+  - id: physical_route_release_blockers_retained
+    detail: as-built map, doorway conflict, protective stop and ROS distribution gates remain unresolved
+
+artifacts:
+  package: src/aisha_rev_d_driver
+  replay_config: src/aisha_rev_d_driver/config/phase8b_replay.yaml
+  read_only_config: src/aisha_rev_d_driver/config/phase8b_rs485_read_only.yaml
+  replay_fixture: src/aisha_rev_d_driver/config/phase8b_encoder_replay.jsonl
+  replay_launch: src/aisha_rev_d_driver/launch/phase8b_replay.launch.py
+  read_only_probe: simulation/aisha_isaac_sim/tools/probe_phase8b_rs485_read_only.py
+  offline_validator: simulation/aisha_isaac_sim/tools/validate_phase8b_rev_d_adapter.py
+  offline_report: simulation/aisha_isaac_sim/results/phase8b_rev_d_differential_adapter_preflight.json

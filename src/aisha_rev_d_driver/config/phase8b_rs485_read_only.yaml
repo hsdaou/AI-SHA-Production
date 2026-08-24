@@ -1,0 +1,27 @@
+aisha_rev_d_encoder_adapter:
+  ros__parameters:
+    # This profile can read telemetry but cannot write any ZLAC register.
+    # Keep every physical confirmation false in source control. Set them true
+    # only at the robot after completing the documented operator checklist.
+    transport: rs485_read_only
+    serial_port: /dev/aisha_zlac
+    unit_address: 1
+    baud_rate: 115200
+    serial_timeout_s: 0.10
+    replay_period_s: 0.05
+    wheel_radius_m: 0.100
+    wheel_track_m: 0.720
+    encoder_counts_per_rev: 16384
+    left_encoder_sign: 1
+    right_encoder_sign: 1
+    encoder_scale_verified: false
+    rolling_radius_verified: false
+    encoder_signs_verified: false
+    hardware_label_verified: false
+    motor_leads_isolated: false
+    external_estop_verified: false
+    publish_odom: false
+    odom_topic: /wheel/odom_raw
+    telemetry_topic: /wheel/encoder_telemetry
+    odom_frame: odom
+    base_frame: base_link

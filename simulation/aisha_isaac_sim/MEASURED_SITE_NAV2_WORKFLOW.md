@@ -320,8 +320,28 @@ robot graph is present. On the robot, use the drive-isolated procedure in
 `PHYSICAL_LOCALIZATION_COMMISSIONING.md`. Passing it authorizes only a later,
 separate wheels-lifted encoder-direction test—not floor motion. Physical route
 planning remains blocked by the non-as-built map, missing Rev D differential
-encoder adapter, unresolved Jazzy/Humble production baseline, uncommissioned
-protective stop, and the 0.85 m versus 0.92 m doorway-release conflict.
+encoder hardware validation, unresolved Jazzy/Humble production baseline,
+uncommissioned protective stop, and the 0.85 m versus 0.92 m doorway-release
+conflict.
+
+### Phase 8B Rev D differential encoder adapter
+
+Phase 8B replaces the software-level mecanum gap with a dedicated Rev D
+differential package. Its deterministic replay, kinematics, int32 rollover,
+encoder word order, 0.1 RPM scale, Modbus CRC and fail-safe timeout pass 30/30
+offline checks plus 12/12 focused package tests:
+
+```bash
+tools/run_phase8b_rev_d_adapter_preflight.sh
+```
+
+The accepted transport boundary is deliberately narrow. Replay never opens a
+device; physical RS485 permits function `0x03` reads only and suppresses
+`/wheel/odom_raw` until encoder scale, loaded radius and both signs are verified.
+There is no motor-write transport, `/cmd_vel` subscriber or TF broadcaster.
+The V4 Series manual versus expected V4.2 label mismatch, read-only physical
+probe and 5 RPM wheels-lifted direction/count test remain open. No floor motion
+or physical route claim follows from this offline gate.
 
 ## 5. Architecture and claim boundary
 

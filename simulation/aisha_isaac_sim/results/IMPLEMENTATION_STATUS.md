@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, the 26/26 Phase 7B registered-LiDAR blocked-route gate, the isolated 29/29 Phase 7C native-costmap spatial-detour gate, the scoped 32/32 Phase 7D administration native-costmap gate, the 40/40 Phase 7E full-office static-map/live-LiDAR fusion gate, the 19/19 Phase 7F operator-presentation gate, and the 23/23 Phase 8A offline physical-localization preparation gate. The non-robot host probe remains blocked at 1/14 and physical release remains pending.**
+**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, the 26/26 Phase 7B registered-LiDAR blocked-route gate, the isolated 29/29 Phase 7C native-costmap spatial-detour gate, the scoped 32/32 Phase 7D administration native-costmap gate, the 40/40 Phase 7E full-office static-map/live-LiDAR fusion gate, the 19/19 Phase 7F operator-presentation gate, the 23/23 Phase 8A offline physical-localization gate, and the 30/30 Phase 8B Rev D differential adapter gate. Phase 8B focused tests pass 12/12; physical RS485 observation, wheel calibration, motion and release remain pending.**
 
 ## Completed
 
@@ -452,10 +452,21 @@
   The read-only runtime probe publishes no command and verifies that `/cmd_vel`
   has no publisher. Its current workstation result is correctly blocked at
   1/14 because there is no physical sensor/odometry/TF graph. The audit
-  quarantines the legacy four-wheel mecanum driver, records the missing Rev D
-  differential encoder adapter and retains every physical hold point.
+  quarantines the legacy four-wheel mecanum driver and retains every physical
+  hold point.
   It also blocks a distributed runtime until one ROS 2 baseline replaces the
   current simulation-Jazzy versus production-launch-Humble split.
+- Phase 8B adds the dedicated `aisha_rev_d_driver` package. The 30/30 offline
+  gate and 12/12 focused tests cover differential command/odometry math, signed
+  int32 encoder rollover, high-word-first position decoding, 0.1 RPM speed
+  scaling, Modbus CRC, supplier example frames, deterministic 5 RPM replay,
+  reverse/lateral rejection and a 0.20 s fail-to-zero dry-run timeout. Replay
+  topics are isolated from the physical EKF input. The optional RS485 transport
+  enforces function `0x03` reads only and the ROS node has no `/cmd_vel`
+  subscriber, TF broadcaster or motor-write path. Physical odometry remains
+  suppressed until the exact V4.2 protocol, counts/revolution, loaded radius and
+  both encoder signs are verified. The read-only and wheels-lifted runtime gates
+  have not been claimed.
 
 ## Deterministic contact tuning disclosure
 
@@ -544,15 +555,17 @@ These are evidence-based project-management estimates, not safety ratings:
 | Measured digital twin | 68% |
 | Nav2/localisation integration | 96% |
 | Dynamic-obstacle simulation safety | 94% |
-| Physical deployment readiness | 34% |
+| Physical deployment readiness | 38% |
 | Overall end objective | 89% |
 
-The latest physical-readiness increase comes from the 23/23 fail-safe offline
-localization preparation: Rev D AMCL/EKF and TF contracts, a zero-command launch
-graph, read-only runtime observer and explicit legacy-kinematics quarantine. It
-does not increase the 89% overall end objective because no physical runtime gate
-has passed. The next gate is the drive-isolated 14/14 stationary test after the
-Rev D differential encoder adapter and ROS dependencies are available.
+The physical-readiness increase to 38% comes from the 30/30 Rev D adapter gate:
+the mecanum software gap is closed at the offline/replay layer and a provably
+read-only physical telemetry path is prepared. It does not increase the 89%
+overall end objective because no physical runtime or calibration gate has
+passed. The next executable gate is the fully confirmed, motor-leads-isolated
+RS485 read-only observation. Exact V4.2 protocol matching, one marked wheel
+revolution, loaded circumference and both side signs are still required before
+the 14/14 stationary localization test can accept `/wheel/odom_raw`.
 
 ## Evidence
 
@@ -671,6 +684,7 @@ Rev D differential encoder adapter and ROS dependencies are available.
 - `administration_nav2_phase7f_operator_presentation_acceptance.json`
 - `phase8a_physical_localization_preflight.json`
 - `phase8a_stationary_localization_probe.json`
+- `phase8b_rev_d_differential_adapter_preflight.json`
 - `administration_nav2_phase6_rtx_presentation_acceptance.json`
 - `administration_nav2_phase7_dynamic_mission.json`
 - `administration_nav2_phase7_dynamic_bridge.json`

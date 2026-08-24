@@ -1,0 +1,95 @@
+{
+  "report_type": "phase8b_rev_d_differential_adapter_offline_preflight",
+  "generated_at_utc": "2026-08-24T12:00:52.492247+00:00",
+  "passed": true,
+  "status": "accepted_offline_replay_physical_blocked",
+  "checks": {
+    "rev_d_geometry_matches_design_contract": true,
+    "candidate_encoder_scale_is_not_claimed_verified": true,
+    "manual_to_expected_hardware_version_mismatch_is_explicit": true,
+    "supplier_register_addresses_are_exact": true,
+    "supplier_position_word_order_and_signed_range_retained": true,
+    "supplier_velocity_scale_and_sign_decode": true,
+    "supplier_enable_frame_matches_manual": true,
+    "supplier_left_positive_velocity_frame_matches_manual": true,
+    "supplier_right_negative_velocity_frame_matches_manual": true,
+    "supplier_left_encoder_read_frame_matches_manual": true,
+    "live_transport_allows_only_function_03": true,
+    "straight_5rpm_conversion_is_consistent": true,
+    "positive_pivot_integration_is_consistent": true,
+    "signed_int32_rollover_is_continuous": true,
+    "replay_fixture_is_deterministic": true,
+    "replay_odometry_is_straight_and_bounded": true,
+    "dry_run_clamps_to_wheels_lifted_limit": true,
+    "dry_run_timeout_fails_to_zero": true,
+    "reverse_is_disabled_and_lateral_motion_rejected": true,
+    "ros_node_has_no_command_subscription_or_tf_broadcast": true,
+    "ros_node_suppresses_uncalibrated_physical_odometry": true,
+    "replay_topics_are_isolated_from_physical_ekf_input": true,
+    "physical_profile_is_read_only_and_fails_closed": true,
+    "replay_launch_starts_only_new_adapter": true,
+    "package_declares_ros_and_serial_dependencies": true,
+    "read_only_probe_blocks_before_serial_open": true,
+    "all_motion_and_release_authority_remains_false": true,
+    "motor_write_transport_is_explicitly_absent": true,
+    "wheels_lifted_gate_remains_blocked": true,
+    "critical_physical_blockers_are_retained": true
+  },
+  "checks_passed": 30,
+  "checks_total": 30,
+  "replay": {
+    "samples": 21,
+    "distance_m": 0.052347094386597515,
+    "candidate_counts_per_rev": 16384,
+    "candidate_scale_physical_credit": false
+  },
+  "live_transport": {
+    "available": "rs485_read_only",
+    "allowed_modbus_functions": [
+      3
+    ],
+    "runtime_observed": false,
+    "motor_write_available": false
+  },
+  "wheels_lifted_gate_passed": false,
+  "floor_motion_authorized": false,
+  "physical_release": false,
+  "hard_blockers": [
+    {
+      "id": "exact_driver_protocol_match_pending",
+      "detail": "supplied manual is V4 Series while ordered hardware is expected to be V4.2; verify the delivered label and matching manual before any register write"
+    },
+    {
+      "id": "physical_encoder_scale_pending",
+      "detail": "one marked wheel revolution must resolve 4096 versus 16384 reported counts"
+    },
+    {
+      "id": "loaded_rolling_radius_pending",
+      "detail": "replace the 0.100 m design value with measured loaded rolling circumference"
+    },
+    {
+      "id": "encoder_direction_pending",
+      "detail": "each side sign must be checked independently with wheels lifted"
+    },
+    {
+      "id": "live_motor_write_transport_not_implemented",
+      "detail": "Phase 8B intentionally provides no path that can enable or command a motor"
+    },
+    {
+      "id": "physical_runtime_not_observed",
+      "detail": "no robot or ZLAC RS485 device is connected to this development host"
+    },
+    {
+      "id": "physical_route_release_blockers_retained",
+      "detail": "as-built map, doorway conflict, protective stop and ROS distribution gates remain unresolved"
+    }
+  ],
+  "source_hashes": {
+    "profile": "3ec7fbc1cd11a0d3b889ce24ba268bd88c45527843e8780918a0d0346b6db8b6",
+    "drive_contract": "af28f6bac76536c8f80aee815e55e4146bb259b72307f92393227641ec336235",
+    "node": "26f80ae5fcd06be8fe91ba2a1f1e1d620d4036a8c76af353fdd38a708676af85",
+    "transport": "4bdb1c68dbba273382cc6559f74012b2833bffd296fef4fa4817b6ce6609d3b8",
+    "replay_fixture": "b2bd326ad21f4cd803f3278da5a1489d09afa353321c2439f25b869eeae6d75d",
+    "read_only_probe": "b16839a1b994a8b111271d89dd7e432f475d6173c221f3ad089a6f6c7575833a"
+  }
+}

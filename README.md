@@ -46,7 +46,8 @@ src/
   robot_bringup/      launch + configs: nav2_params.yaml, ekf.yaml, slam_toolbox, ld19
   robot_description/  robot URDF (digital twin)
   yolov8_ros/         vision detection_node (person / face / gesture / OCR) + pause_inference
-  mecanum_driver/     holonomic drive + encoder odometry + Arduino firmware (arduino/)
+  mecanum_driver/     legacy holonomic drive; quarantined from Rev D
+  aisha_rev_d_driver/ Rev D differential encoder/odometry replay + read-only RS485
   motor_control/      low-level motor/encoder serial bridge
   ldlidar_stl_ros2/   LD19 LiDAR driver (C++)
   bno055_imu/         IMU (fused into odometry via EKF)
@@ -79,7 +80,8 @@ ros2 launch robot_bringup slam.launch.py
 - `/robot_speech` — brain → TTS (speech output)
 - `/aisha/mode` — `gpu_arbiter` broadcasts NAVIGATING/CONVERSING
 - `/aisha/set_conversing` (`std_srvs/SetBool`) — manual mode trigger
-- `/scan`, `/odom`, `/cmd_vel` — LiDAR, fused odometry, mecanum velocity command
+- `/scan`, `/odom`, `/cmd_vel` — legacy production LiDAR/odometry/velocity topics
+- `/wheel/odom_raw` — calibrated Rev D differential encoder input to the EKF
 
 See the **[ADR](src/aisha_brain/docs/adr/0001-gpu-multiplexing-navigating-conversing.md)**
 for the complete rationale and benchmarks.
@@ -94,7 +96,9 @@ office pivot/clearance controller and adds an accepted simulation-only,
 Nav2 costmap marking and learned-safety-coupled spatial detouring in an isolated
 two-route Isaac loop. Phase 7D applies the corrected LiDAR height/no-return
 profile to the administration scene, rejects an unscheduled map-connected
-detour, waits, clears and executes a fresh authorized hallway path. The source
-A1 page-2 plan
-is not redistributed in this repository, so all assumed door/threshold values
+detour, waits, clears and executes a fresh authorized hallway path.
+A fail-safe Phase 8B Rev D adapter now passes offline protocol/odometry replay;
+its physical RS485 mode is read-only and physical calibration remains blocked.
+The source A1 page-2 plan is not redistributed in this repository, so all
+assumed door/threshold values
 remain explicitly labelled and are not a physical-route or safety release.
