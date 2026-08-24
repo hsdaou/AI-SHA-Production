@@ -23,6 +23,12 @@ ROOT = Path(__file__).resolve().parent.parent
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--headless", action="store_true")
+    parser.add_argument(
+        "--scene",
+        type=Path,
+        default=ROOT / "scenes/administration.usd",
+        help="USD scene to open for the interactive presentation.",
+    )
     parser.add_argument("--fps", type=int, default=24)
     parser.add_argument("--seconds-per-shot", type=float, default=3.0)
     parser.add_argument(
@@ -131,7 +137,7 @@ def wait_for_stage_ready(scene: Path, max_updates: int = 600):
 
 
 def main() -> int:
-    scene = ROOT / "scenes/administration.usd"
+    scene = ARGS.scene.resolve()
     mission, trace, shots = load_source()
     if not omni.usd.get_context().open_stage(str(scene.resolve())):
         raise RuntimeError(f"could not open {scene}")

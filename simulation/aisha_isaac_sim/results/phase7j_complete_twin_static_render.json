@@ -1,0 +1,105 @@
+{
+  "report_type": "phase7j_complete_twin_static_render",
+  "generated_at_utc": "2026-08-24T21:56:29.010659+00:00",
+  "status": "rendered",
+  "passed": true,
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/phase7j_complete_captured_administration.usda",
+  "scene_sha256": "2c68439a1700f8ef625fefaa87585e36b81e3ca4450a326e5c7c4610a42a5a99",
+  "renderer": "PathTracing",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "shots": [
+    {
+      "name": "complete_capture_overview.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7j_complete_twin/complete_capture_overview.png",
+      "sha256": "653535530c6c996cb63e8eb4e8b92e3a816617aa415d6e843ef1b9f712b5624a",
+      "camera": [
+        6.0,
+        -5.5,
+        39.0
+      ],
+      "look_at": [
+        6.0,
+        -5.5,
+        0.0
+      ]
+    },
+    {
+      "name": "atrium_and_reception.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7j_complete_twin/atrium_and_reception.png",
+      "sha256": "bf37b323461873f5e65ce93a7119af2bbdb2a4016908164f6a269d8af998ff3d",
+      "camera": [
+        -6.2,
+        5.0,
+        4.7
+      ],
+      "look_at": [
+        0.4,
+        -0.8,
+        0.75
+      ]
+    },
+    {
+      "name": "east_administration_wing.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7j_complete_twin/east_administration_wing.png",
+      "sha256": "782763139d6c9fdd9f819a3b6d3920c9e7e56e3f4bf246a18020f0437472f4c5",
+      "camera": [
+        6.5,
+        3.8,
+        4.0
+      ],
+      "look_at": [
+        15.0,
+        -7.4,
+        0.7
+      ]
+    },
+    {
+      "name": "captured_office_cluster.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7j_complete_twin/captured_office_cluster.png",
+      "sha256": "1c9151c61f334caed5d81556971628fec54999e6a973f70237c0e9fdd3ab029a",
+      "camera": [
+        22.0,
+        -5.0,
+        4.4
+      ],
+      "look_at": [
+        15.0,
+        -10.0,
+        0.7
+      ]
+    },
+    {
+      "name": "principal_registered_supplement.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7j_complete_twin/principal_registered_supplement.png",
+      "sha256": "ed578d6a8b34ab9deb2f62623f2ae260b5dac26f67c21c2b9206398ca0eed352",
+      "camera": [
+        12.8,
+        -4.4,
+        3.4
+      ],
+      "look_at": [
+        7.8,
+        -8.9,
+        0.72
+      ]
+    },
+    {
+      "name": "accepted_route_context.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7j_complete_twin/accepted_route_context.png",
+      "sha256": "859606e99e0d2be1d24f33d19581e40c64f9353a85cea24ecdc05809fcd81bc7",
+      "camera": [
+        -4.8,
+        2.8,
+        6.3
+      ],
+      "look_at": [
+        8.6,
+        -6.0,
+        0.55
+      ]
+    }
+  ]
+}

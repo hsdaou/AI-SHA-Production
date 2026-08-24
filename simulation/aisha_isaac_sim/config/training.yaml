@@ -1091,6 +1091,21 @@ release:
   phase7i_learned_trajectory_changed: false
   phase7i_video_sha256: "2147e0014b730e60ec19367043249c3a01dfe662fff4438040a0da5d8e418cfb"
   phase7i_physical_release: false
+  phase7j_complete_captured_area_twin_available: true
+  phase7j_complete_primary_roomplan_capture_included: true
+  phase7j_principal_supplement_registered: true
+  phase7j_visual_and_collision_layers_separate: true
+  phase7j_raw_roomplan_used_for_collision: false
+  phase7j_complete_phototextured_as_built: false
+  phase7j_vp_locked_interior_assumed: true
+  phase7j_learned_trajectory_changed: false
+  phase7j_presentation_player_executes_policy_live: false
+  phase7j_complete_captured_area_twin_validated: true
+  phase7j_acceptance_checks_passed: "49/49"
+  phase7j_full_hd_video_available: true
+  phase7j_video_sha256: "49ab74ee97cd9f7b5b51bd115ba8817310673bb298238e0d9145640b0fe7c6fd"
+  phase7j_live_omniverse_player_smoke_passed: true
+  phase7j_physical_release: false
   phase8a_physical_localization_offline_preflight_available: true
   phase8a_physical_localization_offline_preflight_passed: true
   phase8a_physical_localization_offline_checks_passed: "23/23"

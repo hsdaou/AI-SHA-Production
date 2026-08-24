@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev Z - 2026-08-24 - photogrammetry-informed administration visual twin**
+**Rev AA - 2026-08-25 - complete captured-area administration twin**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -153,6 +153,69 @@ boundary and camera contract are recorded in
 `config/phase7i_scan_matched_atrium.yaml`. The video is a visual replay of
 recorded poses from the accepted live-policy mission; it is not another live
 policy execution, a complete as-built survey, or a physical release.
+
+## Phase 7J complete captured-area twin
+
+Phase 7J replaces the route-scoped presentation shell with the complete area
+contained in the supplied primary iPhone RoomPlan capture. All 53 primary walls,
+17 doors, 11 windows and captured furniture classes are retained in a
+self-contained semantic USD layer at 1:1 scale. The separately captured
+Principal suite is registered to its approved page-2 approach and adds its room,
+wall, opening and furniture semantics. The primary east-hall wall chain is
+registered to A1 page 2 Block A, which remains the authority for the global
+administration topology. Both scans are also registered vertically so their
+captured floor tops coincide with the world floor; the primary and Principal
+Z offsets are 1.3561 m and 1.5663 m respectively.
+
+The visual and navigation layers are intentionally separate. The complete
+RoomPlan layer supplies the visible digital-twin geometry and capture-derived
+PBR finishes; the frozen, previously accepted Phase 7I architecture and
+furniture collision layer continues to protect the validated route. Movable
+capture-time meshes entering AI-SHA's 0.85 m corner-swept presentation envelope
+are hidden only in the composite scene. Primary-scan furniture inside the
+Principal crop is likewise hidden there so the denser Principal supplement is
+the sole office furniture authority. Both original scan sets remain complete
+in the survey visual layer, and no raw RoomPlan mesh is granted collision or
+safety credit.
+RoomPlan wall/opening fragments entering the 0.42 m validated robot corridor
+are also suppressed only in the composite. The approved plan and frozen
+accepted collision layer are authoritative for those openings, and every
+override is enumerated in the Phase 7J build report.
+
+The handheld RoomPlan floor ends before parts of the accepted hall route, so it
+is retained in the complete survey layer but hidden in the presentation
+composite. The visible floor comes from the validated plan-authority layer; it
+supports the whole route and preserves the central atrium polygon at its
+reported 0.20 m step-down. This prevents unsupported background gaps from
+making AI-SHA appear to float.
+
+Run the complete Full HD PathTracing build, mission replay, encode, contact
+sheet and acceptance pipeline with:
+
+```bash
+tools/run_phase7j_complete_captured_twin.sh
+```
+
+The presentation video is
+`media/videos/AI-SHA_Phase7J_Complete_Captured_Administration_Twin.mp4`. Open
+the repeat-until-closed interactive Omniverse presentation with:
+
+```bash
+tools/run_phase7j_live_omniverse.sh
+```
+
+The frozen release contains 480 Full HD PathTracing frames at 24 fps and passed
+all 49 Phase 7J acceptance checks. Its SHA-256 is
+`49ab74ee97cd9f7b5b51bd115ba8817310673bb298238e0d9145640b0fe7c6fd`.
+The interactive player has also completed an eight-shot Isaac Sim smoke run on
+the release scene.
+
+Use `PHASE7J_PRESENTATION_RUNBOOK.md` at the venue. Phase 7J is the complete
+user-captured **semantic** administration twin, not a complete phototextured
+photogrammetric/as-built survey. The Vice-Principal interior remains a clearly
+disclosed assumption because it was locked. The displayed motion is a visual
+replay of recorded poses from the accepted live Nav2/learned-safety simulation
+mission, not a second live-policy execution or a physical-deployment release.
 
 ## Phase 8A physical-localization preflight
 

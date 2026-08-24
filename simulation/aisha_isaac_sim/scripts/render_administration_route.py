@@ -36,6 +36,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--trajectory-report", type=Path)
     parser.add_argument(
+        "--scene",
+        type=Path,
+        help="USD scene to render; defaults to scenes/administration.usd.",
+    )
+    parser.add_argument(
         "--presentation-profile",
         type=Path,
         help="YAML camera/overlay profile; omit to retain the original six-shot replay.",
@@ -247,6 +252,9 @@ def set_robot_pose(stage, sample: dict[str, Any]) -> None:
     prim.GetAttribute("xformOp:rotateZ:route").Set(math.degrees(float(sample["yaw_rad"])))
 
 
+CAPTURED_CUTAWAY_VISIBILITY: dict[str, str] = {}
+
+
 def set_cutaway(stage, enabled: bool) -> None:
     prefixes = (
         "/World/Architecture/Ceilings",
@@ -259,12 +267,22 @@ def set_cutaway(stage, enabled: bool) -> None:
     )
     for prim in stage.TraverseAll():
         path = str(prim.GetPath())
-        if not any(path.startswith(prefix) for prefix in prefixes):
+        captured_architecture = path.startswith("/World/CapturedAdministration") and any(
+            token in path for token in ("/Wall_", "/Door_", "/Window_")
+        )
+        if not any(path.startswith(prefix) for prefix in prefixes) and not captured_architecture:
             continue
         if not prim.IsA(UsdGeom.Imageable):
             continue
         imageable = UsdGeom.Imageable(prim)
-        if enabled:
+        if captured_architecture:
+            attribute = imageable.GetVisibilityAttr()
+            if enabled:
+                CAPTURED_CUTAWAY_VISIBILITY.setdefault(path, str(attribute.Get()))
+                imageable.MakeInvisible()
+            elif path in CAPTURED_CUTAWAY_VISIBILITY:
+                attribute.Set(CAPTURED_CUTAWAY_VISIBILITY[path])
+        elif enabled:
             imageable.MakeInvisible()
         else:
             imageable.MakeVisible()
@@ -302,7 +320,7 @@ def add_overlay(
 
 def main() -> int:
     ensure_output_dirs()
-    scene = SCENES_DIR / "administration.usd"
+    scene = ARGS.scene.resolve() if ARGS.scene else SCENES_DIR / "administration.usd"
     trajectory_path = ARGS.trajectory_report or RESULTS_DIR / "isaaclab_learned_route_playback_report.json"
     frame_dir = ARGS.frame_directory or PACKAGE_ROOT / "media" / "learned_route_replay_frames"
     render_report_path = ARGS.render_report or RESULTS_DIR / "administration_learned_replay_render_report.json"
@@ -382,6 +400,7 @@ def main() -> int:
                 "camera": list(shot["camera"]),
                 "look_at": list(shot["look_at"]),
                 "focal_length_mm": float(shot["focal_length"]),
+                "cutaway": bool(shot["cutaway"]),
                 "source_trace_records": len(source_samples),
                 "available_source_trace_records": available_source_records,
                 "source_fraction": list(source_fraction),
