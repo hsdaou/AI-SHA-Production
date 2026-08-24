@@ -1,0 +1,146 @@
+schema_version: 1
+phase: "PHASE7J-COMPLETE-CAPTURED-ADMINISTRATION-TWIN"
+date: "2026-08-25"
+status: complete_captured_area_semantic_twin_ready
+objective: >-
+  Make the complete area contained in the primary iPhone RoomPlan capture
+  visible as one interactive Omniverse scene, register the Principal supplement,
+  and replay the accepted office mission against a separately preserved safety
+  collision layer.
+
+source_evidence:
+  primary_roomplan_sha256: "d12576bf72c1a5ccf51706501bc8d65f16ea2a22353a9cf7cf287c3f58f9e13b"
+  principal_supplement_sha256: "d94287e3562344e634889a94aba1ea39d359e29666dd6389673bd8a12599d6cb"
+  mission: results/administration_nav2_phase7e_static_fusion_mission.json
+  approved_topology: "A1 page 2 Block A"
+  raw_capture_committed: false
+
+registration:
+  primary:
+    method: "paired east-hall wall-chain centreline to approved page-2 2.8-3.0 m hallway"
+    native_anchor_xz_m: [8.8, 11.7]
+    world_anchor_xy_m: [4.7, 0.0]
+    world_yaw_deg: -3.56
+    world_z_offset_m: 1.3561
+    metric_scale: 1.0
+  principal_supplement:
+    method: "captured entrance gap to approved Principal approach centreline"
+    native_anchor_xz_m: [-6.0, 1.1]
+    world_anchor_xy_m: [6.978, -7.628]
+    world_yaw_deg: -146.0
+    world_z_offset_m: 1.5663
+    metric_scale: 1.0
+    presentation_crop_world_xy_m: [3.8, 12.3, -12.8, -3.7]
+
+layer_contract:
+  full_capture_visual_layer: scenes/phase7j_complete_captured_administration_visual.usdc
+  composite_scene: scenes/phase7j_complete_captured_administration.usda
+  visual_geometry: "flattened privacy-safe RoomPlan semantics with PBR presentation finishes"
+  navigation_collision_geometry: "hidden frozen Phase 7I route-critical Architecture and Furniture"
+  visible_floor_geometry: "validated plan-authority floor including the 0.20 m lower atrium polygon"
+  incomplete_roomplan_floor_hidden_only_in_composite: true
+  visual_and_collision_layers_separate: true
+  complete_primary_capture_included: true
+  principal_supplement_registered: true
+  full_capture_layer_retains_all_captured_furniture: true
+  principal_supplement_is_composite_furniture_authority_inside_principal_crop: true
+  approved_plan_and_frozen_collision_layer_override_visual_scan_fragments_in_robot_corridor: true
+  movable_visual_conflict_corner_swept_envelope_radius_m: 0.85
+  composite_may_hide_movable_capture_time_furniture_overlapping_accepted_route: true
+  raw_roomplan_mesh_used_for_collision: false
+
+render_contract:
+  renderer: PathTracing
+  path_tracing_spp: 12
+  exposure_bias: 0.65
+  resolution: [1920, 1080]
+  fps: 24
+  seconds_per_shot: 2.5
+  expected_shots: 8
+  expected_frames: 480
+  camera_style: fixed_human_height_environmental_with_complete_capture_reveal
+  robot_should_not_dominate_frame: true
+  replay_motion: recorded_pose_selection_without_route_interpolation
+
+shots:
+  - title: "Complete captured administration - mission start"
+    operator_label: "FULL PRIMARY ROOMPLAN TWIN"
+    camera: [0.2, 5.0, 3.0]
+    look_at: [5.1, -1.2, 0.62]
+    focal_length_mm: 15.0
+    segments: [0]
+  - title: "Captured east administration hallway"
+    operator_label: "0.80 M/S LEARNED HALLWAY POLICY"
+    camera: [6.0, 1.14, 1.80]
+    look_at: [15.1, -0.15, 0.70]
+    focal_length_mm: 15.0
+    segments: [1]
+    source_fraction: [0.58, 1.0]
+  - title: "Vice-Principal approach in captured wing"
+    operator_label: "0.875 M ASSUMED DOOR - LOCKED ROOM"
+    camera: [19.4, -6.8, 1.90]
+    look_at: [16.9, -4.5, 0.62]
+    focal_length_mm: 12.0
+    segments: [2, 3]
+  - title: "Vice-Principal visit and safe reverse departure"
+    operator_label: "LOCKED INTERIOR DISCLOSED ASSUMPTION"
+    camera: [19.2, -7.5, 1.92]
+    look_at: [16.8, -6.0, 0.62]
+    focal_length_mm: 11.5
+    segments: [4]
+  - title: "Return through captured hallway"
+    operator_label: "NAV2 + STATIC/LIVE LIDAR FUSION"
+    camera: [-1.0, 2.50, 2.60]
+    look_at: [9.0, -0.10, 0.68]
+    focal_length_mm: 15.0
+    segments: [5]
+  - title: "Principal suite - registered scan approach"
+    operator_label: "PRINCIPAL SUPPLEMENT AT 1:1 SCALE"
+    camera: [2.55, -2.65, 1.84]
+    look_at: [6.75, -7.35, 0.70]
+    focal_length_mm: 15.0
+    segments: [6, 7]
+    source_fraction: [0.60, 1.0]
+  - title: "Principal visit in capture-derived office"
+    operator_label: "ROOMPLAN GEOMETRY + PHOTO PBR FINISHES"
+    camera: [10.00, -5.00, 4.00]
+    look_at: [7.20, -7.80, 0.55]
+    focal_length_mm: 18.0
+    cutaway: true
+    segments: [8, 9]
+  - title: "Mission complete in the captured-area twin"
+    operator_label: "12/12 LEGS COMPLETE"
+    camera: [0.2, 5.0, 3.0]
+    look_at: [5.1, -1.2, 0.62]
+    focal_length_mm: 15.0
+    segments: [10, 11]
+
+presentation_disclosures:
+  overlay: >-
+    Recorded poses from the accepted live Nav2/learned-safety mission replayed
+    in the complete captured-area semantic twin; visual replay, not live policy execution.
+  environment: >-
+    The complete primary RoomPlan capture is included at 1:1 scale and the
+    Principal supplement is independently registered. RoomPlan is semantic
+    geometry, not a complete phototextured photogrammetric as-built survey.
+  vice_principal_interior_assumed_because_locked: true
+  narrowest_administration_reported_door_width_m: 0.85
+  vice_principal_presentation_assumption_m: 0.875
+  principal_door_width_presentation_assumption_m: 0.90
+  reported_door_height_m: 2.12
+  central_polygon_step_down_m: 0.20
+  principal_visit_uses_temporary_architectural_cutaway: true
+  raw_scan_used_for_collision: false
+  physical_localization_credit: false
+  physical_safety_credit: false
+  physical_release: false
+
+outputs:
+  build_report: results/phase7j_complete_captured_administration_build.json
+  static_render_report: results/phase7j_complete_twin_static_render.json
+  replay_validation: results/administration_nav2_phase7j_replay_validation.json
+  render_report: results/administration_nav2_phase7j_rtx_render_report.json
+  frames: outputs/phase7j_complete_captured_twin_rtx_frames
+  video: media/videos/AI-SHA_Phase7J_Complete_Captured_Administration_Twin.mp4
+  contact_sheet: media/AI-SHA_Phase7J_Complete_Captured_Administration_Twin_contact_sheet.jpg
+  acceptance: results/administration_nav2_phase7j_complete_captured_twin_acceptance.json
