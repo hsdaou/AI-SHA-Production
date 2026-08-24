@@ -101,6 +101,10 @@ PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK = (
     "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7B-"
     "BlockedRoute-Replanning-Safety-Direct-v0"
 )
+PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK = (
+    "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7D-"
+    "NativeCostmap-SafeWait-Safety-Direct-v0"
+)
 PHASE7C_NATIVE_COSTMAP_DETOUR_TASK = (
     "Isaac-AISHA-Phase7C-NativeCostmap-Detour-Safety-Direct-v0"
 )
@@ -110,6 +114,7 @@ PHASE3N_COMPATIBLE_TASKS = {
     PHASE6_MEASURED_NAV2_TASK,
     PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
     PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
+    PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK,
     PHASE7C_NATIVE_COSTMAP_DETOUR_TASK,
 }
 ACCEPTED_PHASE3N_CHECKPOINT = "aisha_phase3n_dynamic_safety_model_50.pt"
@@ -124,6 +129,7 @@ PHASE6_NAV2_TASKS = {
     PHASE6_MEASURED_NAV2_TASK,
     PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
     PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
+    PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK,
 }
 MEASURED_NAV2_TASKS = {PHASE3N_MEASURED_NAV2_TASK, *PHASE6_NAV2_TASKS}
 
@@ -777,6 +783,7 @@ def main() -> int:
                 in {
                     PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
                     PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
+                    PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK,
                 }
                 else 0.0
             ),
@@ -855,7 +862,13 @@ def main() -> int:
         or task == PHASE7C_NATIVE_COSTMAP_DETOUR_TASK
     )
     dynamic_crossing_replay = task == PHASE7_MEASURED_NAV2_DYNAMIC_TASK
-    blocked_route_replay = task == PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK
+    blocked_route_replay = task in {
+        PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
+        PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK,
+    }
+    administration_native_costmap_replay = (
+        task == PHASE7D_ADMINISTRATION_NATIVE_COSTMAP_TASK
+    )
     native_detour_replay = task == PHASE7C_NATIVE_COSTMAP_DETOUR_TASK
     blockage_replay = blocked_route_replay or native_detour_replay
     if phase6_high_speed_replay and mapped_guard is not None:
@@ -890,7 +903,7 @@ def main() -> int:
         bridge.front_scan_period_s = 0.50
         bridge.publish_blockage_state = True
         bridge.messages["blocked_route_active"] = 0
-    if blocked_route_replay:
+    if blocked_route_replay and not administration_native_costmap_replay:
         bridge.publish_phase7b_front_points = True
         bridge.messages["phase7b_front_points"] = 0
     steps_completed = 0
@@ -1215,6 +1228,7 @@ def main() -> int:
                     + (
                         ["/aisha/phase7b/front_points"]
                         if blocked_route_replay
+                        and not administration_native_costmap_replay
                         else []
                     )
                     if blockage_replay
@@ -1430,7 +1444,7 @@ def main() -> int:
                 ),
                 "planner_observation_source": (
                     "native_nav2_obstacle_layer_from_live_isaac_laserscan"
-                    if native_detour_replay
+                    if native_detour_replay or administration_native_costmap_replay
                     else "registered_front_lidar_supervisory_path_validator"
                     if blocked_route_replay
                     else None
@@ -1445,13 +1459,21 @@ def main() -> int:
                     else None
                 ),
                 "registered_pointcloud_topic": (
-                    "/aisha/phase7b/front_points" if blocked_route_replay else None
+                    "/aisha/phase7b/front_points"
+                    if blocked_route_replay
+                    and not administration_native_costmap_replay
+                    else None
                 ),
                 "blocker_state_exposed_to_policy": False,
                 "coordination_state_exposed_to_mission_only": blockage_replay,
                 "route_topology": (
                     "two_route_loop_spatial_detour_available"
                     if native_detour_replay
+                    else (
+                        "map_connected_detour_available_but_outside_"
+                        "mission_authorized_east_hallway"
+                    )
+                    if administration_native_costmap_replay
                     else "single_path_safe_wait_required_no_detour_available"
                     if blocked_route_replay
                     else None

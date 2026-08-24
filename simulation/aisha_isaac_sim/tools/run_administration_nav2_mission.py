@@ -17,6 +17,7 @@ from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Twist
 from lifecycle_msgs.srv import GetState
 from nav2_msgs.action import ComputePathToPose, FollowPath
 from nav2_msgs.msg import Costmap
+from nav2_msgs.srv import ClearEntireCostmap
 from nav_msgs.msg import Odometry, OccupancyGrid
 from rclpy.action import ActionClient
 from rclpy.qos import (
@@ -56,9 +57,13 @@ PHASE6_CONTROL_STACKS = {
     "nav2_mapped_doorway_phase6_high_speed_safety",
     "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
     "nav2_mapped_doorway_phase7b_blocked_route_replanning_safety",
+    "nav2_mapped_doorway_phase7d_native_costmap_safe_wait_safety",
 }
 PHASE7B_CONTROL_STACK = (
     "nav2_mapped_doorway_phase7b_blocked_route_replanning_safety"
+)
+PHASE7D_CONTROL_STACK = (
+    "nav2_mapped_doorway_phase7d_native_costmap_safe_wait_safety"
 )
 
 
@@ -91,6 +96,9 @@ class MissionNode:
         )
         self.controller_state_client = self.node.create_client(
             GetState, "/controller_server/get_state"
+        )
+        self.global_costmap_clear_client = self.node.create_client(
+            ClearEntireCostmap, "/global_costmap/clear_entirely_global_costmap"
         )
         self.initial_pose_publisher = self.node.create_publisher(
             PoseWithCovarianceStamped, "/initialpose", 10
@@ -689,6 +697,245 @@ class MissionNode:
         )
         return fresh_path, fresh_status, result
 
+    def wait_for_native_costmap_profile(
+        self,
+        *,
+        minimum_lethal_samples: int,
+        maximum_lethal_samples: int | None,
+        timeout_s: float,
+    ) -> dict[str, object]:
+        """Wait for the live global obstacle layer to reach a required state."""
+        deadline = time.monotonic() + timeout_s
+        last_profile: dict[str, object] = {"available": False}
+        while time.monotonic() < deadline:
+            rclpy.spin_once(self.node, timeout_sec=0.10)
+            last_profile = self.costmap_blockage_profile(
+                x_m=10.62, y_min_m=-0.80, y_max_m=0.80
+            )
+            if last_profile.get("available") is not True:
+                continue
+            lethal = int(last_profile.get("lethal_or_inscribed_samples", 0))
+            if lethal < minimum_lethal_samples:
+                continue
+            if maximum_lethal_samples is not None and lethal > maximum_lethal_samples:
+                continue
+            return last_profile
+        return last_profile
+
+    @staticmethod
+    def east_hallway_route_profile(path) -> dict[str, object]:
+        """Check a plan against the mission-authorized east hallway envelope."""
+        if path is None:
+            return {"available": False, "authorized": False}
+        points = [
+            (float(pose.pose.position.x), float(pose.pose.position.y))
+            for pose in path.poses
+        ]
+        violations = [
+            point
+            for point in points
+            if not (3.80 <= point[0] <= 17.50 and -0.90 <= point[1] <= 0.90)
+        ]
+        return {
+            "available": True,
+            "authorization_source": "approved_mission_east_hallway_route_envelope",
+            "authorised_x_range_m": [3.80, 17.50],
+            "authorised_y_range_m": [-0.90, 0.90],
+            "path_pose_count": len(points),
+            "violating_pose_count": len(violations),
+            "minimum_y_m": min((point[1] for point in points), default=None),
+            "maximum_y_m": max((point[1] for point in points), default=None),
+            "authorized": not violations,
+        }
+
+    def clear_native_global_costmap(self, timeout_s: float = 10.0) -> bool:
+        """Clear stale obstacle marks after the test barrier is physically removed."""
+        if not self.global_costmap_clear_client.wait_for_service(timeout_sec=timeout_s):
+            return False
+        future = self.global_costmap_clear_client.call_async(ClearEntireCostmap.Request())
+        return self.wait_future(future, timeout_s) and future.result() is not None
+
+    def exercise_native_costmap_blocked_route_replan(
+        self,
+        waypoint: dict,
+        planning_timeout_s: float,
+        clear_baseline: dict[str, object],
+        baseline_path,
+        baseline_path_status: str,
+    ):
+        """Mark the blockage, reject unapproved detours, wait, clear and replan."""
+        started = time.monotonic()
+        active_seen = self.wait_for_blockage_state(True, 15.0)
+        result: dict[str, object] = {
+            "scenario": "temporary_full_width_single_path_hallway_blockage",
+            "blockage_active_seen": active_seen,
+            "topology": (
+                "mission_authorized_single_path_with_unapproved_map_detour_available"
+            ),
+            "observation_source": "native_nav2_obstacle_layer_from_live_isaac_laserscan",
+            "nav2_dynamic_costmap_marking_credit": False,
+            "scenario_state_used_for_test_synchronization_only": True,
+            "scenario_state_exposed_to_policy": False,
+            "costmap_before_activation": clear_baseline,
+            "baseline": {
+                "planning_status": baseline_path_status,
+                "path_pose_count": (
+                    len(baseline_path.poses) if baseline_path is not None else 0
+                ),
+                "path_length_m": (
+                    round(path_length(baseline_path), 4)
+                    if baseline_path is not None
+                    else None
+                ),
+                "route_authorization": self.east_hallway_route_profile(baseline_path),
+            },
+            "attempts": [],
+        }
+        if not active_seen:
+            result["passed"] = False
+            result["status"] = "blockage_active_not_observed"
+            return None, result["status"], result
+
+        blocked_profile = self.wait_for_native_costmap_profile(
+            minimum_lethal_samples=20,
+            maximum_lethal_samples=None,
+            timeout_s=15.0,
+        )
+        start_odom_index = len(self.odom_samples)
+        start_pose = self.odom_samples[-1] if self.odom_samples else None
+        blocked_candidate, blocked_candidate_status = self.compute_path(
+            waypoint, planning_timeout_s
+        )
+        blocked_route_profile = self.east_hallway_route_profile(blocked_candidate)
+        result["native_global_costmap_during_blockage"] = blocked_profile
+        result["attempts"].append(
+            {
+                "attempt": 1,
+                "phase": "barrier_active",
+                "planning_status": blocked_candidate_status,
+                "path_pose_count": (
+                    len(blocked_candidate.poses)
+                    if blocked_candidate is not None
+                    else 0
+                ),
+                "path_length_m": (
+                    round(path_length(blocked_candidate), 4)
+                    if blocked_candidate is not None
+                    else None
+                ),
+                "path_blockage_profile": self.path_blockage_profile(
+                    blocked_candidate, (10.80, 0.0)
+                ),
+                "route_authorization": blocked_route_profile,
+            }
+        )
+        blocked_plan_rejected = (
+            blocked_candidate is None
+            or blocked_route_profile.get("authorized") is False
+        )
+        result["blocked_plan_rejected"] = blocked_plan_rejected
+        result["rejection_authority"] = (
+            "nav2_native_global_costmap"
+            if blocked_candidate is None
+            else "native_costmap_plan_plus_mission_route_authorization"
+        )
+
+        self.request_blockage_clear()
+        cleared_seen = self.wait_for_blockage_state(False, 15.0)
+        result["clearance_requested"] = True
+        result["blockage_cleared_seen"] = cleared_seen
+        # Replace the final obstacle-bearing observation buffers with several
+        # post-removal scans before clearing the costmap layers. Without this
+        # settle interval, an in-flight 2 Hz sample can immediately re-mark the
+        # barrier after the clear service returns.
+        if cleared_seen:
+            self.hold_stopped(2.5)
+        explicit_clear_succeeded = (
+            self.clear_native_global_costmap() if cleared_seen else False
+        )
+        result["explicit_global_costmap_clear_succeeded"] = explicit_clear_succeeded
+        cleared_profile = self.wait_for_native_costmap_profile(
+            minimum_lethal_samples=0,
+            maximum_lethal_samples=0,
+            timeout_s=15.0,
+        ) if explicit_clear_succeeded else {"available": False}
+        result["native_global_costmap_after_clearance"] = cleared_profile
+
+        end_pose = self.odom_samples[-1] if self.odom_samples else None
+        wait_samples = self.odom_samples[start_odom_index:]
+        wait_displacement = (
+            math.hypot(end_pose[0] - start_pose[0], end_pose[1] - start_pose[1])
+            if start_pose is not None and end_pose is not None
+            else None
+        )
+        result["safe_wait"] = {
+            "measurement_start": "after_native_costmap_marking",
+            "odometry_samples": len(wait_samples),
+            "maximum_absolute_linear_velocity_mps": max(
+                (abs(sample[2]) for sample in wait_samples), default=0.0
+            ),
+            "displacement_m": wait_displacement,
+            "elapsed_wall_s": round(time.monotonic() - started, 3),
+        }
+        before_lethal = int(clear_baseline.get("lethal_or_inscribed_samples", -1))
+        blocked_lethal = int(blocked_profile.get("lethal_or_inscribed_samples", 0))
+        cleared_lethal = int(cleared_profile.get("lethal_or_inscribed_samples", -1))
+        native_marking_credit = (
+            clear_baseline.get("available") is True
+            and before_lethal == 0
+            and blocked_lethal >= 20
+            and cleared_profile.get("available") is True
+            and cleared_lethal == 0
+        )
+        result["nav2_dynamic_costmap_marking_credit"] = native_marking_credit
+        baseline_authorized = result["baseline"]["route_authorization"].get(
+            "authorized"
+        ) is True
+        if not baseline_authorized:
+            result["passed"] = False
+            result["status"] = "clear_baseline_path_not_authorized"
+            return None, result["status"], result
+        if not blocked_plan_rejected:
+            result["passed"] = False
+            result["status"] = "blocked_candidate_remained_mission_authorized"
+            return None, result["status"], result
+        if not cleared_seen or not native_marking_credit:
+            result["passed"] = False
+            result["status"] = "native_costmap_did_not_clear"
+            return None, result["status"], result
+
+        fresh_path, fresh_status = self.compute_path(waypoint, planning_timeout_s)
+        fresh_route_profile = self.east_hallway_route_profile(fresh_path)
+        result["attempts"].append(
+            {
+                "attempt": 2,
+                "phase": "barrier_cleared",
+                "planning_status": fresh_status,
+                "path_pose_count": len(fresh_path.poses) if fresh_path is not None else 0,
+                "path_length_m": (
+                    round(path_length(fresh_path), 4)
+                    if fresh_path is not None
+                    else None
+                ),
+                "route_authorization": fresh_route_profile,
+            }
+        )
+        fresh_path_accepted = (
+            fresh_path is not None and fresh_route_profile.get("authorized") is True
+        )
+        result["fresh_path_computed_after_clearance"] = fresh_path_accepted
+        result["planner_attempt_count"] = 2
+        result["replan_mode"] = "fresh_compute_path_to_pose_after_native_clearance"
+        result["passed"] = fresh_path_accepted
+        result["status"] = (
+            "succeeded"
+            if fresh_path_accepted
+            else "fresh_path_outside_mission_authorized_route"
+            if fresh_path is not None
+            else fresh_status
+        )
+        return (fresh_path if fresh_path_accepted else None), result["status"], result
+
     def pivot_in_place(
         self,
         direction: float = 1.0,
@@ -869,6 +1116,7 @@ def main() -> int:
             "nav2_mapped_doorway_phase6_high_speed_safety",
             "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
             PHASE7B_CONTROL_STACK,
+            PHASE7D_CONTROL_STACK,
         ),
         default="nav2",
         help="declare the independently launched bridge command-arbitration mode",
@@ -917,6 +1165,8 @@ def main() -> int:
                 == "nav2_mapped_doorway_phase7_dynamic_crossing_safety"
                 else "nav2_phase6_and_phase3n_learned_safety_with_blocked_route_replanning"
                 if args.control_stack == PHASE7B_CONTROL_STACK
+                else "nav2_phase6_and_phase3n_learned_safety_with_native_costmap_safe_wait"
+                if args.control_stack == PHASE7D_CONTROL_STACK
                 else "nav2_phase6_and_phase3n_learned_safety"
                 if args.control_stack in PHASE6_CONTROL_STACKS
                 else args.control_stack
@@ -926,7 +1176,9 @@ def main() -> int:
                     break
                 leg_started = time.monotonic()
                 route_segment_id = index - 1
-                mission.publish_route_segment(route_segment_id)
+                clear_costmap_baseline = None
+                clear_path_baseline = None
+                clear_path_baseline_status = "not_requested"
                 navigation_waypoint = dict(waypoint)
                 offset = OFFICE_STAGING_OFFSETS_M.get(waypoint["id"], (0.0, 0.0))
                 navigation_waypoint["x_m"] = float(waypoint["x_m"]) + offset[0]
@@ -964,16 +1216,43 @@ def main() -> int:
                         stage_x - float(waypoint["x_m"]),
                         stage_y - float(waypoint["y_m"]),
                     )
-                blocked_route_replanning = None
                 if (
-                    args.control_stack == PHASE7B_CONTROL_STACK
+                    args.control_stack == PHASE7D_CONTROL_STACK
                     and route_segment_id == 1
                 ):
-                    path, planning_status, blocked_route_replanning = (
-                        mission.exercise_blocked_route_replan(
+                    mission.hold_stopped(1.5)
+                    clear_costmap_baseline = mission.wait_for_native_costmap_profile(
+                        minimum_lethal_samples=0,
+                        maximum_lethal_samples=0,
+                        timeout_s=5.0,
+                    )
+                    clear_path_baseline, clear_path_baseline_status = (
+                        mission.compute_path(
                             navigation_waypoint, args.planning_timeout_s
                         )
                     )
+                mission.publish_route_segment(route_segment_id)
+                blocked_route_replanning = None
+                if (
+                    args.control_stack in {PHASE7B_CONTROL_STACK, PHASE7D_CONTROL_STACK}
+                    and route_segment_id == 1
+                ):
+                    if args.control_stack == PHASE7D_CONTROL_STACK:
+                        path, planning_status, blocked_route_replanning = (
+                            mission.exercise_native_costmap_blocked_route_replan(
+                                navigation_waypoint,
+                                args.planning_timeout_s,
+                                clear_costmap_baseline or {"available": False},
+                                clear_path_baseline,
+                                clear_path_baseline_status,
+                            )
+                        )
+                    else:
+                        path, planning_status, blocked_route_replanning = (
+                            mission.exercise_blocked_route_replan(
+                                navigation_waypoint, args.planning_timeout_s
+                            )
+                        )
                 else:
                     path, planning_status = mission.compute_path(
                         navigation_waypoint, args.planning_timeout_s
@@ -1177,6 +1456,7 @@ def main() -> int:
                 "nav2_mapped_doorway_phase6_high_speed_safety",
                 "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
                 PHASE7B_CONTROL_STACK,
+                PHASE7D_CONTROL_STACK,
             },
             "learned_360_safety_coupled": (
                 args.control_stack
@@ -1186,6 +1466,7 @@ def main() -> int:
                     "nav2_mapped_doorway_phase6_high_speed_safety",
                     "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
                     PHASE7B_CONTROL_STACK,
+                    PHASE7D_CONTROL_STACK,
                 }
             ),
             "mapped_doorway_safety_coupled": (
@@ -1195,6 +1476,7 @@ def main() -> int:
                     "nav2_mapped_doorway_phase6_high_speed_safety",
                     "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
                     PHASE7B_CONTROL_STACK,
+                    PHASE7D_CONTROL_STACK,
                 }
             ),
             "phase6_high_speed_safety_coupled": (
@@ -1206,6 +1488,9 @@ def main() -> int:
             ),
             "phase7b_blocked_route_replanning_coupled": (
                 args.control_stack == PHASE7B_CONTROL_STACK
+            ),
+            "phase7d_administration_native_costmap_coupled": (
+                args.control_stack == PHASE7D_CONTROL_STACK
             ),
             "blocked_route_replanning": next(
                 (

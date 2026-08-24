@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev S - 2026-08-24 - Phase 7C native-costmap spatial detour accepted**
+**Rev T - 2026-08-24 - Phase 7D administration native-costmap safe wait accepted**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -85,9 +85,10 @@ Evidence: `results/administration_nav2_phase7_dynamic_mission.json`,
 
 ## Latest blocked-route gate
 
-Phase 7B adds a visible 2.90 m full-width temporary barricade to the single-path
-east office hallway. The administration topology has no alternate corridor, so
-the correct behavior is safe wait rather than a fabricated spatial detour. Nav2
+Phase 7B adds a visible 2.90 m full-width temporary barricade to the
+mission-authorized east office hallway route. No alternate corridor is approved
+for that leg, so the correct behavior is safe wait rather than entering other
+administration spaces as an unscheduled detour. Nav2
 first generated a 2,554-pose candidate; the independent supervisory validator
 rejected it because the registered live front-LiDAR points came within 0.01371 m
 of the path against a 0.46 m required radial clearance. The robot then held
@@ -146,10 +147,49 @@ Evidence: `results/phase7c_native_costmap_detour_mission.json`,
 `results/phase7c_native_costmap_detour_bridge.json` and
 `results/phase7c_native_costmap_detour_integration_gate.json`.
 
-This is an isolated architecture gate. It does not invent an alternate route
-in the administration hallway, which remains correctly represented as
-single-path, and it earns no physical-localization, stopping-distance,
-sim-to-real, safety-certification or deployment credit.
+This is an isolated architecture gate. It does not authorize an alternate route
+for the administration east-hallway leg and it earns no physical-localization,
+stopping-distance, sim-to-real, safety-certification or deployment credit.
+
+## Latest administration native-costmap gate
+
+Phase 7D applies the Phase 7C height-filter correction in a new administration
+runtime profile while leaving the accepted profile frozen. Both local and
+global costmaps explicitly accept the 2.00 m front and 2.20 m crown scan heights;
+`inf_is_valid` also lets no-return rays clear marks after an obstacle is removed.
+All accepted footprint, speed, doorway, controller and reverse-disabled settings
+are otherwise unchanged.
+
+In the live measured-presentation scene, the 33 sampled east-hallway cells
+changed from 0/33 lethal or inscribed to 33/33 after the scan-visible barricade
+appeared. Nav2 changed its 12.7977 m direct plan into a 36.4601 m map-connected
+detour through administration spaces outside the approved east-hallway mission
+envelope. AI-SHA correctly rejected that unscheduled route and waited at no more
+than 0.000192 m/s with effectively zero displacement. After physical barrier
+removal, post-removal scan settling and an explicit global-costmap clear, the
+same cells returned to 0/33; a fresh authorized 12.7977 m plan was executed at
+up to 0.74560 m/s. The accepted Phase 6/3N learned safety remained in the loop,
+with 0.37798 m minimum 360-degree clearance. The formal gate passes 32/32 and
+retains Phase 6 28/28, Phase 7A 24/24, Phase 7B 26/26 and Phase 7C 29/29.
+
+Reproduce it with:
+
+```bash
+tools/run_administration_nav2_phase7d_native_costmap_integration.sh
+```
+
+Evidence: `results/administration_nav2_phase7d_native_costmap_mission.json`,
+`results/administration_nav2_phase7d_native_costmap_bridge.json` and
+`results/administration_nav2_phase7d_native_costmap_integration_gate.json`.
+
+The live Phase 7D gate is intentionally scoped to the first two administration
+legs. A diagnostic full-mission attempt showed that newly visible office clutter
+can make the post-visit Vice-Principal departure infeasible to Navfn. The older
+accepted 12-leg Phase 7B gate retains doorway and office-pivot evidence, but it
+does not close this new-profile limitation. Full-office native-costmap clutter
+classification/refinement is therefore required before the final operator-facing
+capture. This earns no physical-localization, stopping-distance, sim-to-real,
+safety-certification or deployment credit.
 
 ## Latest live autonomy gate
 
