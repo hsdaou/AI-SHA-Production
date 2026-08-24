@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev V - 2026-08-24 - Phase 7F operator Omniverse capture accepted**
+**Rev W - 2026-08-24 - Phase 8A physical-localization preflight prepared**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -59,6 +59,39 @@ with:
 ```bash
 tools/run_administration_nav2_phase7f_operator_presentation.sh
 ```
+
+## Phase 8A physical-localization preflight
+
+The first sim-to-real phase now has a fail-safe, localization-only ROS 2 graph
+for Rev D. It uses real time, a differential AMCL model, raw encoder odometry on
+`/wheel/odom_raw`, BNO055 input on `/imu/data`, filtered output on
+`/odometry/filtered`, and explicit single ownership of the `map -> odom ->
+base_link` TF chain. The launch file contains no Nav2 controller, planner, motor
+node, velocity smoother or `/cmd_vel` publisher.
+
+The offline preparation gate passes 23/23. A two-second host probe correctly
+remains blocked at 1/14 because this workstation is not the physical robot and
+has no live LD19, BNO055, Rev D encoder odometry or localization TF graph. No
+dummy odometry or simulated sensor data was substituted.
+
+The audit also quarantines the production repository's older mecanum driver and
+Nav2 profile: they use four-wheel holonomic kinematics and cannot be applied to
+the two-wheel Rev D platform. The next executable gate is a drive-isolated,
+wheels-chocked stationary test after a Rev D differential encoder adapter and
+the declared ROS dependencies are installed. The target physical ROS
+distribution must also be frozen: simulation is pinned to Jazzy while the
+existing Pi/Jetson launch contract requires Humble, and cross-distro Nav2 is not
+authorized. See
+`PHYSICAL_LOCALIZATION_COMMISSIONING.md` and run:
+
+```bash
+tools/run_phase8a_physical_localization_preflight.sh
+```
+
+Physical doorway motion remains prohibited. The reported 0.85 m opening is
+below the Rev D 0.92 m physical minimum and 0.078 m narrower than the 0.928 m
+production padded width. The accepted simulation presentation remains valid,
+but its 0.030 m padding exception is not transferred to hardware.
 
 ## Latest dynamic-autonomy gate
 

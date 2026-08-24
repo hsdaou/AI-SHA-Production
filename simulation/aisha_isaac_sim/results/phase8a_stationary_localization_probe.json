@@ -1,0 +1,53 @@
+{
+  "report_type": "phase8a_stationary_localization_runtime_probe",
+  "generated_at_utc": "2026-08-24T11:34:53.066627+00:00",
+  "passed": false,
+  "status": "stationary_runtime_gate_blocked",
+  "duration_s": 2.0,
+  "checks": {
+    "crown_scan_rate": false,
+    "imu_rate": false,
+    "raw_wheel_odometry_rate": false,
+    "filtered_odometry_rate": false,
+    "crown_scan_frame": false,
+    "imu_frame": false,
+    "raw_wheel_odometry_frames": false,
+    "filtered_odometry_frames": false,
+    "scan_contains_finite_returns": false,
+    "imu_quaternion_is_normalized": false,
+    "robot_remained_stationary_linear": false,
+    "robot_remained_stationary_angular": false,
+    "required_tf_chain_available": false,
+    "no_cmd_vel_publisher_present": true
+  },
+  "checks_passed": 1,
+  "checks_total": 14,
+  "observed_rates_hz": {
+    "scan": 0.0,
+    "imu": 0.0,
+    "wheel_odom": 0.0,
+    "filtered_odom": 0.0
+  },
+  "observed_frames": {
+    "scan": [],
+    "imu": [],
+    "wheel_odom": [],
+    "filtered_odom": []
+  },
+  "transform_checks": {
+    "map->odom": false,
+    "odom->base_link": false,
+    "base_link->lidar_link": false,
+    "base_link->imu_link": false
+  },
+  "scan_finite_fraction_min": 1.0,
+  "imu_quaternion_norm_error_max": 0.0,
+  "stationary_linear_speed_max_mps": 0.0,
+  "stationary_angular_speed_max_rad_s": 0.0,
+  "cmd_vel_publisher_count": 0,
+  "motion_command_published_by_probe": false,
+  "stationary_runtime_gate_passed": false,
+  "physical_runtime_ready": false,
+  "motion_authorized": false,
+  "physical_release": false
+}

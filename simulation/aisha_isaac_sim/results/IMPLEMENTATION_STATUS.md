@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, the 26/26 Phase 7B registered-LiDAR blocked-route gate, the isolated 29/29 Phase 7C native-costmap spatial-detour gate, the scoped 32/32 Phase 7D administration native-costmap gate, the 40/40 Phase 7E full-office static-map/live-LiDAR fusion gate, and the 19/19 Phase 7F operator-presentation gate. Physical release remains pending.**
+**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, the 26/26 Phase 7B registered-LiDAR blocked-route gate, the isolated 29/29 Phase 7C native-costmap spatial-detour gate, the scoped 32/32 Phase 7D administration native-costmap gate, the 40/40 Phase 7E full-office static-map/live-LiDAR fusion gate, the 19/19 Phase 7F operator-presentation gate, and the 23/23 Phase 8A offline physical-localization preparation gate. The non-robot host probe remains blocked at 1/14 and physical release remains pending.**
 
 ## Completed
 
@@ -446,6 +446,16 @@
   The source motion remains the 40/40 live Phase 7E run. The environment is a
   plan-, scan- and walkthrough-informed presentation twin, not photogrammetry,
   an as-built survey or physical-release evidence.
+- Phase 8A adds a stationary, zero-command Rev D physical-localization
+  preflight. Differential AMCL, a planar encoder/BNO055 EKF, a TF-only Rev D
+  sensor model and a localization-only launch graph pass 23/23 offline checks.
+  The read-only runtime probe publishes no command and verifies that `/cmd_vel`
+  has no publisher. Its current workstation result is correctly blocked at
+  1/14 because there is no physical sensor/odometry/TF graph. The audit
+  quarantines the legacy four-wheel mecanum driver, records the missing Rev D
+  differential encoder adapter and retains every physical hold point.
+  It also blocks a distributed runtime until one ROS 2 baseline replaces the
+  current simulation-Jazzy versus production-launch-Humble split.
 
 ## Deterministic contact tuning disclosure
 
@@ -534,15 +544,15 @@ These are evidence-based project-management estimates, not safety ratings:
 | Measured digital twin | 68% |
 | Nav2/localisation integration | 96% |
 | Dynamic-obstacle simulation safety | 94% |
-| Physical deployment readiness | 30% |
+| Physical deployment readiness | 34% |
 | Overall end objective | 89% |
 
-The latest increase comes from completing the operator-facing Full HD
-PathTracing capture and its 19/19 hash-linked acceptance gate on top of the
-accepted 12-leg native-costmap mission. The immediate next gate is real
-localisation and physical sim-to-real commissioning; this includes measured
-threshold/destination review, all-direction protective sensing, stopping
-distance and hardware safety validation.
+The latest physical-readiness increase comes from the 23/23 fail-safe offline
+localization preparation: Rev D AMCL/EKF and TF contracts, a zero-command launch
+graph, read-only runtime observer and explicit legacy-kinematics quarantine. It
+does not increase the 89% overall end objective because no physical runtime gate
+has passed. The next gate is the drive-isolated 14/14 stationary test after the
+Rev D differential encoder adapter and ROS dependencies are available.
 
 ## Evidence
 
@@ -659,6 +669,8 @@ distance and hardware safety validation.
 - `administration_nav2_phase7f_operator_replay_validation.json`
 - `administration_nav2_phase7f_operator_rtx_render_report.json`
 - `administration_nav2_phase7f_operator_presentation_acceptance.json`
+- `phase8a_physical_localization_preflight.json`
+- `phase8a_stationary_localization_probe.json`
 - `administration_nav2_phase6_rtx_presentation_acceptance.json`
 - `administration_nav2_phase7_dynamic_mission.json`
 - `administration_nav2_phase7_dynamic_bridge.json`

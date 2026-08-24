@@ -2,7 +2,7 @@
 # This file describes a real physics-driven learning task. It is not a claim of
 # physical release or successful sim-to-real transfer.
 
-revision: "TRAINING-PHASE7F-OPERATOR-P"
+revision: "TRAINING-PHASE8A-PREFLIGHT-Q"
 date: "2026-08-24"
 
 software_baseline:
@@ -1066,8 +1066,14 @@ release:
   phase7f_operator_omniverse_presentation_available: true
   phase7f_operator_omniverse_presentation_validated: true
   phase7f_operator_presentation_checks_passed: "19/19"
+  phase8a_physical_localization_offline_preflight_available: true
+  phase8a_physical_localization_offline_preflight_passed: true
+  phase8a_physical_localization_offline_checks_passed: "23/23"
+  phase8a_stationary_runtime_checks_passed: "1/14"
+  phase8a_stationary_runtime_gate_passed: false
+  phase8a_physical_runtime_ready: false
   nav2_integrated_in_simulation: true
   nav2_ground_truth_localization_only: true
   nav2_integrated: true
   physical_robot_release: false
-  required_next_gate: "Begin physical localization and sim-to-real commissioning; validate thresholds and destination-specific clearances, real localization, all-direction protective sensing, stopping distance and hardware safety before any physical release"
+  required_next_gate: "Freeze one physical ROS 2 distribution across Pi, Jetson and workstation, install the declared Nav2 and robot_localization dependencies, implement and bench-validate the Rev D differential encoder adapter, then pass the drive-isolated 14/14 stationary sensor/TF gate before wheel motion"

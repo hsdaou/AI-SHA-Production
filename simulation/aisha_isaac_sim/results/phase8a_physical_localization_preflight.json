@@ -1,0 +1,144 @@
+{
+  "report_type": "phase8a_physical_localization_offline_preflight",
+  "generated_at_utc": "2026-08-24T11:36:07.837499+00:00",
+  "passed": true,
+  "preparation_passed": true,
+  "status": "accepted_offline_preflight_runtime_blocked",
+  "checks": {
+    "rev_d_differential_contract_matches_design_source": true,
+    "physical_footprint_matches_rev_d_source": true,
+    "production_padding_retained": true,
+    "real_time_localization_only": true,
+    "amcl_uses_rev_d_differential_model_and_real_scan": true,
+    "ekf_has_single_tf_ownership_and_separate_raw_output_topics": true,
+    "ekf_is_planar_and_imu_heading_is_relative": true,
+    "tf_only_urdf_contains_required_frames": true,
+    "tf_only_urdf_matches_sensor_design_coordinates": true,
+    "launch_contains_localization_nodes_only": true,
+    "launch_does_not_start_legacy_mecanum_driver": true,
+    "runtime_probe_is_read_only": true,
+    "presentation_map_is_hash_locked": true,
+    "presentation_map_cannot_authorize_motion": true,
+    "doorway_conflict_is_numerically_explicit": true,
+    "all_motion_and_release_authority_is_false": true,
+    "commissioning_sequence_is_monotonic_and_starts_stationary": true,
+    "legacy_mecanum_stack_is_detected_and_quarantined": true,
+    "missing_ros_dependencies_are_recorded_as_blocker": true,
+    "ros_distribution_split_is_detected_and_blocks_runtime": true,
+    "critical_physical_blockers_are_complete": true,
+    "robot_bringup_declares_localization_dependencies": true,
+    "simulation_success_retained_without_physical_credit": true
+  },
+  "checks_passed": 23,
+  "checks_total": 23,
+  "host_dependency_status": {
+    "nav2_amcl": false,
+    "nav2_map_server": false,
+    "nav2_lifecycle_manager": false,
+    "robot_localization": false,
+    "robot_state_publisher": true
+  },
+  "missing_runtime_dependencies": [
+    "nav2_amcl",
+    "nav2_map_server",
+    "nav2_lifecycle_manager",
+    "robot_localization"
+  ],
+  "runtime_probe": {
+    "report_type": "phase8a_stationary_localization_runtime_probe",
+    "generated_at_utc": "2026-08-24T11:34:53.066627+00:00",
+    "passed": false,
+    "status": "stationary_runtime_gate_blocked",
+    "duration_s": 2.0,
+    "checks": {
+      "crown_scan_rate": false,
+      "imu_rate": false,
+      "raw_wheel_odometry_rate": false,
+      "filtered_odometry_rate": false,
+      "crown_scan_frame": false,
+      "imu_frame": false,
+      "raw_wheel_odometry_frames": false,
+      "filtered_odometry_frames": false,
+      "scan_contains_finite_returns": false,
+      "imu_quaternion_is_normalized": false,
+      "robot_remained_stationary_linear": false,
+      "robot_remained_stationary_angular": false,
+      "required_tf_chain_available": false,
+      "no_cmd_vel_publisher_present": true
+    },
+    "checks_passed": 1,
+    "checks_total": 14,
+    "observed_rates_hz": {
+      "scan": 0.0,
+      "imu": 0.0,
+      "wheel_odom": 0.0,
+      "filtered_odom": 0.0
+    },
+    "observed_frames": {
+      "scan": [],
+      "imu": [],
+      "wheel_odom": [],
+      "filtered_odom": []
+    },
+    "transform_checks": {
+      "map->odom": false,
+      "odom->base_link": false,
+      "base_link->lidar_link": false,
+      "base_link->imu_link": false
+    },
+    "scan_finite_fraction_min": 1.0,
+    "imu_quaternion_norm_error_max": 0.0,
+    "stationary_linear_speed_max_mps": 0.0,
+    "stationary_angular_speed_max_rad_s": 0.0,
+    "cmd_vel_publisher_count": 0,
+    "motion_command_published_by_probe": false,
+    "stationary_runtime_gate_passed": false,
+    "physical_runtime_ready": false,
+    "motion_authorized": false,
+    "physical_release": false
+  },
+  "stationary_runtime_gate_passed": false,
+  "physical_runtime_ready": false,
+  "motion_authorized": false,
+  "doorway_traversal_authorized": false,
+  "physical_release": false,
+  "hard_blockers": [
+    {
+      "id": "ros_dependencies_missing_on_current_workstation",
+      "detail": "nav2_amcl, nav2_map_server, nav2_lifecycle_manager and robot_localization are not installed"
+    },
+    {
+      "id": "rev_d_differential_encoder_adapter_missing",
+      "detail": "existing production mecanum_driver uses four-wheel mecanum kinematics and cannot command or estimate the Rev D two-wheel differential drive"
+    },
+    {
+      "id": "encoder_scale_not_calibrated",
+      "detail": "confirm delivered wheel loaded rolling circumference and whether the driver count is 4096 or 16384 per revolution"
+    },
+    {
+      "id": "map_not_as_built",
+      "detail": "current occupancy map is plan/capture-informed presentation geometry and is not physical-clearance authority"
+    },
+    {
+      "id": "physical_door_width_conflict",
+      "detail": "reported 0.85 m opening is below the Rev D 0.92 m physical minimum and below the 0.928 m production padded width"
+    },
+    {
+      "id": "protective_stop_not_commissioned",
+      "detail": "all-direction sensing, hardwired emergency stop, bumpers and measured stopping distance remain unverified"
+    },
+    {
+      "id": "ros_distribution_contract_unresolved",
+      "detail": "simulation is pinned to Jazzy while existing Pi/Jetson production launch documentation requires Humble; cross-distro Nav2 is prohibited"
+    }
+  ],
+  "source_hashes": {
+    "profile": "260009808342b59f0aa88441aef0787db7159375e6eaeeeb23400e0cde0bcb4d",
+    "drive_contract": "af28f6bac76536c8f80aee815e55e4146bb259b72307f92393227641ec336235",
+    "amcl_config": "8cdcd83985fd6925a1cce8f1e4d6028ea58663f6635f56ccc973e3f64785d133",
+    "ekf_config": "b342ecf8a844b82e4ac04f120f1b1f121fd5937ec34af83f2e464fa77a0deb78",
+    "localization_urdf": "00d189bee269dd5c609a705bf1fec40369923ff0bc3b7ad89c016c389621d90d",
+    "launch": "9de4b38ee8c935f90f97d4eeca054d6cece5cc899cd26e7f12ee83fdf6577dc9",
+    "stationary_probe": "1baa5465c3ba01d0b19c0b344ef4ebb76252f7d9cf9768fa83c1b199f362d590"
+  }
+}
