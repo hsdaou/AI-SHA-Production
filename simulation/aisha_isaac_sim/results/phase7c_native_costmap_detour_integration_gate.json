@@ -1,0 +1,75 @@
+{
+  "report_type": "phase7c_native_costmap_detour_integration_gate",
+  "generated_at_utc": "2026-08-24T07:26:41.188129+00:00",
+  "passed": true,
+  "status": "accepted_native_nav2_dynamic_costmap_spatial_detour",
+  "checks": {
+    "phase6_static_baseline_retained": true,
+    "phase7a_crossing_baseline_retained": true,
+    "phase7b_safe_wait_baseline_retained": true,
+    "bridge_passed": true,
+    "native_detour_task_selected": true,
+    "mission_passed": true,
+    "static_baseline_selected_top_branch": true,
+    "blocker_absent_from_initial_centre_cell": true,
+    "blockage_activation_synchronized": true,
+    "native_global_costmap_centre_became_lethal": true,
+    "native_lethal_surface_expanded_across_branch": true,
+    "fresh_nav2_path_selected_bottom_branch": true,
+    "detour_is_spatially_distinct_and_longer": true,
+    "detour_executed_successfully": true,
+    "goal_disc_reached": true,
+    "blockage_remained_active_during_execution": true,
+    "episode_never_reset_or_collided": true,
+    "mission_completion_reached_bridge": true,
+    "accepted_phase6_checkpoint_loaded": true,
+    "learned_360_safety_remained_in_loop": true,
+    "positive_360_clearance_retained": true,
+    "no_privileged_policy_blocker_state": true,
+    "native_nav2_observation_claim_is_explicit": true,
+    "real_alternate_route_topology_is_explicit": true,
+    "live_scan_streams_exercised": true,
+    "per_source_height_filter_fix_is_explicit": true,
+    "both_costmaps_consume_both_live_scans": true,
+    "command_speed_stayed_within_phase7c_profile": true,
+    "localization_and_physical_claim_boundary_retained": true
+  },
+  "checks_passed": 29,
+  "checks_total": 29,
+  "retention": {
+    "phase6": {
+      "passed": true,
+      "checks": "28/28"
+    },
+    "phase7a": {
+      "passed": true,
+      "checks": "24/24"
+    },
+    "phase7b": {
+      "passed": true,
+      "checks": "26/26"
+    }
+  },
+  "native_costmap": {
+    "before_centre_cost": 0,
+    "blocked_centre_cost": 253,
+    "before_lethal_samples": 9,
+    "blocked_lethal_samples": 27,
+    "source": "native_nav2_obstacle_layer_from_live_isaac_laserscan"
+  },
+  "replanning": {
+    "baseline_branch": "top",
+    "baseline_path_length_m": 10.135750894472872,
+    "blocked_route_branch": "bottom",
+    "detour_path_length_m": 11.141590221446535,
+    "executed": true,
+    "final_goal_distance_m": 0.29992538340923103
+  },
+  "learned_safety": {
+    "checkpoint_sha256": "e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318",
+    "authority_steps": 125,
+    "brake_steps": 113,
+    "minimum_360_clearance_m": 0.11033
+  },
+  "claim_boundary": "Accepted only as an isolated Isaac Sim/Nav2 integration gate: live Isaac LaserScan returns marked Nav2's native costmap, changed a top-branch plan into a bottom-branch detour, and the learned-safety-coupled robot executed it. The administration hallway remains single-path; this does not add an alternate route there or provide physical localization, stopping-distance, sim-to-real, safety-certification, or deployment credit."
+}

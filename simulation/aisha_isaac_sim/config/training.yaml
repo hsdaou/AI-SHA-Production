@@ -1046,8 +1046,12 @@ release:
   phase7_blocked_route_replanning_passed: true
   phase7_blocked_route_sensor_supervisor_passed: true
   phase7_blocked_route_spatial_detour_passed: false
+  phase7c_native_nav2_dynamic_costmap_marking_passed: true
+  phase7c_isolated_two_route_spatial_detour_passed: true
+  phase7c_learned_safety_detour_execution_passed: true
+  phase7c_administration_alternate_route_claimed: false
   nav2_integrated_in_simulation: true
   nav2_ground_truth_localization_only: true
   nav2_integrated: true
   physical_robot_release: false
-  required_next_gate: "Demonstrate native Nav2 dynamic-costmap marking and an environment with a real alternate route, without regressing the accepted Phase 6, Phase 7A or Phase 7B missions; physical deployment separately requires threshold and destination-specific clearance verification, real localisation validation, sim-to-real testing, all-direction protective sensing, stopping-distance validation and hardware safety commissioning"
+  required_next_gate: "Apply the explicit per-source Nav2 obstacle-height fix in a new administration runtime profile, reproduce native dynamic marking plus safe wait/fresh planning in the real single-path administration topology, then produce the operator-facing Omniverse/Nav2 presentation capture; physical deployment separately requires threshold and destination-specific clearance verification, real localisation validation, sim-to-real testing, all-direction protective sensing, stopping-distance validation and hardware safety commissioning"

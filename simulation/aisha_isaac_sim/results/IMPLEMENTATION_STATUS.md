@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, and the 26/26 Phase 7B registered-LiDAR blocked-route safe-wait/fresh-plan gate. Physical release remains pending.**
+**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, the 26/26 Phase 7B registered-LiDAR blocked-route safe-wait/fresh-plan gate, and the isolated 29/29 Phase 7C native-costmap spatial-detour gate. Physical release remains pending.**
 
 ## Completed
 
@@ -398,6 +398,15 @@
   gate passes 26/26 while retaining Phase 6 at 28/28 and Phase 7A at 24/24.
   This is a supervisory sensor-validation result, not Nav2 dynamic-costmap,
   alternate-route, persistent-blockage or physical-safety evidence.
+- Phase 7C isolates the missing native Nav2 behavior in a real two-route Isaac
+  loop without changing the administration topology. Explicit 2.00/2.20 m
+  per-source obstacle heights correct Nav2 Jazzy's zero-height filtering. The
+  future blocker-centre cost changed from 0 to 253 and lethal/inscribed samples
+  across the branch increased from 9/27 to 27/27. Nav2 changed from a
+  10.13575 m top path to an 11.14159 m bottom detour; the learned-safety-coupled
+  robot executed it collision-free with the blocker still active. The gate
+  passes 29/29 while retaining Phase 6 28/28, Phase 7A 24/24 and Phase 7B 26/26.
+  This does not claim an alternate administration route or physical safety.
 
 ## Deterministic contact tuning disclosure
 
@@ -482,16 +491,17 @@ These are evidence-based project-management estimates, not safety ratings:
 | Presentation-ready Omniverse simulation | 94% |
 | Learned navigation and doorway handling | 92% |
 | Measured digital twin | 68% |
-| Nav2/localisation integration | 86% |
-| Dynamic-obstacle simulation safety | 89% |
+| Nav2/localisation integration | 90% |
+| Dynamic-obstacle simulation safety | 91% |
 | Physical deployment readiness | 30% |
-| Overall end objective | 82% |
+| Overall end objective | 84% |
 
-The latest increase comes from adding registered-LiDAR candidate rejection,
-safe wait and fresh planning for a full-width single-path blockage while
-retaining the 0.80 m/s static tier, Phase 7A crossing, doorway and central-drop
-gates. The remaining work is dominated by native Nav2 dynamic-costmap and
-alternate-route evidence, real localisation, scan/visual refinement,
+The latest increase comes from native Nav2 dynamic-costmap marking, genuine
+alternate-branch planning and collision-free learned-safety-coupled execution
+in the isolated Phase 7C loop, while retaining the 0.80 m/s static tier, Phase
+7A crossing, Phase 7B safe wait, doorway and central-drop gates. The remaining
+work is dominated by applying the corrected native-costmap profile to the
+single-path administration scenario, real localisation, scan/visual refinement,
 operator-facing capture and physical sim-to-real commissioning.
 
 ## Evidence
@@ -591,6 +601,9 @@ operator-facing capture and physical sim-to-real commissioning.
 - `administration_nav2_phase7b_blocked_route_mission.json`
 - `administration_nav2_phase7b_blocked_route_bridge.json`
 - `administration_nav2_phase7b_blocked_route_integration_gate.json`
+- `phase7c_native_costmap_detour_mission.json`
+- `phase7c_native_costmap_detour_bridge.json`
+- `phase7c_native_costmap_detour_integration_gate.json`
 - `administration_nav2_phase6_rtx_presentation_acceptance.json`
 - `administration_nav2_phase7_dynamic_mission.json`
 - `administration_nav2_phase7_dynamic_bridge.json`

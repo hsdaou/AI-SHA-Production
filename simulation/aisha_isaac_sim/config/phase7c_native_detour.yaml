@@ -1,0 +1,51 @@
+phase: 7C
+status: accepted_native_nav2_dynamic_costmap_spatial_detour
+accepted_at: "2026-08-24"
+
+scenario:
+  topology: two_route_loop_spatial_detour_available
+  static_baseline_branch: top
+  blocked_route_branch: bottom
+  temporary_barricade_centre_xy_m: [6.00, 2.10]
+  temporary_barricade_size_xyz_m: [0.36, 1.65, 1.20]
+  administration_topology_changed: false
+
+observation:
+  source: isaac_crown_and_front_laserscan
+  nav2_layer: nav2_costmap_2d::ObstacleLayer
+  per_source_height_filter_fix:
+    crown_max_obstacle_height_m: 2.20
+    front_max_obstacle_height_m: 2.00
+  policy_privileged_state: false
+  planner_privileged_state: false
+  scenario_state_use: deterministic_test_synchronization_only
+
+native_costmap_evidence:
+  before_centre_cost: 0
+  blocked_centre_cost: 253
+  before_lethal_or_inscribed_samples: 9
+  blocked_lethal_or_inscribed_samples: 27
+  baseline_path_length_m: 10.135750894472872
+  detour_path_length_m: 11.141590221446535
+  accepted_run_final_goal_distance_m: 0.29992538340923103
+  final_goal_distance_acceptance_max_m: 0.32
+
+acceptance:
+  phase7c_checks: 29
+  phase7c_checks_passed: 29
+  phase6_retention_checks: 28
+  phase6_retention_checks_passed: 28
+  phase7a_retention_checks: 24
+  phase7a_retention_checks_passed: 24
+  phase7b_retention_checks: 26
+  phase7b_retention_checks_passed: 26
+  report: results/phase7c_native_costmap_detour_integration_gate.json
+
+claim_boundary:
+  native_nav2_dynamic_costmap_marking: true
+  spatial_detour: true
+  learned_360_safety_coupled: true
+  administration_alternate_route: false
+  physical_localization_credit: false
+  physical_safety_credit: false
+  physical_release: false

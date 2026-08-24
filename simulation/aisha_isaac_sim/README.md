@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev R - 2026-08-24 - Phase 7B blocked-route safe-wait replanning accepted**
+**Rev S - 2026-08-24 - Phase 7C native-costmap spatial detour accepted**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -115,6 +115,41 @@ tools/run_administration_nav2_phase7b_blocked_route_integration.sh
 Evidence: `results/administration_nav2_phase7b_blocked_route_mission.json`,
 `results/administration_nav2_phase7b_blocked_route_bridge.json` and
 `results/administration_nav2_phase7b_blocked_route_integration_gate.json`.
+
+## Latest native-costmap detour gate
+
+Phase 7C fixes the Nav2 Jazzy observation-source height filter in a separate,
+isolated profile. Nav2 had defaulted each source's maximum obstacle height to
+0.0 m, silently rejecting valid AI-SHA returns at 0.25 m and 1.86 m despite the
+layer-level 2 m limit. The Phase 7C profile explicitly sets 2.00 m for the front
+scanner and 2.20 m for the crown scanner; the accepted administration profiles
+and their evidence remain frozen.
+
+The compact Isaac loop has two genuine footprint-feasible branches around a
+central island. With no blocker, Nav2 selected the 10.13575 m top branch and the
+future blocker-centre cost was zero. After a visible, scan-only barricade was
+activated, Nav2's own published global costmap changed the centre to cost 253
+and all 27 sampled cells across the branch became lethal/inscribed. A fresh
+Nav2 request selected the spatially distinct 11.14159 m bottom branch. The
+accepted Phase 6 learned 360-degree safety layer remained the final authority
+over `/cmd_vel`; AI-SHA executed the detour collision-free and entered the
+0.30 m goal disc while the barricade remained present. The formal gate passes
+29/29 and retains Phase 6 at 28/28, Phase 7A at 24/24 and Phase 7B at 26/26.
+
+Reproduce it with:
+
+```bash
+tools/run_phase7c_native_detour_integration.sh
+```
+
+Evidence: `results/phase7c_native_costmap_detour_mission.json`,
+`results/phase7c_native_costmap_detour_bridge.json` and
+`results/phase7c_native_costmap_detour_integration_gate.json`.
+
+This is an isolated architecture gate. It does not invent an alternate route
+in the administration hallway, which remains correctly represented as
+single-path, and it earns no physical-localization, stopping-distance,
+sim-to-real, safety-certification or deployment credit.
 
 ## Latest live autonomy gate
 
