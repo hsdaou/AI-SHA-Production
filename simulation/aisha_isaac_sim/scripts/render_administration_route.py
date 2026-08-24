@@ -28,6 +28,12 @@ def parse_args() -> argparse.Namespace:
         default="PathTracing",
     )
     parser.add_argument("--path-tracing-spp", type=int, default=16)
+    parser.add_argument(
+        "--exposure-bias",
+        type=float,
+        default=0.0,
+        help="RTX tonemap exposure bias; Phase 7F remains at the historical zero default.",
+    )
     parser.add_argument("--trajectory-report", type=Path)
     parser.add_argument(
         "--presentation-profile",
@@ -112,6 +118,7 @@ if ARGS.renderer == "PathTracing":
     settings = carb.settings.get_settings()
     settings.set_int("/rtx/pathtracing/spp", max(1, ARGS.path_tracing_spp))
     settings.set_int("/rtx/pathtracing/totalSpp", max(1, ARGS.path_tracing_spp))
+    settings.set_float("/rtx/post/tonemap/exposureBias", ARGS.exposure_bias)
 
 
 DEFAULT_SHOTS = (
@@ -398,6 +405,7 @@ def main() -> int:
         "fps": ARGS.fps,
         "renderer": ARGS.renderer,
         "path_tracing_spp": ARGS.path_tracing_spp if ARGS.renderer == "PathTracing" else None,
+        "exposure_bias": ARGS.exposure_bias,
         "resolution": [ARGS.width, ARGS.height],
         "duration_s": frame_number / ARGS.fps,
         "shots": rendered_shots,

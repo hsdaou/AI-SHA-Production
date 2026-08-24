@@ -1075,6 +1075,13 @@ release:
   phase7g_live_omniverse_player_available: true
   phase7g_live_omniverse_player_smoke_passed: true
   phase7g_presentation_player_executes_policy_live: false
+  phase7h_photogrammetry_informed_visual_twin_available: true
+  phase7h_photogrammetry_informed_visual_twin_validated: true
+  phase7h_visual_twin_checks_passed: "30/30"
+  phase7h_full_hd_backup_reel_available: true
+  phase7h_raw_dense_mesh_used_for_collision: false
+  phase7h_complete_whole_building_photogrammetric_as_built: false
+  phase7h_physical_release: false
   phase8a_physical_localization_offline_preflight_available: true
   phase8a_physical_localization_offline_preflight_passed: true
   phase8a_physical_localization_offline_checks_passed: "23/23"

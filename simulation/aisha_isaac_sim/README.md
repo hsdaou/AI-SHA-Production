@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev Y - 2026-08-24 - registered administration visual twin complete**
+**Rev Z - 2026-08-24 - photogrammetry-informed administration visual twin**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -89,6 +89,43 @@ Use `PHASE7G_PRESENTATION_RUNBOOK.md` at the venue. The GUI is a live Omniverse
 visualization of recorded successful poses; it does not execute the policy
 again. The source poses came from the accepted live Nav2/learned-safety
 simulation mission.
+
+## Phase 7H photogrammetry-informed visual twin
+
+Phase 7H processes the supplied 7:36 iPhone walkthrough and clean Principal
+stills through a real CUDA AliceVision dense-reconstruction pipeline on the RTX
+5080. The corridor cluster produced 278,696 dense points and a 371,694-face
+textured mesh; the Principal cluster produced 202,347 dense points and a
+253,601-face textured mesh. These are genuine photogrammetry results, but the
+walkthrough was filmed as a normal tour rather than a controlled orbit and the
+HDR video is heavily exposed. The raw meshes therefore contain holes and noisy
+surfaces and are retained as survey evidence—not misrepresented as complete
+as-built geometry or used for collision.
+
+The presentation scene uses the safer and better-looking hybrid result:
+
+- approved page-2 topology remains the global authority;
+- registered 1:1 RoomPlan geometry remains the Principal-suite metric authority;
+- privacy-safe floor and walnut crops from the clean stills supply real
+  capture-derived albedo, roughness and normal maps;
+- no people, portraits, documents, GPS data or whole-room photograph is stored;
+- the accepted Phase 7E collision geometry and 12-leg motion trace are unchanged.
+
+The Full HD PathTracing presentation is
+`media/videos/AI-SHA_Phase7H_Photogrammetry_Informed_Omniverse.mp4`. Rebuild its
+576 frames, encode the film, generate its QA sheet and rerun acceptance with:
+
+```bash
+tools/run_phase7h_photogrammetric_visual_twin.sh
+```
+
+The committed presentation is 1920x1080 at 24 fps for 24 seconds and passes
+all 30 Phase 7H visual-twin acceptance checks.
+
+The exact reconstruction/hybrid claim boundary is recorded in
+`config/phase7h_photogrammetric_visual_twin.yaml`. This is a route-scoped,
+photogrammetry-informed Omniverse twin, not a complete whole-building
+photogrammetric survey or physical deployment release.
 
 ## Phase 8A physical-localization preflight
 

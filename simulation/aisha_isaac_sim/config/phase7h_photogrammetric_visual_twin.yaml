@@ -1,0 +1,151 @@
+schema_version: 1
+phase: "PHASE7H-PHOTOGRAMMETRY-INFORMED-VISUAL-TWIN"
+date: "2026-08-24"
+status: hybrid_visual_twin_ready
+objective: >-
+  Upgrade the accepted administration mission with capture-derived Principal
+  materials and dense-reconstruction evidence without replacing the validated
+  navigation geometry with incomplete walkthrough photogrammetry.
+
+source_evidence:
+  mission: results/administration_nav2_phase7e_static_fusion_mission.json
+  integration: results/administration_nav2_phase7e_static_fusion_integration_gate.json
+  roomplan_overlay: config/measured_administration_presentation_2026-08-23.yaml
+  material_report: results/phase7h_photo_materials_report.json
+  phase7e_checks: "40/40"
+  mission_legs: 12
+
+reconstruction_evidence:
+  engine: "AliceVision 3.3.0 direct CLI with CUDA 12.1"
+  gpu: "NVIDIA GeForce RTX 5080"
+  source_media_committed: false
+  atrium_corridor_cluster:
+    input_views: 92
+    calibrated_views: 30
+    sparse_landmarks: 9033
+    dense_points: 278696
+    textured_faces: 371694
+    classification: "east corridor at the end of the atrium capture window"
+    raw_mesh_presentation_status: "evidence_only_rejected_as_hero_geometry"
+  principal_office_cluster:
+    input_views: 88
+    calibrated_views: 32
+    sparse_landmarks: 4781
+    dense_points: 202347
+    textured_faces: 253601
+    coverage: "Principal doorway, slatted walls, executive desk, meeting area, glazing and storage"
+    raw_mesh_presentation_status: "evidence_only_rejected_as_collision_or_full_screen_geometry"
+  rejection_reason: >-
+    The supplied walkthrough is a normal tour with limited orbital parallax and
+    heavily exposed HDR video. The dense meshes contain holes and noisy surfaces.
+    They are valid survey evidence and visual references but are not represented
+    as complete as-built geometry.
+
+hybrid_visual_contract:
+  global_topology_authority: "approved A1 page 2 Block A plan"
+  metric_local_geometry_authority: "registered iPhone RoomPlan Principal suite"
+  collision_geometry: "unchanged from the Phase 7E accepted scene"
+  raw_dense_mesh_collision_enabled: false
+  raw_dense_mesh_in_hero_render: false
+  capture_derived_materials:
+    - textures/administration/principal_grey_oak_albedo.png
+    - textures/administration/principal_grey_oak_roughness.png
+    - textures/administration/principal_grey_oak_normal.png
+    - textures/administration/principal_walnut_albedo.png
+    - textures/administration/principal_walnut_roughness.png
+    - textures/administration/principal_walnut_normal.png
+  privacy_scope: "surface-only crops; no people, portraits, documents, GPS or whole-room photograph committed"
+
+render_contract:
+  renderer: PathTracing
+  path_tracing_spp: 16
+  exposure_bias: 0.85
+  resolution: [1920, 1080]
+  fps: 24
+  seconds_per_shot: 3.0
+  expected_shots: 8
+  expected_frames: 576
+  camera_height_range_m: [1.76, 1.92]
+  camera_style: fixed_human_height_wide_environmental
+  robot_should_not_dominate_frame: true
+  replay_motion: recorded_pose_selection_without_route_interpolation
+
+shots:
+  - title: "Mission start - measured administration atrium"
+    operator_label: "NAV2 + LEARNED 360 SAFETY"
+    camera: [4.20, -4.00, 1.76]
+    look_at: [-1.20, 1.10, 0.74]
+    focal_length_mm: 18.0
+    segments: [0]
+  - title: "East hall - capture-verified corridor"
+    operator_label: "0.80 M/S HALLWAY POLICY"
+    camera: [6.0, 1.08, 1.78]
+    look_at: [15.0, -0.40, 0.70]
+    focal_length_mm: 16.0
+    segments: [1]
+    source_fraction: [0.62, 1.0]
+  - title: "Vice-Principal doorway - assumed 0.875 m"
+    operator_label: "MAPPED DOORWAY SAFETY"
+    camera: [19.55, -7.55, 1.88]
+    look_at: [16.85, -5.30, 0.58]
+    focal_length_mm: 11.5
+    segments: [2, 3]
+  - title: "Vice-Principal visit and departure"
+    operator_label: "LOCKED INTERIOR - DISCLOSED ASSUMPTION"
+    camera: [19.55, -7.55, 1.88]
+    look_at: [16.75, -6.15, 0.58]
+    focal_length_mm: 11.5
+    segments: [4]
+  - title: "Return hall - Principal suite turn"
+    operator_label: "NAV2 + STATIC/LIVE LIDAR FUSION"
+    camera: [3.0, 1.00, 1.86]
+    look_at: [9.0, -0.45, 0.68]
+    focal_length_mm: 16.0
+    segments: [5, 6]
+  - title: "Principal office approach"
+    operator_label: "ROOMPLAN-REGISTERED APPROACH"
+    camera: [2.60, -2.70, 1.82]
+    look_at: [6.80, -7.45, 0.70]
+    focal_length_mm: 16.0
+    segments: [7]
+    source_fraction: [0.55, 1.0]
+  - title: "Principal visit - capture-derived visual twin"
+    operator_label: "PHOTO MATERIALS + MEASURED FURNITURE"
+    camera: [10.70, -6.10, 1.92]
+    look_at: [9.00, -9.80, 0.72]
+    focal_length_mm: 12.0
+    segments: [8, 9]
+  - title: "Mission complete - return home"
+    operator_label: "12/12 LEGS COMPLETE"
+    camera: [4.20, -4.00, 1.76]
+    look_at: [-1.05, 0.80, 0.74]
+    focal_length_mm: 18.0
+    segments: [10, 11]
+
+presentation_disclosures:
+  overlay: >-
+    Recorded live-policy wheel-physics poses in a photogrammetry-informed
+    Omniverse twin; visual replay, not live policy execution.
+  environment: >-
+    Route-scoped hybrid digital twin: approved page-2 topology, registered
+    metric RoomPlan Principal geometry, dense photogrammetry survey evidence
+    and privacy-safe photo-derived PBR materials. Not a complete whole-building
+    photogrammetric/as-built survey or a physical deployment release.
+  vice_principal_interior_assumed_because_locked: true
+  principal_door_width_presentation_assumption_m: 0.90
+  narrowest_administration_reported_door_width_m: 0.85
+  vice_principal_presentation_assumption_m: 0.875
+  reported_door_height_m: 2.12
+  central_polygon_step_down_m: 0.20
+  raw_dense_mesh_used_for_collision: false
+  physical_localization_credit: false
+  physical_safety_credit: false
+  physical_release: false
+
+outputs:
+  replay_validation: results/administration_nav2_phase7h_replay_validation.json
+  render_report: results/administration_nav2_phase7h_rtx_render_report.json
+  frames: outputs/phase7h_photogrammetric_rtx_frames
+  video: media/videos/AI-SHA_Phase7H_Photogrammetry_Informed_Omniverse.mp4
+  contact_sheet: media/AI-SHA_Phase7H_Photogrammetry_Informed_Omniverse_contact_sheet.jpg
+  acceptance: results/administration_nav2_phase7h_photogrammetric_acceptance.json

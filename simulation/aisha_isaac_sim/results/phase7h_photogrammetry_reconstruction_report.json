@@ -1,0 +1,72 @@
+{
+  "report_type": "phase7h_alicevision_dense_reconstruction",
+  "generated_at_utc": "2026-08-24T17:00:00Z",
+  "status": "completed_hybrid_integration_accepted_raw_mesh_as_evidence_only",
+  "workstation": {
+    "os": "Ubuntu 24.04.4 LTS",
+    "kernel": "6.17.0-35-generic",
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "driver": "580.159.03",
+    "alicevision": "3.3.0 CUDA 12.1"
+  },
+  "source": {
+    "walkthrough_sha256": "3c5acb0e60331c3464c8647675bde16770853a9448d77d310c6a79eff41edec8",
+    "principal_still_6707_sha256": "b09853c24b4f28ef7df1fbe7cb7cc9588a5db4c04619a455d23e7ae3311f7105",
+    "principal_still_6708_sha256": "04dd6bef21734f56cd05dbca29c86c769dcf8f819461eb2927dba2847d1a9ae5",
+    "raw_media_committed": false,
+    "walkthrough_duration_s": 456.855,
+    "walkthrough_resolution_px": [2160, 3840],
+    "walkthrough_fps": 59.719166912915476
+  },
+  "pipeline": {
+    "camera_model": "pinhole_radialk3_default_60deg_fov",
+    "features": "GPU SIFT high/high adaptive contrast",
+    "matching": "sequential 20-neighbour guided fundamental-with-distortion",
+    "sfm": "incremental bundle adjustment",
+    "dense": "GPU depth-map estimation at downscale 2",
+    "meshing": "Delaunay graph-cut",
+    "texturing": "Basic UV multi-atlas 4096 JPEG"
+  },
+  "clusters": {
+    "atrium_window_corridor_cluster": {
+      "source_window_s": [0.0, 45.0],
+      "input_views": 92,
+      "calibrated_views": 30,
+      "calibrated_fraction": 0.3260869565,
+      "sparse_landmarks": 9033,
+      "sparse_residual_rmse_px": 0.465,
+      "dense_points": 278696,
+      "textured_vertices": 224778,
+      "textured_faces": 371694,
+      "textured_mesh_sha256": "d0949db12ad62e55db5b104ab177ed0f77f3107a9641d18515dc4f883366427f",
+      "classification": "east corridor at the end of the atrium/reception window",
+      "quality": "partial geometry and washed HDR texture"
+    },
+    "principal_office_cluster": {
+      "source_window_s": [180.0, 220.0],
+      "input_views": 88,
+      "calibrated_views": 32,
+      "calibrated_fraction": 0.3636363636,
+      "sparse_landmarks": 4781,
+      "sparse_residual_rmse_px": 0.704276,
+      "dense_points": 202347,
+      "textured_vertices": 167199,
+      "textured_faces": 253601,
+      "textured_mesh_sha256": "6e8a1bd13846b883b2044ef23083d423b5144e704b811f175695e5f50df0a2f9",
+      "coverage": "doorway, slatted walls, executive desk, meeting area, glazing and storage",
+      "quality": "recognisable partial room with holes and noisy low-parallax surfaces"
+    }
+  },
+  "decision": {
+    "raw_dense_mesh_committed": false,
+    "raw_dense_mesh_used_for_collision": false,
+    "raw_dense_mesh_used_as_full_screen_hero_geometry": false,
+    "reason": "the normal walkthrough lacks the controlled orbit, overlap, exposure and parallax required for a presentation-grade complete mesh",
+    "hybrid_result": "retain plan/RoomPlan geometry; apply privacy-safe PBR surface maps derived from the clean stills; preserve accepted collision geometry and trajectory"
+  },
+  "claim_boundary": {
+    "genuine_dense_photogrammetry_executed": true,
+    "complete_whole_building_photogrammetric_as_built": false,
+    "physical_release": false
+  }
+}
