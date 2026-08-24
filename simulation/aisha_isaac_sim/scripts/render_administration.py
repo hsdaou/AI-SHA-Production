@@ -60,8 +60,8 @@ SHOTS = (
     },
     {
         "name": "administration_atrium.png",
-        "position": (4.20, -4.00, 1.72),
-        "look_at": (-1.20, 1.10, 0.82),
+        "position": (5.55, -5.55, 1.72),
+        "look_at": (-0.20, 0.20, 0.82),
         "focal_length": 18.0,
         "robot": (3.40, 0.00, 180.0),
         "hide_ceilings": False,

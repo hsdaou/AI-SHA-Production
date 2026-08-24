@@ -80,9 +80,20 @@ measured_visual_twin:
         chairs: [Chair0, Chair2, Chair4]
         storage: [Storage2, Storage3, Storage4, Storage5, Storage7]
   atrium:
-    appearance_status: "walkthrough_matched_on_roomplan_checked_page_2_envelope"
-    central_display_treatment: "privacy_safe_abstract_easels_and_seating_on_prohibited_lower_polygon"
-    reception_treatment: "two-segment_glazed_walnut_slatted_counter_and_upper_fascia"
+    appearance_status: "roomplan_registered_envelope_with_walkthrough_matched_atrium_revision_2026_08_24"
+    source_section: "unidentified4"
+    layout_authority: "metric RoomPlan envelope plus walkthrough frames 0-45 s for visual semantics"
+    route_critical_collision_geometry_changed: false
+    central_display_treatment: "three privacy-safe abstract easels, paired black benches and slim side tables on prohibited lower polygon"
+    reception_treatment: "two opposing glazed walnut slatted window counters flanking the diagonal entrance/Principal approach"
+    reception_window_run_length_m: 2.55
+    central_seating_offset_m: 1.42
+    perimeter_treatment: "dark vertical walnut office frontage around the octagonal atrium"
+    floor_inlay_treatment: "double thin black octagonal linework outside the 0.20 m lowered island"
+    column_treatment: "four existing route-cleared white collision cores retained with visual base and capital trim"
+    rear_frontage_treatment: "central glazed double doorway with walnut fronts and privacy-safe circular emblems"
+    upper_atrium_treatment: "white octagonal bulkhead with abstract school and flag colour panels"
+    planting_treatment: "walkthrough-matched tall white-potted greenery; added visual-only outside the learned route"
     principal_route_treatment: "terrazzo_secretary_approach_with_walnut_and_grey_frame_glass_partitions"
   principal:
     floor_finish: "walkthrough_matched_grey_wood_plank"

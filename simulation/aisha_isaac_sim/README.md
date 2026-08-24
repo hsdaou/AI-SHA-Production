@@ -127,6 +127,33 @@ The exact reconstruction/hybrid claim boundary is recorded in
 photogrammetry-informed Omniverse twin, not a complete whole-building
 photogrammetric survey or physical deployment release.
 
+## Phase 7I scan-matched atrium correction
+
+Phase 7I rejects the earlier stylized atrium proxy and rebuilds the first
+walkthrough view from the administration RoomPlan section `unidentified4` and
+the supplied video's first 45 seconds. The corrected scene now includes the
+opposing glazed walnut reception windows, open octagonal terrazzo hall, double
+black island inlay, slim black public benches, three privacy-safe displays,
+rear glazed doorway and emblems, white upper ring, plants and timber office
+fronts visible in the capture.
+
+The 0.20 m central drop/no-go boundary, door colliders, four route-cleared
+column collision cores, and accepted 12-leg learned pose trace are unchanged.
+The raw scan and walkthrough remain outside the repository. Rebuild the 576
+Full HD PathTracing frames, MP4, contact sheet and 33-check acceptance package
+with:
+
+```bash
+tools/run_phase7i_scan_matched_atrium.sh
+```
+
+The replacement presentation video is
+`media/videos/AI-SHA_Phase7I_Scan_Matched_Atrium_Omniverse.mp4`. Its claim
+boundary and camera contract are recorded in
+`config/phase7i_scan_matched_atrium.yaml`. The video is a visual replay of
+recorded poses from the accepted live-policy mission; it is not another live
+policy execution, a complete as-built survey, or a physical release.
+
 ## Phase 8A physical-localization preflight
 
 The first sim-to-real phase now has a fail-safe, localization-only ROS 2 graph

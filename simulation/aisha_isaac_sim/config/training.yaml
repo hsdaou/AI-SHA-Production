@@ -1082,6 +1082,15 @@ release:
   phase7h_raw_dense_mesh_used_for_collision: false
   phase7h_complete_whole_building_photogrammetric_as_built: false
   phase7h_physical_release: false
+  phase7i_scan_matched_atrium_available: true
+  phase7i_scan_matched_atrium_validated: true
+  phase7i_scan_matched_atrium_checks_passed: "33/33"
+  phase7i_previous_stylized_atrium_proxy_rejected: true
+  phase7i_full_hd_replacement_reel_available: true
+  phase7i_route_critical_collision_geometry_changed: false
+  phase7i_learned_trajectory_changed: false
+  phase7i_video_sha256: "2147e0014b730e60ec19367043249c3a01dfe662fff4438040a0da5d8e418cfb"
+  phase7i_physical_release: false
   phase8a_physical_localization_offline_preflight_available: true
   phase8a_physical_localization_offline_preflight_passed: true
   phase8a_physical_localization_offline_checks_passed: "23/23"

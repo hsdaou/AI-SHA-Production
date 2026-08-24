@@ -327,7 +327,7 @@
   },
   "measured_geometry": {
     "overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
-    "overlay_sha256": "af2d751d579c52e6779e9338c01b74838518f114a17d56c68604eb205f16dd5a",
+    "overlay_sha256": "c4f17adb012026f8699f9b7b9b27fa9bf47277ca282863328f18e0581486417e",
     "physical_release": false,
     "presentation_clearance_profile": {
       "footprint_padding_per_side_m": 0.03,
@@ -354,10 +354,21 @@
   },
   "measured_visual_twin": {
     "atrium": {
-      "appearance_status": "walkthrough_matched_on_roomplan_checked_page_2_envelope",
-      "central_display_treatment": "privacy_safe_abstract_easels_and_seating_on_prohibited_lower_polygon",
+      "appearance_status": "roomplan_registered_envelope_with_walkthrough_matched_atrium_revision_2026_08_24",
+      "central_display_treatment": "three privacy-safe abstract easels, paired black benches and slim side tables on prohibited lower polygon",
+      "central_seating_offset_m": 1.42,
+      "column_treatment": "four existing route-cleared white collision cores retained with visual base and capital trim",
+      "floor_inlay_treatment": "double thin black octagonal linework outside the 0.20 m lowered island",
+      "layout_authority": "metric RoomPlan envelope plus walkthrough frames 0-45 s for visual semantics",
+      "perimeter_treatment": "dark vertical walnut office frontage around the octagonal atrium",
+      "planting_treatment": "walkthrough-matched tall white-potted greenery; added visual-only outside the learned route",
       "principal_route_treatment": "terrazzo_secretary_approach_with_walnut_and_grey_frame_glass_partitions",
-      "reception_treatment": "two-segment_glazed_walnut_slatted_counter_and_upper_fascia"
+      "rear_frontage_treatment": "central glazed double doorway with walnut fronts and privacy-safe circular emblems",
+      "reception_treatment": "two opposing glazed walnut slatted window counters flanking the diagonal entrance/Principal approach",
+      "reception_window_run_length_m": 2.55,
+      "route_critical_collision_geometry_changed": false,
+      "source_section": "unidentified4",
+      "upper_atrium_treatment": "white octagonal bulkhead with abstract school and flag colour panels"
     },
     "enabled": true,
     "principal": {
@@ -1111,7 +1122,7 @@
     }
   ],
   "status": "measured_site_presentation_candidate_scene_built",
-  "timestamp_utc": "2026-08-24T17:10:23.953983+00:00",
+  "timestamp_utc": "2026-08-24T18:22:51.099764+00:00",
   "visual_upgrade": {
     "collision_geometry_changed": true,
     "reference_policy": "approved page-2 global topology; independently registered RoomPlan Principal geometry and atrium scale; walkthrough materials and occluded visual detail",
