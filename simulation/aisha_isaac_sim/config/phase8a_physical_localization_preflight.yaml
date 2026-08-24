@@ -135,7 +135,7 @@ commissioning_sequence:
     status: pending_physical_robot
     motion_allowed: false
   - id: phase8b_wheels_lifted_direction_encoder
-    status: blocked
+    status: offline_adapter_prepared_runtime_blocked
     motion_allowed: false
   - id: phase8c_tethered_open_area_0_10_mps
     status: blocked
@@ -150,8 +150,8 @@ commissioning_sequence:
 hard_blockers:
   - id: ros_dependencies_missing_on_current_workstation
     detail: nav2_amcl, nav2_map_server, nav2_lifecycle_manager and robot_localization are not installed
-  - id: rev_d_differential_encoder_adapter_missing
-    detail: existing production mecanum_driver uses four-wheel mecanum kinematics and cannot command or estimate the Rev D two-wheel differential drive
+  - id: rev_d_differential_encoder_hardware_validation_pending
+    detail: the new adapter passes replay/protocol checks and supports read-only RS485, but physical scale, loaded radius, per-side signs and exact V4.2 protocol compatibility remain unverified
   - id: encoder_scale_not_calibrated
     detail: confirm delivered wheel loaded rolling circumference and whether the driver count is 4096 or 16384 per revolution
   - id: map_not_as_built
@@ -170,3 +170,5 @@ artifacts:
   launch: src/robot_bringup/launch/phase8a_localization_preflight.launch.py
   stationary_probe: simulation/aisha_isaac_sim/tools/probe_phase8a_stationary_localization.py
   offline_validation: results/phase8a_physical_localization_preflight.json
+  rev_d_encoder_adapter: src/aisha_rev_d_driver
+  phase8b_adapter_validation: results/phase8b_rev_d_differential_adapter_preflight.json

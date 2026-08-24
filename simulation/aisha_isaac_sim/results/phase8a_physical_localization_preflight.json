@@ -1,6 +1,6 @@
 {
   "report_type": "phase8a_physical_localization_offline_preflight",
-  "generated_at_utc": "2026-08-24T11:36:07.837499+00:00",
+  "generated_at_utc": "2026-08-24T11:57:20.600240+00:00",
   "passed": true,
   "preparation_passed": true,
   "status": "accepted_offline_preflight_runtime_blocked",
@@ -108,8 +108,8 @@
       "detail": "nav2_amcl, nav2_map_server, nav2_lifecycle_manager and robot_localization are not installed"
     },
     {
-      "id": "rev_d_differential_encoder_adapter_missing",
-      "detail": "existing production mecanum_driver uses four-wheel mecanum kinematics and cannot command or estimate the Rev D two-wheel differential drive"
+      "id": "rev_d_differential_encoder_hardware_validation_pending",
+      "detail": "the new adapter passes replay/protocol checks and supports read-only RS485, but physical scale, loaded radius, per-side signs and exact V4.2 protocol compatibility remain unverified"
     },
     {
       "id": "encoder_scale_not_calibrated",
@@ -133,7 +133,7 @@
     }
   ],
   "source_hashes": {
-    "profile": "260009808342b59f0aa88441aef0787db7159375e6eaeeeb23400e0cde0bcb4d",
+    "profile": "ee84cfd2945588ec9878a34673f987cd8877ab20eeb7ac8138f2a0c41987c234",
     "drive_contract": "af28f6bac76536c8f80aee815e55e4146bb259b72307f92393227641ec336235",
     "amcl_config": "8cdcd83985fd6925a1cce8f1e4d6028ea58663f6635f56ccc973e3f64785d133",
     "ekf_config": "b342ecf8a844b82e4ac04f120f1b1f121fd5937ec34af83f2e464fa77a0deb78",

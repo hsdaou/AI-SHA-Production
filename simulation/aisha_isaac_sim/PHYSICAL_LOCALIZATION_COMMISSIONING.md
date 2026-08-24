@@ -21,6 +21,10 @@ occupied-building operation, or physical release.
   velocity smoother, motor node or `/cmd_vel` publisher.
 - A read-only runtime observer checks topic rates, message frames, TF ownership,
   scan/IMU sanity, stationary odometry and the absence of `/cmd_vel` publishers.
+- The Phase 8B `aisha_rev_d_driver` package now supplies tested differential
+  kinematics, signed/rollover-safe encoder integration, deterministic replay and
+  read-only ZLAC8015D Modbus telemetry. It has no motor-write transport, no
+  `/cmd_vel` subscription and no TF broadcaster.
 
 Run the offline preparation check at any time:
 
@@ -39,11 +43,12 @@ simulation/aisha_isaac_sim/tools/run_phase8a_physical_localization_preflight.sh
    kinematics. Rev D has two driven wheels, a 0.100 m design radius, a 0.720 m
    design track and no lateral command. Do not launch the mecanum driver on the
    Rev D robot.
-3. A Rev D differential encoder adapter is still required. It must publish raw
-   `odom -> base_link` data on `/wheel/odom_raw` without broadcasting TF. Its
-   wheel radius and count scale cannot be frozen until the delivered wheels are
-   measured under load and one marked revolution resolves 4096 versus 16384
-   driver counts.
+3. The Rev D differential encoder adapter now passes its 30/30 offline gate,
+   but its physical odometry output remains intentionally suppressed. The
+   delivered driver label must be matched to an exact manual, the loaded wheel
+   circumference measured, one marked revolution must resolve 4096 versus
+   16384 counts, and both encoder signs must be verified before
+   `/wheel/odom_raw` can be supplied to the EKF.
 4. The current administration occupancy map is a plan/RoomPlan/walkthrough-
    informed presentation map, not an as-built map. It may be observed in a
    stationary experiment but cannot authorize physical path planning.
@@ -64,28 +69,44 @@ Do this only on the physical robot with an operator and an independent spotter:
 1. Keep the motor drive disabled and electrically isolated. Chock the wheels.
    Verify both latching emergency-stop devices before energizing the sensor
    computers. Do not rely on ROS as the emergency stop.
-2. Install dependencies and build the two packages:
+2. Install dependencies and build the three packages:
 
    ```bash
    rosdep install --from-paths src --ignore-src -r -y
-   colcon build --packages-select robot_description robot_bringup
+   colcon build --packages-select aisha_rev_d_driver robot_description robot_bringup
    source install/setup.bash
    ```
 
-3. Start the LD19 as `/scan` with `frame_id:=lidar_link`, and start the BNO055
-   source as `/imu/data` with `frame_id:=imu_link`. Start only a verified Rev D
-   differential encoder adapter on `/wheel/odom_raw`; do not substitute dummy
-   odometry, RF2O, or the mecanum driver.
-4. Start the localization-only graph, providing an explicit map path:
+3. Before the localization graph, pass the separate Phase 8B read-only RS485
+   probe with motor leads isolated. It can read only Modbus function `0x03` and
+   cannot enable or command the drive. Do not bypass any confirmation flag:
+
+   ```bash
+   simulation/aisha_isaac_sim/tools/probe_phase8b_rs485_read_only.py \
+     --confirm-hardware-label-v4-2 \
+     --confirm-matching-rs485-manual \
+     --confirm-motor-leads-isolated \
+     --confirm-wheels-chocked \
+     --confirm-external-estop-verified \
+     --confirm-operator-present \
+     --confirm-independent-spotter-present
+   ```
+
+4. After a separately approved wheels-lifted direction/count calibration, start
+   the LD19 as `/scan` with `frame_id:=lidar_link`, the BNO055 as `/imu/data`
+   with `frame_id:=imu_link`, and the calibrated Rev D adapter on
+   `/wheel/odom_raw`. Do not substitute dummy odometry, RF2O, or the mecanum
+   driver.
+5. Start the localization-only graph, providing an explicit map path:
 
    ```bash
    ros2 launch robot_bringup phase8a_localization_preflight.launch.py \
      map:=/absolute/path/to/administration.yaml
    ```
 
-5. Give AMCL one initial pose using RViz. Do not send a navigation goal. Confirm
+6. Give AMCL one initial pose using RViz. Do not send a navigation goal. Confirm
    that no node publishes `/cmd_vel`.
-6. With the robot still chocked and drive-disabled, collect the 20-second gate:
+7. With the robot still chocked and drive-disabled, collect the 20-second gate:
 
    ```bash
    simulation/aisha_isaac_sim/tools/run_phase8a_physical_localization_preflight.sh \
@@ -99,8 +120,10 @@ rad/s, and zero `/cmd_vel` publishers.
 
 ## Go/no-go boundary
 
-A passing stationary report authorizes only progression to a separate
-wheels-lifted direction/encoder test. It does not authorize floor motion. The
-first floor-motion gate will be tethered, access-controlled, limited to 0.10
-m/s in an open test area, and will remain blocked until the differential driver,
-encoder scaling, emergency-stop circuit and spotter procedure are verified.
+The 30/30 Phase 8B offline report authorizes only the guarded read-only serial
+observation above. A passing read-only report can progress to a separately
+reviewed wheels-lifted direction/count calibration capped at 5 RPM; that motor-
+write path is intentionally not part of Phase 8B yet. Neither report authorizes
+floor motion. The first floor-motion gate will be tethered, access-controlled,
+limited to 0.10 m/s in an open test area, and remains blocked until encoder
+scaling, emergency-stop operation and the spotter procedure are verified.

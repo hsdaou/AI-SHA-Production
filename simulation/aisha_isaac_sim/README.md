@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev W - 2026-08-24 - Phase 8A physical-localization preflight prepared**
+**Rev X - 2026-08-24 - Phase 8B Rev D encoder adapter accepted offline**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -76,9 +76,9 @@ dummy odometry or simulated sensor data was substituted.
 
 The audit also quarantines the production repository's older mecanum driver and
 Nav2 profile: they use four-wheel holonomic kinematics and cannot be applied to
-the two-wheel Rev D platform. The next executable gate is a drive-isolated,
-wheels-chocked stationary test after a Rev D differential encoder adapter and
-the declared ROS dependencies are installed. The target physical ROS
+the two-wheel Rev D platform. Phase 8B now supplies the missing differential
+software foundation, while its physical calibration and runtime gates remain
+blocked. The target physical ROS
 distribution must also be frozen: simulation is pinned to Jazzy while the
 existing Pi/Jetson launch contract requires Humble, and cross-distro Nav2 is not
 authorized. See
@@ -87,6 +87,34 @@ authorized. See
 ```bash
 tools/run_phase8a_physical_localization_preflight.sh
 ```
+
+## Phase 8B Rev D differential encoder adapter
+
+The new `src/aisha_rev_d_driver` package passes 30/30 offline acceptance checks
+and 12/12 focused unit tests. It implements Rev D differential command math,
+signed 32-bit encoder integration with rollover handling, and the verified
+ZLAC8015D V4 Series Modbus register layout. Supplier example frames for enable,
+positive/negative target velocity and encoder reads reproduce byte-for-byte,
+including CRC.
+
+Phase 8B does not command the physical robot. Its default mode is a deterministic
+5 RPM replay on isolated `/phase8b/replay/*` topics. The optional physical mode
+can read status, fault, position and speed registers with Modbus function `0x03`
+only; every outbound frame is checked immediately before transmission. The ROS
+node has no `/cmd_vel` subscription, no TF broadcaster and no motor-enable or
+target-velocity transport. Run the offline gate with:
+
+```bash
+tools/run_phase8b_rev_d_adapter_preflight.sh
+```
+
+The expected driver label is V4.2 while the supplied communication document is
+for the V4 Series, so exact hardware/manual compatibility is not assumed. The
+candidate 16384 counts/revolution and 0.100 m radius have no physical odometry
+credit until a marked revolution, loaded rolling circumference and both encoder
+signs are measured. The future read-only probe blocks before opening the serial
+device unless its complete operator checklist is explicitly confirmed. A motor-
+write path and the 5 RPM wheels-lifted test remain a later reviewed gate.
 
 Physical doorway motion remains prohibited. The reported 0.85 m opening is
 below the Rev D 0.92 m physical minimum and 0.078 m narrower than the 0.928 m

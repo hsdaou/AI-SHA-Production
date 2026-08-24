@@ -226,7 +226,7 @@ def main() -> int:
         "legacy_mecanum_stack_is_detected_and_quarantined": (
             "OmniMotionModel" in legacy_nav
             and "Mecanum forward kinematics" in legacy_driver
-            and "rev_d_differential_encoder_adapter_missing" in blocker_ids
+            and "rev_d_differential_encoder_hardware_validation_pending" in blocker_ids
         ),
         "missing_ros_dependencies_are_recorded_as_blocker": (
             bool(missing_dependencies)
@@ -241,7 +241,7 @@ def main() -> int:
             and "ros_distribution_contract_unresolved" in blocker_ids
         ),
         "critical_physical_blockers_are_complete": {
-            "rev_d_differential_encoder_adapter_missing",
+            "rev_d_differential_encoder_hardware_validation_pending",
             "encoder_scale_not_calibrated",
             "map_not_as_built",
             "physical_door_width_conflict",

@@ -1,0 +1,22 @@
+aisha_rev_d_encoder_adapter:
+  ros__parameters:
+    # Offline-only deterministic replay. This never opens a serial port.
+    transport: replay
+    replay_path: ""
+    replay_period_s: 0.05
+    wheel_radius_m: 0.100
+    wheel_track_m: 0.720
+    encoder_counts_per_rev: 16384
+    left_encoder_sign: 1
+    right_encoder_sign: 1
+    encoder_scale_verified: false
+    rolling_radius_verified: false
+    encoder_signs_verified: false
+    hardware_label_verified: false
+    motor_leads_isolated: false
+    external_estop_verified: false
+    publish_odom: true
+    odom_topic: /phase8b/replay/wheel_odom_raw
+    telemetry_topic: /phase8b/replay/encoder_telemetry
+    odom_frame: odom
+    base_frame: base_link
