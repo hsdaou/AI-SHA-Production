@@ -272,6 +272,12 @@ def build_presentation(args: argparse.Namespace) -> int:
                 "grey_oak_albedo.png",
                 "grey_oak_roughness.png",
                 "grey_oak_normal.png",
+                "principal_grey_oak_albedo.png",
+                "principal_grey_oak_roughness.png",
+                "principal_grey_oak_normal.png",
+                "principal_walnut_albedo.png",
+                "principal_walnut_roughness.png",
+                "principal_walnut_normal.png",
                 "mottled_grey_albedo.png",
                 "mottled_grey_roughness.png",
                 "mottled_grey_normal.png",
@@ -328,6 +334,20 @@ def build_presentation(args: argparse.Namespace) -> int:
             roughness_path=texture_dir / "grey_oak_roughness.png",
             normal_path=texture_dir / "grey_oak_normal.png",
             roughness=0.46,
+        )
+        principal_grey_oak_finish = textured_material(
+            "PrincipalPhotoGreyOakFinish",
+            texture_dir / "principal_grey_oak_albedo.png",
+            roughness_path=texture_dir / "principal_grey_oak_roughness.png",
+            normal_path=texture_dir / "principal_grey_oak_normal.png",
+            roughness=0.46,
+        )
+        principal_walnut_finish = textured_material(
+            "PrincipalPhotoWalnutFinish",
+            texture_dir / "principal_walnut_albedo.png",
+            roughness_path=texture_dir / "principal_walnut_roughness.png",
+            normal_path=texture_dir / "principal_walnut_normal.png",
+            roughness=0.36,
         )
         mottled_grey_finish = textured_material(
             "MottledGreyFinish",
@@ -865,7 +885,7 @@ def build_presentation(args: argparse.Namespace) -> int:
                 f"PrincipalMeasured_{name}_TopFinish",
                 (max(0.10, sx - 0.04), max(0.10, sy - 0.04)),
                 centre,
-                walnut_finish,
+                principal_walnut_finish,
                 z=height + 0.004,
                 rotate_z_deg=yaw,
                 metres_per_tile=1.5,
@@ -1258,8 +1278,8 @@ def build_presentation(args: argparse.Namespace) -> int:
             textured_polygon_surface(
                 "PrincipalOfficeGreyOakMeasured",
                 principal_floor_polygon,
-                grey_oak_finish,
-                metres_per_tile=2.25,
+                principal_grey_oak_finish,
+                metres_per_tile=3.60,
             )
         else:
             textured_rect_surface("PrincipalOfficeOak", principal_size, principal_centre, oak_finish, rotate_z_deg=principal_rotation, metres_per_tile=2.6)

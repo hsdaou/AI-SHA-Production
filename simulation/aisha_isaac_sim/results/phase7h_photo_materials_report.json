@@ -1,0 +1,52 @@
+{
+  "report_type": "phase7h_privacy_safe_photo_material_generation",
+  "status": "passed",
+  "source": {
+    "path_committed": false,
+    "sha256": [
+      "224ac898af8bd39de6f21091822ddf1a87e7ccccb43ce9e36b03e6ac78e56a72",
+      "5b442fdc242f74d325ec27f9794defbe3578ca6333606db3999d5f0bfd2e2450"
+    ],
+    "dimensions_px": [
+      1350,
+      1800
+    ],
+    "detail_dimensions_px": [
+      1350,
+      1800
+    ],
+    "privacy_scope": "surface-only floor and walnut crops; no people, portraits, documents or complete-room imagery"
+  },
+  "assets": {
+    "principal_grey_oak": {
+      "albedo": {
+        "path": "textures/administration/principal_grey_oak_albedo.png",
+        "sha256": "d965ae91aff6421bb3a897c7179e99d34f43f926a8cecfe7871cddbda9743342"
+      },
+      "roughness": {
+        "path": "textures/administration/principal_grey_oak_roughness.png",
+        "sha256": "ee2b2e13bf01607d1cddcecca7f2e8470fdd93cae4549a195bc3e32ff86668ae"
+      },
+      "normal": {
+        "path": "textures/administration/principal_grey_oak_normal.png",
+        "sha256": "1862bae5b664ea51cad1763b42fbfe8888d20922fd2be3674f3c99a39250895a"
+      }
+    },
+    "principal_walnut": {
+      "albedo": {
+        "path": "textures/administration/principal_walnut_albedo.png",
+        "sha256": "a8d7727f362f40f9048b16274c04d9ce3ba872b80f007d2e6300f07a241d0b0a"
+      },
+      "roughness": {
+        "path": "textures/administration/principal_walnut_roughness.png",
+        "sha256": "4e8783e688c011a63021b1be3ad3be2dcfe6dc86390d8489f84ad1d9aa9c62d8"
+      },
+      "normal": {
+        "path": "textures/administration/principal_walnut_normal.png",
+        "sha256": "cd61ff3fb4af45c840a39795e2672b65f53a3259b84c88a8740f73ce960a4fdc"
+      }
+    }
+  },
+  "collision_geometry_changed": false,
+  "physical_release": false
+}

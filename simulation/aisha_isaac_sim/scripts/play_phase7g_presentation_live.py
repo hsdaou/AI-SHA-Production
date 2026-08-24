@@ -44,6 +44,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--report", type=Path, default=ROOT / "tmp/phase7g_live_omniverse_session.json"
     )
+    parser.add_argument(
+        "--session-label",
+        default="PHASE7G",
+        help="operator-facing label; the Phase 7G default preserves the frozen launcher contract",
+    )
     return parser.parse_args()
 
 
@@ -133,8 +138,9 @@ def main() -> int:
     stage = wait_for_stage_ready(scene)
     if not APP.is_running():
         raise RuntimeError("Isaac Sim stopped after the administration stage finished loading")
-    print(f"PHASE7G LIVE stage_ready={scene.resolve()}")
-    camera_path = "/World/Phase7GPresentationCamera"
+    label = "".join(character for character in ARGS.session_label.upper() if character.isalnum())
+    print(f"{label} LIVE stage_ready={scene.resolve()}")
+    camera_path = f"/World/{label}PresentationCamera"
     camera_prim = stage.DefinePrim(camera_path, "Camera")
     camera = UsdGeom.Camera(camera_prim)
     camera_prim.CreateAttribute(
@@ -178,7 +184,7 @@ def main() -> int:
                     camera_state.set_target_world(Gf.Vec3d(*map(float, shot["look_at"])), True)
                     viewport.set_active_camera(camera_path)
                 print(
-                    f"PHASE7G LIVE shot={shot_index}/{len(shots)} "
+                    f"{label} LIVE shot={shot_index}/{len(shots)} "
                     f"title={shot['title']} segments={sorted(segment_ids)}"
                 )
                 for sample in samples:
@@ -196,7 +202,7 @@ def main() -> int:
         interrupted = True
 
     report = {
-        "report_type": "phase7g_live_omniverse_presentation_session",
+        "report_type": f"{label.lower()}_live_omniverse_presentation_session",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "status": "operator_interrupted" if interrupted else "completed_requested_loops",
         "scene": str(scene.resolve()),
@@ -217,7 +223,7 @@ def main() -> int:
     }
     ARGS.report.parent.mkdir(parents=True, exist_ok=True)
     ARGS.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print(f"AISHA_PHASE7G_LIVE_SESSION report={ARGS.report.resolve()}")
+    print(f"AISHA_{label}_LIVE_SESSION report={ARGS.report.resolve()}")
     return 0
 
 

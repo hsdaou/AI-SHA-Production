@@ -1111,7 +1111,7 @@
     }
   ],
   "status": "measured_site_presentation_candidate_scene_built",
-  "timestamp_utc": "2026-08-24T15:23:24.512514+00:00",
+  "timestamp_utc": "2026-08-24T17:10:23.953983+00:00",
   "visual_upgrade": {
     "collision_geometry_changed": true,
     "reference_policy": "approved page-2 global topology; independently registered RoomPlan Principal geometry and atrium scale; walkthrough materials and occluded visual detail",
@@ -1165,6 +1165,30 @@
       {
         "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/grey_oak_normal.png",
         "sha256": "0f77204746ffe0b16d8791660e452d07344c4b2e4447070155b4bdc8f989570e"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/principal_grey_oak_albedo.png",
+        "sha256": "d965ae91aff6421bb3a897c7179e99d34f43f926a8cecfe7871cddbda9743342"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/principal_grey_oak_roughness.png",
+        "sha256": "ee2b2e13bf01607d1cddcecca7f2e8470fdd93cae4549a195bc3e32ff86668ae"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/principal_grey_oak_normal.png",
+        "sha256": "1862bae5b664ea51cad1763b42fbfe8888d20922fd2be3674f3c99a39250895a"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/principal_walnut_albedo.png",
+        "sha256": "a8d7727f362f40f9048b16274c04d9ce3ba872b80f007d2e6300f07a241d0b0a"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/principal_walnut_roughness.png",
+        "sha256": "4e8783e688c011a63021b1be3ad3be2dcfe6dc86390d8489f84ad1d9aa9c62d8"
+      },
+      {
+        "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/principal_walnut_normal.png",
+        "sha256": "cd61ff3fb4af45c840a39795e2672b65f53a3259b84c88a8740f73ce960a4fdc"
       },
       {
         "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/textures/administration/mottled_grey_albedo.png",
