@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, the 26/26 Phase 7B registered-LiDAR blocked-route gate, the isolated 29/29 Phase 7C native-costmap spatial-detour gate, the scoped 32/32 Phase 7D administration native-costmap gate, the 40/40 Phase 7E full-office static-map/live-LiDAR fusion gate, the 19/19 Phase 7F operator-presentation gate, the 23/23 Phase 8A offline physical-localization gate, and the 30/30 Phase 8B Rev D differential adapter gate. Phase 8B focused tests pass 13/13, including a real pseudo-terminal serial loopback. Phase 8C passes 17/17 sanitized supplier documentary checks: V4.2 procurement/shipping identity and V4 Series manual compatibility are hash-bound and supplier-attested. The passive attachment audit opened no serial port and remains blocked on the received-unit label and USB-RS485 identity; physical RS485 observation, wheel calibration, motion and release remain pending.**
+**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, the 26/26 Phase 7B registered-LiDAR blocked-route gate, the isolated 29/29 Phase 7C native-costmap spatial-detour gate, the scoped 32/32 Phase 7D administration native-costmap gate, the 40/40 Phase 7E full-office static-map/live-LiDAR fusion gate, the 19/19 Phase 7F operator-presentation gate, and the 23/23 Phase 7G presentation-freeze gate. The Full HD freeze reel uses the wide human-height camera, packages the accepted dynamic encounter, and has a smoke-tested Isaac Sim GUI player. Phase 8A still passes 23/23 offline physical-localization checks and Phase 8B passes 30/30 plus 13/13 focused tests. Phase 8C passes 17/17 sanitized supplier documentary checks. Physical RS485 observation, wheel calibration, motion and release remain pending.**
 
 ## Completed
 
@@ -446,6 +446,15 @@
   The source motion remains the 40/40 live Phase 7E run. The environment is a
   plan-, scan- and walkthrough-informed presentation twin, not photogrammetry,
   an as-built survey or physical-release evidence.
+- Phase 7G freezes that wide visual source into a 46.125 s, 1920 x 1080 operator
+  reel and adds the accepted dynamic pedestrian encounter as a deliberately
+  framed evidence insert. It retains every wide mission frame once and in order,
+  preserves the dynamic encounter duration within one target frame, and passes
+  23/23 checks. The packaged RaytracedLighting GUI player opens the real
+  administration USD, activates the eight presentation cameras and completed a
+  real Isaac Sim smoke over all 12 route segments. The GUI player replays
+  recorded poses; the source motion, rather than the player, ran the live
+  Nav2/learned-safety stack.
 - Phase 8A adds a stationary, zero-command Rev D physical-localization
   preflight. Differential AMCL, a planar encoder/BNO055 EKF, a TF-only Rev D
   sensor model and a localization-only launch graph pass 23/23 offline checks.
@@ -556,15 +565,18 @@ These are evidence-based project-management estimates, not safety ratings:
 
 | Workstream | Progress |
 |---|---:|
-| Presentation-ready Omniverse simulation | 98% |
+| Presentation-ready Omniverse simulation | 100% |
 | Learned navigation and doorway handling | 92% |
 | Measured digital twin | 68% |
 | Nav2/localisation integration | 96% |
 | Dynamic-obstacle simulation safety | 94% |
 | Physical deployment readiness | 40% |
-| Overall end objective | 90% |
+| Overall end objective | 92% |
 
-The physical-readiness estimate is now 40% and the overall estimate is 90%.
+The presentation workstream is now frozen at 100% for its declared simulation
+scope, and the overall estimate is 92%. Phase 7G provides both a smoke-tested
+GUI Omniverse player and a Full HD backup reel with the corrected wide camera,
+office visits and dynamic-obstacle evidence. Physical readiness remains 40%.
 Phase 8C hash-binds the procurement record, shipping record and V4 Series
 RS485 manual to a sanitized repository contract. Both records identify
 ZLAC8015D V4.2, and the supplier explicitly attests that the registered V4
@@ -690,6 +702,9 @@ localization test can accept `/wheel/odom_raw`.
 - `administration_nav2_phase7f_operator_replay_validation.json`
 - `administration_nav2_phase7f_operator_rtx_render_report.json`
 - `administration_nav2_phase7f_operator_presentation_acceptance.json`
+- `administration_nav2_phase7g_presentation_freeze_report.json`
+- `administration_nav2_phase7g_presentation_freeze_acceptance.json`
+- `administration_nav2_phase7g_live_omniverse_smoke.json`
 - `phase8a_physical_localization_preflight.json`
 - `phase8a_stationary_localization_probe.json`
 - `phase8b_rev_d_differential_adapter_preflight.json`

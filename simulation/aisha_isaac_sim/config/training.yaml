@@ -1066,6 +1066,15 @@ release:
   phase7f_operator_omniverse_presentation_available: true
   phase7f_operator_omniverse_presentation_validated: true
   phase7f_operator_presentation_checks_passed: "19/19"
+  phase7g_presentation_freeze_available: true
+  phase7g_presentation_freeze_validated: true
+  phase7g_presentation_freeze_checks_passed: "23/23"
+  phase7g_full_hd_backup_reel_available: true
+  phase7g_wide_camera_robot_not_dominant: true
+  phase7g_dynamic_safety_evidence_insert_available: true
+  phase7g_live_omniverse_player_available: true
+  phase7g_live_omniverse_player_smoke_passed: true
+  phase7g_presentation_player_executes_policy_live: false
   phase8a_physical_localization_offline_preflight_available: true
   phase8a_physical_localization_offline_preflight_passed: true
   phase8a_physical_localization_offline_checks_passed: "23/23"
