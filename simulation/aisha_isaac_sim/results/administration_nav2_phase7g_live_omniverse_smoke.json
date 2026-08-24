@@ -1,0 +1,33 @@
+{
+  "report_type": "phase7g_live_omniverse_presentation_session",
+  "generated_at_utc": "2026-08-24T13:47:37.741733+00:00",
+  "status": "completed_requested_loops",
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/administration.usd",
+  "scene_sha256": "40414d9841e384afb06394382a2688f540aeb61395644070d1781175a7cad011",
+  "trajectory_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7e_static_fusion_mission.json",
+  "trajectory_report_sha256": "6463b80bfc1015063c5805c555f43d5986fe3f0c0517848735d093d92c759bf5",
+  "camera_profile": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/phase7f_operator_presentation.yaml",
+  "camera_profile_sha256": "28af2e2739caea3e1e192eaa36be1ce0fd73008fbaabf7f9f308575aa656c3f9",
+  "headless": true,
+  "renderer": "RaytracedLighting",
+  "loops_completed": 1,
+  "frames_presented": 16,
+  "segment_frame_counts": {
+    "0": 2,
+    "1": 2,
+    "2": 1,
+    "3": 1,
+    "4": 2,
+    "5": 1,
+    "6": 1,
+    "7": 2,
+    "8": 1,
+    "9": 1,
+    "10": 1,
+    "11": 1
+  },
+  "recorded_pose_selection_without_interpolation": true,
+  "source_motion_was_live_nav2_and_learned_safety": true,
+  "presentation_player_executes_policy_live": false,
+  "physical_release": false
+}

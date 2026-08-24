@@ -1,0 +1,78 @@
+schema_version: 1
+phase: "PHASE7G-PRESENTATION-FREEZE"
+date: "2026-08-24"
+status: freeze_profile_ready
+objective: >-
+  Freeze a presentation-ready Full HD Omniverse package around the accepted
+  wide Phase 7F office mission and the accepted deterministic dynamic-safety
+  encounter, without changing either source trajectory.
+
+source_evidence:
+  wide_mission_video: media/videos/AI-SHA_Phase7F_Operator_Omniverse_Presentation.mp4
+  wide_mission_acceptance: results/administration_nav2_phase7f_operator_presentation_acceptance.json
+  wide_mission_render_report: results/administration_nav2_phase7f_operator_rtx_render_report.json
+  dynamic_safety_video: media/videos/AI-SHA_Phase4A_Administration_Dynamic_Safety_Showcase.mp4
+  dynamic_safety_video_report: results/phase4a_dynamic_safety_presentation_video_report.json
+  dynamic_safety_run_report: results/phase4a_administration_dynamic_showcase_report.json
+  phase7e_integration: results/administration_nav2_phase7e_static_fusion_integration_gate.json
+
+freeze_contract:
+  resolution: [1920, 1080]
+  fps: 24
+  intro_frames: 72
+  expected_wide_mission_frames: 576
+  transition_frames: 48
+  expected_dynamic_safety_frames: 315
+  ending_frames: 96
+  expected_total_frames: 1107
+  expected_duration_s: 46.125
+  mission_source_frames_retained_once_in_order: true
+  dynamic_source_duration_preserved: true
+  dynamic_source_resampled_30_to_24_fps: true
+  robot_should_not_dominate_mission_frame: true
+  camera_style: fixed_human_height_wide_environmental
+  dynamic_insert_style: framed_evidence_window_with_metrics_panel
+  audio_track_required: false
+
+dynamic_insert:
+  video_rectangle_xywh: [40, 135, 1440, 810]
+  panel_rectangle_xywh: [1510, 135, 370, 810]
+  metrics:
+    protective_stop_duration_s: 2.2333333333333334
+    maximum_resumed_velocity_mps: 0.46277
+    collisions: 0
+
+live_omniverse_contract:
+  launcher: tools/run_phase7g_live_omniverse.sh
+  player: scripts/play_phase7g_presentation_live.py
+  renderer: RaytracedLighting
+  trajectory_source: results/administration_nav2_phase7e_static_fusion_mission.json
+  camera_source: config/phase7f_operator_presentation.yaml
+  recorded_pose_selection_without_interpolation: true
+  source_motion_was_live_nav2_and_learned_safety: true
+  presentation_player_executes_policy_live: false
+
+presentation_disclosures:
+  environment: >-
+    Plan-, iPhone-capture- and walkthrough-informed presentation twin; not a
+    photogrammetric or as-built survey.
+  motion: >-
+    Wide mission footage and live Omniverse player replay recorded poses from
+    the accepted live Nav2/learned-safety simulation source; the presentation
+    player itself does not execute the policy.
+  vice_principal_interior_assumed_because_locked: true
+  principal_door_width_presentation_assumption_m: 0.90
+  vice_principal_reported_door_width_m: 0.85
+  reported_door_height_m: 2.12
+  central_polygon_step_down_m: 0.20
+  physical_localization_credit: false
+  physical_safety_credit: false
+  physical_release: false
+
+outputs:
+  video: media/videos/AI-SHA_Phase7G_Omniverse_Presentation_Freeze.mp4
+  contact_sheet: media/AI-SHA_Phase7G_Omniverse_Presentation_Freeze_contact_sheet.jpg
+  report: results/administration_nav2_phase7g_presentation_freeze_report.json
+  acceptance: results/administration_nav2_phase7g_presentation_freeze_acceptance.json
+  live_smoke_report: results/administration_nav2_phase7g_live_omniverse_smoke.json
+  runbook: PHASE7G_PRESENTATION_RUNBOOK.md

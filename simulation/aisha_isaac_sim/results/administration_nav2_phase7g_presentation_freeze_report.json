@@ -1,0 +1,114 @@
+{
+  "report_type": "administration_nav2_phase7g_presentation_freeze",
+  "generated_at_utc": "2026-08-24T13:46:22.724012+00:00",
+  "passed": true,
+  "status": "presentation_freeze_built",
+  "checks": {
+    "phase7f_mission_source_accepted": true,
+    "dynamic_safety_sources_accepted": true,
+    "mission_source_hash_linked": true,
+    "dynamic_source_hash_linked": true,
+    "all_wide_mission_frames_retained": true,
+    "dynamic_duration_preserved_within_one_target_frame": true,
+    "full_hd_24fps_output": true,
+    "expected_frame_count": true,
+    "contact_sheet_created": true,
+    "no_physical_release": true
+  },
+  "checks_passed": 10,
+  "checks_total": 10,
+  "output": {
+    "video": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase7G_Omniverse_Presentation_Freeze.mp4",
+    "video_sha256": "d920ff1b847592c4927566570092f7d3f829eeefc7a57ca55cda314f92ec8cac",
+    "video_size_bytes": 7241941,
+    "contact_sheet": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/AI-SHA_Phase7G_Omniverse_Presentation_Freeze_contact_sheet.jpg",
+    "contact_sheet_sha256": "560780547f05eeccfe81757443ad56fabdd184a9c7e7a6ac64eb0d9829239c5e",
+    "width": 1920,
+    "height": 1080,
+    "fps": 24.0,
+    "frames": 1107,
+    "duration_s": 46.125
+  },
+  "timeline": [
+    {
+      "section": "intro_card",
+      "start_frame": 0,
+      "end_frame": 71,
+      "frames": 72
+    },
+    {
+      "section": "wide_path_traced_office_mission",
+      "start_frame": 72,
+      "end_frame": 647,
+      "frames": 576
+    },
+    {
+      "section": "dynamic_safety_transition_card",
+      "start_frame": 648,
+      "end_frame": 695,
+      "frames": 48
+    },
+    {
+      "section": "framed_dynamic_safety_evidence",
+      "start_frame": 696,
+      "end_frame": 1010,
+      "frames": 315
+    },
+    {
+      "section": "mission_complete_card",
+      "start_frame": 1011,
+      "end_frame": 1106,
+      "frames": 96
+    }
+  ],
+  "sources": {
+    "wide_mission": {
+      "video_sha256": "6fcc87d6faa91fe45ef8795e8a32e083f68af66f594763351eaaf39e150780e8",
+      "acceptance_sha256": "0e1ae267099eb671327e740f272683900077822b54bb50647fa8300b2163840f",
+      "metadata": {
+        "width": 1920,
+        "height": 1080,
+        "fps": 24.0,
+        "frames": 576,
+        "duration_s": 24.0
+      },
+      "frames_retained_once_in_order": 576
+    },
+    "dynamic_safety": {
+      "video_sha256": "556468502d6f5a86a6e13cf5809bd9fd6dba5d3ae76db6d82d3eea64afa77886",
+      "video_report_sha256": "99280ecaeb3a27cad66e39eaf1c52e171a69031476f8111d1f0243ef1b00b120",
+      "run_report_sha256": "8acb793d5877aa3a86e2122c9649fbb255738cb987f736b870af17020ba910e9",
+      "metadata": {
+        "width": 1280,
+        "height": 720,
+        "fps": 30.0,
+        "frames": 394,
+        "duration_s": 13.133333333333333
+      },
+      "target_frames": 315,
+      "first_selected_source_frame": 0,
+      "last_selected_source_frame": 392,
+      "duration_error_s": 0.00833333333333286,
+      "frame_rate_normalized_only": true
+    }
+  },
+  "assembly": {
+    "mission_motion_changed": false,
+    "dynamic_motion_retimed": false,
+    "dynamic_frames_resampled_for_target_rate": true,
+    "dynamic_evidence_window_scaled_and_framed": true,
+    "audio_track": false
+  },
+  "claim_boundary": {
+    "environment": "Plan-, iPhone-capture- and walkthrough-informed presentation twin; not a photogrammetric or as-built survey.",
+    "motion": "Wide mission footage and live Omniverse player replay recorded poses from the accepted live Nav2/learned-safety simulation source; the presentation player itself does not execute the policy.",
+    "vice_principal_interior_assumed_because_locked": true,
+    "principal_door_width_presentation_assumption_m": 0.9,
+    "vice_principal_reported_door_width_m": 0.85,
+    "reported_door_height_m": 2.12,
+    "central_polygon_step_down_m": 0.2,
+    "physical_localization_credit": false,
+    "physical_safety_credit": false,
+    "physical_release": false
+  }
+}

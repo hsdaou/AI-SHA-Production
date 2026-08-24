@@ -60,6 +60,31 @@ with:
 tools/run_administration_nav2_phase7f_operator_presentation.sh
 ```
 
+## Phase 7G presentation freeze
+
+Phase 7G closes the presentation workstream around the wide Phase 7F camera
+instead of the older close-follow reel. The final 46.125 s backup video is
+1920 x 1080 at 24 fps. It retains all 576 wide path-traced mission frames once
+and in order, then presents the accepted pedestrian encounter in a framed
+evidence window with its 2.23 s stop, 0.46 m/s resume and zero-contact metrics.
+The resulting package passes 23/23 checks:
+
+`media/videos/AI-SHA_Phase7G_Omniverse_Presentation_Freeze.mp4`
+
+The package also contains a RaytracedLighting Isaac Sim GUI player using the
+same eight human-height cameras and the accepted 12-leg recorded pose trace. A
+real Isaac Sim headless smoke completed one loop over all 12 segments. Start
+the repeat-until-closed GUI presentation with:
+
+```bash
+tools/run_phase7g_live_omniverse.sh
+```
+
+Use `PHASE7G_PRESENTATION_RUNBOOK.md` at the venue. The GUI is a live Omniverse
+visualization of recorded successful poses; it does not execute the policy
+again. The source poses came from the accepted live Nav2/learned-safety
+simulation mission.
+
 ## Phase 8A physical-localization preflight
 
 The first sim-to-real phase now has a fail-safe, localization-only ROS 2 graph
