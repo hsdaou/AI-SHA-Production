@@ -1,6 +1,6 @@
 {
   "report_type": "phase8b_passive_hardware_attachment_inventory",
-  "generated_at_utc": "2026-08-24T12:24:10.966376+00:00",
+  "generated_at_utc": "2026-08-24T13:25:09.494871+00:00",
   "passed": false,
   "status": "blocked_missing_hardware_evidence",
   "expected_driver_label": "ZLAC8015D V4.2",
@@ -8,16 +8,27 @@
     "supplier_archive_readable": true,
     "v4_0_supplier_material_identified": true,
     "v4_2_specific_supplier_material_found": false,
+    "procurement_driver_v4_2_confirmed": true,
+    "shipping_driver_v4_2_confirmed": true,
+    "supplier_attested_v4_2_manual_compatibility": true,
     "received_driver_label_photo_hashed": false,
     "received_driver_label_text_matches_expected": false,
-    "matching_rs485_manual_hashed": false,
+    "matching_rs485_manual_hashed": true,
+    "matching_rs485_manual_hash_registered": true,
     "operator_confirmed_manual_matches_label": false,
+    "documentary_manual_compatibility_satisfied": true,
     "stable_usb_rs485_device_found": false,
     "expected_usb_serial_matches_stable_device": false
   },
+  "supplier_documentary_evidence": {
+    "profile_phase": "8C",
+    "documentary_compatibility_passed": true,
+    "manual_registered_sha256": "79f6e112d6820d4740ec8b507ccfde8840b71811e1c2bee36d7d82a3b4a31aa7",
+    "private_source_documents_committed": false
+  },
   "supplier_archive": {
     "provided": true,
-    "path": "/home/robot-wst/Downloads/wetransfer_zllg80asm250-4096-v2-18-zip_2026-08-20_0753.zip",
+    "source_name": "wetransfer_zllg80asm250-4096-v2-18-zip_2026-08-20_0753.zip",
     "readable": true,
     "sha256": "cc361c78447bcfd9af738251cbf09929f77b37d6aea175cb951105b294e539c1",
     "entries": [
@@ -47,15 +58,16 @@
     "readable": false
   },
   "matching_rs485_manual": {
-    "provided": false,
-    "readable": false
+    "provided": true,
+    "source_name": "ZLAC8015D V4 Series RS485 Communication Version 1.06-20251111.pdf",
+    "readable": true,
+    "sha256": "79f6e112d6820d4740ec8b507ccfde8840b71811e1c2bee36d7d82a3b4a31aa7",
+    "size_bytes": 290612
   },
   "serial_by_id_root": "/dev/serial/by-id",
   "serial_devices": [],
   "blockers": [
-    "v4_2_manual_absent_from_supplier_archive",
     "received_driver_label_not_provided",
-    "exact_matching_manual_not_provided",
     "no_stable_usb_rs485_device"
   ],
   "serial_port_opened": false,
@@ -63,5 +75,5 @@
   "motor_write_available": false,
   "motion_authorized": false,
   "physical_release": false,
-  "next_gate": "provide_exact_label_photo_matching_manual_and_stable_usb_rs485_identity"
+  "next_gate": "provide_received_label_photo_and_stable_usb_rs485_identity"
 }

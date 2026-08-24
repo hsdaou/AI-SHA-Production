@@ -7,12 +7,13 @@ authorize wheel motion.
 ## Current result
 
 The workstation has no `/dev/serial/by-id` directory and `lsusb` shows no
-USB-RS485 adapter. The supplied outer archive contains
-`ZLAC8015D V4.0.zip`. The passive audit also reads that nested ZIP's directory
-without extracting it: the English RS485 document is `ZLAC8015D V4 Series
-RS485 Communication Version 1.06-20251111.pdf`, and no entry is named V4.2.
-The archive has no photo of the received driver. Therefore the physical
-telemetry gate remains blocked.
+USB-RS485 adapter. The supplied outer archive is named V4.0, but Phase 8C now
+binds the procurement and shipping evidence for `ZLAC8015D V4.2` to the exact
+hash of the V4 Series RS485 manual. The supplier explicitly attests that this
+manual applies to V4.2. Documentary compatibility therefore passes even though
+no manual file is named V4.2. The archive still has no photo of the actual
+received driver, so the physical telemetry gate remains blocked on the label
+and USB adapter identities.
 
 The software serial path was exercised separately against a Linux pseudo-
 terminal. The adapter issued exactly three Modbus function `0x03` requests for
@@ -26,9 +27,9 @@ connector side. The label photo must show the complete model/hardware revision,
 serial number and input-voltage rating. Also photograph both sides of the
 USB-RS485 adapter so its chipset/model and serial identity can be recorded.
 
-Obtain the exact RS485 communication manual for the received revision from the
-supplier. A V4 Series or V4.0 document is not automatically treated as a V4.2
-manual even if its register table looks similar.
+The applicable RS485 manual is already hash-registered through Phase 8C. Do not
+substitute another revision without adding a new supplier attestation and hash
+verification.
 
 Connect only the USB-RS485 adapter to the workstation first, then capture:
 
@@ -48,7 +49,6 @@ simulation/aisha_isaac_sim/tools/audit_phase8b_hardware_attachment.py \
   --driver-label-photo /absolute/path/to/driver-label.jpg \
   --confirmed-driver-label "ZLAC8015D V4.2" \
   --matching-rs485-manual /absolute/path/to/exact-manual.pdf \
-  --confirm-manual-matches-label \
   --expected-usb-serial SERIAL_FROM_UDEV
 ```
 

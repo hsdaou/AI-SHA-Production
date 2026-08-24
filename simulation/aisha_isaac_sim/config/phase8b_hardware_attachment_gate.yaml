@@ -3,9 +3,9 @@ phase: "8B-H"
 date: "2026-08-24"
 status: passive_audit_complete_physical_attachment_blocked
 objective: >-
-  Identify the exact received ZLAC8015D hardware/manual pair and a stable
-  USB-RS485 device before any serial port is opened or any Modbus request is
-  transmitted.
+  Identify the exact received ZLAC8015D V4.2 unit and a stable USB-RS485
+  device, using the Phase 8C supplier-attested V4 Series manual contract,
+  before any serial port is opened or any Modbus request is transmitted.
 
 authorization_boundary:
   filesystem_inventory: true
@@ -38,6 +38,9 @@ known_local_evidence:
   nested_driver_archive: ZLAC8015D V4.0.zip
   v4_0_material_present: true
   v4_2_specific_manual_present: false
+  v4_series_manual_sha256: 79f6e112d6820d4740ec8b507ccfde8840b71811e1c2bee36d7d82a3b4a31aa7
+  supplier_attests_v4_series_manual_compatible_with_v4_2: true
+  phase8c_documentary_compatibility_passed: true
   received_driver_label_photo_present: false
   usb_rs485_device_present: false
 
@@ -52,4 +55,6 @@ artifacts:
   audit_tool: simulation/aisha_isaac_sim/tools/audit_phase8b_hardware_attachment.py
   audit_report: simulation/aisha_isaac_sim/results/phase8b_hardware_attachment_inventory.json
   operator_checklist: simulation/aisha_isaac_sim/PHASE8B_HARDWARE_ATTACHMENT.md
+  supplier_evidence_profile: simulation/aisha_isaac_sim/config/phase8c_supplier_documentary_evidence.yaml
+  supplier_evidence_report: simulation/aisha_isaac_sim/results/phase8c_supplier_documentary_evidence.json
   serial_loopback_test: src/aisha_rev_d_driver/test/test_serial_loopback.py

@@ -114,20 +114,24 @@ status and fault ranges, then decodes signed position and speed values from the
 returned byte stream. This is serial-path evidence, not physical-driver
 evidence.
 
-The passive hardware-attachment audit opened no serial port and sent zero
-Modbus frames. It found only `ZLAC8015D V4.0.zip` in the supplied archive, no
-received-unit label photo, no exact V4.2 manual and no stable
-`/dev/serial/by-id` USB-RS485 device on this workstation. Follow
-`PHASE8B_HARDWARE_ATTACHMENT.md` and rerun the passive audit after those items
-are available. A passing audit authorizes only operator review before the
-separate guarded read-only probe.
+Phase 8C now registers a sanitized, hash-bound documentary chain: the
+procurement and shipping records identify `ZLAC8015D V4.2`, and the supplier
+explicitly attests that the registered V4 Series RS485 manual version
+`1.06-20251111` applies to V4.2. The private source documents and email body are
+not committed. Local hash verification passed for all three source records.
 
-The expected driver label is V4.2 while the supplied communication document is
-for the V4 Series, so exact hardware/manual compatibility is not assumed. The
-candidate 16384 counts/revolution and 0.100 m radius have no physical odometry
-credit until a marked revolution, loaded rolling circumference and both encoder
-signs are measured. The future read-only probe blocks before opening the serial
-device unless its complete operator checklist is explicitly confirmed. A motor-
+The passive hardware-attachment audit still opened no serial port and sent zero
+Modbus frames. The manual-related blockers are closed, leaving only the actual
+received-unit label photo and a stable `/dev/serial/by-id` USB-RS485 identity.
+Follow `PHASE8B_HARDWARE_ATTACHMENT.md` and
+`PHASE8C_SUPPLIER_EVIDENCE.md`. A passing attachment audit authorizes only
+operator review before the separate guarded read-only probe.
+
+The candidate 16384 counts/revolution and 0.100 m radius have no physical
+odometry credit until a marked revolution, loaded rolling circumference and
+both encoder signs are measured. The future read-only probe blocks before
+opening the serial device unless its complete operator checklist is explicitly
+confirmed. A motor-
 write path and the 5 RPM wheels-lifted test remain a later reviewed gate.
 
 Physical doorway motion remains prohibited. The reported 0.85 m opening is
@@ -495,7 +499,8 @@ bracket release.
 
 Before cutting metal:
 
-1. Obtain the exact V2.18 single-shaft dimensioned drawing and exact V4.2 driver manual.
+1. Obtain the exact V2.18 single-shaft dimensioned drawing and retain the
+   hash-registered, supplier-attested V4 Series driver manual with the order.
 2. Measure both received wheels: free OD, loaded circumference, tread/body width,
    shaft and mounting-face stack.
 3. Measure new caster overall height, trail, plate pattern and swivel-axis locations.

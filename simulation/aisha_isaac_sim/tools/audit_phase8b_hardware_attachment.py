@@ -27,6 +27,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=ROOT / "config/phase8b_hardware_attachment_gate.yaml",
     )
+    parser.add_argument(
+        "--supplier-evidence-profile",
+        type=Path,
+        default=ROOT / "config/phase8c_supplier_documentary_evidence.yaml",
+    )
     parser.add_argument("--supplier-archive", type=Path)
     parser.add_argument("--driver-label-photo", type=Path)
     parser.add_argument("--confirmed-driver-label", default="")
@@ -100,7 +105,7 @@ def archive_inventory(path: Path | None) -> dict[str, Any]:
     if not path.is_file() or not zipfile.is_zipfile(path):
         return {
             "provided": True,
-            "path": str(path),
+            "source_name": path.name,
             "readable": False,
             "entries": [],
         }
@@ -161,7 +166,7 @@ def archive_inventory(path: Path | None) -> dict[str, Any]:
     )
     return {
         "provided": True,
-        "path": str(path.resolve()),
+        "source_name": path.name,
         "readable": True,
         "sha256": sha256(path),
         "entries": relevant,
@@ -177,7 +182,7 @@ def optional_file_evidence(path: Path | None) -> dict[str, Any]:
     readable = path.is_file()
     result: dict[str, Any] = {
         "provided": True,
-        "path": str(path.resolve()),
+        "source_name": path.name,
         "readable": readable,
     }
     if readable:
@@ -189,11 +194,41 @@ def optional_file_evidence(path: Path | None) -> dict[str, Any]:
 def main() -> int:
     args = parse_args()
     profile = load_yaml(args.profile)
+    supplier_evidence_profile = load_yaml(args.supplier_evidence_profile)
     expected_label = profile["required_identity_evidence"]["exact_received_driver_label"]
     supplier = archive_inventory(args.supplier_archive)
     label_photo = optional_file_evidence(args.driver_label_photo)
     manual = optional_file_evidence(args.matching_rs485_manual)
     serial_devices = serial_inventory(args.serial_by_id_root)
+    documentary_evidence = supplier_evidence_profile.get("documentary_evidence", {})
+    documentary_gate = supplier_evidence_profile.get("gate", {})
+    supplier_attestation = supplier_evidence_profile.get("supplier_attestation", {})
+    expected_manual_hash = str(documentary_evidence.get("rs485_manual", {}).get("sha256", ""))
+    manual_hash_registered = (
+        manual.get("readable") is True
+        and bool(expected_manual_hash)
+        and manual.get("sha256") == expected_manual_hash
+    )
+    procurement_v4_2_confirmed = (
+        documentary_gate.get("procurement_model_v4_2_confirmed") is True
+    )
+    shipping_v4_2_confirmed = documentary_gate.get("shipping_model_v4_2_confirmed") is True
+    supplier_manual_compatibility_attested = (
+        documentary_gate.get("supplier_manual_compatibility_attested") is True
+        and supplier_attestation.get(
+            "v4_series_manual_compatible_with_zlac8015d_v4_2"
+        )
+        is True
+    )
+    documentary_manual_compatibility_satisfied = all(
+        (
+            procurement_v4_2_confirmed,
+            shipping_v4_2_confirmed,
+            supplier_manual_compatibility_attested,
+            documentary_gate.get("documentary_compatibility_passed") is True,
+            manual_hash_registered,
+        )
+    )
     confirmed_label_matches = (
         bool(args.confirmed_driver_label)
         and args.confirmed_driver_label.strip().casefold() == expected_label.casefold()
@@ -214,10 +249,15 @@ def main() -> int:
         "supplier_archive_readable": supplier.get("readable") is True,
         "v4_0_supplier_material_identified": supplier.get("v4_0_named_material_present") is True,
         "v4_2_specific_supplier_material_found": supplier.get("v4_2_named_material_present") is True,
+        "procurement_driver_v4_2_confirmed": procurement_v4_2_confirmed,
+        "shipping_driver_v4_2_confirmed": shipping_v4_2_confirmed,
+        "supplier_attested_v4_2_manual_compatibility": supplier_manual_compatibility_attested,
         "received_driver_label_photo_hashed": label_photo.get("readable") is True,
         "received_driver_label_text_matches_expected": confirmed_label_matches,
         "matching_rs485_manual_hashed": manual.get("readable") is True,
+        "matching_rs485_manual_hash_registered": manual_hash_registered,
         "operator_confirmed_manual_matches_label": args.confirm_manual_matches_label,
+        "documentary_manual_compatibility_satisfied": documentary_manual_compatibility_satisfied,
         "stable_usb_rs485_device_found": bool(serial_devices),
         "expected_usb_serial_matches_stable_device": stable_serial_match,
     }
@@ -226,23 +266,23 @@ def main() -> int:
         for name in (
             "received_driver_label_photo_hashed",
             "received_driver_label_text_matches_expected",
-            "matching_rs485_manual_hashed",
-            "operator_confirmed_manual_matches_label",
+            "documentary_manual_compatibility_satisfied",
             "stable_usb_rs485_device_found",
             "expected_usb_serial_matches_stable_device",
         )
     )
     blockers = []
-    if not identity_checks["v4_2_specific_supplier_material_found"]:
-        blockers.append("v4_2_manual_absent_from_supplier_archive")
+    if not identity_checks["documentary_manual_compatibility_satisfied"]:
+        if not identity_checks["supplier_attested_v4_2_manual_compatibility"]:
+            blockers.append("supplier_v4_2_manual_compatibility_not_attested")
+        if not identity_checks["matching_rs485_manual_hashed"]:
+            blockers.append("exact_matching_manual_not_provided")
+        elif not identity_checks["matching_rs485_manual_hash_registered"]:
+            blockers.append("matching_manual_hash_not_registered")
     if not identity_checks["received_driver_label_photo_hashed"]:
         blockers.append("received_driver_label_not_provided")
     elif not identity_checks["received_driver_label_text_matches_expected"]:
         blockers.append("received_driver_label_text_not_confirmed_or_mismatched")
-    if not identity_checks["matching_rs485_manual_hashed"]:
-        blockers.append("exact_matching_manual_not_provided")
-    elif not identity_checks["operator_confirmed_manual_matches_label"]:
-        blockers.append("manual_to_received_label_match_not_confirmed")
     if not identity_checks["stable_usb_rs485_device_found"]:
         blockers.append("no_stable_usb_rs485_device")
     elif not identity_checks["expected_usb_serial_matches_stable_device"]:
@@ -255,6 +295,12 @@ def main() -> int:
         "status": "ready_for_operator_review" if gate_passed else "blocked_missing_hardware_evidence",
         "expected_driver_label": expected_label,
         "identity_checks": identity_checks,
+        "supplier_documentary_evidence": {
+            "profile_phase": supplier_evidence_profile.get("phase"),
+            "documentary_compatibility_passed": documentary_manual_compatibility_satisfied,
+            "manual_registered_sha256": expected_manual_hash,
+            "private_source_documents_committed": False,
+        },
         "supplier_archive": supplier,
         "driver_label_photo": label_photo,
         "matching_rs485_manual": manual,
@@ -269,7 +315,7 @@ def main() -> int:
         "next_gate": (
             "operator_review_then_guarded_rs485_read_only_probe"
             if gate_passed
-            else "provide_exact_label_photo_matching_manual_and_stable_usb_rs485_identity"
+            else "provide_received_label_photo_and_stable_usb_rs485_identity"
         ),
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)

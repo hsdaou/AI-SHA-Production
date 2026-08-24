@@ -44,11 +44,15 @@ class Phase8BHardwareAttachmentContract(unittest.TestCase):
         self.assertEqual(
             set(self.report["blockers"]),
             {
-                "v4_2_manual_absent_from_supplier_archive",
                 "received_driver_label_not_provided",
-                "exact_matching_manual_not_provided",
                 "no_stable_usb_rs485_device",
             },
+        )
+        self.assertTrue(
+            self.report["identity_checks"]["documentary_manual_compatibility_satisfied"]
+        )
+        self.assertTrue(
+            self.report["identity_checks"]["matching_rs485_manual_hash_registered"]
         )
 
     def test_archive_and_local_usb_findings_are_specific(self) -> None:

@@ -1,0 +1,63 @@
+{
+  "report_type": "phase8c_sanitized_supplier_documentary_evidence",
+  "generated_at_utc": "2026-08-24T13:29:13.262695+00:00",
+  "passed": true,
+  "status": "documentary_evidence_passed_physical_intake_blocked",
+  "expected_driver_model_and_revision": "ZLAC8015D V4.2",
+  "registered_hashes": {
+    "procurement_record": "1ddc55331e7adae275958e9ed203108b28310955699ea5925b5ea375ead203fb",
+    "shipping_record": "0623f6e03e7033f3b1c58e8013e4aa69fc6d876ca0ba2dacc640cceb9cb0021e",
+    "rs485_manual": "79f6e112d6820d4740ec8b507ccfde8840b71811e1c2bee36d7d82a3b4a31aa7"
+  },
+  "contract_checks": {
+    "phase_is_8c": true,
+    "driver_model_is_v4_2": true,
+    "procurement_record_confirms_v4_2": true,
+    "shipping_record_confirms_v4_2": true,
+    "manual_version_registered": true,
+    "manual_read_only_function_documented": true,
+    "supplier_compatibility_attested": true,
+    "encoder_scale_remains_unverified": true,
+    "documentary_gate_passed": true,
+    "received_label_not_claimed": true,
+    "usb_identity_not_claimed": true,
+    "runtime_not_claimed": true,
+    "motion_not_authorized": true,
+    "physical_release_not_claimed": true,
+    "remaining_blockers_are_exact": true,
+    "private_sources_not_committed": true,
+    "profile_contains_no_email_address_or_home_path": true
+  },
+  "contract_checks_passed": 17,
+  "contract_checks_total": 17,
+  "local_hash_verification": {
+    "procurement_record": {
+      "provided": true,
+      "readable": true,
+      "sha256_matches": true
+    },
+    "shipping_record": {
+      "provided": true,
+      "readable": true,
+      "sha256_matches": true
+    },
+    "rs485_manual": {
+      "provided": true,
+      "readable": true,
+      "sha256_matches": true
+    }
+  },
+  "local_hash_verification_required": true,
+  "local_hashes_passed": true,
+  "documentary_compatibility_passed": true,
+  "received_driver_label_verified": false,
+  "usb_rs485_identity_verified": false,
+  "rs485_read_only_runtime_passed": false,
+  "wheel_motion_authorized": false,
+  "physical_release": false,
+  "remaining_blockers": [
+    "received_driver_label_not_provided",
+    "no_stable_usb_rs485_device"
+  ],
+  "private_source_documents_committed": false
+}

@@ -341,10 +341,12 @@ device; physical RS485 permits function `0x03` reads only and suppresses
 There is no motor-write transport, `/cmd_vel` subscriber or TF broadcaster.
 A Linux pseudo-terminal loopback proves that the serial transport emits only
 the three expected function-`0x03` reads and decodes the replies. A separate
-passive attachment audit opened no serial port and found no received-unit label
-photo, exact V4.2 manual or stable USB-RS485 by-id device. The physical
-read-only probe and 5 RPM wheels-lifted direction/count test therefore remain
-open. No floor motion or physical route claim follows from these offline gates.
+passive attachment audit opened no serial port. Phase 8C now hash-binds the
+V4.2 procurement/shipping records, exact V4 Series manual and supplier
+compatibility attestation, leaving the received-unit label photo and stable
+USB-RS485 by-id device as the two attachment blockers. The physical read-only
+probe and 5 RPM wheels-lifted direction/count test therefore remain open. No
+floor motion or physical route claim follows from these offline gates.
 
 ## 5. Architecture and claim boundary
 
