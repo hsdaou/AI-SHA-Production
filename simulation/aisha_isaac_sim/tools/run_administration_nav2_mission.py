@@ -16,9 +16,17 @@ from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Twist
 from lifecycle_msgs.srv import GetState
 from nav2_msgs.action import ComputePathToPose, FollowPath
+from nav2_msgs.msg import Costmap
 from nav_msgs.msg import Odometry, OccupancyGrid
 from rclpy.action import ActionClient
-from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
+from rclpy.qos import (
+    DurabilityPolicy,
+    QoSProfile,
+    ReliabilityPolicy,
+    qos_profile_sensor_data,
+)
+from sensor_msgs.msg import PointCloud2
+from sensor_msgs_py import point_cloud2
 from std_msgs.msg import Bool, UInt32
 
 
@@ -47,7 +55,11 @@ APPROACH_DOOR_BY_WAYPOINT = {
 PHASE6_CONTROL_STACKS = {
     "nav2_mapped_doorway_phase6_high_speed_safety",
     "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
+    "nav2_mapped_doorway_phase7b_blocked_route_replanning_safety",
 }
+PHASE7B_CONTROL_STACK = (
+    "nav2_mapped_doorway_phase7b_blocked_route_replanning_safety"
+)
 
 
 def yaw_quaternion(yaw_radians: float) -> tuple[float, float]:
@@ -90,6 +102,9 @@ class MissionNode:
         self.route_segment_publisher = self.node.create_publisher(
             UInt32, "/aisha/route_segment_id", 10
         )
+        self.blockage_release_publisher = self.node.create_publisher(
+            Bool, "/aisha/clear_blocked_route", 10
+        )
         map_qos = QoSProfile(
             depth=1,
             durability=DurabilityPolicy.TRANSIENT_LOCAL,
@@ -99,6 +114,24 @@ class MissionNode:
         self.node.create_subscription(Odometry, "/odom", self._odom, 10)
         self.node.create_subscription(
             PoseWithCovarianceStamped, "/amcl_pose", self._amcl_pose, 10
+        )
+        self.node.create_subscription(
+            Bool,
+            "/aisha/blocked_route_active",
+            self._blocked_route_state,
+            10,
+        )
+        self.node.create_subscription(
+            Costmap,
+            "/global_costmap/costmap_raw",
+            self._global_costmap,
+            10,
+        )
+        self.node.create_subscription(
+            PointCloud2,
+            "/aisha/phase7b/front_points",
+            self._registered_front_points,
+            qos_profile_sensor_data,
         )
         self.map_received = False
         self.amcl_pose_samples = 0
@@ -111,6 +144,14 @@ class MissionNode:
         self.pose_trace: list[dict[str, object]] = []
         self._trace_odom_count = 0
         self._trace_start_sim_s: float | None = None
+        self.blockage_active = False
+        self.blockage_ever_active = False
+        self.blockage_state_messages = 0
+        self.blockage_transitions: list[dict[str, object]] = []
+        self.global_costmap: Costmap | None = None
+        self.global_costmap_samples = 0
+        self.registered_front_points: list[tuple[float, float, float]] = []
+        self.registered_front_pointcloud_samples = 0
         self.node.create_subscription(Twist, "/cmd_vel", self._command, 10)
 
     def _map(self, _message: OccupancyGrid) -> None:
@@ -167,6 +208,153 @@ class MissionNode:
 
     def _command(self, message: Twist) -> None:
         self.command_samples.append((message.linear.x, message.angular.z))
+
+    def _blocked_route_state(self, message: Bool) -> None:
+        active = bool(message.data)
+        self.blockage_state_messages += 1
+        self.blockage_ever_active |= active
+        if active == self.blockage_active and self.blockage_transitions:
+            return
+        self.blockage_active = active
+        pose = self.odom_samples[-1] if self.odom_samples else None
+        self.blockage_transitions.append(
+            {
+                "active": active,
+                "odometry_sample": len(self.odom_samples),
+                "robot_xy_m": list(pose[:2]) if pose is not None else None,
+                "robot_linear_velocity_mps": pose[2] if pose is not None else None,
+            }
+        )
+
+    def _global_costmap(self, message: Costmap) -> None:
+        self.global_costmap = message
+        self.global_costmap_samples += 1
+
+    def _registered_front_points(self, message: PointCloud2) -> None:
+        points = point_cloud2.read_points(
+            message, field_names=("x", "y", "z"), skip_nans=True
+        )
+        self.registered_front_points = [
+            (float(point[0]), float(point[1]), float(point[2]))
+            for point in points
+        ]
+        self.registered_front_pointcloud_samples += 1
+
+    def costmap_blockage_profile(
+        self, x_m: float = 10.62, y_min_m: float = -1.45, y_max_m: float = 1.45
+    ) -> dict[str, object]:
+        message = self.global_costmap
+        if message is None:
+            return {"available": False}
+        metadata = message.metadata
+        resolution = float(metadata.resolution)
+        origin_x = float(metadata.origin.position.x)
+        origin_y = float(metadata.origin.position.y)
+        size_x = int(metadata.size_x)
+        size_y = int(metadata.size_y)
+        x_index = int(math.floor((x_m - origin_x) / resolution))
+        samples = []
+        y_m = y_min_m
+        while y_m <= y_max_m + resolution * 0.5:
+            y_index = int(math.floor((y_m - origin_y) / resolution))
+            if 0 <= x_index < size_x and 0 <= y_index < size_y:
+                value = int(message.data[y_index * size_x + x_index])
+                samples.append((round(y_m, 3), value))
+            y_m += 0.05
+        return {
+            "available": True,
+            "topic_samples_received": self.global_costmap_samples,
+            "sample_x_m": x_m,
+            "sample_count": len(samples),
+            "maximum_cost": max((value for _, value in samples), default=None),
+            "lethal_or_inscribed_samples": sum(
+                value >= 253 for _, value in samples
+            ),
+            "nonzero_samples": sum(value > 0 for _, value in samples),
+            "samples_y_cost": [list(item) for item in samples],
+        }
+
+    @staticmethod
+    def path_blockage_profile(path, centre_xy_m: tuple[float, float]) -> dict:
+        if path is None:
+            return {"available": False}
+        centre_x, centre_y = centre_xy_m
+        points = [
+            (float(pose.pose.position.x), float(pose.pose.position.y))
+            for pose in path.poses
+        ]
+        nearest = min(
+            points,
+            key=lambda point: math.hypot(
+                point[0] - centre_x, point[1] - centre_y
+            ),
+        )
+        near_face = [
+            point for point in points if abs(point[0] - centre_x) <= 0.30
+        ]
+        return {
+            "available": True,
+            "minimum_centre_distance_m": math.hypot(
+                nearest[0] - centre_x, nearest[1] - centre_y
+            ),
+            "nearest_xy_m": list(nearest),
+            "near_blockage_point_count": len(near_face),
+            "near_blockage_y_range_m": (
+                [
+                    min(point[1] for point in near_face),
+                    max(point[1] for point in near_face),
+                ]
+                if near_face
+                else None
+            ),
+        }
+
+    def registered_lidar_path_profile(
+        self, path, required_clearance_m: float = 0.46
+    ) -> dict[str, object]:
+        """Validate a global path against the latest registered LiDAR returns."""
+        if path is None:
+            return {"available": False, "reason": "no_candidate_path"}
+        if not self.registered_front_points:
+            return {"available": False, "reason": "no_registered_lidar_points"}
+        path_points = [
+            (float(pose.pose.position.x), float(pose.pose.position.y))
+            for pose in path.poses
+        ]
+        minimum_distance = math.inf
+        nearest_path = None
+        nearest_obstacle = None
+        violating_path_pose_count = 0
+        for path_x, path_y in path_points:
+            nearest_for_pose, obstacle = min(
+                (
+                    (
+                        math.hypot(path_x - obstacle_x, path_y - obstacle_y),
+                        (obstacle_x, obstacle_y),
+                    )
+                    for obstacle_x, obstacle_y, _ in self.registered_front_points
+                ),
+                key=lambda item: item[0],
+            )
+            if nearest_for_pose <= required_clearance_m:
+                violating_path_pose_count += 1
+            if nearest_for_pose < minimum_distance:
+                minimum_distance = nearest_for_pose
+                nearest_path = (path_x, path_y)
+                nearest_obstacle = obstacle
+        return {
+            "available": True,
+            "pointcloud_samples_received": self.registered_front_pointcloud_samples,
+            "registered_obstacle_point_count": len(self.registered_front_points),
+            "required_radial_clearance_m": required_clearance_m,
+            "minimum_path_to_obstacle_distance_m": minimum_distance,
+            "nearest_path_xy_m": list(nearest_path) if nearest_path else None,
+            "nearest_obstacle_xy_m": (
+                list(nearest_obstacle) if nearest_obstacle else None
+            ),
+            "violating_path_pose_count": violating_path_pose_count,
+            "candidate_rejected": violating_path_pose_count > 0,
+        }
 
     def wait_for_map_and_odometry(self, timeout_s: float) -> bool:
         deadline = time.monotonic() + timeout_s
@@ -321,6 +509,185 @@ class MissionNode:
         for _ in range(3):
             self.route_segment_publisher.publish(message)
             rclpy.spin_once(self.node, timeout_sec=0.05)
+
+    def wait_for_blockage_state(self, active: bool, timeout_s: float) -> bool:
+        deadline = time.monotonic() + timeout_s
+        while time.monotonic() < deadline:
+            rclpy.spin_once(self.node, timeout_sec=0.05)
+            if self.blockage_active == active and (
+                active or self.blockage_ever_active
+            ):
+                return True
+        return False
+
+    def hold_stopped(self, duration_s: float) -> None:
+        deadline = time.monotonic() + duration_s
+        while time.monotonic() < deadline:
+            self.stop()
+            rclpy.spin_once(self.node, timeout_sec=0.05)
+
+    def request_blockage_clear(self) -> None:
+        message = Bool()
+        message.data = True
+        discovery_deadline = time.monotonic() + 2.0
+        while (
+            self.blockage_release_publisher.get_subscription_count() == 0
+            and time.monotonic() < discovery_deadline
+        ):
+            rclpy.spin_once(self.node, timeout_sec=0.05)
+        for _ in range(5):
+            self.blockage_release_publisher.publish(message)
+            rclpy.spin_once(self.node, timeout_sec=0.05)
+
+    def exercise_blocked_route_replan(
+        self, waypoint: dict, planning_timeout_s: float
+    ):
+        """Reject a LiDAR-conflicting candidate, wait, then validate a fresh path."""
+        started = time.monotonic()
+        active_seen = self.wait_for_blockage_state(True, 15.0)
+        result: dict[str, object] = {
+            "scenario": "temporary_full_width_single_path_hallway_blockage",
+            "blockage_active_seen": active_seen,
+            "topology": "single_path_safe_wait_no_detour_available",
+            "observation_source": "registered_front_lidar_supervisory_path_validator",
+            "nav2_dynamic_costmap_marking_credit": False,
+            "scenario_state_used_for_test_synchronization_only": True,
+            "scenario_state_exposed_to_policy": False,
+            "attempts": [],
+        }
+        if not active_seen:
+            result["passed"] = False
+            result["status"] = "blockage_active_not_observed"
+            return None, result["status"], result
+
+        # Accumulate several independent 2 Hz registered LiDAR snapshots before
+        # allowing the route supervisor to evaluate Nav2's candidate path.
+        self.hold_stopped(2.5)
+        start_odom_index = len(self.odom_samples)
+        start_pose = self.odom_samples[-1] if self.odom_samples else None
+        blocked_candidate, blocked_candidate_status = self.compute_path(
+            waypoint, planning_timeout_s
+        )
+        blocked_sensor_profile = self.registered_lidar_path_profile(
+            blocked_candidate
+        )
+        sensor_rejected_candidate = bool(
+            blocked_sensor_profile.get("candidate_rejected", False)
+        )
+        blocked_status = (
+            "rejected_by_registered_lidar_path_validator"
+            if sensor_rejected_candidate
+            else blocked_candidate_status
+        )
+        blocked_path = None if sensor_rejected_candidate else blocked_candidate
+        result["global_costmap_during_blockage"] = self.costmap_blockage_profile()
+        result["attempts"].append(
+            {
+                "attempt": 1,
+                "phase": "barrier_active",
+                "planning_status": blocked_status,
+                "nav2_candidate_planning_status": blocked_candidate_status,
+                "candidate_path_pose_count": (
+                    len(blocked_candidate.poses)
+                    if blocked_candidate is not None
+                    else 0
+                ),
+                "path_pose_count": (
+                    len(blocked_path.poses) if blocked_path is not None else 0
+                ),
+                "path_length_m": (
+                    round(path_length(blocked_candidate), 4)
+                    if blocked_candidate is not None
+                    else None
+                ),
+                "path_blockage_profile": self.path_blockage_profile(
+                    blocked_candidate, (10.80, 0.0)
+                ),
+                "registered_lidar_validation": blocked_sensor_profile,
+            }
+        )
+        blocked_plan_rejected = (
+            blocked_candidate is None or sensor_rejected_candidate
+        )
+        result["blocked_plan_rejected"] = blocked_plan_rejected
+        result["rejection_authority"] = (
+            "registered_lidar_supervisory_path_validator"
+            if sensor_rejected_candidate
+            else "nav2_global_planner"
+        )
+
+        self.request_blockage_clear()
+        cleared_seen = self.wait_for_blockage_state(False, 15.0)
+        result["clearance_requested"] = True
+        result["blockage_cleared_seen"] = cleared_seen
+        if cleared_seen:
+            self.hold_stopped(2.5)
+
+        end_pose = self.odom_samples[-1] if self.odom_samples else None
+        wait_samples = self.odom_samples[start_odom_index:]
+        wait_displacement = (
+            math.hypot(end_pose[0] - start_pose[0], end_pose[1] - start_pose[1])
+            if start_pose is not None and end_pose is not None
+            else None
+        )
+        result["safe_wait"] = {
+            "measurement_start": "after_initial_costmap_and_stop_settle",
+            "odometry_samples": len(wait_samples),
+            "maximum_absolute_linear_velocity_mps": max(
+                (abs(sample[2]) for sample in wait_samples), default=0.0
+            ),
+            "displacement_m": wait_displacement,
+            "elapsed_wall_s": round(time.monotonic() - started, 3),
+        }
+        if not blocked_plan_rejected:
+            result["passed"] = False
+            result["status"] = "blocked_candidate_not_rejected_by_lidar_validator"
+            return None, result["status"], result
+        if not cleared_seen:
+            result["passed"] = False
+            result["status"] = "blockage_clear_not_observed"
+            return None, result["status"], result
+        fresh_candidate, fresh_candidate_status = self.compute_path(
+            waypoint, planning_timeout_s
+        )
+        fresh_sensor_profile = self.registered_lidar_path_profile(fresh_candidate)
+        fresh_sensor_rejected = bool(
+            fresh_sensor_profile.get("candidate_rejected", False)
+        )
+        fresh_path = None if fresh_sensor_rejected else fresh_candidate
+        fresh_status = (
+            "rejected_by_registered_lidar_path_validator"
+            if fresh_sensor_rejected
+            else fresh_candidate_status
+        )
+        result["attempts"].append(
+            {
+                "attempt": 2,
+                "phase": "barrier_cleared",
+                "planning_status": fresh_status,
+                "nav2_candidate_planning_status": fresh_candidate_status,
+                "candidate_path_pose_count": (
+                    len(fresh_candidate.poses) if fresh_candidate is not None else 0
+                ),
+                "path_pose_count": (
+                    len(fresh_path.poses) if fresh_path is not None else 0
+                ),
+                "path_length_m": (
+                    round(path_length(fresh_candidate), 4)
+                    if fresh_candidate is not None
+                    else None
+                ),
+                "registered_lidar_validation": fresh_sensor_profile,
+            }
+        )
+        result["fresh_path_computed_after_clearance"] = fresh_path is not None
+        result["planner_attempt_count"] = 2
+        result["replan_mode"] = "fresh_compute_path_to_pose_after_safe_wait"
+        result["passed"] = fresh_path is not None
+        result["status"] = (
+            "succeeded" if fresh_path is not None else fresh_status
+        )
+        return fresh_path, fresh_status, result
 
     def pivot_in_place(
         self,
@@ -501,6 +868,7 @@ def main() -> int:
             "nav2_mapped_doorway_phase3n_safety",
             "nav2_mapped_doorway_phase6_high_speed_safety",
             "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
+            PHASE7B_CONTROL_STACK,
         ),
         default="nav2",
         help="declare the independently launched bridge command-arbitration mode",
@@ -547,6 +915,8 @@ def main() -> int:
                 "nav2_phase6_and_phase3n_learned_safety_with_dynamic_crossing"
                 if args.control_stack
                 == "nav2_mapped_doorway_phase7_dynamic_crossing_safety"
+                else "nav2_phase6_and_phase3n_learned_safety_with_blocked_route_replanning"
+                if args.control_stack == PHASE7B_CONTROL_STACK
                 else "nav2_phase6_and_phase3n_learned_safety"
                 if args.control_stack in PHASE6_CONTROL_STACKS
                 else args.control_stack
@@ -594,9 +964,20 @@ def main() -> int:
                         stage_x - float(waypoint["x_m"]),
                         stage_y - float(waypoint["y_m"]),
                     )
-                path, planning_status = mission.compute_path(
-                    navigation_waypoint, args.planning_timeout_s
-                )
+                blocked_route_replanning = None
+                if (
+                    args.control_stack == PHASE7B_CONTROL_STACK
+                    and route_segment_id == 1
+                ):
+                    path, planning_status, blocked_route_replanning = (
+                        mission.exercise_blocked_route_replan(
+                            navigation_waypoint, args.planning_timeout_s
+                        )
+                    )
+                else:
+                    path, planning_status = mission.compute_path(
+                        navigation_waypoint, args.planning_timeout_s
+                    )
                 record = {
                     "index": index,
                     "route_segment_id": route_segment_id,
@@ -616,6 +997,7 @@ def main() -> int:
                     "planning_status": planning_status,
                     "path_pose_count": len(path.poses) if path is not None else 0,
                     "path_length_m": round(path_length(path), 4) if path is not None else None,
+                    "blocked_route_replanning": blocked_route_replanning,
                 }
                 if path is None:
                     record["execution_status"] = "not_started"
@@ -794,6 +1176,7 @@ def main() -> int:
                 "nav2_mapped_doorway_phase3n_safety",
                 "nav2_mapped_doorway_phase6_high_speed_safety",
                 "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
+                PHASE7B_CONTROL_STACK,
             },
             "learned_360_safety_coupled": (
                 args.control_stack
@@ -802,6 +1185,7 @@ def main() -> int:
                     "nav2_mapped_doorway_phase3n_safety",
                     "nav2_mapped_doorway_phase6_high_speed_safety",
                     "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
+                    PHASE7B_CONTROL_STACK,
                 }
             ),
             "mapped_doorway_safety_coupled": (
@@ -810,6 +1194,7 @@ def main() -> int:
                     "nav2_mapped_doorway_phase3n_safety",
                     "nav2_mapped_doorway_phase6_high_speed_safety",
                     "nav2_mapped_doorway_phase7_dynamic_crossing_safety",
+                    PHASE7B_CONTROL_STACK,
                 }
             ),
             "phase6_high_speed_safety_coupled": (
@@ -819,6 +1204,25 @@ def main() -> int:
                 args.control_stack
                 == "nav2_mapped_doorway_phase7_dynamic_crossing_safety"
             ),
+            "phase7b_blocked_route_replanning_coupled": (
+                args.control_stack == PHASE7B_CONTROL_STACK
+            ),
+            "blocked_route_replanning": next(
+                (
+                    leg.get("blocked_route_replanning")
+                    for leg in legs
+                    if leg.get("blocked_route_replanning") is not None
+                ),
+                None,
+            ),
+            "blocked_route_coordination": {
+                "state_topic": "/aisha/blocked_route_active",
+                "release_topic": "/aisha/clear_blocked_route",
+                "state_messages": mission.blockage_state_messages,
+                "transitions": mission.blockage_transitions,
+                "used_for_scenario_synchronization_only": True,
+                "exposed_to_policy": False,
+            },
             "frozen_phase3m_local_navigation_coupled": False,
             "physical_release": False,
             "claim_boundary": (

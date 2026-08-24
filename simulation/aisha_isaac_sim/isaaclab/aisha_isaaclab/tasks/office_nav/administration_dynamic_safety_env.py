@@ -85,6 +85,41 @@ def _showcase_person_proxy() -> RigidObjectCfg:
     )
 
 
+def _temporary_corridor_blocker_proxy() -> RigidObjectCfg:
+    """Create a visible kinematic barricade that spans the office hallway."""
+    return RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/DynamicObstacle_0",
+        spawn=sim_utils.CuboidCfg(
+            size=(0.36, 2.90, 1.20),
+            rigid_props=sim_utils.RigidBodyPropertiesCfg(
+                disable_gravity=True,
+                kinematic_enabled=True,
+                solver_position_iteration_count=4,
+                solver_velocity_iteration_count=1,
+            ),
+            collision_props=sim_utils.CollisionPropertiesCfg(
+                contact_offset=0.02,
+                rest_offset=0.0,
+            ),
+            mass_props=sim_utils.MassPropertiesCfg(mass=45.0),
+            physics_material=sim_utils.RigidBodyMaterialCfg(
+                static_friction=0.70,
+                dynamic_friction=0.60,
+                restitution=0.0,
+                friction_combine_mode="min",
+                restitution_combine_mode="min",
+            ),
+            visual_material=sim_utils.PreviewSurfaceCfg(
+                diffuse_color=(0.92, 0.32, 0.04),
+                emissive_color=(0.08, 0.012, 0.0),
+                roughness=0.48,
+                metallic=0.08,
+            ),
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(pos=(0.0, 0.0, -5.0)),
+    )
+
+
 @configclass
 class AishaAdministrationDynamicSafetySceneCfg(AishaAdministrationLiveSceneCfg):
     """Walkthrough-matched administration scene with ray-visible people."""
@@ -211,6 +246,36 @@ class AishaAdministrationMeasuredNav2DynamicSafetySceneCfg(
 
 
 @configclass
+class AishaAdministrationMeasuredNav2BlockedRouteSceneCfg(
+    AishaAdministrationMeasuredNav2DynamicSafetySceneCfg
+):
+    """Measured scene with a scan-visible full-width temporary barricade."""
+
+    dynamic_obstacle_0 = _temporary_corridor_blocker_proxy()
+    # Keep the learned crown observation frozen at 36 beams. The independent
+    # low front scanner supplies a denser costmap surface so a 2.90 m barrier
+    # cannot alias into disconnected lethal points at presentation distance.
+    front_lidar = MultiMeshRayCasterCfg(
+        prim_path="{ENV_REGEX_NS}/Robot/base_link/front_lidar_link",
+        update_period=0.05,
+        offset=MultiMeshRayCasterCfg.OffsetCfg(),
+        ray_alignment="base",
+        pattern_cfg=patterns.LidarPatternCfg(
+            channels=1,
+            vertical_fov_range=(0.0, 0.0),
+            horizontal_fov_range=(-60.0, 60.0),
+            horizontal_res=1.0,
+        ),
+        max_distance=10.0,
+        mesh_prim_paths=administration_collision_raycast_targets()
+        + [_dynamic_obstacle_raycast_target()],
+        reference_meshes=True,
+        update_mesh_ids=False,
+        debug_vis=False,
+    )
+
+
+@configclass
 class AishaAdministrationDynamicSafetyShowcaseSceneCfg(
     AishaAdministrationDynamicSafetySceneCfg
 ):
@@ -323,6 +388,31 @@ class AishaAdministrationMeasuredNav2Phase7DynamicCrossingEnvCfg(
     showcase_crossing_half_span_m = 1.10
     showcase_crossing_speed_mps = 0.48
     showcase_trigger_distance_m = 2.60
+
+
+@configclass
+class AishaAdministrationMeasuredNav2Phase7BBlockedRouteEnvCfg(
+    AishaAdministrationMeasuredNav2Phase6HighSpeedEnvCfg
+):
+    """Phase 7B safe-wait replan gate for the single-path east hallway."""
+
+    scene: AishaAdministrationMeasuredNav2BlockedRouteSceneCfg = (
+        AishaAdministrationMeasuredNav2BlockedRouteSceneCfg(
+            num_envs=1,
+            env_spacing=55.0,
+            replicate_physics=False,
+            clone_in_fabric=False,
+        )
+    )
+    maximum_active_obstacles = 1
+    dynamic_obstacle_activation_probability = 1.0
+    dynamic_obstacle_social_retreat_speed_mps = 0.0
+    temporary_blockage_segment_id = 1
+    temporary_blockage_centre_xy_m = (10.80, 0.0)
+    # The physical hallway is 2.80 m wide. The 2.90 m wall-anchored proxy
+    # overlaps each side by 0.05 m so Navfn's point path cannot exploit a
+    # mathematical edge gap that is far narrower than AI-SHA.
+    temporary_blockage_size_xyz_m = (0.36, 2.90, 1.20)
 
 
 @configclass
@@ -608,3 +698,95 @@ class AishaAdministrationMeasuredNav2DynamicCrossingEnv(
     """Full measured Nav2 mission with one deterministic sensed crossing."""
 
     cfg: AishaAdministrationMeasuredNav2Phase7DynamicCrossingEnvCfg
+
+
+class AishaAdministrationMeasuredNav2BlockedRouteEnv(
+    AishaAdministrationDynamicSafetyEnv
+):
+    """Temporary full-width blockage controlled by the Phase 7B mission gate."""
+
+    cfg: AishaAdministrationMeasuredNav2Phase7BBlockedRouteEnvCfg
+
+    def __init__(
+        self,
+        cfg: AishaAdministrationMeasuredNav2Phase7BBlockedRouteEnvCfg,
+        render_mode: str | None = None,
+        **kwargs,
+    ):
+        super().__init__(cfg, render_mode, **kwargs)
+        self._temporary_blockage_release_requested = torch.zeros(
+            self.num_envs, dtype=torch.bool, device=self.device
+        )
+
+    def _sample_dynamic_obstacles(self, env_ids: torch.Tensor) -> None:
+        """Arm the fixed barrier while keeping it hidden before segment 1."""
+        super()._sample_dynamic_obstacles(env_ids)
+        self._obstacle_active[:, env_ids] = False
+        self._obstacle_pause_phase[:, env_ids] = 0.0
+        if hasattr(self, "_temporary_blockage_release_requested"):
+            self._temporary_blockage_release_requested[env_ids] = False
+
+    def release_temporary_blockage(self) -> None:
+        """Remove the barrier after the mission has verified the blocked plan."""
+        self._temporary_blockage_release_requested[:] = True
+
+    def _update_dynamic_obstacles(self, env_ids: torch.Tensor | None = None) -> None:
+        """Expose the barricade for segment 1 until the mission requests removal."""
+        if env_ids is None:
+            env_ids = torch.arange(self.num_envs, device=self.device)
+        origins = self.scene.env_origins[env_ids, :2]
+        on_blocked_segment = (
+            self._segment_ids[env_ids] == self.cfg.temporary_blockage_segment_id
+        )
+        self._obstacle_pause_phase[0, env_ids] = torch.maximum(
+            self._obstacle_pause_phase[0, env_ids], on_blocked_segment.float()
+        )
+        triggered = self._obstacle_pause_phase[0, env_ids] > 0.5
+        if hasattr(self, "_temporary_blockage_release_requested"):
+            released = self._temporary_blockage_release_requested[env_ids]
+        else:
+            released = torch.zeros_like(triggered)
+        active = triggered & ~released
+        self._obstacle_active[0, env_ids] = active
+
+        blocker = self._dynamic_obstacles[0]
+        root_pose = blocker.data.default_root_state[env_ids, :7].clone()
+        root_pose[:, 0] = origins[:, 0] + self.cfg.temporary_blockage_centre_xy_m[0]
+        root_pose[:, 1] = origins[:, 1] + self.cfg.temporary_blockage_centre_xy_m[1]
+        root_pose[:, 2] = torch.where(
+            active,
+            torch.full_like(root_pose[:, 2], self.cfg.temporary_blockage_size_xyz_m[2] / 2.0),
+            torch.full_like(root_pose[:, 2], -5.0),
+        )
+        root_pose[:, 3] = 1.0
+        root_pose[:, 4:] = 0.0
+        blocker.write_root_pose_to_sim(root_pose, env_ids=env_ids)
+        blocker.write_root_velocity_to_sim(
+            torch.zeros((len(env_ids), 6), device=self.device), env_ids=env_ids
+        )
+
+        for obstacle_index in range(1, self.cfg.dynamic_obstacle_count):
+            obstacle = self._dynamic_obstacles[obstacle_index]
+            hidden_pose = obstacle.data.default_root_state[env_ids, :7].clone()
+            hidden_pose[:, :2] = origins
+            hidden_pose[:, 2] = -5.0
+            hidden_pose[:, 3] = 1.0
+            hidden_pose[:, 4:] = 0.0
+            obstacle.write_root_pose_to_sim(hidden_pose, env_ids=env_ids)
+            obstacle.write_root_velocity_to_sim(
+                torch.zeros((len(env_ids), 6), device=self.device), env_ids=env_ids
+            )
+
+    def blockage_state(self) -> dict[str, torch.Tensor]:
+        """Return scenario telemetry; it is not part of either policy observation."""
+        triggered = self._obstacle_pause_phase[0] > 0.5
+        released = self._temporary_blockage_release_requested.clone()
+        return {
+            "triggered": triggered,
+            "active": triggered & ~released,
+            "cleared": triggered & released,
+            "blocker_position_xy_m": (
+                self._dynamic_obstacles[0].data.root_pos_w[:, :2]
+                - self.scene.env_origins[:, :2]
+            ).clone(),
+        }

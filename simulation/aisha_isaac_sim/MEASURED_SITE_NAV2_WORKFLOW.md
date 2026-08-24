@@ -234,6 +234,31 @@ not yet prove blocked-route global replanning, crowd navigation, human
 behaviour, physical stopping distance, physical localization or deployment
 safety. Those boundaries are recorded in `config/phase7_dynamic_nav2.yaml`.
 
+### Phase 7B blocked-route safe wait and fresh planning
+
+Phase 7B preserves the accepted Phase 6 and Phase 7A gates and introduces one
+full-width barricade on east-hallway segment 1:
+
+```bash
+tools/run_administration_nav2_phase7b_blocked_route_integration.sh
+```
+
+The hallway has no alternate mapped route. Nav2 therefore supplies a candidate
+path while a supervisory validator checks that path against the latest
+map-registered front-LiDAR ray hits using a 0.46 m radial clearance. The active
+barricade caused 184 candidate poses to violate that clearance, so the route
+was rejected before execution. After a stationary safe wait and physical
+barrier removal, the mission requested a fresh path; its minimum sensed
+clearance was 1.02065 m and it completed the full 12-leg mission. The acceptance
+report passes 26/26.
+
+Barricade state is used only to synchronize this deterministic test and request
+its removal. It is not policy or path-validator input. This gate does not claim
+that the installed Nav2 obstacle layer marked the dynamic object, that a spatial
+detour exists, or that persistent blockage, physical localization, stopping
+distance or deployment safety is proven. The exact boundary is recorded in
+`config/phase7b_blocked_route.yaml`.
+
 ## 5. Architecture and claim boundary
 
 Two authentic controller paths are now verified:
@@ -250,12 +275,14 @@ Nav2 and the frozen learned local navigator are not placed in series because
 they are both local motion authorities; doing that without a deliberate
 arbitration design would obscure which controller caused a command.
 
-This closes the measured-presentation **static** Nav2 integration gate, not the
-blocked-route dynamic-replanning or physical-release gates. The supplied iPhone
-mesh sections and manual door dimensions inform the procedural scene, but
-native section-to-stage registration and an as-built survey are still
-incomplete. Physical work still requires measured clearance/threshold review,
-sim-to-real validation, a hardware emergency stop and supervised commissioning.
+This now closes the measured-presentation static, controlled-crossing and
+single-path temporary-blockage simulation gates. It does not close native Nav2
+dynamic-costmap marking, alternate-route, persistent-blockage or physical
+release gates. The supplied iPhone mesh sections and manual door dimensions
+inform the procedural scene, but native section-to-stage registration and an
+as-built survey are still incomplete. Physical work still requires measured
+clearance/threshold review, sim-to-real validation, a hardware emergency stop
+and supervised commissioning.
 
 Check measured-site preparation at any time with:
 

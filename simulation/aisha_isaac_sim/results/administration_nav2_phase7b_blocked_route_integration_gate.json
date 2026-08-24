@@ -1,0 +1,491 @@
+{
+  "report_type": "administration_nav2_phase7b_blocked_route_integration_gate",
+  "generated_at_utc": "2026-08-24T06:26:25.539552+00:00",
+  "passed": true,
+  "status": "accepted_single_path_safe_wait_replanning",
+  "checks": {
+    "phase6_static_baseline_retained": true,
+    "phase7a_crossing_baseline_retained": true,
+    "bridge_passed": true,
+    "blocked_route_task_selected": true,
+    "mission_passed_all_12_legs": true,
+    "blocked_route_control_stack_declared": true,
+    "episode_never_reset": true,
+    "mission_completion_reached_bridge": true,
+    "ground_truth_localization_boundary_retained": true,
+    "accepted_phase6_primary_loaded": true,
+    "accepted_phase3n_fallback_loaded": true,
+    "blocker_sensed_without_privileged_policy_state": true,
+    "single_path_safe_wait_scope_disclosed": true,
+    "blockage_triggered_on_segment_1": true,
+    "blockage_was_cleared_after_release": true,
+    "mission_observed_active_and_clear_states": true,
+    "active_blocked_plan_was_rejected": true,
+    "fresh_global_path_computed_after_clearance": true,
+    "safe_wait_held_robot_stationary": true,
+    "replanned_leg_executed_successfully": true,
+    "high_speed_resumed_after_replan": true,
+    "no_collision_with_blocker_or_static_scene": true,
+    "doorway_limit_retained": true,
+    "central_drop_clearance_retained": true,
+    "both_office_pivots_retained": true,
+    "physical_release_remains_false": true
+  },
+  "checks_passed": 26,
+  "checks_total": 26,
+  "mission": {
+    "report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7b_blocked_route_mission.json",
+    "legs_completed": 12,
+    "elapsed_wall_s": 482.009,
+    "replanning": {
+      "scenario": "temporary_full_width_single_path_hallway_blockage",
+      "blockage_active_seen": true,
+      "topology": "single_path_safe_wait_no_detour_available",
+      "observation_source": "registered_front_lidar_supervisory_path_validator",
+      "nav2_dynamic_costmap_marking_credit": false,
+      "scenario_state_used_for_test_synchronization_only": true,
+      "scenario_state_exposed_to_policy": false,
+      "attempts": [
+        {
+          "attempt": 1,
+          "phase": "barrier_active",
+          "planning_status": "rejected_by_registered_lidar_path_validator",
+          "nav2_candidate_planning_status": "succeeded",
+          "candidate_path_pose_count": 2554,
+          "path_pose_count": 0,
+          "path_length_m": 12.7777,
+          "path_blockage_profile": {
+            "available": true,
+            "minimum_centre_distance_m": 0.14099150394137555,
+            "nearest_xy_m": [
+              10.794672456279258,
+              0.1408908139715095
+            ],
+            "near_blockage_point_count": 121,
+            "near_blockage_y_range_m": [
+              0.12458099988293725,
+              0.1577450616416627
+            ]
+          },
+          "registered_lidar_validation": {
+            "available": true,
+            "pointcloud_samples_received": 19,
+            "registered_obstacle_point_count": 121,
+            "required_radial_clearance_m": 0.46,
+            "minimum_path_to_obstacle_distance_m": 0.013712857181989233,
+            "nearest_path_xy_m": [
+              10.619939794169213,
+              0.13121552121901914
+            ],
+            "nearest_obstacle_xy_m": [
+              10.619999885559082,
+              0.1449282467365265
+            ],
+            "violating_path_pose_count": 184,
+            "candidate_rejected": true
+          }
+        },
+        {
+          "attempt": 2,
+          "phase": "barrier_cleared",
+          "planning_status": "succeeded",
+          "nav2_candidate_planning_status": "succeeded",
+          "candidate_path_pose_count": 2554,
+          "path_pose_count": 2554,
+          "path_length_m": 12.7777,
+          "registered_lidar_validation": {
+            "available": true,
+            "pointcloud_samples_received": 25,
+            "registered_obstacle_point_count": 105,
+            "required_radial_clearance_m": 0.46,
+            "minimum_path_to_obstacle_distance_m": 1.0206471265726091,
+            "nearest_path_xy_m": [
+              13.770102077273222,
+              0.3058493063781498
+            ],
+            "nearest_obstacle_xy_m": [
+              13.71485424041748,
+              1.3250000476837158
+            ],
+            "violating_path_pose_count": 0,
+            "candidate_rejected": false
+          }
+        }
+      ],
+      "global_costmap_during_blockage": {
+        "available": true,
+        "topic_samples_received": 6,
+        "sample_x_m": 10.62,
+        "sample_count": 59,
+        "maximum_cost": 254,
+        "lethal_or_inscribed_samples": 22,
+        "nonzero_samples": 24,
+        "samples_y_cost": [
+          [
+            -1.45,
+            254
+          ],
+          [
+            -1.4,
+            254
+          ],
+          [
+            -1.35,
+            254
+          ],
+          [
+            -1.3,
+            253
+          ],
+          [
+            -1.25,
+            253
+          ],
+          [
+            -1.2,
+            253
+          ],
+          [
+            -1.15,
+            253
+          ],
+          [
+            -1.1,
+            253
+          ],
+          [
+            -1.05,
+            253
+          ],
+          [
+            -1.0,
+            253
+          ],
+          [
+            -0.95,
+            253
+          ],
+          [
+            -0.9,
+            246
+          ],
+          [
+            -0.85,
+            0
+          ],
+          [
+            -0.8,
+            0
+          ],
+          [
+            -0.75,
+            0
+          ],
+          [
+            -0.7,
+            0
+          ],
+          [
+            -0.65,
+            0
+          ],
+          [
+            -0.6,
+            0
+          ],
+          [
+            -0.55,
+            0
+          ],
+          [
+            -0.5,
+            0
+          ],
+          [
+            -0.45,
+            0
+          ],
+          [
+            -0.4,
+            0
+          ],
+          [
+            -0.35,
+            0
+          ],
+          [
+            -0.3,
+            0
+          ],
+          [
+            -0.25,
+            0
+          ],
+          [
+            -0.2,
+            0
+          ],
+          [
+            -0.15,
+            0
+          ],
+          [
+            -0.1,
+            0
+          ],
+          [
+            -0.05,
+            0
+          ],
+          [
+            0.0,
+            0
+          ],
+          [
+            0.05,
+            0
+          ],
+          [
+            0.1,
+            0
+          ],
+          [
+            0.15,
+            0
+          ],
+          [
+            0.2,
+            0
+          ],
+          [
+            0.25,
+            0
+          ],
+          [
+            0.3,
+            0
+          ],
+          [
+            0.35,
+            0
+          ],
+          [
+            0.4,
+            0
+          ],
+          [
+            0.45,
+            0
+          ],
+          [
+            0.5,
+            0
+          ],
+          [
+            0.55,
+            0
+          ],
+          [
+            0.6,
+            0
+          ],
+          [
+            0.65,
+            0
+          ],
+          [
+            0.7,
+            0
+          ],
+          [
+            0.75,
+            0
+          ],
+          [
+            0.8,
+            0
+          ],
+          [
+            0.85,
+            0
+          ],
+          [
+            0.9,
+            246
+          ],
+          [
+            0.95,
+            253
+          ],
+          [
+            1.0,
+            253
+          ],
+          [
+            1.05,
+            253
+          ],
+          [
+            1.1,
+            253
+          ],
+          [
+            1.15,
+            253
+          ],
+          [
+            1.2,
+            253
+          ],
+          [
+            1.25,
+            253
+          ],
+          [
+            1.3,
+            253
+          ],
+          [
+            1.35,
+            254
+          ],
+          [
+            1.4,
+            254
+          ],
+          [
+            1.45,
+            254
+          ]
+        ]
+      },
+      "blocked_plan_rejected": true,
+      "rejection_authority": "registered_lidar_supervisory_path_validator",
+      "clearance_requested": true,
+      "blockage_cleared_seen": true,
+      "safe_wait": {
+        "measurement_start": "after_initial_costmap_and_stop_settle",
+        "odometry_samples": 79,
+        "maximum_absolute_linear_velocity_mps": 0.00013112823944538832,
+        "displacement_m": 5.045267597785778e-07,
+        "elapsed_wall_s": 5.199
+      },
+      "fresh_path_computed_after_clearance": true,
+      "planner_attempt_count": 2,
+      "replan_mode": "fresh_compute_path_to_pose_after_safe_wait",
+      "passed": true,
+      "status": "succeeded"
+    }
+  },
+  "bridge": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7b_blocked_route_bridge.json",
+  "static_retention": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase6_high_speed_integration_gate.json",
+  "crossing_retention": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7_dynamic_integration_gate.json",
+  "blocked_route": {
+    "enabled": true,
+    "scenario": "temporary_full_width_single_path_hallway_blockage",
+    "planner_observation_source": "registered_front_lidar_supervisory_path_validator",
+    "simulation_time_paced_to_wall_clock": true,
+    "sensor_publish_rate_hz": {
+      "crown_lidar": 2.0,
+      "front_lidar": 2.0
+    },
+    "registered_pointcloud_topic": "/aisha/phase7b/front_points",
+    "blocker_state_exposed_to_policy": false,
+    "coordination_state_exposed_to_mission_only": true,
+    "route_topology": "single_path_safe_wait_required_no_detour_available",
+    "blockage_segment_id": 1,
+    "blockage_size_xyz_m": [
+      0.36,
+      2.9,
+      1.2
+    ],
+    "blockage_position_xy_m": [
+      10.8,
+      0.0
+    ],
+    "triggered": true,
+    "active_steps": 79,
+    "trigger_step": 1136,
+    "cleared": true,
+    "clear_step": 1215,
+    "release_requests": 5,
+    "robot_xy_at_trigger_m": [
+      4.323234,
+      -0.00305
+    ],
+    "robot_xy_at_clear_m": [
+      4.341665,
+      -0.003199
+    ],
+    "maximum_robot_speed_while_active_mps": 0.169089,
+    "minimum_central_front_range_while_active_m": 5.82288,
+    "physical_safety_credit": false
+  },
+  "mapped_guard": {
+    "steps": 15373,
+    "doorway_active_steps": 9748,
+    "doorway_slow_steps": 5785,
+    "doorway_alignment_steps": 7860,
+    "doorway_alignment_hold_steps": 669,
+    "doorway_overspeed_stops": 7,
+    "doorway_direction_rearms": 2,
+    "polygon_no_go_stops": 0,
+    "doorway_entries": {
+      "vice_principal": 2,
+      "principal": 2
+    },
+    "maximum_abs_speed_in_doorway_mps": 0.059327296912670135,
+    "maximum_abs_tangent_offset_in_doorway_m": 0.015254592895509234,
+    "minimum_polygon_full_footprint_clearance_m": 0.279585,
+    "enabled": true,
+    "architecture": "nav2_cmd_vel_then_mapped_doorway_and_polygon_guard",
+    "maximum_doorway_speed_mps": 0.1,
+    "target_doorway_speed_mps": 0.08,
+    "doorway_alignment_tolerance_deg": 0.7500000000000001,
+    "approach_alignment_tolerance_deg": 3.0000000000000004,
+    "approach_stage_capture_radius_m": 0.018,
+    "overspeed_stop_mps": 0.095,
+    "traction_command_ceiling_mps": 0.18,
+    "traction_gain": 1.5,
+    "breakaway_angular_rad_s": 0.42,
+    "polygon_outer_radius_m": 2.3,
+    "polygon_body_circumscribed_radius_m": 0.8204151388169284,
+    "polygon_minimum_clearance_m": 0.05,
+    "physical_safety_credit": false,
+    "overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
+    "overlay_sha256": "e5b60981b6771158434fb160beac97b2d197643ab0520d198174c9846992298b",
+    "site_config": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
+    "site_config_sha256": "c06e1941e873ae88012844ee27be9e7614342412d5c51cccfe9358a9559ffe47"
+  },
+  "learned_safety": {
+    "enabled": true,
+    "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt",
+    "checkpoint_sha256": "e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318",
+    "checkpoint_is_accepted_phase3n": false,
+    "checkpoint_is_accepted_phase6": true,
+    "accepted_checkpoint_profile": "phase6_high_speed_080",
+    "fallback_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt",
+    "fallback_checkpoint_sha256": "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b",
+    "fallback_checkpoint_is_accepted_phase3n": true,
+    "policy_selection": "phase6_on_declared_high_speed_segments_phase3n_elsewhere",
+    "dynamic_handoff_sensor": null,
+    "primary_policy_steps": 1411,
+    "fallback_policy_steps": 13962,
+    "base_command_source": "nav2_cmd_vel",
+    "authority_steps": 242,
+    "brake_steps": 74,
+    "mean_brake_fraction_while_active": 0.08082425084796326,
+    "maximum_brake_fraction": 0.6149724721908569,
+    "minimum_360_clearance_m": 0.01401,
+    "deterministic_static_integration_gate": false
+  },
+  "claim_boundary": {
+    "supported": "One temporary full-width single-path hallway blockage sensed through registered LiDAR path validation, rejection of the unsafe Nav2 candidate, safe wait, fresh validated global path after clearance and full mission completion",
+    "spatial_detour_supported": false,
+    "reason_no_detour": "The route-scoped east office hallway has no mapped alternate corridor",
+    "persistent_blockage_navigation_supported": false,
+    "physical_localization_credit": false,
+    "physical_safety_credit": false,
+    "physical_release": false
+  }
+}
