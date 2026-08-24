@@ -1,0 +1,63 @@
+{
+  "status": "measured_route_constraints_passed",
+  "passed": true,
+  "checks": {
+    "trace_completed_all_twelve_segments": true,
+    "trace_contains_world_frame_samples": true,
+    "central_atrium_no_go_respected": true,
+    "vice_principal_presentation_aperture_respected": true,
+    "principal_presentation_aperture_respected": true,
+    "registered_principal_shell_and_furniture_clear": true,
+    "physical_release_disabled": true
+  },
+  "sampling": {
+    "source_records": 5020,
+    "interpolated_records": 9353,
+    "maximum_translation_spacing_m": 0.01,
+    "maximum_yaw_spacing_deg": 1.0
+  },
+  "padded_footprint": {
+    "length_m": 1.24,
+    "width_m": 0.8280000000000001,
+    "padding_per_side_m": 0.03
+  },
+  "central_atrium_no_go": {
+    "step_down_m": 0.2,
+    "radius_m": 2.3,
+    "violation_count_capped": 0,
+    "first_violations": []
+  },
+  "doors": {
+    "vice_principal": {
+      "encounters": 622,
+      "minimum_padded_clearance_m": 0.00103,
+      "violations": [],
+      "passed": true
+    },
+    "principal": {
+      "encounters": 554,
+      "minimum_padded_clearance_m": 0.02696,
+      "violations": [],
+      "passed": true
+    }
+  },
+  "registered_principal_geometry": {
+    "enabled": true,
+    "obstacle_count": 21,
+    "violation_count_capped": 0,
+    "first_violations": [],
+    "scope": "interpolated mission segments 7, 8 and 9"
+  },
+  "physical_release": false,
+  "claim_boundary": "Deterministic simulation-geometry audit only. Passing does not establish real-world threshold, localization, stopping-distance, or physical safety performance.",
+  "report_type": "measured_administration_route_constraint_audit",
+  "generated_at_utc": "2026-08-24T18:27:07.385308+00:00",
+  "sources": {
+    "config": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
+    "config_sha256": "c06e1941e873ae88012844ee27be9e7614342412d5c51cccfe9358a9559ffe47",
+    "overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
+    "overlay_sha256": "c4f17adb012026f8699f9b7b9b27fa9bf47277ca282863328f18e0581486417e",
+    "trace": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7e_static_fusion_mission.json",
+    "trace_sha256": "6463b80bfc1015063c5805c555f43d5986fe3f0c0517848735d093d92c759bf5"
+  }
+}

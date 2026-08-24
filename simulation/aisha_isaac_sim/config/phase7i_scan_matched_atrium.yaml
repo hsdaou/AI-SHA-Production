@@ -1,0 +1,134 @@
+schema_version: 1
+phase: "PHASE7I-SCAN-MATCHED-ATRIUM"
+date: "2026-08-24"
+status: scan_matched_atrium_ready
+objective: >-
+  Replace the stylized atrium proxy with a RoomPlan-registered and
+  walkthrough-matched atrium while replaying the accepted learned trajectory
+  through the unchanged route-critical safety geometry.
+
+source_evidence:
+  mission: results/administration_nav2_phase7e_static_fusion_mission.json
+  integration: results/administration_nav2_phase7e_static_fusion_integration_gate.json
+  roomplan_overlay: config/measured_administration_presentation_2026-08-23.yaml
+  roomplan_source_section: unidentified4
+  walkthrough_window_s: [0, 45]
+  material_report: results/phase7h_photo_materials_report.json
+  mission_legs: 12
+
+scan_matched_atrium_contract:
+  previous_proxy_rejected: true
+  metric_envelope_authority: "iPhone RoomPlan administration scan section unidentified4"
+  visual_semantics_authority: "supplied administration walkthrough frames 0-45 seconds"
+  global_topology_authority: "approved A1 page 2 Block A plan"
+  route_critical_collision_geometry_changed: false
+  central_drop_and_no_go_unchanged: true
+  door_colliders_unchanged: true
+  column_collision_cores_unchanged: true
+  learned_trajectory_changed: false
+  raw_capture_media_committed: false
+  required_visual_features:
+    - opposing_glazed_walnut_reception_windows
+    - octagonal_polished_terrazzo_hall
+    - double_black_island_inlay
+    - prohibited_0_20m_lowered_island
+    - paired_slim_black_public_benches
+    - three_privacy_safe_display_easels
+    - four_route_cleared_white_columns
+    - walnut_perimeter_office_fronts
+    - rear_glazed_double_door_and_emblems
+    - white_octagonal_upper_band_and_colour_panels
+    - tall_white_potted_greenery
+
+render_contract:
+  renderer: PathTracing
+  path_tracing_spp: 16
+  exposure_bias: 0.85
+  resolution: [1920, 1080]
+  fps: 24
+  seconds_per_shot: 3.0
+  expected_shots: 8
+  expected_frames: 576
+  camera_height_range_m: [1.76, 1.92]
+  camera_style: fixed_human_height_wide_environmental
+  robot_should_not_dominate_frame: true
+  replay_motion: recorded_pose_selection_without_route_interpolation
+
+shots:
+  - title: "Mission start - scan-matched administration atrium"
+    operator_label: "ROOMPLAN + WALKTHROUGH MATCH"
+    camera: [5.55, -5.55, 1.76]
+    look_at: [-0.20, 0.20, 0.74]
+    focal_length_mm: 18.0
+    segments: [0]
+  - title: "East hall - capture-verified corridor"
+    operator_label: "0.80 M/S HALLWAY POLICY"
+    camera: [6.0, 1.08, 1.78]
+    look_at: [15.0, -0.40, 0.70]
+    focal_length_mm: 16.0
+    segments: [1]
+    source_fraction: [0.62, 1.0]
+  - title: "Vice-Principal doorway - assumed 0.875 m"
+    operator_label: "MAPPED DOORWAY SAFETY"
+    camera: [19.55, -7.55, 1.88]
+    look_at: [16.85, -5.30, 0.58]
+    focal_length_mm: 11.5
+    segments: [2, 3]
+  - title: "Vice-Principal visit and departure"
+    operator_label: "LOCKED INTERIOR - DISCLOSED ASSUMPTION"
+    camera: [19.55, -7.55, 1.88]
+    look_at: [16.75, -6.15, 0.58]
+    focal_length_mm: 11.5
+    segments: [4]
+  - title: "Return hall - Principal suite turn"
+    operator_label: "NAV2 + STATIC/LIVE LIDAR FUSION"
+    camera: [3.0, 1.00, 1.86]
+    look_at: [9.0, -0.45, 0.68]
+    focal_length_mm: 16.0
+    segments: [5, 6]
+  - title: "Principal office approach"
+    operator_label: "ROOMPLAN-REGISTERED APPROACH"
+    camera: [2.60, -2.70, 1.82]
+    look_at: [6.80, -7.45, 0.70]
+    focal_length_mm: 16.0
+    segments: [7]
+    source_fraction: [0.55, 1.0]
+  - title: "Principal visit - capture-derived visual twin"
+    operator_label: "PHOTO MATERIALS + MEASURED FURNITURE"
+    camera: [10.70, -6.10, 1.92]
+    look_at: [9.00, -9.80, 0.72]
+    focal_length_mm: 12.0
+    segments: [8, 9]
+  - title: "Mission complete - return through matched atrium"
+    operator_label: "12/12 LEGS COMPLETE"
+    camera: [5.55, -5.55, 1.76]
+    look_at: [-0.20, 0.20, 0.74]
+    focal_length_mm: 18.0
+    segments: [10, 11]
+
+presentation_disclosures:
+  overlay: >-
+    Recorded live-policy wheel-physics poses in a scan-matched Omniverse twin;
+    visual replay, not live policy execution.
+  environment: >-
+    Route-scoped hybrid digital twin: approved page-2 topology, registered
+    RoomPlan administration/Principal geometry, and privacy-safe walkthrough
+    visual matching. Not a complete as-built survey or physical deployment release.
+  vice_principal_interior_assumed_because_locked: true
+  principal_door_width_presentation_assumption_m: 0.90
+  narrowest_administration_reported_door_width_m: 0.85
+  vice_principal_presentation_assumption_m: 0.875
+  reported_door_height_m: 2.12
+  central_polygon_step_down_m: 0.20
+  raw_dense_mesh_used_for_collision: false
+  physical_localization_credit: false
+  physical_safety_credit: false
+  physical_release: false
+
+outputs:
+  replay_validation: results/administration_nav2_phase7i_replay_validation.json
+  render_report: results/administration_nav2_phase7i_rtx_render_report.json
+  frames: outputs/phase7i_scan_matched_atrium_rtx_frames
+  video: media/videos/AI-SHA_Phase7I_Scan_Matched_Atrium_Omniverse.mp4
+  contact_sheet: media/AI-SHA_Phase7I_Scan_Matched_Atrium_Omniverse_contact_sheet.jpg
+  acceptance: results/administration_nav2_phase7i_scan_matched_atrium_acceptance.json

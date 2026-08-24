@@ -115,6 +115,7 @@ def build_presentation(args: argparse.Namespace) -> int:
             config = deep_merge(config, measured_overlay)
         visual_twin = config.get("measured_visual_twin", {})
         visual_twin_enabled = bool(visual_twin.get("enabled", False))
+        atrium_twin = visual_twin.get("atrium", {}) if visual_twin_enabled else {}
         principal_twin = visual_twin.get("principal", {}) if visual_twin_enabled else {}
         refinement_path = CONFIG_DIR / "geometry_rtx_refinement.yaml"
         refinement = load_yaml(refinement_path)
@@ -294,6 +295,7 @@ def build_presentation(args: argparse.Namespace) -> int:
         grey_oak = visual_material("GreyOakFloor", (0.53, 0.52, 0.49), roughness=0.46)
         green = visual_material("SchoolGreen", (0.055, 0.255, 0.14), roughness=0.46)
         green_accent = visual_material("SchoolGreenAccent", (0.035, 0.39, 0.21), roughness=0.32)
+        red_accent = visual_material("FlagRed", (0.58, 0.035, 0.028), roughness=0.42)
         cabinet_mint = visual_material("CabinetMint", (0.28, 0.49, 0.39), roughness=0.38)
         leaf_green = visual_material("PlantGreen", (0.035, 0.20, 0.07), roughness=0.72)
         leaf_light = visual_material("PlantLightGreen", (0.08, 0.31, 0.12), roughness=0.68)
@@ -789,6 +791,100 @@ def build_presentation(args: argparse.Namespace) -> int:
                     rotate_z_deg=angle,
                 )
 
+        def reception_partition(
+            name: str,
+            start_xy: tuple[float, float],
+            end_xy: tuple[float, float],
+            outside_normal: tuple[float, float],
+        ) -> None:
+            """Build a walkthrough reception window on an accepted wall edge."""
+            dx, dy = end_xy[0] - start_xy[0], end_xy[1] - start_xy[1]
+            length = math.hypot(dx, dy)
+            tx, ty = dx / length, dy / length
+            yaw = math.degrees(math.atan2(dy, dx))
+            centre = ((start_xy[0] + end_xy[0]) / 2.0, (start_xy[1] + end_xy[1]) / 2.0)
+            inside_normal = (-outside_normal[0], -outside_normal[1])
+
+            # Sill and hood retain the original corridor-wall centreline and
+            # collision edge. Slats, glazing and the shallow counter projection
+            # are render-only, preserving the learned centreline clearance.
+            box(
+                f"/World/Architecture/Reception/{name}/LowerWall",
+                (length, wall_thickness, 1.02),
+                (*centre, 0.51),
+                timber,
+                rotate_z_deg=yaw,
+            )
+            box(
+                f"/World/Architecture/Reception/{name}/UpperHood",
+                (length, wall_thickness, 0.80),
+                (*centre, wall_height - 0.40),
+                timber,
+                rotate_z_deg=yaw,
+            )
+            sill_centre = (
+                centre[0] + inside_normal[0] * 0.055,
+                centre[1] + inside_normal[1] * 0.055,
+            )
+            box(
+                f"/World/Architecture/Reception/{name}/CounterSill",
+                (length + 0.08, 0.29, 0.075),
+                (*sill_centre, 1.065),
+                timber_light,
+                collision=False,
+                rotate_z_deg=yaw,
+            )
+            textured_rect_surface(
+                f"Reception_{name}_CounterFinish",
+                (length, 0.25),
+                sill_centre,
+                walnut_finish,
+                z=1.105,
+                rotate_z_deg=yaw,
+                metres_per_tile=1.8,
+            )
+
+            pane_count = max(2, int(round(length / 0.78)))
+            pane_length = length / pane_count
+            for index in range(pane_count):
+                offset = -length / 2.0 + pane_length * (index + 0.5)
+                pane_xy = (centre[0] + tx * offset, centre[1] + ty * offset)
+                box(
+                    f"/World/Architecture/Reception/{name}/Glass_{index:02d}",
+                    (max(0.10, pane_length - 0.035), 0.028, 0.99),
+                    (*pane_xy, 1.60),
+                    glass,
+                    collision=False,
+                    rotate_z_deg=yaw,
+                )
+            for index in range(pane_count + 1):
+                offset = -length / 2.0 + pane_length * index
+                frame_xy = (centre[0] + tx * offset, centre[1] + ty * offset)
+                box(
+                    f"/World/Architecture/Reception/{name}/Mullion_{index:02d}",
+                    (0.035, 0.050, 1.08),
+                    (*frame_xy, 1.60),
+                    metal,
+                    collision=False,
+                    rotate_z_deg=yaw,
+                )
+
+            slat_count = max(1, int(length / 0.095))
+            face_offset = wall_thickness / 2.0 + 0.024
+            for index in range(slat_count + 1):
+                offset = -length / 2.0 + length * index / slat_count
+                x = centre[0] + tx * offset + inside_normal[0] * face_offset
+                y = centre[1] + ty * offset + inside_normal[1] * face_offset
+                for label, z, height in (("Lower", 0.51, 0.90), ("Upper", wall_height - 0.40, 0.68)):
+                    box(
+                        f"/World/Appearance/ReceptionSlats/{name}_{label}_{index:03d}",
+                        (0.030, 0.038, height),
+                        (x, y, z),
+                        timber_light,
+                        collision=False,
+                        rotate_z_deg=yaw,
+                    )
+
         def glazed_partition(
             name: str,
             start_xy: tuple[float, float],
@@ -942,6 +1038,37 @@ def build_presentation(args: argparse.Namespace) -> int:
                 arm_xy = local_to_world(centre_xy, (local_x, 0.0), yaw_deg)
                 box(f"/World/Furniture/{name}/Arm{side}", (0.14, 0.70, 0.42), (*arm_xy, floor_z + 0.48), black, rotate_z_deg=yaw_deg)
 
+        def atrium_bench(
+            name: str,
+            centre_xy: tuple[float, float],
+            yaw_deg: float,
+            *,
+            floor_z: float,
+        ) -> None:
+            """Slim black public bench matching the atrium walkthrough."""
+            box(f"/World/Furniture/{name}/Seat", (1.82, 0.54, 0.085), (*centre_xy, floor_z + 0.46), black, rotate_z_deg=yaw_deg)
+            back_xy = local_to_world(centre_xy, (0.0, 0.245), yaw_deg)
+            box(f"/World/Furniture/{name}/Back", (1.82, 0.065, 0.48), (*back_xy, floor_z + 0.73), black, rotate_z_deg=yaw_deg)
+            for support_index, local_x in enumerate((-0.66, 0.66)):
+                support_xy = local_to_world(centre_xy, (local_x, 0.0), yaw_deg)
+                box(f"/World/Furniture/{name}/Support_{support_index}", (0.045, 0.48, 0.43), (*support_xy, floor_z + 0.215), metal, collision=False, rotate_z_deg=yaw_deg)
+            # Subtle studs reproduce the perforated back rhythm without a heavy
+            # high-poly boolean mesh.
+            for row in range(3):
+                for column in range(12):
+                    stud_xy = local_to_world(
+                        back_xy,
+                        (-0.77 + column * 0.14, -0.037),
+                        yaw_deg,
+                    )
+                    sphere(
+                        f"/World/Furniture/{name}/BackStud_{row:02d}_{column:02d}",
+                        0.012,
+                        (*stud_xy, floor_z + 0.61 + row * 0.105),
+                        dark_grey,
+                        collision=False,
+                    )
+
         def desk(name: str, centre_xy: tuple[float, float], yaw_deg: float = 0.0) -> None:
             box(f"/World/Furniture/{name}/Top", (2.00, 0.82, 0.09), (*centre_xy, 0.76), timber_light, rotate_z_deg=yaw_deg)
             textured_rect_surface(
@@ -1025,12 +1152,12 @@ def build_presentation(args: argparse.Namespace) -> int:
             cylinder(f"/World/Furniture/{name}/Pedestal", 0.14, 0.69, (*centre_xy, 0.365), black)
             cylinder(f"/World/Furniture/{name}/Foot", 0.42, 0.045, (*centre_xy, 0.035), metal)
 
-        def plant(name: str, centre_xy: tuple[float, float]) -> None:
-            cylinder(f"/World/Furniture/{name}/Pot", 0.24, 0.42, (*centre_xy, 0.21), light_grey)
+        def plant(name: str, centre_xy: tuple[float, float], *, collision: bool = True) -> None:
+            cylinder(f"/World/Furniture/{name}/Pot", 0.24, 0.42, (*centre_xy, 0.21), light_grey, collision=collision)
             cylinder(f"/World/Furniture/{name}/PotRim", 0.255, 0.055, (*centre_xy, 0.425), bronze, collision=False)
             cylinder(f"/World/Furniture/{name}/Stem", 0.035, 0.70, (*centre_xy, 0.72), timber, collision=False)
             for index, (dx, dy, dz) in enumerate(((0.0, 0.0, 1.18), (0.24, 0.0, 1.10), (-0.22, 0.05, 1.08), (0.0, 0.22, 1.12), (0.05, -0.22, 1.06))):
-                leaf_collision = sphere(f"/World/Furniture/{name}/LeafCollision_{index}", 0.24, (centre_xy[0] + dx, centre_xy[1] + dy, dz), leaf_green)
+                leaf_collision = sphere(f"/World/Furniture/{name}/LeafCollision_{index}", 0.24, (centre_xy[0] + dx, centre_xy[1] + dy, dz), leaf_green, collision=collision)
                 UsdGeom.Imageable(leaf_collision).MakeInvisible()
                 ellipsoid(
                     f"/World/Furniture/{name}/Leaf_{index}",
@@ -1301,12 +1428,71 @@ def build_presentation(args: argparse.Namespace) -> int:
             end = vertices[(index + 1) % 8]
             if index == 6:  # south-east diagonal opening toward Principal cluster
                 continue
-            if index == 7:  # east face split around the 2.80 m hallway
-                wall_segment("Atrium_East_South", start, (start[0], hall_y_min), warm_white)
-                wall_segment("Atrium_East_North", (start[0], hall_y_max), end, warm_white)
+            if visual_twin_enabled and index == 2:
+                # Opposite the captured approach is a bright glazed doorway,
+                # flanked by walnut office fronts and circular school emblems.
+                dx, dy = end[0] - start[0], end[1] - start[1]
+                length = math.hypot(dx, dy)
+                tx, ty = dx / length, dy / length
+                nx, ny = -ty, tx
+                yaw = math.degrees(math.atan2(dy, dx))
+                door_width = 1.62
+                before_end = (
+                    start[0] + tx * (length / 2.0 - door_width / 2.0),
+                    start[1] + ty * (length / 2.0 - door_width / 2.0),
+                )
+                after_start = (
+                    start[0] + tx * (length / 2.0 + door_width / 2.0),
+                    start[1] + ty * (length / 2.0 + door_width / 2.0),
+                )
+                slatted_wall("Atrium_RearDoor_Left", start, before_end)
+                slatted_wall("Atrium_RearDoor_Right", after_start, end)
+                door_centre = ((start[0] + end[0]) / 2.0, (start[1] + end[1]) / 2.0)
+                for leaf_index, leaf_offset in enumerate((-door_width / 4.0, door_width / 4.0)):
+                    leaf_xy = (door_centre[0] + tx * leaf_offset, door_centre[1] + ty * leaf_offset)
+                    box(
+                        f"/World/Architecture/Glass/AtriumRearDoor_{leaf_index}",
+                        (door_width / 2.0 - 0.035, wall_thickness, 2.42),
+                        (*leaf_xy, 1.21),
+                        glass,
+                        rotate_z_deg=yaw,
+                    )
+                    box(
+                        f"/World/Architecture/Glass/AtriumRearDoorFrame_{leaf_index}",
+                        (0.035, wall_thickness + 0.025, 2.48),
+                        (leaf_xy[0] - tx * door_width / 4.0, leaf_xy[1] - ty * door_width / 4.0, 1.24),
+                        metal,
+                        collision=False,
+                        rotate_z_deg=yaw,
+                    )
+                for emblem_index, tangent_offset in enumerate((-1.40, 1.40)):
+                    emblem_xy = (
+                        door_centre[0] + tx * tangent_offset + nx * 0.105,
+                        door_centre[1] + ty * tangent_offset + ny * 0.105,
+                    )
+                    ellipsoid(
+                        f"/World/Appearance/AtriumEmblem_{emblem_index}",
+                        (0.34, 0.035, 0.34),
+                        (*emblem_xy, 1.55),
+                        bronze,
+                        rotate_z_deg=yaw,
+                    )
                 continue
-            material = timber if index in (0, 1) else warm_white
-            wall_segment(f"Atrium_{index:02d}", start, end, material)
+            if index == 7:  # east face split around the 2.80 m hallway
+                if visual_twin_enabled:
+                    slatted_wall("Atrium_East_South", start, (start[0], hall_y_min))
+                    slatted_wall("Atrium_East_North", (start[0], hall_y_max), end)
+                else:
+                    wall_segment("Atrium_East_South", start, (start[0], hall_y_min), warm_white)
+                    wall_segment("Atrium_East_North", (start[0], hall_y_max), end, warm_white)
+                continue
+            if visual_twin_enabled:
+                # The scan/video show dark vertical timber wrapping the
+                # octagonal office frontage, not broad white proxy walls.
+                slatted_wall(f"Atrium_{index:02d}", start, end)
+            else:
+                material = timber if index in (0, 1) else warm_white
+                wall_segment(f"Atrium_{index:02d}", start, end, material)
 
         access_half_width = vice_access_size[0] / 2.0
         wall_segment("EastHall_North", (vertices[0][0], hall_y_max), (hall_x_max, hall_y_max), warm_white)
@@ -1363,12 +1549,23 @@ def build_presentation(args: argparse.Namespace) -> int:
                 normal[0] * principal_passage_width / 2.0 * side_sign,
                 normal[1] * principal_passage_width / 2.0 * side_sign,
             )
-            wall_segment(
-                f"PrincipalAccess_{side_name}",
-                (corridor_start[0] + offset[0], corridor_start[1] + offset[1]),
-                (corridor_end[0] + offset[0], corridor_end[1] + offset[1]),
-                material,
-            )
+            wall_start = (corridor_start[0] + offset[0], corridor_start[1] + offset[1])
+            wall_end = (corridor_end[0] + offset[0], corridor_end[1] + offset[1])
+            if visual_twin_enabled:
+                reception_length = float(atrium_twin.get("reception_window_run_length_m", 2.55))
+                window_end = (
+                    wall_start[0] + tangent[0] * reception_length,
+                    wall_start[1] + tangent[1] * reception_length,
+                )
+                reception_partition(
+                    f"{side_name}Window",
+                    wall_start,
+                    window_end,
+                    (normal[0] * side_sign, normal[1] * side_sign),
+                )
+                slatted_wall(f"PrincipalAccess_{side_name}_Remainder", window_end, wall_end)
+            else:
+                wall_segment(f"PrincipalAccess_{side_name}", wall_start, wall_end, material)
 
         principal_values = config["doors"]["principal"]
         if visual_twin_enabled:
@@ -1430,52 +1627,36 @@ def build_presentation(args: argparse.Namespace) -> int:
             ),
         }
 
-        # Walkthrough-derived furniture and finishes.
-        box("/World/Furniture/Reception/Base", (4.20, 0.78, 1.08), (-1.10, 3.45, 0.54), timber)
-        box("/World/Furniture/Reception/Counter", (4.35, 0.92, 0.09), (-1.10, 3.45, 1.10), timber_light)
-        textured_rect_surface("ReceptionCounterFinish", (4.26, 0.84), (-1.10, 3.45), walnut_finish, z=1.147, metres_per_tile=2.1)
-        for index in range(40):
-            x = -3.05 + index * 0.10
-            box(f"/World/Furniture/Reception/Slat_{index:02d}", (0.035, 0.055, 0.86), (x, 3.01, 0.50), timber_light, collision=False)
-        for index, x in enumerate((-2.35, -1.10, 0.15)):
-            box(f"/World/Furniture/Reception/Glass_{index:02d}", (1.08, 0.025, 0.74), (x, 3.43, 1.52), glass, collision=False)
-            for side, offset in (("Left", -0.56), ("Right", 0.56)):
-                box(f"/World/Furniture/Reception/GlassFrame_{index:02d}_{side}", (0.025, 0.040, 0.80), (x + offset, 3.43, 1.52), metal, collision=False)
-        box("/World/Furniture/Reception/Monitor", (0.055, 0.52, 0.34), (-0.35, 3.18, 1.37), black, collision=False)
-        box("/World/Furniture/Reception/MonitorStand", (0.08, 0.08, 0.22), (-0.35, 3.18, 1.18), metal, collision=False)
+        # Walkthrough-derived furniture and finishes. The early proxy put one
+        # freestanding reception desk on the far side of the atrium. The video
+        # instead shows opposing glazed counters along the diagonal approach;
+        # the registered wall partitions above now provide them.
+        if not visual_twin_enabled:
+            box("/World/Furniture/Reception/Base", (4.20, 0.78, 1.08), (-1.10, 3.45, 0.54), timber)
+            box("/World/Furniture/Reception/Counter", (4.35, 0.92, 0.09), (-1.10, 3.45, 1.10), timber_light)
+            textured_rect_surface("ReceptionCounterFinish", (4.26, 0.84), (-1.10, 3.45), walnut_finish, z=1.147, metres_per_tile=2.1)
+            box("/World/Furniture/AtriumBench/Seat", (2.60, 0.70, 0.16), (-1.00, -3.35, 0.46), black)
+            box("/World/Furniture/AtriumBench/Back", (2.60, 0.12, 0.70), (-1.00, -3.68, 0.78), black)
         if visual_twin_enabled:
-            # The capture shows an angled, wraparound reception rather than a
-            # single loose desk. This west return and upper fascia reproduce the
-            # first 45 seconds of the walkthrough without copying visible signs.
-            box("/World/Furniture/Reception/WestReturnBase", (3.35, 0.78, 1.08), (-4.15, 1.55, 0.54), timber, rotate_z_deg=90.0)
-            box("/World/Furniture/Reception/WestReturnCounter", (3.48, 0.92, 0.09), (-4.15, 1.55, 1.10), timber_light, rotate_z_deg=90.0)
-            textured_rect_surface("ReceptionWestCounterFinish", (3.40, 0.84), (-4.15, 1.55), walnut_finish, z=1.147, rotate_z_deg=90.0, metres_per_tile=2.1)
-            for index in range(31):
-                y = 0.05 + index * 0.10
-                box(f"/World/Furniture/Reception/WestSlat_{index:02d}", (0.055, 0.035, 0.86), (-4.59, y, 0.50), timber_light, collision=False)
-            for index in range(42):
-                x = -3.20 + index * 0.10
-                box(f"/World/Appearance/ReceptionFascia/North_{index:02d}", (0.035, 0.10, 0.78), (x, 3.02, 2.47), timber_light, collision=False)
-            for index in range(30):
-                y = 0.15 + index * 0.10
-                box(f"/World/Appearance/ReceptionFascia/West_{index:02d}", (0.10, 0.035, 0.78), (-4.58, y, 2.47), timber_light, collision=False)
-            for index, y in enumerate((0.45, 1.55, 2.65)):
-                box(f"/World/Furniture/Reception/WestGlass_{index:02d}", (0.025, 0.96, 0.72), (-4.16, y, 1.51), glass, collision=False)
-                box(f"/World/Furniture/Reception/WestGlassFrame_{index:02d}", (0.04, 0.035, 0.78), (-4.16, y - 0.50, 1.51), metal, collision=False)
-        box("/World/Furniture/AtriumBench/Seat", (2.60, 0.70, 0.16), (-1.00, -3.35, 0.46), black)
-        box("/World/Furniture/AtriumBench/Back", (2.60, 0.12, 0.70), (-1.00, -3.68, 0.78), black)
-        for index, x in enumerate((-2.05, 0.05)):
-            box(f"/World/Furniture/AtriumBench/Leg_{index}", (0.10, 0.58, 0.38), (x, -3.35, 0.20), metal, collision=False)
-        if visual_twin_enabled:
-            sofa("CentralAtriumSofaNorth", (-0.62, 0.68), 180.0, floor_z=-central_step_down)
-            sofa("CentralAtriumSofaSouth", (0.62, -0.68), 0.0, floor_z=-central_step_down)
-            box("/World/Furniture/CentralAtriumCoffeeTable", (0.95, 0.52, 0.08), (0.0, 0.0, -central_step_down + 0.39), timber_light)
-            for index, (x, y, yaw) in enumerate(((-1.48, 0.05, -18.0), (1.42, 0.12, 16.0))):
-                box(f"/World/Furniture/CentralAtriumDisplay/Easel_{index:02d}/Board", (0.64, 0.045, 0.88), (x, y, -central_step_down + 1.12), paper, collision=False, rotate_z_deg=yaw)
+            seating_offset = float(atrium_twin.get("central_seating_offset_m", 1.42))
+            atrium_bench("CentralAtriumBenchNorth", (0.0, seating_offset), 180.0, floor_z=-central_step_down)
+            atrium_bench("CentralAtriumBenchSouth", (0.0, -seating_offset), 0.0, floor_z=-central_step_down)
+            for table_index, x in enumerate((-1.30, 1.30)):
+                box(f"/World/Furniture/CentralAtriumSideTable_{table_index:02d}/Top", (0.52, 0.42, 0.055), (x, 0.0, -central_step_down + 0.43), black, collision=False)
+                for leg_index, (lx, ly) in enumerate(((-0.20, -0.15), (-0.20, 0.15), (0.20, -0.15), (0.20, 0.15))):
+                    box(f"/World/Furniture/CentralAtriumSideTable_{table_index:02d}/Leg_{leg_index}", (0.025, 0.025, 0.39), (x + lx, ly, -central_step_down + 0.195), metal, collision=False)
+            display_materials = (green_accent, paper, bronze)
+            for index, (x, y, yaw) in enumerate(((-0.72, 0.02, -10.0), (0.0, 0.12, 0.0), (0.72, 0.02, 10.0))):
+                box(f"/World/Furniture/CentralAtriumDisplay/Easel_{index:02d}/Board", (0.56, 0.045, 0.80), (x, y, -central_step_down + 1.10), display_materials[index], collision=False, rotate_z_deg=yaw)
                 for leg_index, local_x in enumerate((-0.22, 0.22)):
                     leg_xy = local_to_world((x, y), (local_x, 0.10), yaw)
                     box(f"/World/Furniture/CentralAtriumDisplay/Easel_{index:02d}/Leg_{leg_index}", (0.035, 0.035, 1.18), (*leg_xy, -central_step_down + 0.59), timber_light, collision=False, rotate_z_deg=yaw)
         plant("AtriumPlant", (2.20, 3.45))
+        if visual_twin_enabled:
+            # The capture has tall white-potted plants around the inner island.
+            # These visual-only anchors do not alter LiDAR or the learned route.
+            for plant_index, plant_xy in enumerate(((-3.65, -0.65), (-2.90, 3.30), (3.10, 2.85))):
+                plant(f"AtriumCapturedPlant_{plant_index:02d}", plant_xy, collision=False)
         plant("EastHallPlant", (20.70, 0.70))
 
         # Abstract displays establish the rhythm seen along the real timber
@@ -1587,12 +1768,39 @@ def build_presentation(args: argparse.Namespace) -> int:
                 (x, y, column_height / 2.0),
                 warm_white,
             )
+            if visual_twin_enabled:
+                cylinder(f"/World/Appearance/AtriumColumnTrim/Base_{index:02d}", column_radius + 0.035, 0.055, (x, y, 0.0275), warm_white, collision=False)
+                cylinder(f"/World/Appearance/AtriumColumnTrim/Capital_{index:02d}", column_radius + 0.035, 0.075, (x, y, column_height - 0.0375), warm_white, collision=False)
         for index, x in enumerate((16.55, 17.35, 18.15, 18.95, 19.75)):
             box(f"/World/Architecture/Glass/ViceExterior_{index:02d}", (0.72, 0.045, 1.62), (x, -8.02, 1.48), glass, collision=False)
             box(f"/World/Architecture/Glass/ViceMullion_{index:02d}", (0.035, 0.07, 1.78), (x - 0.38, -7.99, 1.48), metal, collision=False)
 
         # Dark geometric inlays are physical-space cues; aggregate itself is now
         # represented by the high-density procedural texture above.
+        if visual_twin_enabled:
+            # The video shows two thin black octagonal inlays around the lowered
+            # island. These are floor finishes only; the real 0.20 m riser and
+            # invisible LiDAR/no-go boundary above remain unchanged.
+            for line_index, line_radius in enumerate((central_radius + 0.20, central_radius + 0.38)):
+                inlay_vertices = [
+                    (
+                        central_centre[0] + line_radius * math.cos(math.radians(central_orientation + 45.0 * index)),
+                        central_centre[1] + line_radius * math.sin(math.radians(central_orientation + 45.0 * index)),
+                    )
+                    for index in range(8)
+                ]
+                for edge_index in range(8):
+                    start = inlay_vertices[edge_index]
+                    end = inlay_vertices[(edge_index + 1) % 8]
+                    dx, dy = end[0] - start[0], end[1] - start[1]
+                    box(
+                        f"/World/Appearance/AtriumIslandInlay_{line_index}_{edge_index}",
+                        (math.hypot(dx, dy), 0.032, 0.007),
+                        ((start[0] + end[0]) / 2.0, (start[1] + end[1]) / 2.0, 0.012),
+                        black,
+                        collision=False,
+                        rotate_z_deg=math.degrees(math.atan2(dy, dx)),
+                    )
         for index, (start, end) in enumerate((((7.0, 0.45), (10.5, 0.45)), ((10.5, 0.45), (11.6, -0.35)), ((11.6, -0.35), (14.2, -0.35)))):
             dx, dy = end[0] - start[0], end[1] - start[1]
             box(
@@ -1644,6 +1852,51 @@ def build_presentation(args: argparse.Namespace) -> int:
         # Dropped-ceiling grid and vents reproduce the office scale cues visible
         # in the walkthrough without claiming surveyed dimensions.
         ceiling_grid("Atrium", (0.0, 0.0), (10.80, 10.80))
+        if visual_twin_enabled:
+            # The atrium capture has a broad white octagonal bulkhead above the
+            # island, carrying alternating school/flag colour panels. The early
+            # proxy incorrectly exposed the dark ceiling grid across this band.
+            bulkhead_radius = 3.95
+            bulkhead_vertices = [
+                (
+                    bulkhead_radius * math.cos(math.radians(22.5 + 45.0 * index)),
+                    bulkhead_radius * math.sin(math.radians(22.5 + 45.0 * index)),
+                )
+                for index in range(8)
+            ]
+            banner_materials = (green_accent, red_accent, black, green, red_accent, green_accent, black, green)
+            for index in range(8):
+                start = bulkhead_vertices[index]
+                end = bulkhead_vertices[(index + 1) % 8]
+                dx, dy = end[0] - start[0], end[1] - start[1]
+                length = math.hypot(dx, dy)
+                yaw = math.degrees(math.atan2(dy, dx))
+                centre = ((start[0] + end[0]) / 2.0, (start[1] + end[1]) / 2.0)
+                box(
+                    f"/World/Architecture/Ceilings/AtriumBulkhead_{index:02d}",
+                    (length + 0.12, 1.05, 0.105),
+                    (*centre, wall_height - 0.085),
+                    warm_white,
+                    collision=False,
+                    rotate_z_deg=yaw,
+                )
+                box(
+                    f"/World/Appearance/AtriumUpperBanner_{index:02d}",
+                    (min(1.25, length * 0.48), 0.035, 0.38),
+                    (*centre, wall_height - 0.42),
+                    banner_materials[index],
+                    collision=False,
+                    rotate_z_deg=yaw,
+                )
+                stripe_xy = local_to_world(centre, (0.0, -0.022), yaw)
+                box(
+                    f"/World/Appearance/AtriumUpperBannerStripe_{index:02d}",
+                    (min(1.10, length * 0.42), 0.012, 0.045),
+                    (*stripe_xy, wall_height - 0.42),
+                    paper,
+                    collision=False,
+                    rotate_z_deg=yaw,
+                )
         ceiling_grid("EastHall", hall_centre, (hall_size[0] - 0.11, hall_size[1] - 0.08))
         ceiling_grid("ViceAccess", vice_access_centre, (vice_access_size[0] - 0.08, vice_access_size[1] - 0.08))
         ceiling_grid("Vice", vice_centre, (vice_size[0] - 0.08, vice_size[1] - 0.08), rotate_z_deg=vice_rotation)
