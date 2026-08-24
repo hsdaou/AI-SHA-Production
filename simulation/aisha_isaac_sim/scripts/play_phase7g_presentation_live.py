@@ -7,7 +7,9 @@ import argparse
 import hashlib
 import json
 import math
+import sys
 import time
+import traceback
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -53,7 +55,7 @@ from isaacsim import SimulationApp
 APP = SimulationApp({"headless": ARGS.headless, "renderer": "RaytracedLighting"})
 
 import omni.usd
-from pxr import Gf, UsdGeom
+from pxr import Gf, Sdf, UsdGeom
 
 
 def sha256(path: Path) -> str:
@@ -88,15 +90,56 @@ def set_robot_pose(stage, sample: dict) -> None:
     prim.GetAttribute("xformOp:rotateZ:route").Set(math.degrees(float(sample["yaw_rad"])))
 
 
+def wait_for_stage_ready(scene: Path, max_updates: int = 600):
+    """Wait for Kit's asynchronous GUI stage transition to finish.
+
+    ``open_stage`` can return before the GUI has installed the new stage.  During
+    that short transition ``SimulationApp.is_running()`` reports false because
+    its USD context temporarily has no stage.  Entering the presentation loop
+    at that point therefore looks like a crash: the loop is skipped and the
+    script's normal ``finally`` block closes Isaac Sim.
+    """
+    context = omni.usd.get_context()
+    expected = scene.resolve()
+    last_status = ("", 0, 0)
+    last_identifier = None
+    for _ in range(max_updates):
+        APP.update()
+        stage = context.get_stage()
+        last_status = context.get_stage_loading_status()
+        if stage is not None:
+            root_layer = stage.GetRootLayer()
+            real_path = root_layer.realPath or root_layer.identifier
+            if real_path:
+                last_identifier = Path(real_path).resolve()
+            if last_status[2] == 0 and last_identifier == expected:
+                # Give the renderer/viewport a few frames to consume the fully
+                # loaded stage before defining and selecting our camera.
+                for _ in range(8):
+                    APP.update()
+                return context.get_stage()
+    raise RuntimeError(
+        "Isaac Sim did not finish opening the administration stage "
+        f"after {max_updates} updates: expected={expected}, "
+        f"current={last_identifier}, loading_status={last_status}"
+    )
+
+
 def main() -> int:
     scene = ROOT / "scenes/administration.usd"
     mission, trace, shots = load_source()
     if not omni.usd.get_context().open_stage(str(scene.resolve())):
         raise RuntimeError(f"could not open {scene}")
-    stage = omni.usd.get_context().get_stage()
+    stage = wait_for_stage_ready(scene)
+    if not APP.is_running():
+        raise RuntimeError("Isaac Sim stopped after the administration stage finished loading")
+    print(f"PHASE7G LIVE stage_ready={scene.resolve()}")
     camera_path = "/World/Phase7GPresentationCamera"
     camera_prim = stage.DefinePrim(camera_path, "Camera")
     camera = UsdGeom.Camera(camera_prim)
+    camera_prim.CreateAttribute(
+        "omni:kit:centerOfInterest", Sdf.ValueTypeNames.Vector3d
+    ).Set(Gf.Vec3d(0.0, 0.0, -1.0))
     viewport = None
     camera_state = None
     if not ARGS.headless:
@@ -180,6 +223,11 @@ def main() -> int:
 
 if __name__ == "__main__":
     try:
-        raise SystemExit(main())
+        exit_code = main()
+    except BaseException:  # Keep the real error visible before Kit disables logging on close.
+        traceback.print_exc(file=sys.stderr)
+        sys.stderr.flush()
+        raise
     finally:
         APP.close()
+    raise SystemExit(exit_code)

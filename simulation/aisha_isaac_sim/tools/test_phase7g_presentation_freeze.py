@@ -79,6 +79,9 @@ class Phase7GPresentationFreezeContract(unittest.TestCase):
         source = PLAYER.read_text(encoding="utf-8")
         self.assertIn("SimulationApp", source)
         self.assertIn("set_active_camera", source)
+        self.assertIn("wait_for_stage_ready", source)
+        self.assertIn('"omni:kit:centerOfInterest"', source)
+        self.assertIn("traceback.print_exc", source)
         self.assertIn("Select recorded poses without interpolation", source)
         self.assertNotIn("np.interp", source)
 
