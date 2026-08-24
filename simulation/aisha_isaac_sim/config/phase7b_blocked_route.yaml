@@ -1,0 +1,51 @@
+phase: 7B
+status: accepted_single_path_safe_wait_replanning
+accepted_at: "2026-08-24"
+
+scenario:
+  route_segment_id: 1
+  topology: single_path_east_office_hallway
+  alternate_route_available: false
+  temporary_barricade_centre_xy_m: [10.80, 0.00]
+  temporary_barricade_size_xyz_m: [0.36, 2.90, 1.20]
+
+observation:
+  source: isaac_front_lidar_registered_ray_hits
+  ros_topic: /aisha/phase7b/front_points
+  frame: map
+  publish_rate_hz: 2.0
+  policy_privileged_state: false
+  path_validator_privileged_state: false
+  scenario_state_use: deterministic_test_synchronization_only
+
+supervisory_path_validation:
+  required_radial_clearance_m: 0.46
+  active_candidate_status: rejected_by_registered_lidar_path_validator
+  active_candidate_minimum_clearance_m: 0.013712857181989233
+  active_candidate_violating_pose_count: 184
+  cleared_candidate_minimum_clearance_m: 1.0206471265726091
+  cleared_candidate_violating_pose_count: 0
+  safe_wait_maximum_speed_mps: 0.00013112823944538832
+  safe_wait_displacement_m: 0.0000005045267597785778
+
+acceptance:
+  phase7b_checks: 26
+  phase7b_checks_passed: 26
+  mission_legs: 12
+  mission_legs_completed: 12
+  phase6_retention_checks: 28
+  phase6_retention_checks_passed: 28
+  phase7a_retention_checks: 24
+  phase7a_retention_checks_passed: 24
+  report: results/administration_nav2_phase7b_blocked_route_integration_gate.json
+
+claim_boundary:
+  nav2_candidate_generation: true
+  registered_lidar_supervisory_rejection: true
+  safe_wait_and_fresh_path_after_clearance: true
+  native_nav2_dynamic_costmap_marking: false
+  spatial_detour: false
+  persistent_blockage_navigation: false
+  physical_localization_credit: false
+  physical_safety_credit: false
+  physical_release: false

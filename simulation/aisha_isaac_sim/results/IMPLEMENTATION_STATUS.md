@@ -1,6 +1,6 @@
 # AI-SHA Isaac Sim implementation status
 
-**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier and now also passes a separate 24/24 Phase 7A sensor-visible pedestrian stop-wait-resume gate. Blocked-route replanning and physical release remain pending.**
+**Updated 2026-08-24. The unchanged Rev D robot passes the full measured-presentation Nav2 mission at the Phase 6 speed tier, the separate 24/24 Phase 7A pedestrian stop-wait-resume gate, and the 26/26 Phase 7B registered-LiDAR blocked-route safe-wait/fresh-plan gate. Physical release remains pending.**
 
 ## Completed
 
@@ -389,6 +389,15 @@
   encounter steps with four learned-brake steps, while the independent
   protective latch held the final stop for 52 steps. This is not physical
   stopping-distance or human-safety evidence.
+- Phase 7B adds a 2.90 m full-width temporary barricade on single-path east
+  hallway segment 1. A registered front-LiDAR supervisor rejected Nav2's
+  2,554-pose candidate at 0.01371 m sensed path clearance against a 0.46 m
+  requirement, held the robot below 0.000132 m/s with negligible displacement,
+  then accepted a fresh path at 1.02065 m minimum sensed clearance after the
+  physical barricade was removed. The full mission completed 12/12 legs and the
+  gate passes 26/26 while retaining Phase 6 at 28/28 and Phase 7A at 24/24.
+  This is a supervisory sensor-validation result, not Nav2 dynamic-costmap,
+  alternate-route, persistent-blockage or physical-safety evidence.
 
 ## Deterministic contact tuning disclosure
 
@@ -415,10 +424,11 @@ claim. See `config/physics_materials.yaml`.
   model and exact camera intrinsics remain hold points. The trained ray ranges
   are scalable geometric sensing, not a validated RTX LD19 noise model.
 - The 12-segment Principal/Vice-Principal policy, declared Phase 3 dynamic
-  safety, measured static Nav2 mission and separate Phase 7A sensed crossing
-  pass. Blocked-route global replanning, broader office-directory coverage,
-  native scan registration and sim-to-real commissioning remain subsequent
-  gates.
+  safety, measured static Nav2 mission, separate Phase 7A sensed crossing and
+  Phase 7B single-path blocked-route safe-wait/fresh-plan mission pass. Native
+  Nav2 dynamic-costmap marking, alternate-route replanning, broader
+  office-directory coverage, physical localisation and sim-to-real
+  commissioning remain subsequent gates.
 - The administration USD has been rebuilt around the walkthrough's primary
   visual anchors: brighter polished terrazzo and aggregate, white atrium
   columns, dark timber/slatted walls, office glazing, a round timber meeting
@@ -469,19 +479,20 @@ These are evidence-based project-management estimates, not safety ratings:
 
 | Workstream | Progress |
 |---|---:|
-| Presentation-ready Omniverse simulation | 93% |
-| Learned navigation and doorway handling | 91% |
+| Presentation-ready Omniverse simulation | 94% |
+| Learned navigation and doorway handling | 92% |
 | Measured digital twin | 68% |
-| Nav2/localisation integration | 82% |
-| Dynamic-obstacle simulation safety | 84% |
+| Nav2/localisation integration | 86% |
+| Dynamic-obstacle simulation safety | 89% |
 | Physical deployment readiness | 30% |
-| Overall end objective | 79% |
+| Overall end objective | 82% |
 
-The latest increase comes from coupling a sensed dynamic crossing to the full
-measured-scene Nav2 mission while retaining the 0.80 m/s static tier, doorway
-and central-drop gates. The remaining work is dominated by Phase 7B
-blocked-route global replanning, real localisation, native scan/visual
-refinement, operator-facing capture and physical sim-to-real commissioning.
+The latest increase comes from adding registered-LiDAR candidate rejection,
+safe wait and fresh planning for a full-width single-path blockage while
+retaining the 0.80 m/s static tier, Phase 7A crossing, doorway and central-drop
+gates. The remaining work is dominated by native Nav2 dynamic-costmap and
+alternate-route evidence, real localisation, scan/visual refinement,
+operator-facing capture and physical sim-to-real commissioning.
 
 ## Evidence
 
@@ -577,6 +588,9 @@ refinement, operator-facing capture and physical sim-to-real commissioning.
 - `administration_nav2_measured_mission.json`
 - `administration_nav2_measured_integration_gate.json`
 - `administration_nav2_phase6_high_speed_integration_gate.json`
+- `administration_nav2_phase7b_blocked_route_mission.json`
+- `administration_nav2_phase7b_blocked_route_bridge.json`
+- `administration_nav2_phase7b_blocked_route_integration_gate.json`
 - `administration_nav2_phase6_rtx_presentation_acceptance.json`
 - `administration_nav2_phase7_dynamic_mission.json`
 - `administration_nav2_phase7_dynamic_bridge.json`

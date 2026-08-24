@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev Q - 2026-08-24 - Phase 7A live Nav2 dynamic crossing accepted**
+**Rev R - 2026-08-24 - Phase 7B blocked-route safe-wait replanning accepted**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -72,8 +72,8 @@ held the final stop for 52 steps and used the 360-degree scan to prevent an earl
 restart as the pedestrian cleared the robot's corner.
 
 This establishes one repeatable stop-wait-resume simulation scenario—not crowd
-navigation, a human-behaviour model, physical stopping distance, or blocked-route
-global replanning. The latter is the Phase 7B gate. Reproduce this stage with:
+navigation, a human-behaviour model or physical stopping distance. Reproduce
+the retained Phase 7A stage with:
 
 ```bash
 tools/run_administration_nav2_phase7_dynamic_integration.sh
@@ -82,6 +82,39 @@ tools/run_administration_nav2_phase7_dynamic_integration.sh
 Evidence: `results/administration_nav2_phase7_dynamic_mission.json`,
 `results/administration_nav2_phase7_dynamic_bridge.json` and
 `results/administration_nav2_phase7_dynamic_integration_gate.json`.
+
+## Latest blocked-route gate
+
+Phase 7B adds a visible 2.90 m full-width temporary barricade to the single-path
+east office hallway. The administration topology has no alternate corridor, so
+the correct behavior is safe wait rather than a fabricated spatial detour. Nav2
+first generated a 2,554-pose candidate; the independent supervisory validator
+rejected it because the registered live front-LiDAR points came within 0.01371 m
+of the path against a 0.46 m required radial clearance. The robot then held
+stationary for the blockage interval, with 0.000132 m/s maximum measured speed
+and less than 0.000001 m displacement.
+
+After the barricade was physically removed, the mission requested a fresh
+global path. The new candidate's minimum registered-LiDAR clearance was
+1.02065 m with zero violating poses, so it was accepted and executed. The full
+Principal/Vice-Principal mission completed 12/12 legs in 482.0 s; the formal
+gate passes 26/26 while retaining the Phase 6 28/28 and Phase 7A 24/24 evidence.
+
+The registered point cloud is derived from Isaac's actual front-LiDAR ray hits;
+the barricade pose is evaluation/synchronization state only and is not supplied
+to either learned policy or the path validator. The installed Nav2 obstacle
+layer did not earn dynamic-marking credit, so this result is explicitly a
+sensor-supervised candidate rejection, safe wait and fresh-plan acceptance—not
+a Navfn infeasibility result, alternate-route proof, physical localization or
+physical safety release. Reproduce it with:
+
+```bash
+tools/run_administration_nav2_phase7b_blocked_route_integration.sh
+```
+
+Evidence: `results/administration_nav2_phase7b_blocked_route_mission.json`,
+`results/administration_nav2_phase7b_blocked_route_bridge.json` and
+`results/administration_nav2_phase7b_blocked_route_integration_gate.json`.
 
 ## Latest live autonomy gate
 

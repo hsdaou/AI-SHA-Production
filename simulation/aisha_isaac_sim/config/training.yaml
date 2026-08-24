@@ -1043,9 +1043,11 @@ release:
   phase7_dynamic_crossing_nav2_passed: true
   phase7_sensor_scoped_learned_handoff_observed: true
   phase7_controlled_stop_wait_resume_passed: true
-  phase7_blocked_route_replanning_passed: false
+  phase7_blocked_route_replanning_passed: true
+  phase7_blocked_route_sensor_supervisor_passed: true
+  phase7_blocked_route_spatial_detour_passed: false
   nav2_integrated_in_simulation: true
   nav2_ground_truth_localization_only: true
   nav2_integrated: true
   physical_robot_release: false
-  required_next_gate: "Phase 7B must demonstrate temporary blocked-route global replanning without regressing the accepted static or crossing missions; physical deployment separately requires threshold and destination-specific clearance verification, real localisation validation, sim-to-real testing, all-direction protective sensing, stopping-distance validation and hardware safety commissioning"
+  required_next_gate: "Demonstrate native Nav2 dynamic-costmap marking and an environment with a real alternate route, without regressing the accepted Phase 6, Phase 7A or Phase 7B missions; physical deployment separately requires threshold and destination-specific clearance verification, real localisation validation, sim-to-real testing, all-direction protective sensing, stopping-distance validation and hardware safety commissioning"

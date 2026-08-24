@@ -15,6 +15,7 @@ import hashlib
 import json
 import math
 import sys
+import time
 import traceback
 from datetime import datetime, timezone
 from pathlib import Path
@@ -96,11 +97,16 @@ PHASE7_MEASURED_NAV2_DYNAMIC_TASK = (
     "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7-"
     "DynamicCrossing-Safety-Direct-v0"
 )
+PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK = (
+    "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7B-"
+    "BlockedRoute-Replanning-Safety-Direct-v0"
+)
 PHASE3N_COMPATIBLE_TASKS = {
     PHASE3N_PRESENTATION_TASK,
     PHASE3N_MEASURED_NAV2_TASK,
     PHASE6_MEASURED_NAV2_TASK,
     PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
+    PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
 }
 ACCEPTED_PHASE3N_CHECKPOINT = "aisha_phase3n_dynamic_safety_model_50.pt"
 ACCEPTED_PHASE3N_SHA256 = (
@@ -113,6 +119,7 @@ ACCEPTED_PHASE6_SHA256 = (
 PHASE6_NAV2_TASKS = {
     PHASE6_MEASURED_NAV2_TASK,
     PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
+    PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
 }
 MEASURED_NAV2_TASKS = {PHASE3N_MEASURED_NAV2_TASK, *PHASE6_NAV2_TASKS}
 
@@ -155,7 +162,7 @@ class AishaSimulationBridge:
         from nav_msgs.msg import Odometry
         from rclpy.qos import HistoryPolicy, QoSProfile, ReliabilityPolicy
         from rosgraph_msgs.msg import Clock
-        from sensor_msgs.msg import LaserScan
+        from sensor_msgs.msg import LaserScan, PointCloud2
         from std_msgs.msg import Bool, UInt32
         from tf2_ros import StaticTransformBroadcaster, TransformBroadcaster
 
@@ -179,6 +186,12 @@ class AishaSimulationBridge:
         self.front_publisher = self.node.create_publisher(
             LaserScan, "/front_scan", sensor_qos
         )
+        self.phase7b_front_points_publisher = self.node.create_publisher(
+            PointCloud2, "/aisha/phase7b/front_points", sensor_qos
+        )
+        self.blockage_state_publisher = self.node.create_publisher(
+            Bool, "/aisha/blocked_route_active", 10
+        )
         self.tf_broadcaster = TransformBroadcaster(self.node)
         self.static_tf_broadcaster = StaticTransformBroadcaster(self.node)
         self.subscription = self.node.create_subscription(
@@ -193,6 +206,12 @@ class AishaSimulationBridge:
             self._route_segment_callback,
             10,
         )
+        self.blockage_release_subscription = self.node.create_subscription(
+            Bool,
+            "/aisha/clear_blocked_route",
+            self._blockage_release_callback,
+            10,
+        )
         self.command_linear_mps = 0.0
         self.command_angular_rad_s = 0.0
         self.command_received_at_s = -math.inf
@@ -203,6 +222,10 @@ class AishaSimulationBridge:
         self.ring_stop_release_clearance_m: float | None = None
         self.front_stop_half_angle_deg = 10.0
         self.command_watchdog_s = 0.30
+        self.crown_scan_period_s = 0.10
+        self.front_scan_period_s = 0.05
+        self.publish_phase7b_front_points = False
+        self.publish_blockage_state = False
         self.maximum_forward_mps = maximum_forward_mps
         self.non_high_speed_navigation_maximum_mps = (
             non_high_speed_navigation_maximum_mps
@@ -236,6 +259,8 @@ class AishaSimulationBridge:
         self.current_route_segment_id = 0
         self.route_segment_messages = 0
         self.invalid_route_segment_messages = 0
+        self.blockage_active = False
+        self.blockage_release_requests = 0
         self.maximum_requested_linear_mps_by_segment: dict[int, float] = {}
         self.maximum_guarded_linear_mps_by_segment: dict[int, float] = {}
         self.maximum_observed_linear_mps_by_segment: dict[int, float] = {}
@@ -260,6 +285,13 @@ class AishaSimulationBridge:
         )
         if hasattr(self.raw_env, "_apply_segment_speed_envelope"):
             self.raw_env._apply_segment_speed_envelope()
+
+    def _blockage_release_callback(self, message) -> None:
+        if not bool(message.data):
+            return
+        self.blockage_release_requests += 1
+        if hasattr(self.raw_env, "release_temporary_blockage"):
+            self.raw_env.release_temporary_blockage()
 
     def publish_static_transforms(self, sensor_positions: dict[str, list[float]]) -> None:
         from geometry_msgs.msg import TransformStamped
@@ -471,7 +503,11 @@ class AishaSimulationBridge:
         message.angle_min = angle_min
         message.angle_max = angle_max
         message.angle_increment = (angle_max - angle_min) / max(1, len(values) - 1)
-        message.time_increment = scan_time_s / max(1, len(values))
+        # Isaac's ray caster returns one simultaneous physics snapshot, not a
+        # mechanically swept sequence.  Advertising a per-beam time offset
+        # makes laser_geometry request transforms in the future and can cause
+        # Nav2's costmap to discard an otherwise valid obstacle scan.
+        message.time_increment = 0.0
         message.scan_time = scan_time_s
         message.range_min = 0.12
         message.range_max = 10.0
@@ -479,16 +515,48 @@ class AishaSimulationBridge:
         publisher.publish(message)
         self.messages[message_key] += 1
 
+    def _publish_front_points(
+        self,
+        ranges: torch.Tensor,
+    ) -> None:
+        """Publish map-registered points generated only from live LiDAR hits."""
+        from sensor_msgs_py import point_cloud2
+        from std_msgs.msg import Header
+
+        valid = torch.isfinite(ranges) & (ranges >= 0.12) & (ranges < 9.999)
+        sensor = self.raw_env.scene.sensors["front_lidar"]
+        origin = self.raw_env.scene.env_origins[0]
+        # MultiMeshRayCaster already supplies the actual world-space hit for
+        # every ray. Register those hits into the map/odom-coincident frame at
+        # acquisition time, exactly as a point-cloud registration node would.
+        # No blocker pose or scenario geometry is used here.
+        points = sensor.data.ray_hits_w[0, valid] - origin.unsqueeze(0)
+        header = Header()
+        header.stamp = ros_stamp(self.simulation_time_s)
+        header.frame_id = "map"
+        message = point_cloud2.create_cloud_xyz32(
+            header, points.detach().cpu().tolist()
+        )
+        self.phase7b_front_points_publisher.publish(message)
+        self.messages["phase7b_front_points"] += 1
+
     def publish(self, step_index: int) -> None:
         from geometry_msgs.msg import TransformStamped
         from nav_msgs.msg import Odometry
         from rosgraph_msgs.msg import Clock
+        from std_msgs.msg import Bool
 
         stamp = ros_stamp(self.simulation_time_s)
         clock = Clock()
         clock.clock = stamp
         self.clock_publisher.publish(clock)
         self.messages["clock"] += 1
+
+        if self.publish_blockage_state:
+            blockage_state = Bool()
+            blockage_state.data = self.blockage_active
+            self.blockage_state_publisher.publish(blockage_state)
+            self.messages["blocked_route_active"] += 1
 
         robot = self.raw_env._robot
         origin = self.raw_env.scene.env_origins[0]
@@ -545,26 +613,33 @@ class AishaSimulationBridge:
         self.tf_broadcaster.sendTransform(transforms)
         self.messages["tf"] += len(transforms)
 
-        if step_index % max(1, round(0.10 / self.control_period_s)) == 0:
+        if step_index % max(
+            1, round(self.crown_scan_period_s / self.control_period_s)
+        ) == 0:
             self._publish_scan(
                 self.crown_publisher,
                 "lidar_link",
                 self.raw_env._lidar_ranges()[0],
                 -math.pi,
                 math.pi - math.radians(10.0),
-                0.10,
+                self.crown_scan_period_s,
                 "scan",
             )
-        if step_index % max(1, round(0.05 / self.control_period_s)) == 0:
+        if step_index % max(
+            1, round(self.front_scan_period_s / self.control_period_s)
+        ) == 0:
+            front_ranges = self.front_ranges()[0]
             self._publish_scan(
                 self.front_publisher,
                 "front_lidar_link",
-                self.front_ranges()[0],
+                front_ranges,
                 -math.radians(60.0),
                 math.radians(60.0),
-                0.05,
+                self.front_scan_period_s,
                 "front_scan",
             )
+            if self.publish_phase7b_front_points:
+                self._publish_front_points(front_ranges)
 
     def close(self) -> None:
         self.node.destroy_node()
@@ -678,7 +753,13 @@ def main() -> int:
         # separate evidence.
         deterministic_overrides = {
             "dynamic_obstacle_activation_probability": (
-                1.0 if task == PHASE7_MEASURED_NAV2_DYNAMIC_TASK else 0.0
+                1.0
+                if task
+                in {
+                    PHASE7_MEASURED_NAV2_DYNAMIC_TASK,
+                    PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK,
+                }
+                else 0.0
             ),
             "action_latency_steps_range": (0, 0),
             "motor_strength_scale_range": (1.0, 1.0),
@@ -752,6 +833,7 @@ def main() -> int:
     }
     phase6_high_speed_replay = task in PHASE6_NAV2_TASKS
     dynamic_crossing_replay = task == PHASE7_MEASURED_NAV2_DYNAMIC_TASK
+    blocked_route_replay = task == PHASE7B_MEASURED_NAV2_BLOCKED_ROUTE_TASK
     if phase6_high_speed_replay and mapped_guard is not None:
         # The furnished wheel contacts need the same proven 0.42 rad/s
         # breakaway command used by the office pivots. Translation remains
@@ -775,6 +857,17 @@ def main() -> int:
         bridge.front_stop_trigger_m = 0.90
         bridge.front_stop_release_m = 1.10
         bridge.ring_stop_release_clearance_m = 0.35
+    if blocked_route_replay:
+        # The measured global map is roughly six million 1 cm cells. Match the
+        # temporary-blockage sensors to its 2 Hz update rate so the executor's
+        # TF filter consumes current samples rather than accumulating a stale
+        # high-rate scan queue while recomputing the full global costmap.
+        bridge.crown_scan_period_s = 0.50
+        bridge.front_scan_period_s = 0.50
+        bridge.publish_phase7b_front_points = True
+        bridge.publish_blockage_state = True
+        bridge.messages["phase7b_front_points"] = 0
+        bridge.messages["blocked_route_active"] = 0
     steps_completed = 0
     reset_detected = False
     safety_authority_steps = 0
@@ -802,8 +895,19 @@ def main() -> int:
     dynamic_stop_observed = False
     dynamic_recovery_observed = False
     dynamic_trace = []
+    blockage_triggered = False
+    blockage_cleared = False
+    blockage_trigger_step = None
+    blockage_clear_step = None
+    blockage_active_steps = 0
+    blockage_maximum_robot_speed_mps = 0.0
+    blockage_minimum_central_front_range_m = math.inf
+    blockage_start_robot_xy_m = None
+    blockage_clear_robot_xy_m = None
+    blockage_position_xy_m = None
     last_pre_step_position_xy_m = None
     last_pre_step_minimum_ring_clearance_m = None
+    phase7b_pacing_start_wall_s = time.monotonic()
     try:
         if not learned_safety_enabled:
             env.reset()
@@ -968,9 +1072,58 @@ def main() -> int:
                                 ),
                             }
                         )
+            if blocked_route_replay and hasattr(raw_env, "blockage_state"):
+                state = raw_env.blockage_state()
+                triggered = bool(state["triggered"][0].item())
+                active = bool(state["active"][0].item())
+                cleared = bool(state["cleared"][0].item())
+                bridge.blockage_active = active
+                robot_xy = raw_env._local_xy()[0]
+                blocker_xy = state["blocker_position_xy_m"][0]
+                blockage_position_xy_m = [
+                    round(float(value), 5)
+                    for value in blocker_xy.detach().cpu().tolist()
+                ]
+                if triggered and not blockage_triggered:
+                    blockage_triggered = True
+                    blockage_trigger_step = steps_completed
+                    blockage_start_robot_xy_m = [
+                        round(float(value), 6)
+                        for value in robot_xy.detach().cpu().tolist()
+                    ]
+                if active:
+                    blockage_active_steps += 1
+                    speed = abs(
+                        float(raw_env._robot.data.root_lin_vel_b[0, 0].item())
+                    )
+                    blockage_maximum_robot_speed_mps = max(
+                        blockage_maximum_robot_speed_mps, speed
+                    )
+                    blockage_minimum_central_front_range_m = min(
+                        blockage_minimum_central_front_range_m,
+                        bridge.current_central_front_range_m,
+                    )
+                if cleared and not blockage_cleared:
+                    blockage_cleared = True
+                    blockage_clear_step = steps_completed
+                    blockage_clear_robot_xy_m = [
+                        round(float(value), 6)
+                        for value in robot_xy.detach().cpu().tolist()
+                    ]
             bridge.simulation_time_s += control_period_s
             bridge.publish(steps_completed)
             steps_completed += 1
+            if blocked_route_replay:
+                # Nav2 consumes the LiDAR through timestamped TF filters.  Keep
+                # the Phase 7B bridge at or below wall-clock rate so a fast
+                # workstation cannot advance /clock beyond the transform cache
+                # before the costmap has processed the corresponding scan.
+                pacing_deadline_s = (
+                    phase7b_pacing_start_wall_s + bridge.simulation_time_s
+                )
+                pacing_delay_s = pacing_deadline_s - time.monotonic()
+                if pacing_delay_s > 0.0:
+                    time.sleep(pacing_delay_s)
             if bool(torch.any(terminated_or_truncated).item()):
                 reset_detected = True
                 break
@@ -1012,7 +1165,15 @@ def main() -> int:
             "steps_completed": steps_completed,
             "control_period_s": control_period_s,
             "topics": {
-                "subscribed": ["/cmd_vel", "/aisha/route_segment_id"],
+                "subscribed": [
+                    "/cmd_vel",
+                    "/aisha/route_segment_id",
+                ]
+                + (
+                    ["/aisha/clear_blocked_route"]
+                    if blocked_route_replay
+                    else []
+                ),
                 "published": [
                     "/clock",
                     "/odom",
@@ -1020,7 +1181,15 @@ def main() -> int:
                     "/tf_static",
                     "/scan",
                     "/front_scan",
-                ],
+                ]
+                + (
+                    [
+                        "/aisha/blocked_route_active",
+                        "/aisha/phase7b/front_points",
+                    ]
+                    if blocked_route_replay
+                    else []
+                ),
                 "message_counts": bridge.messages,
             },
             "localization": {
@@ -1076,6 +1245,7 @@ def main() -> int:
                 "invalid_route_segment_messages": (
                     bridge.invalid_route_segment_messages
                 ),
+                "blockage_release_requests": bridge.blockage_release_requests,
             },
             "route_scoped_speed_evidence": {
                 "maximum_requested_linear_mps_by_segment": {
@@ -1156,7 +1326,9 @@ def main() -> int:
                     else None
                 ),
                 "deterministic_static_integration_gate": (
-                    learned_safety_enabled and not dynamic_crossing_replay
+                    learned_safety_enabled
+                    and not dynamic_crossing_replay
+                    and not blocked_route_replay
                 ),
             },
             "dynamic_obstacle": {
@@ -1213,6 +1385,66 @@ def main() -> int:
                 "controlled_stop_observed": dynamic_stop_observed,
                 "post_crossing_recovery_observed": dynamic_recovery_observed,
                 "trace": dynamic_trace,
+            },
+            "blocked_route": {
+                "enabled": blocked_route_replay,
+                "scenario": (
+                    "temporary_full_width_single_path_hallway_blockage"
+                    if blocked_route_replay
+                    else None
+                ),
+                "planner_observation_source": (
+                    "registered_front_lidar_supervisory_path_validator"
+                    if blocked_route_replay
+                    else None
+                ),
+                "simulation_time_paced_to_wall_clock": blocked_route_replay,
+                "sensor_publish_rate_hz": (
+                    {
+                        "crown_lidar": round(1.0 / bridge.crown_scan_period_s, 3),
+                        "front_lidar": round(1.0 / bridge.front_scan_period_s, 3),
+                    }
+                    if blocked_route_replay
+                    else None
+                ),
+                "registered_pointcloud_topic": (
+                    "/aisha/phase7b/front_points" if blocked_route_replay else None
+                ),
+                "blocker_state_exposed_to_policy": False,
+                "coordination_state_exposed_to_mission_only": blocked_route_replay,
+                "route_topology": (
+                    "single_path_safe_wait_required_no_detour_available"
+                    if blocked_route_replay
+                    else None
+                ),
+                "blockage_segment_id": (
+                    int(cfg.temporary_blockage_segment_id)
+                    if blocked_route_replay
+                    else None
+                ),
+                "blockage_size_xyz_m": (
+                    list(cfg.temporary_blockage_size_xyz_m)
+                    if blocked_route_replay
+                    else None
+                ),
+                "blockage_position_xy_m": blockage_position_xy_m,
+                "triggered": blockage_triggered,
+                "active_steps": blockage_active_steps,
+                "trigger_step": blockage_trigger_step,
+                "cleared": blockage_cleared,
+                "clear_step": blockage_clear_step,
+                "release_requests": bridge.blockage_release_requests,
+                "robot_xy_at_trigger_m": blockage_start_robot_xy_m,
+                "robot_xy_at_clear_m": blockage_clear_robot_xy_m,
+                "maximum_robot_speed_while_active_mps": round(
+                    blockage_maximum_robot_speed_mps, 6
+                ),
+                "minimum_central_front_range_while_active_m": (
+                    round(blockage_minimum_central_front_range_m, 5)
+                    if math.isfinite(blockage_minimum_central_front_range_m)
+                    else None
+                ),
+                "physical_safety_credit": False,
             },
             "mapped_site_safety": (
                 {

@@ -1,0 +1,298 @@
+{
+  "report_type": "administration_nav2_bridge",
+  "generated_at_utc": "2026-08-24T06:21:33.195851+00:00",
+  "status": "bridge_smoke_completed",
+  "task": "Isaac-AISHA-Administration-Live-Measured-Nav2-Phase7B-BlockedRoute-Replanning-Safety-Direct-v0",
+  "steps_completed": 15373,
+  "control_period_s": 0.03333333333333333,
+  "topics": {
+    "subscribed": [
+      "/cmd_vel",
+      "/aisha/route_segment_id",
+      "/aisha/clear_blocked_route"
+    ],
+    "published": [
+      "/clock",
+      "/odom",
+      "/tf",
+      "/tf_static",
+      "/scan",
+      "/front_scan",
+      "/aisha/blocked_route_active",
+      "/aisha/phase7b/front_points"
+    ],
+    "message_counts": {
+      "clock": 15373,
+      "odom": 15373,
+      "tf": 30746,
+      "tf_static": 3,
+      "scan": 1025,
+      "front_scan": 1025,
+      "blocked_route_active": 15373,
+      "phase7b_front_points": 1025
+    }
+  },
+  "localization": {
+    "nav2_global_pose_source": "isaac_ground_truth_odom_with_identity_map_to_odom",
+    "bridge_publishes_map_to_odom": true,
+    "amcl_tf_broadcast_required": false,
+    "presentation_simulation_only": true,
+    "physical_localization_credit": false
+  },
+  "command_constraints": {
+    "maximum_forward_mps": 0.8,
+    "non_high_speed_navigation_maximum_mps": 0.3,
+    "high_speed_route_segment_ids": [
+      1,
+      5
+    ],
+    "route_scoped_phase3n_thresholds_enabled": true,
+    "reverse_allowed": false,
+    "lateral_motion_allowed": false,
+    "maximum_angular_rad_s": 0.55,
+    "minimum_in_place_angular_rad_s": 0.3,
+    "command_watchdog_s": 0.3,
+    "front_stop_trigger_m": 0.6,
+    "front_stop_release_m": 0.75,
+    "ring_stop_release_clearance_m": null,
+    "front_stop_half_angle_deg": 10.0,
+    "minimum_rotation_clearance_m": 0.08
+  },
+  "events": {
+    "rejected_reverse_commands": 0,
+    "rejected_lateral_commands": 0,
+    "watchdog_stops": 0,
+    "obstacle_stops": 0,
+    "in_place_deadband_compensations": 303,
+    "front_latch_rotation_escape_steps": 0,
+    "rotation_guard_stops": 0,
+    "mission_complete_signal_received": true,
+    "episode_reset_gate_detected": false,
+    "route_segment_messages": 36,
+    "invalid_route_segment_messages": 0,
+    "blockage_release_requests": 5
+  },
+  "route_scoped_speed_evidence": {
+    "maximum_requested_linear_mps_by_segment": {
+      "0": 0.3,
+      "1": 0.8,
+      "2": 0.3,
+      "3": 0.3,
+      "4": 0.3,
+      "5": 0.8,
+      "6": 0.3,
+      "7": 0.3,
+      "8": 0.3,
+      "9": 0.3,
+      "10": 0.3,
+      "11": 0.3
+    },
+    "maximum_guarded_linear_mps_by_segment": {
+      "0": 0.3,
+      "1": 0.8,
+      "2": 0.3,
+      "3": 0.18,
+      "4": 0.3,
+      "5": 0.8,
+      "6": 0.3,
+      "7": 0.3,
+      "8": 0.18,
+      "9": 0.18,
+      "10": 0.3,
+      "11": 0.3
+    },
+    "maximum_observed_linear_mps_by_segment": {
+      "0": 0.25137659907341003,
+      "1": 0.7471846342086792,
+      "2": 0.24067391455173492,
+      "3": 0.059327296912670135,
+      "4": 0.23957538604736328,
+      "5": 0.743355929851532,
+      "6": 0.25234243273735046,
+      "7": 0.25322404503822327,
+      "8": 0.05947601795196533,
+      "9": 0.059399183839559555,
+      "10": 0.24310505390167236,
+      "11": 0.2435964196920395
+    },
+    "mission_segment_source": "/aisha/route_segment_id"
+  },
+  "termination_diagnostics": {
+    "minimum_clearance_ray_index": 2,
+    "minimum_clearance_ray_angle_deg": -160.0,
+    "minimum_exact_range_m": 2.812405,
+    "minimum_exact_clearance_m": 1.781115,
+    "minimum_hit_world_xyz_m": [
+      4.383951,
+      -2.51605,
+      1.179228
+    ],
+    "episode_outcomes": {
+      "success": false,
+      "waypoint_reached": false,
+      "collision": false,
+      "time_out": false,
+      "dynamic_obstacle_collision": false,
+      "static_collision": false,
+      "final_protective_stop_latched": false,
+      "final_peak_torque_active": false,
+      "final_recovery_supervisor_brake_active": false
+    }
+  },
+  "last_pre_step_snapshot": {
+    "position_xy_m": [
+      3.41695,
+      -0.383569
+    ],
+    "minimum_ring_clearance_m": 1.770393
+  },
+  "learned_safety": {
+    "enabled": true,
+    "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt",
+    "checkpoint_sha256": "e49767507925548aa0086c38e764c43037f25734943b2c5712cb58eecb0b6318",
+    "checkpoint_is_accepted_phase3n": false,
+    "checkpoint_is_accepted_phase6": true,
+    "accepted_checkpoint_profile": "phase6_high_speed_080",
+    "fallback_checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase3n_dynamic_safety_model_50.pt",
+    "fallback_checkpoint_sha256": "11016d3e79a23f966597922ec165e73d0de24a509bfebcfdd53761d7a7f0343b",
+    "fallback_checkpoint_is_accepted_phase3n": true,
+    "policy_selection": "phase6_on_declared_high_speed_segments_phase3n_elsewhere",
+    "dynamic_handoff_sensor": null,
+    "primary_policy_steps": 1411,
+    "fallback_policy_steps": 13962,
+    "base_command_source": "nav2_cmd_vel",
+    "authority_steps": 242,
+    "brake_steps": 74,
+    "mean_brake_fraction_while_active": 0.08082425084796326,
+    "maximum_brake_fraction": 0.6149724721908569,
+    "minimum_360_clearance_m": 0.01401,
+    "deterministic_static_integration_gate": false
+  },
+  "dynamic_obstacle": {
+    "enabled": false,
+    "scenario": null,
+    "stylized_proxy_not_human_model": false,
+    "pedestrian_state_exposed_to_policy": false,
+    "crossing_segment_id": null,
+    "triggered": false,
+    "crossing_completed": false,
+    "trigger_step": null,
+    "completion_step": null,
+    "crossing_steps": 0,
+    "sensor_scoped_phase3n_handoff_steps": 0,
+    "front_stop_latched_steps": 0,
+    "learned_authority_steps_during_encounter": 0,
+    "learned_brake_steps_during_encounter": 0,
+    "minimum_robot_pedestrian_centre_distance_m": null,
+    "minimum_central_front_range_m": null,
+    "minimum_360_clearance_m": null,
+    "maximum_pre_trigger_forward_speed_mps": 0.0,
+    "minimum_encounter_forward_speed_mps": null,
+    "maximum_post_crossing_recovery_speed_mps": 0.0,
+    "controlled_stop_observed": false,
+    "post_crossing_recovery_observed": false,
+    "trace": []
+  },
+  "blocked_route": {
+    "enabled": true,
+    "scenario": "temporary_full_width_single_path_hallway_blockage",
+    "planner_observation_source": "registered_front_lidar_supervisory_path_validator",
+    "simulation_time_paced_to_wall_clock": true,
+    "sensor_publish_rate_hz": {
+      "crown_lidar": 2.0,
+      "front_lidar": 2.0
+    },
+    "registered_pointcloud_topic": "/aisha/phase7b/front_points",
+    "blocker_state_exposed_to_policy": false,
+    "coordination_state_exposed_to_mission_only": true,
+    "route_topology": "single_path_safe_wait_required_no_detour_available",
+    "blockage_segment_id": 1,
+    "blockage_size_xyz_m": [
+      0.36,
+      2.9,
+      1.2
+    ],
+    "blockage_position_xy_m": [
+      10.8,
+      0.0
+    ],
+    "triggered": true,
+    "active_steps": 79,
+    "trigger_step": 1136,
+    "cleared": true,
+    "clear_step": 1215,
+    "release_requests": 5,
+    "robot_xy_at_trigger_m": [
+      4.323234,
+      -0.00305
+    ],
+    "robot_xy_at_clear_m": [
+      4.341665,
+      -0.003199
+    ],
+    "maximum_robot_speed_while_active_mps": 0.169089,
+    "minimum_central_front_range_while_active_m": 5.82288,
+    "physical_safety_credit": false
+  },
+  "mapped_site_safety": {
+    "steps": 15373,
+    "doorway_active_steps": 9748,
+    "doorway_slow_steps": 5785,
+    "doorway_alignment_steps": 7860,
+    "doorway_alignment_hold_steps": 669,
+    "doorway_overspeed_stops": 7,
+    "doorway_direction_rearms": 2,
+    "polygon_no_go_stops": 0,
+    "doorway_entries": {
+      "vice_principal": 2,
+      "principal": 2
+    },
+    "maximum_abs_speed_in_doorway_mps": 0.059327296912670135,
+    "maximum_abs_tangent_offset_in_doorway_m": 0.015254592895509234,
+    "minimum_polygon_full_footprint_clearance_m": 0.279585,
+    "enabled": true,
+    "architecture": "nav2_cmd_vel_then_mapped_doorway_and_polygon_guard",
+    "maximum_doorway_speed_mps": 0.1,
+    "target_doorway_speed_mps": 0.08,
+    "doorway_alignment_tolerance_deg": 0.7500000000000001,
+    "approach_alignment_tolerance_deg": 3.0000000000000004,
+    "approach_stage_capture_radius_m": 0.018,
+    "overspeed_stop_mps": 0.095,
+    "traction_command_ceiling_mps": 0.18,
+    "traction_gain": 1.5,
+    "breakaway_angular_rad_s": 0.42,
+    "polygon_outer_radius_m": 2.3,
+    "polygon_body_circumscribed_radius_m": 0.8204151388169284,
+    "polygon_minimum_clearance_m": 0.05,
+    "physical_safety_credit": false,
+    "overlay": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/measured_administration_presentation_2026-08-23.yaml",
+    "overlay_sha256": "e5b60981b6771158434fb160beac97b2d197643ab0520d198174c9846992298b",
+    "site_config": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/administration_assumptions.yaml",
+    "site_config_sha256": "c06e1941e873ae88012844ee27be9e7614342412d5c51cccfe9358a9559ffe47"
+  },
+  "final_position_xy_m": [
+    3.41694,
+    -0.37897
+  ],
+  "minimum_front_range_m": 0.47789,
+  "minimum_central_front_range_m": 0.75651,
+  "minimum_ring_clearance_m": 0.01401,
+  "learned_policy_coupled": true,
+  "learned_360_safety_coupled": true,
+  "central_drop_safety_routing": {
+    "learned_crown_scan_excludes_navigation_barrier": true,
+    "occupancy_map_keeps_navigation_barrier": true,
+    "physics_collider_kept": true,
+    "mapped_full_footprint_guard_required": true
+  },
+  "measured_nav2_termination_envelope": {
+    "lidar_collision_margin_m": 0.015,
+    "nav2_footprint_padding_m": 0.03,
+    "physical_geometry_changed": false,
+    "physical_safety_credit": false
+  },
+  "frozen_phase3m_local_navigation_coupled": false,
+  "physical_release": false,
+  "claim_boundary": "With a Phase 3N checkpoint this run proves live Nav2-to-learned-safety arbitration in the Isaac scene. When enabled, the mapped-site guard adds simulation-only doorway alignment/speed and central-drop constraints before the learned brake actor. It does not couple the frozen Phase 3M local navigator, replace the formal dynamic-obstacle evaluation, prove stopping distance or sim-to-real performance, or authorize physical deployment. Without a checkpoint it proves Isaac physics/ROS exchange only.",
+  "passed": true
+}

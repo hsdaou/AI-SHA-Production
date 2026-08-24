@@ -511,7 +511,9 @@ class TrainingConfigTests(unittest.TestCase):
             release["phase7_sensor_scoped_learned_handoff_observed"]
         )
         self.assertTrue(release["phase7_controlled_stop_wait_resume_passed"])
-        self.assertFalse(release["phase7_blocked_route_replanning_passed"])
+        self.assertTrue(release["phase7_blocked_route_replanning_passed"])
+        self.assertTrue(release["phase7_blocked_route_sensor_supervisor_passed"])
+        self.assertFalse(release["phase7_blocked_route_spatial_detour_passed"])
         self.assertTrue(release["nav2_integrated_in_simulation"])
         self.assertTrue(release["nav2_ground_truth_localization_only"])
         self.assertTrue(release["nav2_integrated"])
