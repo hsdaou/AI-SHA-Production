@@ -23,7 +23,9 @@ DEFAULT_CONFIG = PACKAGE_ROOT / "config" / "administration_assumptions.yaml"
 DEFAULT_OVERLAY = (
     PACKAGE_ROOT / "config" / "measured_administration_presentation_2026-08-23.yaml"
 )
-DEFAULT_TRACE = PACKAGE_ROOT / "results" / "phase3n_administration_final_omniverse_report.json"
+DEFAULT_TRACE = (
+    PACKAGE_ROOT / "results" / "administration_nav2_phase7e_static_fusion_mission.json"
+)
 DEFAULT_REPORT = PACKAGE_ROOT / "results" / "measured_route_constraint_audit.json"
 DOOR_ROUTE_SEGMENTS = {
     "vice_principal": {3, 4},
@@ -128,6 +130,46 @@ def regular_polygon(centre: tuple[float, float], radius: float, orientation_deg:
     ]
 
 
+def segment_rectangle(
+    start: tuple[float, float],
+    end: tuple[float, float],
+    thickness_m: float,
+) -> list[tuple[float, float]]:
+    dx, dy = end[0] - start[0], end[1] - start[1]
+    length = math.hypot(dx, dy)
+    if length <= 1.0e-9:
+        raise ValueError("wall segment must have nonzero length")
+    nx, ny = -dy / length * thickness_m / 2.0, dx / length * thickness_m / 2.0
+    return [
+        (start[0] + nx, start[1] + ny),
+        (end[0] + nx, end[1] + ny),
+        (end[0] - nx, end[1] - ny),
+        (start[0] - nx, start[1] - ny),
+    ]
+
+
+def oriented_rectangle(
+    centre: tuple[float, float],
+    size_xy: tuple[float, float],
+    yaw_deg: float,
+) -> list[tuple[float, float]]:
+    cosine, sine = math.cos(math.radians(yaw_deg)), math.sin(math.radians(yaw_deg))
+    result = []
+    for local_x, local_y in (
+        (-size_xy[0] / 2.0, -size_xy[1] / 2.0),
+        (size_xy[0] / 2.0, -size_xy[1] / 2.0),
+        (size_xy[0] / 2.0, size_xy[1] / 2.0),
+        (-size_xy[0] / 2.0, size_xy[1] / 2.0),
+    ):
+        result.append(
+            (
+                centre[0] + local_x * cosine - local_y * sine,
+                centre[1] + local_x * sine + local_y * cosine,
+            )
+        )
+    return result
+
+
 def door_aperture_clearance(
     footprint: list[tuple[float, float]], door: dict
 ) -> float | None:
@@ -169,6 +211,37 @@ def audit(config: dict, overlay: dict, trace_report: dict) -> dict:
     )
 
     no_go_violations = []
+    twin = overlay.get("measured_visual_twin", {})
+    principal_twin = twin.get("principal", {}) if twin.get("enabled") else {}
+    registered_obstacles: list[tuple[str, list[tuple[float, float]]]] = []
+    wall_thickness = float(config["plan_geometry"]["wall_thickness_m"]["value"])
+    for wall in principal_twin.get("walls", []) + principal_twin.get(
+        "approach_partitions", []
+    ):
+        registered_obstacles.append(
+            (
+                str(wall["id"]),
+                segment_rectangle(
+                    tuple(float(value) for value in wall["start_xy_m"]),
+                    tuple(float(value) for value in wall["end_xy_m"]),
+                    wall_thickness,
+                ),
+            )
+        )
+    for group in ("tables", "chairs", "storage"):
+        for obstacle in principal_twin.get(group, []):
+            size = tuple(float(value) for value in obstacle["size_xyz_m"][:2])
+            registered_obstacles.append(
+                (
+                    str(obstacle["id"]),
+                    oriented_rectangle(
+                        tuple(float(value) for value in obstacle["centre_xy_m"]),
+                        size,
+                        float(obstacle["yaw_deg"]),
+                    ),
+                )
+            )
+    registered_violations = []
     door_results = {
         name: {"encounters": 0, "minimum_padded_clearance_m": None, "violations": []}
         for name in overlay["doors"]
@@ -184,6 +257,19 @@ def audit(config: dict, overlay: dict, trace_report: dict) -> dict:
                         "xy_m": [round(sample["x_m"], 4), round(sample["y_m"], 4)],
                     }
                 )
+        if int(sample["segment_id"]) in {7, 8, 9}:
+            for obstacle_id, obstacle_polygon in registered_obstacles:
+                if not polygons_intersect(footprint, obstacle_polygon):
+                    continue
+                if len(registered_violations) < 50:
+                    registered_violations.append(
+                        {
+                            "step": sample["step"],
+                            "segment_id": sample["segment_id"],
+                            "xy_m": [round(sample["x_m"], 4), round(sample["y_m"], 4)],
+                            "obstacle_id": obstacle_id,
+                        }
+                    )
         for name, overlay_door in overlay["doors"].items():
             if int(sample["segment_id"]) not in DOOR_ROUTE_SEGMENTS[name]:
                 continue
@@ -218,8 +304,9 @@ def audit(config: dict, overlay: dict, trace_report: dict) -> dict:
         and trace_report.get("waypoints_completed") == 12,
         "trace_contains_world_frame_samples": bool(raw_trace),
         "central_atrium_no_go_respected": not no_go_violations,
-        "vice_principal_85cm_aperture_respected": door_results["vice_principal"]["passed"],
-        "principal_85cm_aperture_respected": door_results["principal"]["passed"],
+        "vice_principal_presentation_aperture_respected": door_results["vice_principal"]["passed"],
+        "principal_presentation_aperture_respected": door_results["principal"]["passed"],
+        "registered_principal_shell_and_furniture_clear": not registered_violations,
         "physical_release_disabled": overlay.get("physical_release") is False,
     }
     passed = all(checks.values())
@@ -245,6 +332,13 @@ def audit(config: dict, overlay: dict, trace_report: dict) -> dict:
             "first_violations": no_go_violations,
         },
         "doors": door_results,
+        "registered_principal_geometry": {
+            "enabled": bool(principal_twin),
+            "obstacle_count": len(registered_obstacles),
+            "violation_count_capped": len(registered_violations),
+            "first_violations": registered_violations,
+            "scope": "interpolated mission segments 7, 8 and 9",
+        },
         "physical_release": False,
         "claim_boundary": (
             "Deterministic simulation-geometry audit only. Passing does not establish real-world "

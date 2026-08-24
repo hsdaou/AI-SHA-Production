@@ -29,9 +29,9 @@ render_contract:
 shots:
   - title: "Mission start - administration atrium"
     operator_label: "NAV2 + LEARNED 360 SAFETY"
-    camera: [-4.35, 0.0, 1.76]
-    look_at: [2.30, 0.0, 0.70]
-    focal_length_mm: 16.0
+    camera: [4.20, -4.00, 1.76]
+    look_at: [-1.20, 1.10, 0.74]
+    focal_length_mm: 18.0
     segments: [0]
   - title: "East hall - 0.80 m/s tier"
     operator_label: "HIGH-SPEED HALLWAY POLICY"
@@ -40,7 +40,7 @@ shots:
     focal_length_mm: 16.0
     segments: [1]
     source_fraction: [0.62, 1.0]
-  - title: "Vice-Principal doorway - measured 0.85 m"
+  - title: "Vice-Principal doorway - assumed 0.875 m"
     operator_label: "MAPPED DOORWAY SAFETY"
     camera: [19.55, -7.55, 1.88]
     look_at: [16.85, -5.30, 0.58]
@@ -60,22 +60,22 @@ shots:
     segments: [5, 6]
   - title: "Principal office approach"
     operator_label: "MAPPED APPROACH CONTROL"
-    camera: [3.15, -4.20, 1.82]
-    look_at: [6.65, -7.30, 0.70]
+    camera: [2.60, -2.70, 1.82]
+    look_at: [6.80, -7.45, 0.70]
     focal_length_mm: 16.0
     segments: [7]
     source_fraction: [0.55, 1.0]
   - title: "Principal visit, pivot and departure"
     operator_label: "OFFICE PIVOT + CLEARANCE"
-    camera: [10.85, -9.78, 1.86]
-    look_at: [8.05, -8.65, 0.58]
-    focal_length_mm: 11.5
+    camera: [10.70, -6.10, 1.92]
+    look_at: [9.00, -9.80, 0.72]
+    focal_length_mm: 12.0
     segments: [8, 9]
   - title: "Mission complete - return home"
     operator_label: "12/12 LEGS COMPLETE"
-    camera: [-4.35, 0.0, 1.76]
-    look_at: [2.50, -2.0, 0.70]
-    focal_length_mm: 16.0
+    camera: [4.20, -4.00, 1.76]
+    look_at: [-1.05, 0.80, 0.74]
+    focal_length_mm: 18.0
     segments: [10, 11]
 
 presentation_disclosures:
@@ -83,11 +83,14 @@ presentation_disclosures:
     Recorded live-policy wheel-physics poses replayed in Omniverse; visual
     replay, not live policy execution.
   environment: >-
-    Measured-presentation digital twin informed by the approved plan, iPhone
-    capture and walkthrough; not photogrammetric or as-built.
+    Route-scoped digital twin using independently registered iPhone RoomPlan
+    geometry for the atrium scale and Principal suite, approved page-2 global
+    topology, and walkthrough-matched materials; not photogrammetric and not a
+    whole-building as-built survey.
   vice_principal_interior_assumed_because_locked: true
   principal_door_width_presentation_assumption_m: 0.90
-  vice_principal_reported_door_width_m: 0.85
+  narrowest_administration_reported_door_width_m: 0.85
+  vice_principal_presentation_assumption_m: 0.875
   reported_door_height_m: 2.12
   central_polygon_step_down_m: 0.20
   physical_localization_credit: false

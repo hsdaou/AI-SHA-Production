@@ -1,6 +1,6 @@
 # AI-SHA - Isaac Sim package (proof of concept)
 
-**Rev X - 2026-08-24 - Phase 8B passive hardware-attachment audit complete**
+**Rev Y - 2026-08-24 - registered administration visual twin complete**
 
 This package describes the simplified indoor proof-of-concept: two driven hub
 wheels on the centre lateral axis, four physical swivel castors, a retained
@@ -25,7 +25,7 @@ from a 0.80 m/s request; doorway speed remained below 0.060 m/s.
 Phase 7F turns that accepted motion into the operator-facing film. Omniverse
 selects only recorded wheel-physics pose samples from the successful Phase 7E
 run; it does not interpolate or invent a second route. Eight fixed,
-human-height 11.5-16 mm cameras separately show the atrium departure, high-speed
+human-height 11.5-18 mm cameras separately show the atrium departure, high-speed
 east hall, Vice-Principal entry and departure, return hall, Principal approach,
 Principal visit/departure and home return. The environment remains legible and
 AI-SHA does not occupy most of the frame. Every frame says that this is a
@@ -35,19 +35,24 @@ Site facts and assumptions remain visible in both the video and reports:
 
 - The Vice-Principal office was locked during capture. Its interior appearance
   is an explicit plan-envelope and adjacent-material assumption.
-- The user-reported administration minimum of 0.85 m is conservatively applied
-  to the VP door. The Principal door uses a disclosed 0.90 m presentation
-  assumption. Both use the reported 2.12 m height.
+- The user-reported administration minimum is 0.85 m. Because that value was
+  not identified as the locked VP doorway, the VP and Principal clear widths
+  are disclosed presentation assumptions of 0.875 m and 0.90 m respectively.
+  Both use the reported 2.12 m height.
+- The captured Principal suite uses the RoomPlan wall, window, desk, chair and
+  cabinet footprints at 1:1 metric scale. Its entrance gap is registered to the
+  approved page-2 Principal approach. The atrium capture independently matches
+  the page-2 span within 0.029 m; no unreliable cross-scan stitch is claimed.
 - The central polygon is modeled as a 0.20 m step-down and a hard mapped no-go
   zone. The robot never enters it.
 - Thresholds are assumed flush because they were not measured. The result is an
-  Omniverse RTX procedural presentation scene, not a photogrammetric/as-built
-  digital twin or a physical-deployment release.
+  Omniverse RTX route-scoped visual twin, not a whole-site photogrammetric/as-built
+  survey or a physical-deployment release.
 
 Presentation video:
 `media/videos/AI-SHA_Phase7F_Operator_Omniverse_Presentation.mp4` — 24.0 s,
 1920 x 1080 at 24 fps, RTX PathTracing at 16 samples per pixel, SHA-256
-`6fcc87d6faa91fe45ef8795e8a32e083f68af66f594763351eaaf39e150780e8`.
+`36f16371361d7c54b9031aa854fe244be0dd40e629b9f5ea68c4bc0b49f5e557`.
 The presentation gate passes 19/19 and the visual QA contact sheet is
 `media/AI-SHA_Phase7F_Operator_Omniverse_contact_sheet.jpg`. The acceptance record is
 `results/administration_nav2_phase7f_operator_presentation_acceptance.json`;
@@ -619,15 +624,20 @@ and measured caster properties.
 
 `scripts/build_administration.py` remains a strict input gate by default. The
 explicit `--presentation-assumptions` mode builds `scenes/administration.usd`
-from page 2 of the approved ground-floor plan. The central 12.75 m atrium,
-2.80 m east hallway, east Vice-Principal placement and angled south-east
-Principal placement now control the route topology. Corridor/office finishes,
-furniture and lighting follow the supplied walkthrough video. Its original
-wide-door mode uses disclosed 1.40 m presentation openings; the newer measured
-overlay supersedes those with the reported 0.85 m VP opening and a disclosed
-0.90 m Principal assumption. Thresholds remain assumed flush because the rigid
-castor proxy cannot support threshold-contact conclusions. Scene metadata and
-reports keep physical release false.
+from page 2 of the approved ground-floor plan. The central 12.75 m atrium, 2.80
+m east hallway and east Vice-Principal placement control the page-2 route
+topology. The captured Principal suite is then registered independently from
+`Project-2608231553.usdz`: its entrance anchor lands on the approved-plan
+approach, and its nine-wall irregular shell, four window/blind runs, three table
+footprints, three detected chairs and five storage footprints remain at
+RoomPlan's native 1:1 metric scale. The supplied walkthrough controls
+privacy-safe finishes and visible-but-occluded detail.
+`Project-2608231545.usdz` independently verifies the atrium span and orientation
+without forcing an unreliable stitch between captures. The newer overlay uses
+the reported 0.85 m administration-wide minimum and disclosed 0.875 m VP / 0.90
+m Principal presentation assumptions. Thresholds remain assumed flush because
+the rigid castor proxy cannot support threshold-contact conclusions. Scene
+metadata and reports keep physical release false.
 
 The walkthrough-derived atrium columns are also presentation assumptions, not
 surveyed structure. Their positions are declared in the scene configuration and
@@ -758,13 +768,15 @@ commissioning are still required.
 
 ### Administration visual upgrade
 
-The first walkthrough-grounded visual upgrade is now complete. The
-administration USD uses deterministic procedural PBR textures for polished
-terrazzo, dark walnut, light oak and mottled grey finishes, plus a denser
-ceiling grid, LED fixtures, vents, glazed office partitions, detailed furniture
-and a refined collisionless AI-SHA presentation shell. These additions do not
-change the route or collision geometry. The walkthrough controls appearance;
-the approved page-2 Block A plan remains the geometry authority.
+The RoomPlan-registered visual upgrade is now complete. The administration USD
+uses deterministic procedural PBR textures for polished terrazzo, dark walnut,
+grey oak and mottled grey finishes, plus the captured Principal-suite wall and
+furniture footprints, a denser ceiling grid, LED fixtures, vents, glazed office
+partitions and a refined collisionless AI-SHA presentation shell. Unlike the
+earlier appearance-only upgrade, the registered Principal shell is collision
+geometry and therefore requires the measured-route audit. The accepted Phase
+7E trace clears all 21 registered wall/furniture obstacles with zero violations.
+The approved page-2 Block A plan remains the global topology authority.
 
 `scripts/render_administration_route.py` presents the successful Phase 2
 policy-only trace through six human-height cameras: atrium departure, east hall,
@@ -991,8 +1003,9 @@ presentation assumptions; this film is not a physical safety or deployment
 release.
 
 That Phase 3N/4A reel remains historical accepted evidence for the original
-wide-door scene. The Rev N measured-administration deliverable at the top of
-this README supersedes it for the current 0.85/0.90 m presentation geometry.
+wide-door scene. The current deliverable at the top of this README supersedes
+it with a reported 0.85 m administration-wide minimum and disclosed 0.875/0.90
+m VP/Principal presentation geometry.
 
 The administration USD was rebuilt with page-2 Block A printed-dimension anchors
 (12.75 m atrium, 2.80 m hall, 7.80 x 6.30 m conference room and 4.73 m

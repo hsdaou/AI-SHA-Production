@@ -150,6 +150,37 @@ def oak(rng: np.random.Generator) -> tuple[Path, Path, Path]:
     )
 
 
+def grey_oak(rng: np.random.Generator) -> tuple[Path, Path, Path]:
+    """Grey wood-plank finish observed throughout the Principal suite."""
+    yy, xx = np.mgrid[0:SIZE, 0:SIZE]
+    plank_height = 128
+    plank = yy // plank_height
+    plank_tint = np.array([3.0, -5.0, 2.0, -3.0, 4.0, 0.0, -4.0, 3.0])[plank]
+    waviness = 0.27 * np.sin(2.0 * np.pi * yy / SIZE) + 0.08 * np.sin(
+        10.0 * np.pi * yy / SIZE
+    )
+    grain = 6.0 * np.sin(2.0 * np.pi * (xx / 126.0 + waviness))
+    grain += 2.5 * np.sin(2.0 * np.pi * xx / 37.0)
+    grain += rng.normal(0.0, 1.15, (SIZE, SIZE))
+    base = np.array([166.0, 164.0, 158.0])
+    image = base[None, None, :] + (grain + plank_tint)[..., None] * np.array(
+        [0.83, 0.78, 0.68]
+    )
+    seam = (yy % plank_height <= 2) | (yy % plank_height >= plank_height - 2)
+    image[seam] *= 0.70
+    albedo = _save_rgb("grey_oak_albedo.png", image)
+    roughness = 111.0 + 5.0 * np.sin(2.0 * np.pi * xx / 126.0)
+    roughness += rng.normal(0.0, 1.8, (SIZE, SIZE))
+    roughness[seam] = 132.0
+    height = grain + plank_tint
+    height[seam] -= 11.0
+    return (
+        albedo,
+        _save_grey("grey_oak_roughness.png", roughness),
+        _save_normal("grey_oak_normal.png", height, 0.16),
+    )
+
+
 def mottled_paint(rng: np.random.Generator) -> tuple[Path, Path, Path]:
     small = rng.normal(0.0, 1.0, (128, 128))
     broad = np.asarray(
@@ -173,7 +204,13 @@ def mottled_paint(rng: np.random.Generator) -> tuple[Path, Path, Path]:
 def main() -> int:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(SEED)
-    outputs = [*terrazzo(rng), *walnut(rng), *oak(rng), *mottled_paint(rng)]
+    outputs = [
+        *terrazzo(rng),
+        *walnut(rng),
+        *oak(rng),
+        *mottled_paint(rng),
+        *grey_oak(rng),
+    ]
     for output in outputs:
         print(output)
     return 0

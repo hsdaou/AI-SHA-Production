@@ -3,15 +3,16 @@
 #
 # The approved page-2 topology remains authoritative until the two native scan
 # sections are independently registered. The locked VP destination is modelled
-# at the reported 0.85 m administration-wide minimum. The captured Principal
-# destination uses a reasonable 0.90 m presentation assumption; neither value
-# is represented as an individual site measurement.
+# at a reasonable 0.875 m presentation clearance above the reported 0.85 m
+# administration-wide minimum. The captured Principal destination uses a 0.90 m
+# presentation assumption; neither value is represented as an individual site
+# measurement.
 
 overlay_type: measured_administration_geometry
 schema_version: 2
 status: measured_site_presentation_candidate
-measurement_scope: "administration_minimum_applied_to_locked_vp_door; principal_door_0.90m_presentation_assumption"
-registration_status: "approved_page_2_topology_with_roomplan_scale_and_appearance_evidence; native_scan_alignment_pending"
+measurement_scope: "administration_minimum_0.85m; locked_vp_door_0.875m_and_principal_door_0.90m_presentation_assumptions"
+registration_status: "independent_route_scoped_roomplan_to_page_2_registration_complete_for_atrium_and_principal_cluster; cross_scan_stitch_not_required"
 candidate_route_geometry_valid: false
 candidate_simulation_route_geometry_valid: true
 physical_release: false
@@ -32,6 +33,110 @@ capture_limitations:
     status: "not_captured_locked_during_site_visit"
     presentation_treatment: "plan_envelope_and_walkthrough_consistent_material_assumption_only"
 
+# Privacy-sanitised semantic geometry derived from the supplied RoomPlan USDZ
+# captures. No imagery, people, documents, GPS data, or raw scan meshes are
+# stored here. The Principal transform is fixed by its observed open entrance
+# gap and the page-2 approach centreline. The atrium registration is an
+# independent scale/orientation check; it is not a forced inter-scan stitch.
+measured_visual_twin:
+  schema_version: 1
+  enabled: true
+  status: "route_scoped_registered_visual_and_collision_candidate"
+  raw_media_committed: false
+  walkthrough_timestamps:
+    atrium_and_reception_s: [0, 45]
+    principal_approach_s: [165, 180]
+    principal_office_s: [180, 220]
+  registration:
+    atrium:
+      source_sha256: "d12576bf72c1a5ccf51706501bc8d65f16ea2a22353a9cf7cf287c3f58f9e13b"
+      source_section: "unidentified4"
+      method: "native wall-chain span and dominant-axis registration to approved page-2 atrium"
+      metric_scale: 1.0
+      native_wall_chain_span_m: 12.779
+      approved_plan_atrium_diagonal_m: 12.750
+      absolute_span_residual_m: 0.029
+      native_dominant_axis_deg: -3.56
+      world_yaw_correction_deg: 3.56
+      confidence: "route_scoped; plan remains global topology authority"
+    principal:
+      source_sha256: "d94287e3562344e634889a94aba1ea39d359e29666dd6389673bd8a12599d6cb"
+      source_section: "diningRoom0"
+      method: "open entrance gap to page-2 Principal approach centreline plus walkthrough topology"
+      metric_scale: 1.0
+      native_anchor_xz_m: [-6.000, 1.100]
+      world_anchor_xy_m: [6.978, -7.628]
+      world_yaw_deg: -146.000
+      anchor_role: "centre of the 1.12 m RoomPlan entrance gap between Wall13 and Wall16"
+      presentation_jamb_adjustment:
+        wall: Wall13
+        trim_m: 0.25
+        resulting_structural_gap_m: 1.35
+        reason: "retain the accepted 0.90 m clear doorway and padded reverse-departure sweep despite RoomPlan jamb-edge noise"
+      selected_semantic_ids:
+        walls: [Wall11, Wall13, Wall16, Wall17, Wall21, Wall14, Wall12, Wall8, Wall4]
+        windows: [Window3, Window4, Window5, Window2]
+        tables: [Table0, Table1, Table2]
+        chairs: [Chair0, Chair2, Chair4]
+        storage: [Storage2, Storage3, Storage4, Storage5, Storage7]
+  atrium:
+    appearance_status: "walkthrough_matched_on_roomplan_checked_page_2_envelope"
+    central_display_treatment: "privacy_safe_abstract_easels_and_seating_on_prohibited_lower_polygon"
+    reception_treatment: "two-segment_glazed_walnut_slatted_counter_and_upper_fascia"
+    principal_route_treatment: "terrazzo_secretary_approach_with_walnut_and_grey_frame_glass_partitions"
+  principal:
+    floor_finish: "walkthrough_matched_grey_wood_plank"
+    floor_polygon_xy_m:
+      - [9.4075, -4.6518]
+      - [9.4226, -4.7639]
+      - [7.4512, -7.3490]
+      - [6.4806, -7.9026]
+      - [6.2549, -8.2074]
+      - [4.5677, -10.6651]
+      - [4.6777, -10.6436]
+      - [6.4221, -11.8880]
+      - [6.3931, -11.8494]
+      - [7.9012, -11.8600]
+      - [7.8369, -11.8268]
+      - [8.8182, -10.5065]
+      - [8.7619, -10.5384]
+      - [11.4908, -10.2665]
+      - [11.4033, -10.1948]
+      - [10.9615, -5.7613]
+      - [10.9420, -5.8221]
+    ceiling_bounds: {centre_xy_m: [8.030, -8.270], size_xy_m: [7.35, 8.05]}
+    walls:
+      - {id: Wall11, start_xy_m: [10.9420, -5.8221], end_xy_m: [9.4075, -4.6518], style: grey_frame_glass}
+      - {id: Wall13, start_xy_m: [9.4226, -4.7639], end_xy_m: [7.6030, -7.1500], style: warm_white, status: roomplan_wall_with_0.25m_presentation_jamb_trim}
+      - {id: Wall16, start_xy_m: [6.4806, -7.9026], end_xy_m: [6.2549, -8.2074], style: walnut_slatted}
+      - {id: Wall17, start_xy_m: [6.2532, -8.2097], end_xy_m: [4.5677, -10.6651], style: walnut_slatted}
+      - {id: Wall21, start_xy_m: [4.6777, -10.6436], end_xy_m: [6.4221, -11.8880], style: walnut_tv_wall}
+      - {id: Wall14, start_xy_m: [6.3931, -11.8494], end_xy_m: [7.9012, -11.8600], style: warm_white}
+      - {id: Wall12, start_xy_m: [7.8369, -11.8268], end_xy_m: [8.8182, -10.5065], style: white_blinds}
+      - {id: Wall8, start_xy_m: [8.7619, -10.5384], end_xy_m: [11.4908, -10.2665], style: white_blinds}
+      - {id: Wall4, start_xy_m: [11.4033, -10.1948], end_xy_m: [10.9615, -5.7613], style: walnut_and_warm_white}
+    approach_partitions:
+      - {id: Wall10, start_xy_m: [4.8231, -7.2708], end_xy_m: [6.2723, -8.3198], style: grey_frame_glass}
+    windows:
+      - {id: Window3, centre_xy_m: [10.1899, -5.3490], width_m: 1.588011, height_m: 1.708712, yaw_deg: 142.6700, treatment: grey_frame_glass}
+      - {id: Window4, centre_xy_m: [8.5110, -10.7857], width_m: 0.645847, height_m: 1.005488, yaw_deg: 53.3785, treatment: white_blinds}
+      - {id: Window5, centre_xy_m: [8.0083, -11.4620], width_m: 0.633544, height_m: 0.986982, yaw_deg: 53.3785, treatment: white_blinds}
+      - {id: Window2, centre_xy_m: [9.2105, -10.4133], width_m: 0.693146, height_m: 0.894452, yaw_deg: 5.6900, treatment: white_blinds}
+    tables:
+      - {id: Table0, centre_xy_m: [9.5014, -9.1019], size_xyz_m: [2.436593, 1.014620, 0.802184], yaw_deg: -84.3100, role: executive_desk_main}
+      - {id: Table1, centre_xy_m: [7.8333, -10.1330], size_xyz_m: [1.602790, 0.803974, 0.796203], yaw_deg: -36.6215, role: meeting_table}
+      - {id: Table2, centre_xy_m: [10.6842, -9.8466], size_xyz_m: [1.201952, 0.835423, 0.802184], yaw_deg: 5.6900, role: executive_desk_return}
+    chairs:
+      - {id: Chair0, centre_xy_m: [10.5012, -9.0075], size_xyz_m: [0.643189, 0.711914, 1.107687], yaw_deg: 96.5849, role: executive}
+      - {id: Chair2, centre_xy_m: [9.1505, -9.7490], size_xyz_m: [0.506164, 0.626831, 0.641747], yaw_deg: -84.3099, role: visitor}
+      - {id: Chair4, centre_xy_m: [9.0297, -8.5367], size_xyz_m: [0.506165, 0.626831, 0.641747], yaw_deg: -84.3099, role: visitor}
+    storage:
+      - {id: Storage2, centre_xy_m: [5.6798, -10.9461], size_xyz_m: [1.984971, 0.511364, 1.004302], yaw_deg: -35.5026, role: tv_award_cabinet}
+      - {id: Storage3, centre_xy_m: [5.6911, -9.3698], size_xyz_m: [1.975601, 0.226234, 1.004302], yaw_deg: -124.4674, role: curved_display_cabinet}
+      - {id: Storage4, centre_xy_m: [10.3127, -6.2764], size_xyz_m: [0.667237, 0.627441, 1.675615], yaw_deg: 142.6699, role: tall_storage}
+      - {id: Storage5, centre_xy_m: [9.7899, -5.3816], size_xyz_m: [1.173378, 0.536820, 1.031319], yaw_deg: 142.6700, role: low_storage}
+      - {id: Storage7, centre_xy_m: [6.2820, -8.5836], size_xyz_m: [0.473873, 0.310677, 1.696750], yaw_deg: -124.4675, role: slatted_partition_return}
+
 plan_geometry:
   atrium:
     central_polygon:
@@ -43,10 +148,10 @@ plan_geometry:
 
 doors:
   vice_principal:
-    clear_width_m: 0.85
+    clear_width_m: 0.875
     clear_height_m: 2.12
     frame_depth_m: 0.16
-    width_status: "user_reported_administration_minimum_conservative_destination_assumption"
+    width_status: "reasonable_locked_room_presentation_assumption_0.025m_above_user_reported_administration_minimum"
     threshold_height_mm: 0
     threshold_status: "flush_presentation_assumption_from_walkthrough_not_measured"
   principal:
@@ -81,7 +186,8 @@ presentation_clearance_profile:
 safety_boundary:
   production_nav2_padding_must_remain_0_080_m: true
   raw_media_not_committed_due_to_people_documents_and_gps: true
-  scan_alignment_not_claimed: true
+  scan_alignment_not_claimed: false
+  scan_alignment_scope: "independent route-scoped atrium and Principal registration only; no whole-building or cross-scan alignment claim"
   threshold_not_measured: true
   central_atrium_drop_requires_no_go_mapping: true
   vice_principal_interior_not_captured: true
