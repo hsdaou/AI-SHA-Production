@@ -1,0 +1,40 @@
+{
+  "report_type": "phase7m_nurec_reel_privacy_review",
+  "generated_at_utc": "2026-08-25T11:00:42.449741+00:00",
+  "status": "passed_local_preview_only",
+  "passed_local_preview": true,
+  "profile": "config/phase7m_nurec_presentation_reel.yaml",
+  "profile_sha256": "2a59a36c136f2f3f0d28bb3f9ccd6e7eb2c520ffde91439d64ecf324b276b3d7",
+  "render_report": "results/phase7m_nurec_reel_render.json",
+  "render_report_sha256": "1c93492fd22c257ce5e65c341ffcba5762c0f900d52a3e5d386134a8474920dc",
+  "encode_report": "results/phase7m_nurec_reel_encode.json",
+  "encode_report_sha256": "ebd94fee3830876a8fb13b47e63db0fcfe1d6363c04c68e35daf0aec07d02162",
+  "selected_camera_codes": [
+    5,
+    20,
+    65,
+    95
+  ],
+  "reviewed_visual_scope": [
+    "widescreen source-camera contact sheet",
+    "robot-overlay contact sheets",
+    "final Full HD render contact sheet",
+    "one-frame-per-second encoded-video contact sheet"
+  ],
+  "observations": {
+    "live_people_observed": false,
+    "close_certificate_views_included": false,
+    "close_portrait_views_included": false,
+    "raw_capture_included": false,
+    "student_biometric_content_observed": false,
+    "selected_signage_or_documents_readable_as_sensitive": false,
+    "robot_upright_and_floor_aligned": true,
+    "robot_does_not_fill_most_of_frame": true
+  },
+  "local_media_and_frames_untracked": true,
+  "coding_agent_visual_selection_review_completed": true,
+  "authorized_human_privacy_review_completed": false,
+  "external_distribution_approved": false,
+  "external_distribution_requires_user_review": true,
+  "safe_use": "local presentation preview on the authorized project machine"
+}

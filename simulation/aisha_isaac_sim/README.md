@@ -282,6 +282,30 @@ physical-deployment release. Raw video, extracted frames, checkpoints, NuRec
 assets and native screenshots remain local because they can contain private
 school details.
 
+## Phase 7M Full HD NuRec presentation reel
+
+Phase 7M corrects the NuRec-to-metric gravity sign from COLMAP's physical
+camera-up vectors and anchors absolute scale to the Principal doorway-to-turn
+route. AI-SHA is upright and floor-aligned, the shared-area registration is
+4.69 cm median / 18.0 cm p95, and the Principal route anchor is below 1 mm.
+
+The local 1920×1080, 24 fps reel uses four captured camera positions so the
+robot remains readable without filling the frame. It replays un-interpolated
+poses from the accepted Phase 7E Nav2 and learned-safety mission, retimed for
+presentation clarity; it does not execute the policy again while rendering.
+
+Validate and open the 13.75-second reel with:
+
+```bash
+tools/open_phase7m_nurec_presentation_reel.sh
+```
+
+Use `tools/build_phase7m_nurec_presentation_reel.sh` to rebuild it and
+`PHASE7M_NUREC_PRESENTATION_RUNBOOK.md` for narration and privacy constraints.
+The local preview passes 42/42 checks. The MP4, NuRec assets, frames and QA
+images stay outside Git, and external distribution still requires an
+authorized human privacy review.
+
 ## Phase 8A physical-localization preflight
 
 The first sim-to-real phase now has a fail-safe, localization-only ROS 2 graph

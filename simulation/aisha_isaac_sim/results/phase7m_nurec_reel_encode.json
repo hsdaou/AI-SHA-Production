@@ -1,0 +1,33 @@
+{
+  "report_type": "phase7m_nurec_presentation_reel_encode",
+  "generated_at_utc": "2026-08-25T11:00:42.289158+00:00",
+  "status": "encoded",
+  "passed": true,
+  "profile": "config/phase7m_nurec_presentation_reel.yaml",
+  "profile_sha256": "2a59a36c136f2f3f0d28bb3f9ccd6e7eb2c520ffde91439d64ecf324b276b3d7",
+  "render_report": "results/phase7m_nurec_reel_render.json",
+  "render_report_sha256": "1c93492fd22c257ce5e65c341ffcba5762c0f900d52a3e5d386134a8474920dc",
+  "source_frame_count": 198,
+  "intro_seconds": 2.5,
+  "main_seconds": 8.25,
+  "outro_seconds": 3.0,
+  "output": "media/videos/AI-SHA_Phase7M_NuRec_Principal_Visit_Presentation.mp4",
+  "output_sha256": "ab4a190af712f80102236668027f9f6c0be12809fc68a3ed5f6cca2676861ebb",
+  "output_size_bytes": 2764000,
+  "ffmpeg": "ffmpeg-linux-x86_64-v7.0.2",
+  "media_probe": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 24.0,
+    "frame_count": 330,
+    "duration_s": 13.75,
+    "first_frame_nonblank": true,
+    "last_frame_nonblank": true
+  },
+  "recorded_pose_presentation_replay": true,
+  "presentation_retimed": true,
+  "source_policy_executed_live_during_render": false,
+  "physical_release": false,
+  "external_distribution_requires_user_privacy_review": true,
+  "video_committed": false
+}

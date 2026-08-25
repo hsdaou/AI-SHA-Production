@@ -1,10 +1,10 @@
 {
   "report_type": "phase7l_nurec_composite_build",
-  "generated_at_utc": "2026-08-25T08:28:11.862111+00:00",
+  "generated_at_utc": "2026-08-25T10:55:31.922406+00:00",
   "status": "passed",
   "passed": true,
   "scene": "scenes/phase7l_nurec_registered_administration.usda",
-  "scene_sha256": "415a04403368e2820f4c30889b90a97a13ca0788455d712afdfd6a2070cc898a",
+  "scene_sha256": "fe5e72dacaf2b03980975688ef63091a55661f05570f6ee80311d71d9c0a807d",
   "registration": "results/phase7l_nurec_registration.json",
   "assets": {
     "main": {

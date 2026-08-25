@@ -1119,6 +1119,22 @@ release:
   phase7l_privacy_sensitive_assets_local_only: true
   phase7l_acceptance_checks_passed: "43/43"
   phase7l_physical_release: false
+  phase7m_nurec_presentation_reel_available: true
+  phase7m_nurec_presentation_reel_validated: true
+  phase7m_acceptance_checks_passed: "42/42"
+  phase7m_registration_gravity_sign_corrected: true
+  phase7m_registration_shared_atrium_median_residual_m: 0.0469125
+  phase7m_registration_shared_atrium_p95_residual_m: 0.1802040
+  phase7m_principal_turn_anchor_residual_m: 0.0
+  phase7m_full_hd_video_available_local_only: true
+  phase7m_video_sha256: "ab4a190af712f80102236668027f9f6c0be12809fc68a3ed5f6cca2676861ebb"
+  phase7m_video_duration_s: 13.75
+  phase7m_video_resolution_px: [1920, 1080]
+  phase7m_video_fps: 24
+  phase7m_presentation_retimed: true
+  phase7m_presentation_player_executes_policy_live: false
+  phase7m_user_privacy_review_required_before_external_distribution: true
+  phase7m_physical_release: false
   phase8a_physical_localization_offline_preflight_available: true
   phase8a_physical_localization_offline_preflight_passed: true
   phase8a_physical_localization_offline_checks_passed: "23/23"

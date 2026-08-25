@@ -1,6 +1,6 @@
 {
   "report_type": "phase7l_nurec_metric_registration",
-  "generated_at_utc": "2026-08-25T07:44:04.961562+00:00",
+  "generated_at_utc": "2026-08-25T11:00:33.767779+00:00",
   "status": "passed_provisional_presentation_registration",
   "passed": true,
   "source": {
@@ -129,6 +129,8 @@
     ]
   },
   "metric_anchor": {
+    "gravity_axis_sign_method": "mean COLMAP camera physical-up vectors",
+    "gravity_axis_sign_resolved": true,
     "principal_door_transition_source_frame": 358,
     "approach_direction_source_frame": 337,
     "principal_door_world_xy_m": [
@@ -145,32 +147,37 @@
     "ceiling_height_status": "presentation_assumption_from_walkthrough_appearance",
     "principal_height_quantiles": [
       0.01,
-      0.95
+      0.99
     ],
-    "reconstructed_height_span_units": 2.9827237418939445,
-    "principal_absolute_scale_m_per_unit": 1.0057921080197274,
-    "world_yaw_deg": 48.31189863404221
+    "reconstructed_height_span_units": 3.025791020568964,
+    "principal_absolute_scale_m_per_unit": 0.9693262540437831,
+    "absolute_scale_method": "principal_door_to_turn_metric_anchor",
+    "source_anchor_distance_units": 5.641356448676331,
+    "world_anchor_distance_m": 5.4683149141211675,
+    "reconstructed_ceiling_height_m": 2.93297867548743,
+    "ceiling_height_residual_m": 0.06702132451257015,
+    "world_yaw_deg": 212.04514603920896
   },
   "world_transforms": {
     "principal_component": {
       "column_vector_matrix": [
         [
-          0.664756807459,
-          -0.038200112047,
-          0.753828165388,
-          6.732569953755
+          -0.816507542485,
+          -0.167239221029,
+          0.49491399535,
+          7.540139137524
         ],
         [
-          0.746418713161,
-          0.182508255252,
-          -0.648974272189,
-          -8.177945549646
+          -0.511105553727,
+          0.06575814156,
+          -0.820999614218,
+          -7.483590584381
         ],
         [
-          -0.112139449507,
-          0.988356844849,
-          0.148974010014,
-          1.561580804815
+          0.108073737758,
+          -0.952523121266,
+          -0.143572829738,
+          1.538839067178
         ],
         [
           0.0,
@@ -181,51 +188,51 @@
       ],
       "usd_gf_row_vector_matrix": [
         [
-          0.664756807459,
-          0.746418713161,
-          -0.112139449507,
+          -0.816507542485,
+          -0.511105553727,
+          0.108073737758,
           0.0
         ],
         [
-          -0.038200112047,
-          0.182508255252,
-          0.988356844849,
+          -0.167239221029,
+          0.06575814156,
+          -0.952523121266,
           0.0
         ],
         [
-          0.753828165388,
-          -0.648974272189,
-          0.148974010014,
+          0.49491399535,
+          -0.820999614218,
+          -0.143572829738,
           0.0
         ],
         [
-          6.732569953755,
-          -8.177945549646,
-          1.561580804815,
+          7.540139137524,
+          -7.483590584381,
+          1.538839067178,
           1.0
         ]
       ],
-      "uniform_scale_m_per_native_unit": 1.0057921080197276
+      "uniform_scale_m_per_native_unit": 0.9693262540437831
     },
     "main_component": {
       "column_vector_matrix": [
         [
-          -2.51798727694,
-          -0.196586400707,
-          1.184620173762,
-          9.012192427263
+          -0.722671440488,
+          0.044733261117,
+          -2.589189595337,
+          -6.662473068845
         ],
         [
-          1.188432668522,
-          -0.013679622592,
-          2.523820864518,
-          6.382844512313
+          2.584262414647,
+          0.184573708739,
+          -0.718107341862,
+          -7.298903980891
         ],
         [
-          -0.172043486995,
-          2.782696129807,
-          0.096095700216,
-          1.141549817673
+          0.16580590308,
+          -2.681807099241,
+          -0.092611668333,
+          1.943641471276
         ],
         [
           0.0,
@@ -236,47 +243,49 @@
       ],
       "usd_gf_row_vector_matrix": [
         [
-          -2.51798727694,
-          1.188432668522,
-          -0.172043486995,
+          -0.722671440488,
+          2.584262414647,
+          0.16580590308,
           0.0
         ],
         [
-          -0.196586400707,
-          -0.013679622592,
-          2.782696129807,
+          0.044733261117,
+          0.184573708739,
+          -2.681807099241,
           0.0
         ],
         [
-          1.184620173762,
-          2.523820864518,
-          0.096095700216,
+          -2.589189595337,
+          -0.718107341862,
+          -0.092611668333,
           0.0
         ],
         [
-          9.012192427263,
-          6.382844512313,
-          1.141549817673,
+          -6.662473068845,
+          -7.298903980891,
+          1.943641471276,
           1.0
         ]
       ],
-      "uniform_scale_m_per_native_unit": 2.789665050837026
+      "uniform_scale_m_per_native_unit": 2.6885233560727806
     }
   },
   "validation": {
-    "shared_atrium_world_residual_median_m": 0.0486772994216081,
-    "shared_atrium_world_residual_p95_m": 0.1869832547906237,
-    "shared_atrium_world_residual_max_m": 0.1869832547906237,
+    "shared_atrium_world_residual_median_m": 0.046912462256453395,
+    "shared_atrium_world_residual_p95_m": 0.18020401680419157,
+    "shared_atrium_world_residual_max_m": 0.18020401680419157,
     "gravity_alignment_residual_deg": 2.3607239518285903,
     "principal_door_anchor_residual_m": 0.0,
     "approach_direction_residual_deg": 0.0,
-    "principal_turn_anchor_residual_m": 0.20571688048368125,
+    "principal_turn_anchor_residual_m": 8.881784197001252e-16,
+    "reconstructed_ceiling_height_residual_m": 0.06702132451257015,
     "thresholds": {
       "minimum_shared_3d_pairs": 10,
       "median_residual_max_m": 0.1,
       "p95_residual_max_m": 0.25,
       "gravity_residual_max_deg": 3.0,
-      "principal_turn_anchor_residual_max_m": 0.35
+      "principal_turn_anchor_residual_max_m": 0.35,
+      "reconstructed_ceiling_height_residual_max_m": 0.25
     }
   },
   "layer_contract": {
