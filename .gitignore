@@ -86,6 +86,11 @@ simulation/results/
 simulation/aisha_isaac_sim/isaaclab/logs/
 simulation/aisha_isaac_sim/isaaclab/outputs/
 
+# Phase 7L capture-derived NuRec assets and native renders are local-only.
+simulation/aisha_isaac_sim/tmp/phase7l_*
+simulation/aisha_isaac_sim/media/screenshots/phase7l_nurec_*/
+simulation/aisha_isaac_sim/media/AI-SHA_Phase7L_NuRec_IsaacSim_contact_sheet.jpg
+
 # Selected Phase 2 presentation policy (small, hash-locked release artifact)
 !simulation/aisha_isaac_sim/isaaclab/checkpoints/
 !simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase2_policy_model_1850.pt

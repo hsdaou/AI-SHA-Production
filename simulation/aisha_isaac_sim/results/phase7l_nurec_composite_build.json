@@ -1,0 +1,49 @@
+{
+  "report_type": "phase7l_nurec_composite_build",
+  "generated_at_utc": "2026-08-25T08:28:11.862111+00:00",
+  "status": "passed",
+  "passed": true,
+  "scene": "scenes/phase7l_nurec_registered_administration.usda",
+  "scene_sha256": "415a04403368e2820f4c30889b90a97a13ca0788455d712afdfd6a2070cc898a",
+  "registration": "results/phase7l_nurec_registration.json",
+  "assets": {
+    "main": {
+      "path": "tmp/phase7l_nurec_runs/administration_full_nurec.usdz",
+      "sha256": "d0fc273a43e99f6866fc718e7b6dc72ede8b41f2cf275b48ad78536fbe0eac6f",
+      "size_bytes": 171938578,
+      "privacy_sensitive_local_only": true
+    },
+    "principal": {
+      "path": "tmp/phase7l_nurec_runs/principal_full_nurec.usdz",
+      "sha256": "febc25e8f58ce43cc2664b04fc1ea5503029293d626b64340df97184f62336a1",
+      "size_bytes": 128579871,
+      "privacy_sensitive_local_only": true
+    }
+  },
+  "visual_sector_variants": [
+    "main_administration",
+    "principal_office"
+  ],
+  "default_visual_sector": "principal_office",
+  "checks": {
+    "stage_opens": true,
+    "active_nurec_composes": true,
+    "robot_composes": true,
+    "collision_architecture_composes": true,
+    "collision_furniture_composes": true,
+    "legacy_render_geometry_hidden": true,
+    "visual_sector_default_is_principal": true
+  },
+  "visible_legacy_gprims": [],
+  "layer_contract": {
+    "gaussians_visual_only": true,
+    "navigation_collision_geometry_changed": false,
+    "frozen_collision_hidden_but_active": true,
+    "raw_gaussians_used_for_lidar_or_collision": false,
+    "nurec_asset_transform": "identity_native_training_basis",
+    "metric_world_transform": "inverse_of_registered_nurec_to_world_sim3",
+    "robot_motion": "accepted recorded policy pose replay, not live policy execution",
+    "vice_principal_interior_assumed_locked_not_captured": true,
+    "physical_release": false
+  }
+}

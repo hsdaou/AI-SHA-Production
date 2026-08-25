@@ -1,0 +1,31 @@
+{
+  "report_type": "phase7l_nurec_live_presentation_session",
+  "generated_at_utc": "2026-08-25T08:28:46.911752+00:00",
+  "status": "completed_requested_loops",
+  "scene": "scenes/phase7l_nurec_registered_administration.usda",
+  "scene_sha256": "415a04403368e2820f4c30889b90a97a13ca0788455d712afdfd6a2070cc898a",
+  "trajectory_report": "results/administration_nav2_phase7e_static_fusion_mission.json",
+  "trajectory_report_sha256": "6463b80bfc1015063c5805c555f43d5986fe3f0c0517848735d093d92c759bf5",
+  "camera": "/World/Presentation/NuRec/gauss/Cameras/camera_0",
+  "robot": "/World/Presentation/MetricWorld/AISHA",
+  "segments": [
+    6,
+    7,
+    8,
+    9
+  ],
+  "camera_time_codes": [
+    0,
+    15
+  ],
+  "headless": true,
+  "renderer": "RaytracedLighting with NuRec RTX",
+  "single_gpu": true,
+  "loops_completed": 1,
+  "frames_presented": 16,
+  "recorded_pose_selection_without_interpolation": true,
+  "source_motion_was_live_nav2_and_learned_safety": true,
+  "presentation_player_executes_policy_live": false,
+  "navigation_collision_geometry_changed": false,
+  "physical_release": false
+}

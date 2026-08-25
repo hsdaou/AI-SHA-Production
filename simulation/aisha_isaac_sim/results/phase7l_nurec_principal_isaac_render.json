@@ -1,0 +1,113 @@
+{
+  "report_type": "phase7l_nurec_isaac_render",
+  "generated_at_utc": "2026-08-25T08:07:48.232582+00:00",
+  "status": "rendered",
+  "passed": true,
+  "stage": "tmp/phase7l_nurec_runs/principal_full_nurec.usdz",
+  "stage_sha256": "febc25e8f58ce43cc2664b04fc1ea5503029293d626b64340df97184f62336a1",
+  "camera": "/World/gauss/Cameras/camera_0",
+  "authored_time_range": [
+    0.0,
+    105.0
+  ],
+  "time_codes_per_second": 24.0,
+  "renderer": "RaytracedLighting",
+  "single_gpu": true,
+  "gaussian_tonemapping_enabled": true,
+  "resolution": [
+    540,
+    960
+  ],
+  "frames": [
+    {
+      "time_code": 0,
+      "path": "media/screenshots/phase7l_nurec_principal_smoke/nurec_camera_frame_0000.png",
+      "sha256": "e380638dff029bd4f0aa2a9c5cda1a6de63a567044e410244c5223819034cb4a",
+      "mean_rgb": [
+        156.4280015432099,
+        164.13921103395063,
+        184.02319444444444
+      ],
+      "std_rgb": [
+        35.34849835967028,
+        35.36764375584622,
+        36.32447009816468
+      ]
+    },
+    {
+      "time_code": 20,
+      "path": "media/screenshots/phase7l_nurec_principal_smoke/nurec_camera_frame_0020.png",
+      "sha256": "b3331d4793040cb923a625a719c32d14a33707aa84b53ed524d1a767e9d24524",
+      "mean_rgb": [
+        181.23504822530865,
+        180.71848379629628,
+        176.97397569444445
+      ],
+      "std_rgb": [
+        40.24613964809649,
+        42.2698970628171,
+        48.0730065035797
+      ]
+    },
+    {
+      "time_code": 40,
+      "path": "media/screenshots/phase7l_nurec_principal_smoke/nurec_camera_frame_0040.png",
+      "sha256": "3c8f95af7aa998b2cc8e4de6a68685ec54bc9552cf522e156f0873873f3fe67a",
+      "mean_rgb": [
+        159.78846836419754,
+        156.78711805555557,
+        146.92258294753086
+      ],
+      "std_rgb": [
+        52.13975895095802,
+        56.46357609891132,
+        63.05511554577646
+      ]
+    },
+    {
+      "time_code": 60,
+      "path": "media/screenshots/phase7l_nurec_principal_smoke/nurec_camera_frame_0060.png",
+      "sha256": "6bf174ced509cd4745d6a3c61094cb1343224c5fc20785de0e37b49217230540",
+      "mean_rgb": [
+        159.58925540123457,
+        157.3444386574074,
+        150.8980787037037
+      ],
+      "std_rgb": [
+        61.69271959907477,
+        62.79865341003365,
+        63.723702529403845
+      ]
+    },
+    {
+      "time_code": 80,
+      "path": "media/screenshots/phase7l_nurec_principal_smoke/nurec_camera_frame_0080.png",
+      "sha256": "174898fac7a59910343657bc9d4b61c671ca779184412f06162836ebe53c3416",
+      "mean_rgb": [
+        177.52639467592593,
+        176.7891049382716,
+        173.33865162037037
+      ],
+      "std_rgb": [
+        64.39980516409803,
+        65.18087789162999,
+        66.77242297954469
+      ]
+    },
+    {
+      "time_code": 105,
+      "path": "media/screenshots/phase7l_nurec_principal_smoke/nurec_camera_frame_0105.png",
+      "sha256": "25a6f74f0af52e13d5c9fbcb36dc8e9c48591200ffb3e4876b3f59e78d743b41",
+      "mean_rgb": [
+        84.8212287808642,
+        75.83120949074075,
+        61.39685763888889
+      ],
+      "std_rgb": [
+        36.56551856214414,
+        35.300926505638635,
+        31.8563077327414
+      ]
+    }
+  ]
+}

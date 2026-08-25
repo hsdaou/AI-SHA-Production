@@ -1,0 +1,290 @@
+{
+  "report_type": "phase7l_nurec_metric_registration",
+  "generated_at_utc": "2026-08-25T07:44:04.961562+00:00",
+  "status": "passed_provisional_presentation_registration",
+  "passed": true,
+  "source": {
+    "colmap_root": "tmp/phase7k_photogrammetry_2fps",
+    "database": "tmp/phase7k_photogrammetry_2fps/database.db",
+    "main_component": 1,
+    "principal_component": 2,
+    "main_semantics": "atrium, reception and administration corridors",
+    "principal_semantics": "shared atrium pass, captured Principal doorway and interior",
+    "principal_component_registered_images": 122,
+    "raw_media_committed": false
+  },
+  "cross_component_registration": {
+    "method": "SIFT track correspondences in shared atrium views plus deterministic Sim(3) RANSAC",
+    "candidate_3d_pairs": 74,
+    "accepted_3d_pairs": 19,
+    "principal_to_main_scale": 0.360542247793492,
+    "principal_to_main_rotation": [
+      [
+        -0.273533973167,
+        0.050981764083,
+        -0.960510294195
+      ],
+      [
+        -0.16142959541,
+        0.981996959544,
+        0.098094124041
+      ],
+      [
+        0.9482192,
+        0.181886863672,
+        -0.260379564433
+      ]
+    ],
+    "principal_to_main_translation": [
+      -1.495293786182,
+      0.233371056408,
+      -5.063965445854
+    ],
+    "native_residual_median_component1_units": 0.01744915555614892,
+    "matched_pair_statistics": [
+      {
+        "main_frame": 50,
+        "principal_frame": 337,
+        "ratio_matches": 72,
+        "epipolar_inliers": 33,
+        "three_dimensional_pairs": 11
+      },
+      {
+        "main_frame": 1,
+        "principal_frame": 330,
+        "ratio_matches": 35,
+        "epipolar_inliers": 20,
+        "three_dimensional_pairs": 10
+      },
+      {
+        "main_frame": 1,
+        "principal_frame": 337,
+        "ratio_matches": 37,
+        "epipolar_inliers": 17,
+        "three_dimensional_pairs": 9
+      },
+      {
+        "main_frame": 20,
+        "principal_frame": 330,
+        "ratio_matches": 45,
+        "epipolar_inliers": 20,
+        "three_dimensional_pairs": 9
+      },
+      {
+        "main_frame": 45,
+        "principal_frame": 337,
+        "ratio_matches": 47,
+        "epipolar_inliers": 22,
+        "three_dimensional_pairs": 9
+      },
+      {
+        "main_frame": 50,
+        "principal_frame": 330,
+        "ratio_matches": 37,
+        "epipolar_inliers": 13,
+        "three_dimensional_pairs": 9
+      },
+      {
+        "main_frame": 20,
+        "principal_frame": 337,
+        "ratio_matches": 40,
+        "epipolar_inliers": 18,
+        "three_dimensional_pairs": 8
+      },
+      {
+        "main_frame": 40,
+        "principal_frame": 330,
+        "ratio_matches": 29,
+        "epipolar_inliers": 11,
+        "three_dimensional_pairs": 7
+      },
+      {
+        "main_frame": 10,
+        "principal_frame": 344,
+        "ratio_matches": 72,
+        "epipolar_inliers": 14,
+        "three_dimensional_pairs": 6
+      },
+      {
+        "main_frame": 60,
+        "principal_frame": 337,
+        "ratio_matches": 59,
+        "epipolar_inliers": 18,
+        "three_dimensional_pairs": 6
+      },
+      {
+        "main_frame": 45,
+        "principal_frame": 330,
+        "ratio_matches": 28,
+        "epipolar_inliers": 12,
+        "three_dimensional_pairs": 5
+      },
+      {
+        "main_frame": 60,
+        "principal_frame": 330,
+        "ratio_matches": 38,
+        "epipolar_inliers": 12,
+        "three_dimensional_pairs": 5
+      }
+    ]
+  },
+  "metric_anchor": {
+    "principal_door_transition_source_frame": 358,
+    "approach_direction_source_frame": 337,
+    "principal_door_world_xy_m": [
+      6.978,
+      -7.628
+    ],
+    "principal_turn_world_xy_m": [
+      3.45,
+      -3.45
+    ],
+    "camera_height_m": 1.55,
+    "camera_height_status": "presentation_assumption",
+    "ceiling_height_m": 3.0,
+    "ceiling_height_status": "presentation_assumption_from_walkthrough_appearance",
+    "principal_height_quantiles": [
+      0.01,
+      0.95
+    ],
+    "reconstructed_height_span_units": 2.9827237418939445,
+    "principal_absolute_scale_m_per_unit": 1.0057921080197274,
+    "world_yaw_deg": 48.31189863404221
+  },
+  "world_transforms": {
+    "principal_component": {
+      "column_vector_matrix": [
+        [
+          0.664756807459,
+          -0.038200112047,
+          0.753828165388,
+          6.732569953755
+        ],
+        [
+          0.746418713161,
+          0.182508255252,
+          -0.648974272189,
+          -8.177945549646
+        ],
+        [
+          -0.112139449507,
+          0.988356844849,
+          0.148974010014,
+          1.561580804815
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "usd_gf_row_vector_matrix": [
+        [
+          0.664756807459,
+          0.746418713161,
+          -0.112139449507,
+          0.0
+        ],
+        [
+          -0.038200112047,
+          0.182508255252,
+          0.988356844849,
+          0.0
+        ],
+        [
+          0.753828165388,
+          -0.648974272189,
+          0.148974010014,
+          0.0
+        ],
+        [
+          6.732569953755,
+          -8.177945549646,
+          1.561580804815,
+          1.0
+        ]
+      ],
+      "uniform_scale_m_per_native_unit": 1.0057921080197276
+    },
+    "main_component": {
+      "column_vector_matrix": [
+        [
+          -2.51798727694,
+          -0.196586400707,
+          1.184620173762,
+          9.012192427263
+        ],
+        [
+          1.188432668522,
+          -0.013679622592,
+          2.523820864518,
+          6.382844512313
+        ],
+        [
+          -0.172043486995,
+          2.782696129807,
+          0.096095700216,
+          1.141549817673
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "usd_gf_row_vector_matrix": [
+        [
+          -2.51798727694,
+          1.188432668522,
+          -0.172043486995,
+          0.0
+        ],
+        [
+          -0.196586400707,
+          -0.013679622592,
+          2.782696129807,
+          0.0
+        ],
+        [
+          1.184620173762,
+          2.523820864518,
+          0.096095700216,
+          0.0
+        ],
+        [
+          9.012192427263,
+          6.382844512313,
+          1.141549817673,
+          1.0
+        ]
+      ],
+      "uniform_scale_m_per_native_unit": 2.789665050837026
+    }
+  },
+  "validation": {
+    "shared_atrium_world_residual_median_m": 0.0486772994216081,
+    "shared_atrium_world_residual_p95_m": 0.1869832547906237,
+    "shared_atrium_world_residual_max_m": 0.1869832547906237,
+    "gravity_alignment_residual_deg": 2.3607239518285903,
+    "principal_door_anchor_residual_m": 0.0,
+    "approach_direction_residual_deg": 0.0,
+    "principal_turn_anchor_residual_m": 0.20571688048368125,
+    "thresholds": {
+      "minimum_shared_3d_pairs": 10,
+      "median_residual_max_m": 0.1,
+      "p95_residual_max_m": 0.25,
+      "gravity_residual_max_deg": 3.0,
+      "principal_turn_anchor_residual_max_m": 0.35
+    }
+  },
+  "layer_contract": {
+    "nurec_is_visual_only": true,
+    "frozen_phase7i_collision_navigation_unchanged": true,
+    "raw_gaussian_used_for_collision_or_lidar": false,
+    "physical_localization_credit": false,
+    "physical_release": false,
+    "registration_classification": "provisional presentation registration, not a certified survey control"
+  }
+}

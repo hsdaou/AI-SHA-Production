@@ -1106,6 +1106,19 @@ release:
   phase7j_video_sha256: "49ab74ee97cd9f7b5b51bd115ba8817310673bb298238e0d9145640b0fe7c6fd"
   phase7j_live_omniverse_player_smoke_passed: true
   phase7j_physical_release: false
+  phase7l_nurec_gaussian_twin_available: true
+  phase7l_main_nurec_trained_30000_iterations: true
+  phase7l_principal_nurec_trained_30000_iterations: true
+  phase7l_principal_office_capture_included: true
+  phase7l_registration_provisional_not_certified: true
+  phase7l_gaussian_visual_layer_only: true
+  phase7l_route_critical_collision_geometry_changed: false
+  phase7l_live_omniverse_player_available: true
+  phase7l_live_omniverse_player_smoke_passed: true
+  phase7l_presentation_player_executes_policy_live: false
+  phase7l_privacy_sensitive_assets_local_only: true
+  phase7l_acceptance_checks_passed: "43/43"
+  phase7l_physical_release: false
   phase8a_physical_localization_offline_preflight_available: true
   phase8a_physical_localization_offline_preflight_passed: true
   phase8a_physical_localization_offline_checks_passed: "23/23"

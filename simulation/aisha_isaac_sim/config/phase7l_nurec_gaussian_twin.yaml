@@ -1,0 +1,108 @@
+schema_version: 1
+phase: "PHASE7L-NUREC-GAUSSIAN-TWIN"
+date: "2026-08-25"
+status: registered_nurec_composite_validated
+objective: >-
+  Preserve the accepted administration navigation and collision stack while
+  displaying AI-SHA inside NVIDIA NuRec 3D Gaussian reconstructions trained
+  from the supplied administration walkthrough.
+
+capture:
+  source: "user-supplied administration walkthrough IMG_6700.MOV"
+  colmap_pipeline: "2 fps connected-component reconstruction"
+  training_resolution_px: [540, 960]
+  original_video_committed: false
+  extracted_images_committed: false
+  gaussian_assets_committed: false
+  native_renders_committed: false
+
+training:
+  engine: "NVIDIA 3DGRUT"
+  engine_commit: "a37ef721012dea0f29c0fcfff2d525023b4e854a"
+  renderer: "3DGUT reference pipeline"
+  iterations_per_component: 30000
+  seed: 42
+  export: "half-precision NuRec USDZ with authored cameras"
+  components:
+    main_administration:
+      colmap_component: 1
+      registered_images: 355
+      gaussian_count: 1456155
+      psnr: 21.80605617099338
+      ssim: 0.7158011992772421
+      lpips: 0.3841802146699693
+      asset: tmp/phase7l_nurec_runs/administration_full_nurec.usdz
+      asset_sha256: "d0fc273a43e99f6866fc718e7b6dc72ede8b41f2cf275b48ad78536fbe0eac6f"
+    principal_office:
+      colmap_component: 2
+      registered_images: 122
+      gaussian_count: 1089250
+      psnr: 24.651418924331665
+      ssim: 0.8575202990323305
+      lpips: 0.29546607844531536
+      asset: tmp/phase7l_nurec_runs/principal_full_nurec.usdz
+      asset_sha256: "febc25e8f58ce43cc2664b04fc1ea5503029293d626b64340df97184f62336a1"
+
+registration:
+  method: >-
+    SIFT/COLMAP shared-atrium Sim(3), gravity alignment, Principal doorway
+    transition anchor, and the presentation ceiling-height assumption.
+  shared_atrium_candidate_pairs: 74
+  accepted_pairs: 19
+  median_residual_m: 0.0486773
+  p95_residual_m: 0.1869833
+  gravity_residual_deg: 2.360724
+  principal_turn_anchor_residual_m: 0.2057169
+  certified_survey_control: false
+  status: "provisional presentation registration"
+
+composition:
+  scene: scenes/phase7l_nurec_registered_administration.usda
+  default_sector: principal_office
+  sectors: [main_administration, principal_office]
+  camera: /World/Presentation/NuRec/gauss/Cameras/camera_0
+  robot: /World/Presentation/MetricWorld/AISHA
+  coordinate_strategy: >-
+    Keep each NuRec asset in its native training basis and apply the inverse
+    registration to the complete frozen metric world. This avoids RTX Gaussian
+    distortion while preserving the same metric alignment.
+  legacy_render_geometry_hidden: true
+  legacy_collision_geometry_active: true
+
+layer_contract:
+  navigation_collision_geometry: "unchanged frozen Phase 7I route-critical geometry"
+  visual_and_collision_layers_separate: true
+  gaussian_visual_only: true
+  gaussian_used_for_collision: false
+  gaussian_used_for_lidar: false
+  accepted_policy_or_safety_stack_changed: false
+  robot_motion: "recorded accepted Phase 7E policy-pose replay"
+  presentation_executes_policy_live: false
+
+presentation_disclosures:
+  supported_claim: >-
+    NVIDIA 3D Gaussian photogrammetric reconstruction trained from the supplied
+    walkthrough, rendered natively in Isaac Sim and provisionally registered to
+    the frozen AI-SHA administration navigation world.
+  seamless_complete_administration_capture: false
+  principal_office_captured: true
+  vice_principal_interior_assumed_because_locked: true
+  registration_is_certified_survey_control: false
+  visual_replay_is_live_policy_execution: false
+  physical_localization_credit: false
+  physical_safety_credit: false
+  physical_release: false
+  privacy_review_required_before_external_media_distribution: true
+
+outputs:
+  main_preflight: results/phase7l_nurec_dataset_preflight.json
+  principal_preflight: results/phase7l_nurec_principal_dataset_preflight.json
+  connector_preflight: results/phase7l_nurec_principal_connector_dataset_preflight.json
+  training_report: results/phase7l_nurec_training_report.json
+  registration_report: results/phase7l_nurec_registration.json
+  composite_build: results/phase7l_nurec_composite_build.json
+  main_isaac_render: results/phase7l_nurec_isaac_render.json
+  principal_isaac_render: results/phase7l_nurec_principal_isaac_render.json
+  composite_isaac_render: results/phase7l_nurec_composite_isaac_render.json
+  live_player_smoke: results/phase7l_nurec_live_player_smoke.json
+  acceptance: results/phase7l_nurec_gaussian_twin_acceptance.json
