@@ -1,0 +1,129 @@
+{
+  "report_type": "phase7k_phototextured_survey_static_render",
+  "generated_at_utc": "2026-08-25T04:41:44.507912+00:00",
+  "status": "rendered",
+  "passed": true,
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/phase7k_phototextured_photogrammetric_survey.usda",
+  "scene_sha256": "e15e26cf53c0d2d3c6cbe294021b1760d310a27ea754545f4c5a2d4befdff74c",
+  "renderer": "PathTracing",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "raw_dense_evidence_views": 2,
+  "clean_presentation_views": 5,
+  "shots": [
+    {
+      "name": "raw_atrium_corridor_cluster.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7k_phototextured_survey/raw_atrium_corridor_cluster.png",
+      "sha256": "1d732fcd9a4ec0909708dc3e8422bce72d2536b3be8ef1344d57c9733111bb53",
+      "camera": [
+        -2.8,
+        5.1,
+        2.8
+      ],
+      "look_at": [
+        1.8,
+        -0.4,
+        0.75
+      ],
+      "mode": "raw_atrium"
+    },
+    {
+      "name": "raw_principal_office_cluster.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7k_phototextured_survey/raw_principal_office_cluster.png",
+      "sha256": "04868d95559d36844b72f9015f50f16aee8ca452b446a950ffd31cfad41ddc81",
+      "camera": [
+        12.2,
+        -3.7,
+        3.0
+      ],
+      "look_at": [
+        7.6,
+        -8.3,
+        1.05
+      ],
+      "mode": "raw_principal"
+    },
+    {
+      "name": "phototextured_atrium_reception.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7k_phototextured_survey/phototextured_atrium_reception.png",
+      "sha256": "2fa8b38b7d292a26d9c61e45ca5741f7a723e01a5404f3f96cb6d11133959b45",
+      "camera": [
+        -6.2,
+        5.0,
+        4.7
+      ],
+      "look_at": [
+        0.4,
+        -0.8,
+        0.75
+      ],
+      "mode": "clean"
+    },
+    {
+      "name": "phototextured_east_hall.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7k_phototextured_survey/phototextured_east_hall.png",
+      "sha256": "ea410b3dbbee4180b6324aca079c766f7adc9f565215128c0517da516b1fec6b",
+      "camera": [
+        6.0,
+        1.14,
+        1.8
+      ],
+      "look_at": [
+        15.1,
+        -0.15,
+        0.7
+      ],
+      "mode": "clean"
+    },
+    {
+      "name": "phototextured_principal_office.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7k_phototextured_survey/phototextured_principal_office.png",
+      "sha256": "8ce2b9979a8675a663a52a42e7af4ef573e870a76de4588a40db4e8d04917a55",
+      "camera": [
+        10.0,
+        -5.0,
+        4.0
+      ],
+      "look_at": [
+        7.2,
+        -7.8,
+        0.55
+      ],
+      "mode": "clean"
+    },
+    {
+      "name": "phototextured_complete_overview.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7k_phototextured_survey/phototextured_complete_overview.png",
+      "sha256": "504f604d7ea9e7475f95b3bea5e18e236a41824264ecadc4c577d55632e99522",
+      "camera": [
+        6.0,
+        -5.5,
+        39.0
+      ],
+      "look_at": [
+        6.0,
+        -5.5,
+        0.0
+      ],
+      "mode": "clean"
+    },
+    {
+      "name": "accepted_route_context.png",
+      "path": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/media/screenshots/phase7k_phototextured_survey/accepted_route_context.png",
+      "sha256": "c580da9b4a58eeaaa5e890f75529223f116cb3fc0a0a0065c2ff126c9b1c8624",
+      "camera": [
+        -4.8,
+        2.8,
+        6.3
+      ],
+      "look_at": [
+        8.6,
+        -6.0,
+        0.55
+      ],
+      "mode": "route"
+    }
+  ]
+}

@@ -1,0 +1,285 @@
+{
+  "report_type": "phase7k_photogrammetry_asset_manifest",
+  "status": "passed",
+  "passed": true,
+  "engine": "AliceVision 3.3.0 dense reconstruction and texturing",
+  "clusters": {
+    "atrium_corridor": {
+      "source_obj_sha256": "d0949db12ad62e55db5b104ab177ed0f77f3107a9641d18515dc4f883366427f",
+      "source_mtl_sha256": "e09962723c17e928964b37697652776530987a2b4e5d3607f184100dd2b546b3",
+      "source_obj_committed": false,
+      "source_atlases_committed": false,
+      "geometry": {
+        "vertices": 185330,
+        "texture_coordinates": 224773,
+        "faces": 371694,
+        "native_min_xyz_m": [
+          -1.953655,
+          0.99308,
+          -3.710405
+        ],
+        "native_max_xyz_m": [
+          1.204112,
+          2.444917,
+          0.596557
+        ],
+        "native_extent_xyz_m": [
+          3.157767,
+          1.451837,
+          4.306962
+        ],
+        "materials": [
+          "material_1001",
+          "material_1002"
+        ]
+      },
+      "presentation_atlases": {
+        "1001": {
+          "source_sha256": "a140b248b434e7db2d568f46afb49230dcd77b8dfbc4c8c59f30a500587d5c67",
+          "output": "textures/phase7k_photogrammetry/atrium_corridor_texture_1001.jpg",
+          "output_sha256": "cfb7983e823c8feac9e5ddd57a89a4f7a5413ed58637e187dbff228d2e43dd17",
+          "output_dimensions_px": [
+            2048,
+            2048
+          ],
+          "face_or_face_like_regions_blurred": 7,
+          "redaction_boxes_source_px": [
+            [
+              2758,
+              1229,
+              2840,
+              1311
+            ],
+            [
+              1606,
+              1492,
+              2084,
+              1970
+            ],
+            [
+              3516,
+              388,
+              3668,
+              540
+            ],
+            [
+              1741,
+              768,
+              2051,
+              1078
+            ],
+            [
+              3612,
+              3173,
+              3698,
+              3259
+            ],
+            [
+              1541,
+              2869,
+              1893,
+              3221
+            ],
+            [
+              1772,
+              3367,
+              2169,
+              3764
+            ]
+          ],
+          "readable_ocr_text_after_screen": false
+        },
+        "1002": {
+          "source_sha256": "3ae625729554ce53afdcc35dae77f54f41c0158212bdb3d5742f12de7a87a3b4",
+          "output": "textures/phase7k_photogrammetry/atrium_corridor_texture_1002.jpg",
+          "output_sha256": "55701892786c8f312c4f43396a450b5bd6cf2fe4063d561f99122fd9b01ad241",
+          "output_dimensions_px": [
+            2048,
+            2048
+          ],
+          "face_or_face_like_regions_blurred": 4,
+          "redaction_boxes_source_px": [
+            [
+              1037,
+              410,
+              1126,
+              499
+            ],
+            [
+              1466,
+              730,
+              1689,
+              953
+            ],
+            [
+              1627,
+              2358,
+              1707,
+              2438
+            ],
+            [
+              1132,
+              2640,
+              1227,
+              2735
+            ]
+          ],
+          "readable_ocr_text_after_screen": false
+        }
+      }
+    },
+    "principal_office": {
+      "source_obj_sha256": "6e8a1bd13846b883b2044ef23083d423b5144e704b811f175695e5f50df0a2f9",
+      "source_mtl_sha256": "e09962723c17e928964b37697652776530987a2b4e5d3607f184100dd2b546b3",
+      "source_obj_committed": false,
+      "source_atlases_committed": false,
+      "geometry": {
+        "vertices": 126420,
+        "texture_coordinates": 167161,
+        "faces": 253601,
+        "native_min_xyz_m": [
+          -1.803314,
+          -0.046371,
+          -3.85643
+        ],
+        "native_max_xyz_m": [
+          1.961839,
+          2.949063,
+          1.073099
+        ],
+        "native_extent_xyz_m": [
+          3.765153,
+          2.995433,
+          4.929529
+        ],
+        "materials": [
+          "material_1001",
+          "material_1002"
+        ]
+      },
+      "presentation_atlases": {
+        "1001": {
+          "source_sha256": "ce4daae05f055d4872ff3ff357c6603fa4286f3171e0cf1f38411bf059c98bde",
+          "output": "textures/phase7k_photogrammetry/principal_office_texture_1001.jpg",
+          "output_sha256": "2607607e201091449da78124f4611797e4a9a922999d49df26e50c0936f042cf",
+          "output_dimensions_px": [
+            2048,
+            2048
+          ],
+          "face_or_face_like_regions_blurred": 8,
+          "redaction_boxes_source_px": [
+            [
+              1169,
+              424,
+              1249,
+              504
+            ],
+            [
+              2487,
+              368,
+              2581,
+              462
+            ],
+            [
+              3659,
+              752,
+              4001,
+              1094
+            ],
+            [
+              2559,
+              3074,
+              2918,
+              3433
+            ],
+            [
+              1286,
+              3376,
+              1410,
+              3500
+            ],
+            [
+              2670,
+              3522,
+              2766,
+              3618
+            ],
+            [
+              1279,
+              3322,
+              1431,
+              3474
+            ],
+            [
+              1314,
+              3165,
+              1677,
+              3528
+            ]
+          ],
+          "readable_ocr_text_after_screen": false
+        },
+        "1002": {
+          "source_sha256": "bb8b0ce922effe548a4ebb1c1cb639bd064d31f1001d0a4a51801f338903d00e",
+          "output": "textures/phase7k_photogrammetry/principal_office_texture_1002.jpg",
+          "output_sha256": "dd3131f53e7723e428b557e1c7936f4b7a1562cfb7b6e3d365c14d7b37beaa70",
+          "output_dimensions_px": [
+            2048,
+            2048
+          ],
+          "face_or_face_like_regions_blurred": 7,
+          "redaction_boxes_source_px": [
+            [
+              557,
+              1209,
+              626,
+              1278
+            ],
+            [
+              18,
+              61,
+              120,
+              163
+            ],
+            [
+              495,
+              2560,
+              576,
+              2641
+            ],
+            [
+              904,
+              3063,
+              982,
+              3141
+            ],
+            [
+              2,
+              2508,
+              184,
+              2690
+            ],
+            [
+              126,
+              2000,
+              354,
+              2228
+            ],
+            [
+              699,
+              2139,
+              1268,
+              2708
+            ]
+          ],
+          "readable_ocr_text_after_screen": false
+        }
+      }
+    }
+  },
+  "privacy_contract": "source photographs/OBJ/atlases remain uncommitted; public atlases are 2K, face-screened and OCR-negative",
+  "cluster_registration": "provisional similarity transforms against metric RoomPlan",
+  "clusters_false_welded": false,
+  "raw_dense_mesh_used_for_collision": false,
+  "physical_release": false
+}

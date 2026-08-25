@@ -1,0 +1,27 @@
+#usda 1.0
+(
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "World" (
+    customData = {
+        dictionary aisha = {
+            string phase = "PHASE7K"
+            string presentation_mode = "clean_phototextured_metric_twin_with_raw_dense_evidence_hidden"
+        }
+    }
+    prepend references = @./phase7k_phototextured_photogrammetric_survey.usda@</World>
+)
+{
+    over "PhotogrammetricSurvey" (
+        customData = {
+            dictionary aisha = {
+                string hidden_reason = "incomplete_dense_capture_fragments_obscure_navigation_presentation"
+            }
+        }
+    )
+    {
+        token visibility = "invisible"
+    }
+}
