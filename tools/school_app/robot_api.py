@@ -236,6 +236,43 @@ def audit_free(free: list, busy: list) -> dict:
             "reason": "unmatched_combined_subject" if suspect else None}
 
 
+def free_students_reportable(free: list, busy: list, audit: dict) -> bool:
+    """Is a free-student result worth stating at all?
+
+    audit_free() already flags sections it could not attribute, and both callers
+    used to append a caveat and report the number anyway. That is fine when a
+    section or two is affected. It is not fine when the caveat swallows the
+    answer: a grade-8 period-1 query returned "269 of 269 students are free"
+    with a warning attached, during a period when the entire grade was in class.
+    A number that wrong is not improved by a footnote - the listener remembers
+    269, and the emailed version is a list of every child in the grade.
+
+    This is the student-side twin of busy_free_sane(): refuse the shapes that
+    mean "the lookup matched nothing", and let everything else through with the
+    existing caveat.
+    """
+    total = len(free) + len(busy)
+    if total == 0:
+        return False
+    # Nobody busy during a scheduled period: the subject never matched an
+    # enrolment, so "free" here means "not found", not "not in class".
+    if not busy and len(free) > 5:
+        return False
+    # Most of the grade sits in sections we could not attribute.
+    suspect = set(audit.get("suspect_sections") or [])
+    if suspect:
+        n_suspect = sum(1 for x in free if str(x.get("section")) in suspect)
+        if n_suspect * 2 >= total:
+            return False
+    return True
+
+
+_UNRELIABLE_FREE = ("I cannot answer that reliably. For that period the timetable "
+                    "splits those sections across parallel groups, so I cannot tell "
+                    "which students are actually free. Please check with the school "
+                    "office on +971 6 558 2211.")
+
+
 _NO_ENROL = {
     "ok": False,
     "reason": "no_enrolment_data",
@@ -395,7 +432,7 @@ def r_free_count():
     # No grade named = the whole school. "Which students are available now?" is a
     # perfectly natural question for a director and used to be refused outright.
     if not grade:
-        totals, suspect_any = [], []
+        totals, suspect_any, dropped = [], [], []
         for g in student_grades():
             try:
                 f, b = find_free_students(g, day, period)
@@ -403,6 +440,11 @@ def r_free_count():
                 continue
             a = audit_free(f, b)
             if a["reason"] == "no_students_for_grade":
+                continue
+            if not free_students_reportable(f, b, a):
+                # Summing a grade whose lookup matched nothing inflates the
+                # school-wide total by the size of that grade. Drop it and say so.
+                dropped.append(str(g))
                 continue
             totals.append((g, len(f), len(b)))
             if not a["reliable"]:
@@ -416,6 +458,11 @@ def r_free_count():
                       f"{'s' if len(suspect_any) > 1 else ''} {', '.join(suspect_any)} "
                       "the timetable lists a combined subject I cannot match to "
                       "individual enrolments.")
+        if dropped:
+            speak += (f" Grade{'s' if len(dropped) > 1 else ''} {', '.join(dropped)} "
+                      f"{'are' if len(dropped) > 1 else 'is'} not included: for that "
+                      "period the timetable splits those sections across parallel "
+                      "groups, so I cannot tell who is free.")
         return jsonify({"ok": True, "scope": "all_grades", "day": day, "period": period,
                         "free_count": n, "per_grade": [
                             {"grade": g, "free": f, "busy": b} for g, f, b in totals],
@@ -432,6 +479,11 @@ def r_free_count():
                         "speakable": (f"I have the timetable for grade {grade}, but no "
                                       "student records for it, so I cannot count who "
                                       "is free.")}), 200
+    if not free_students_reportable(free, busy, audit):
+        return jsonify({"ok": False, "reason": "unattributable_result",
+                        "grade": grade, "day": day, "period": period,
+                        "suspect_sections": audit.get("suspect_sections"),
+                        "speakable": _UNRELIABLE_FREE}), 200
     speak = (f"In grade {grade}, {n} student{'' if n == 1 else 's'} "
              f"{'is' if n == 1 else 'are'} free in {period} on {day}.")
     if not audit["reliable"]:
@@ -466,7 +518,7 @@ def r_free_students():
         return jsonify({"ok": False, "reason": "not_in_session"}), 200
 
     if not grade:                     # whole school, one grouped report
-        rows, suspect = [], []
+        rows, suspect, dropped = [], [], []
         for g in student_grades():
             try:
                 f, b = find_free_students(g, day, period)
@@ -475,6 +527,13 @@ def r_free_students():
             if not f and not b:
                 continue
             a = audit_free(f, b)
+            if not free_students_reportable(f, b, a):
+                # Do NOT put these names in the email. When the lookup matches
+                # nothing every child in the grade is listed as "free", and the
+                # recipient gets a roster of the whole grade presented as a
+                # finding. Naming them is the harm; a caveat does not undo it.
+                dropped.append(str(g))
+                continue
             if not a["reliable"]:
                 suspect.append(str(g))
             for s_ in f:
@@ -483,6 +542,14 @@ def r_free_students():
         # list must carry the same warning or the administrator acts on 1,204 names
         # of whom hundreds are actually sitting in class.
         note = ""
+        if dropped:
+            note += (f"<p style=\"background:#fee2e2;border-left:4px solid #dc2626;"
+                     f"padding:10px;margin:12px 0;\"><b>Grade"
+                     f"{'s' if len(dropped) > 1 else ''} {', '.join(dropped)} "
+                     f"{'are' if len(dropped) > 1 else 'is'} omitted.</b> For this "
+                     f"period the timetable splits those sections across parallel "
+                     f"groups, so every student in them would have been listed as "
+                     f"free. Those names are deliberately not included.</p>")
         if suspect:
             note = (f"<p style=\"background:#fef3c7;border-left:4px solid #d97706;"
                     f"padding:10px;margin:12px 0;\"><b>Treat this list as an "

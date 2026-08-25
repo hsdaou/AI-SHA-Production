@@ -44,7 +44,21 @@ def normalize_subject(name):
         return ""
     n = name.strip().lower()
     # Remove level/track suffixes:  N1, N2, N3, N4, L, L1, M, M1, MA, TN, TN1, etc.
-    n = re.sub(r"\s*[-]?\s*(n[0-9]*|l[0-9]*|m[0-9a-z]*|tn[0-9]*)$", "", n)
+    #
+    # The level code must be a SEPARATE, SHORT token - hence the required
+    # separator and the bounded repeats. The previous pattern was
+    #     \s*[-]?\s*(n[0-9]*|l[0-9]*|m[0-9a-z]*|tn[0-9]*)$
+    # where the separator was optional and m[0-9a-z]* was unbounded, so it ate
+    # whole words off the end of ordinary subject names:
+    #     "Mathematics" -> ""        (matched nobody: every student looked FREE)
+    #     "Music"       -> ""        (same)
+    #     "Computing"   -> "co"      (matched far too much: false BUSY)
+    #     "Latin"       -> "lati", "Nutrition" -> "nutritio"
+    # Two subjects normalising to empty covered 395 of 3294 timetable rows, and
+    # because the same function normalises the ENROLMENT side, students enrolled
+    # in "Mathematics" were invisible too. A grade-8 period-3 query returned 210
+    # of 269 students "free" when the whole grade was in class.
+    n = re.sub(r"(?:\s+|\s*-\s*)(?:n\d{0,2}|l\d{0,2}|m[a-z]?\d{0,2}|tn\d{0,2})$", "", n)
     # Remove cultural descriptors: "- Arabs", "- Non Arabs", "Non A"
     n = re.sub(r"\s*[-]\s*(arabs?|non arabs?|non a)$", "", n)
     # Expand common short forms
