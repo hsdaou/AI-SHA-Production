@@ -51,6 +51,8 @@ ASK_TOPIC   = "/speech/text"                          # question in
 VIDEO_HOME  = os.path.expanduser("~/video_messages")  # video-message skill lives here
 HRMS_HOME   = os.path.expanduser("~/hrms_query")       # HRMS skill config lives here
 HRMS_TOOL   = os.path.expanduser("~/robot_ws/tools/hrms_query/hrms_query.py")
+SR_HOME     = os.path.expanduser("~/student_report_query")
+SR_TOOL     = os.path.expanduser("~/robot_ws/tools/student_report_query/student_report_query.py")
 TT_HOME     = os.path.expanduser("~/timetable_query")
 TT_TOOL     = os.path.expanduser("~/robot_ws/tools/timetable_query/timetable_query.py")
 FACE_HOME   = os.path.expanduser("~/face_auth")        # face-auth gate lives here
@@ -73,6 +75,20 @@ VIDEO_SECS  = 15                                       # length of a recorded me
 VIDEO_INTENT = re.compile(
     r"(record|leave|send|take).{0,20}(video|vedio)\s*message"
     r"|video\s*message.{0,20}(to|for)\s+(sam|admin|hsdaou)", re.I)
+
+# Student reports name a minor and carry academic and behaviour records, so the
+# report is EMAILED to an authenticated administrator and never spoken or shown.
+#
+# This pattern is a verbatim copy of the one in brain_node._classify. brain_node
+# routes the utterance to SKILL_STUDENT_REPORT and then deliberately stays
+# silent, expecting the skill layer to answer. Until now the console had no
+# student-report handler at all, so nothing ran and the robot simply never
+# replied - the request vanished between the two. Keep the two patterns
+# identical: if brain_node routes something the console cannot match, that
+# request goes silent again.
+STUDENT_REPORT_INTENT = re.compile(
+    r"\b(student|pupil)\s+(report|marks?|grades?|results?)\b"
+    r"|\b(report|marks?|grades?|results?)\s+(for|of)\s+(student|pupil)\b", re.I)
 
 # HRMS staff-leave questions. Broad on purpose: hrms_query.py does the precise
 # routing and refuses anything it cannot map, so a false positive here costs a
@@ -317,6 +333,8 @@ class Hub(Node):
             self._start_auth_prompt()      # PIN is then typed, never spoken
         elif HRMS_INTENT.search(m.data or ""):
             self._start_hrms_query(m.data)
+        elif STUDENT_REPORT_INTENT.search(m.data or ""):
+            self._start_student_report_query(m.data)
         elif _is_timetable(m.data or "", self._last_skill):
             self._start_timetable_query(m.data)
 
@@ -330,6 +348,61 @@ class Hub(Node):
                 return
             self._vm_busy = True
         threading.Thread(target=self._video_message_worker, daemon=True).start()
+
+    # ── student report skill ────────────────────────────────────────────────
+    def _start_student_report_query(self, utterance):
+        with self.lock:
+            if getattr(self, "_sr_busy", False):
+                return
+            self._sr_busy = True
+        threading.Thread(target=self._student_report_worker,
+                         args=(utterance,), daemon=True).start()
+
+    def _student_report_worker(self, utterance):
+        """Ask student_report_query.py to email one student's report.
+
+        Nothing about the student comes back here - the app renders and sends it,
+        and the robot receives only a confirmation. AI-SHA stands in a public
+        corridor; a minor's marks must never reach its screen or its speaker.
+        """
+        try:
+            r = subprocess.run(
+                f'python3 -u "{SR_TOOL}" ask {json.dumps(utterance)}',
+                shell=True, cwd=SR_HOME, capture_output=True, text=True, timeout=90)
+            out = (r.stdout or "") + (r.stderr or "")
+            spoken = [l[len("SPEAK: "):] for l in out.splitlines()
+                      if l.startswith("SPEAK: ")]
+            if r.returncode == 0 and spoken:
+                self._push("AI-SHA", spoken[-1])
+                return
+            msg = {
+                2: "Tell me the student's computer number - for example "
+                   "\"send the student report for 18140\".",
+                3: None,
+                4: "I could not reach the student report service.",
+            }.get(r.returncode)
+            if msg is None:
+                denied = [l for l in out.splitlines() if "DENIED" in l]
+                if denied:
+                    msg = denied[-1].split("- ", 1)[-1].strip()
+                    if "authenticate" in msg.lower() or "administrator" in msg.lower():
+                        # Queue it so the report is sent the moment the gate opens,
+                        # instead of making the administrator re-type the number.
+                        self._pending_admin = ("student_report", utterance)
+                        msg += " Say \"authenticate me\" and I will then send it."
+                else:
+                    detail = [l for l in out.splitlines() if l.strip()]
+                    msg = ("The student report could not be sent. "
+                           + (detail[-1][:140] if detail else ""))
+            self._push("AI-SHA", msg)
+        except subprocess.TimeoutExpired:
+            self._push("AI-SHA", "The student report service did not respond in time.")
+        except Exception as e:
+            self._push("AI-SHA",
+                       f"Sorry - the student report request failed ({type(e).__name__}).")
+        finally:
+            with self.lock:
+                self._sr_busy = False
 
     # ── HRMS staff-leave skill ──────────────────────────────────────────────
     def _start_hrms_query(self, utterance):
@@ -594,6 +667,8 @@ class Hub(Node):
             if rest:
                 if HRMS_INTENT.search(rest):
                     self._pending_admin = ("hrms", rest)
+                elif STUDENT_REPORT_INTENT.search(rest):
+                    self._pending_admin = ("student_report", rest)
                 elif _is_timetable(rest, self._last_skill):
                     self._pending_admin = ("timetable", rest)
             self._start_auth_prompt()
@@ -700,6 +775,8 @@ class Hub(Node):
             self._start_timetable_query(utt)
         elif kind == "hrms":
             self._start_hrms_query(utt)
+        elif kind == "student_report":
+            self._start_student_report_query(utt)
 
 
 PAGE = """<!DOCTYPE html><html><head><meta charset=utf-8>
