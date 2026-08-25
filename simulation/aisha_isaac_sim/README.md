@@ -246,6 +246,42 @@ assumed because it was locked. The frozen 480-frame Full HD release passed all
 54 acceptance checks; its video SHA-256 is
 `5b823a3bf76619333e1f7b40fdb3b286323e3eae3aa20d2469501315be482c30`.
 
+## Phase 7L NVIDIA NuRec Gaussian twin
+
+Phase 7L replaces the incomplete dense-mesh presentation with two NVIDIA
+3DGRUT Gaussian reconstructions trained directly from the supplied walkthrough:
+355 registered administration views and 122 registered Principal-office views.
+Both components completed 30,000 iterations and were exported as native NuRec
+USDZ assets for Isaac Sim 5.1. The Principal component achieved 24.65 dB PSNR
+and 0.858 SSIM on its held-out views.
+
+The NuRec assets stay in their native training coordinate systems for correct
+RTX rendering. The complete frozen administration navigation world—including
+AI-SHA and the Phase 7I collision geometry—is transformed into the active
+NuRec sector by the inverse provisional registration. Legacy metric render
+meshes are hidden individually, while their collision APIs remain active.
+
+Run the live Principal-route presentation in Isaac Sim with:
+
+```bash
+tools/run_phase7l_live_omniverse.sh
+```
+
+Rebuild and smoke-render the local composite with
+`tools/run_phase7l_nurec_isaac_smoke.sh`. Full retraining is deliberately
+guarded behind `AISHA_ALLOW_NUREC_RETRAIN=1` because it consumes substantial
+GPU time and local storage. The final integration passes 43/43 checks, including
+exact local checkpoint/asset hashes, native Isaac renders, a headless live-player
+smoke, collision-layer separation and privacy controls.
+
+Use `PHASE7L_NUREC_PRESENTATION_RUNBOOK.md` for the operator sequence and claim
+boundary. This is a genuine Gaussian photogrammetric reconstruction and a
+provisional presentation registration—not certified survey control, live policy
+execution, a complete capture of the locked Vice-Principal interior, or a
+physical-deployment release. Raw video, extracted frames, checkpoints, NuRec
+assets and native screenshots remain local because they can contain private
+school details.
+
 ## Phase 8A physical-localization preflight
 
 The first sim-to-real phase now has a fail-safe, localization-only ROS 2 graph

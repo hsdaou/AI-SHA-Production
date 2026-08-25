@@ -1,0 +1,45 @@
+{
+  "report_type": "phase7l_nurec_colmap_dataset_preflight",
+  "generated_at_utc": "2026-08-25T08:06:43.905473+00:00",
+  "status": "passed",
+  "passed": true,
+  "source": {
+    "pipeline": "COLMAP 2 fps walkthrough reconstruction",
+    "component": 2,
+    "registered_images": 122,
+    "frame_id_range": [
+      323,
+      897
+    ],
+    "mean_observations_per_image": "122, mean observations per image: 604.38524590163934",
+    "points3d_header": "15297, mean track length: 4.8202261881414659",
+    "cameras": [
+      "1 OPENCV 1080 1920 839.2813552223098 838.74964999464237 540 960 -0.0055291483091395146 0.0015702750634440923 0.00044678166293085609 -0.00079945783735688354"
+    ],
+    "cameras_bin_sha256": "fcadc42b12ff8dcf6ee4cd481edff05c30f2d83bf03784fe8d429a61a7b7d131",
+    "images_bin_sha256": "bba41098c11d2655e1b89515eef2c5ffb627702bb40d6e7398af32ef7aac8682",
+    "points3d_bin_sha256": "a8c37292416b5a86cf81cd01aa657416b165215899864931c8dbe9ca150842d4",
+    "raw_images_committed": false,
+    "dataset_symlinks_committed": false
+  },
+  "dataset": {
+    "path": "tmp/phase7l_nurec_principal_dataset",
+    "image_link_target": "tmp/phase7k_photogrammetry_2fps/images/video",
+    "sparse_link_target": "tmp/phase7k_photogrammetry_2fps/sparse/2",
+    "all_registered_images_available": true,
+    "recommended_downsample_factor": 2,
+    "downsampled_training_images": 122,
+    "downsampled_resolution_px": [
+      540,
+      960
+    ],
+    "downsampled_images_committed": false
+  },
+  "training_contract": {
+    "engine": "NVIDIA 3DGRUT",
+    "target_export": "NuRec USDZ for Isaac Sim 5.1",
+    "visual_layer_only": true,
+    "navigation_collision_geometry_changed": false,
+    "physical_release": false
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "report_type": "phase7l_nurec_3dgrut_training",
+  "generated_at_utc": "2026-08-25T07:34:00Z",
+  "status": "passed",
+  "passed": true,
+  "engine": {
+    "name": "NVIDIA 3DGRUT",
+    "repository": "https://github.com/nv-tlabs/3dgrut",
+    "commit": "a37ef721012dea0f29c0fcfff2d525023b4e854a",
+    "config": "apps/colmap_3dgut.yaml",
+    "render_pipeline": "3dgut reference",
+    "seed": 42,
+    "gpu": "NVIDIA GeForce RTX 5080 16303 MiB",
+    "driver": "580.159.03"
+  },
+  "components": {
+    "main_administration": {
+      "dataset": "tmp/phase7l_nurec_dataset",
+      "colmap_component": 1,
+      "registered_images": 355,
+      "iterations": 30000,
+      "event_wall_time_s": 530.465030670166,
+      "gaussian_count": 1456155,
+      "metrics": {
+        "mean_psnr": 21.80605617099338,
+        "mean_ssim": 0.7158011992772421,
+        "mean_lpips": 0.3841802146699693,
+        "mean_cc_psnr": 21.151844448513454,
+        "mean_cc_ssim": 0.7006044983863831,
+        "mean_cc_lpips": 0.39126080208354524
+      },
+      "checkpoint": {
+        "path": "tmp/phase7l_nurec_runs/administration_full/phase7l_nurec_dataset-2508_105217/ckpt_last.pt",
+        "size_bytes": 1042656405,
+        "sha256": "5600872ec3bb8cb59ff3849f8bb8d544daa67b7dd85b6176651ee1d5f298f4c8",
+        "local_only": true
+      },
+      "asset": {
+        "path": "tmp/phase7l_nurec_runs/administration_full_nurec.usdz",
+        "size_bytes": 171938578,
+        "sha256": "d0fc273a43e99f6866fc718e7b6dc72ede8b41f2cf275b48ad78536fbe0eac6f",
+        "format": "NuRec USDZ half precision",
+        "privacy_sensitive_local_only": true
+      }
+    },
+    "principal_office": {
+      "dataset": "tmp/phase7l_nurec_principal_dataset",
+      "colmap_component": 2,
+      "registered_images": 122,
+      "iterations": 30000,
+      "event_wall_time_s": 446.1129057407379,
+      "gaussian_count": 1089250,
+      "metrics": {
+        "mean_psnr": 24.651418924331665,
+        "mean_ssim": 0.8575202990323305,
+        "mean_lpips": 0.29546607844531536,
+        "mean_cc_psnr": 24.644389927387238,
+        "mean_cc_ssim": 0.8470844216644764,
+        "mean_cc_lpips": 0.2991832895204425
+      },
+      "checkpoint": {
+        "path": "tmp/phase7l_nurec_runs/principal_full/phase7l_nurec_principal_dataset-2508_112508/ckpt_last.pt",
+        "size_bytes": 779952533,
+        "sha256": "41ddb2fb4d62fcd5778e6614638175957997fc8dd3c472553dda6a4818805365",
+        "local_only": true
+      },
+      "asset": {
+        "path": "tmp/phase7l_nurec_runs/principal_full_nurec.usdz",
+        "size_bytes": 128579871,
+        "sha256": "febc25e8f58ce43cc2664b04fc1ea5503029293d626b64340df97184f62336a1",
+        "format": "NuRec USDZ half precision",
+        "privacy_sensitive_local_only": true
+      }
+    }
+  },
+  "training_contract": {
+    "test_split_interval": 8,
+    "metrics_computed_on_holdout_views": true,
+    "raw_training_images_committed": false,
+    "checkpoints_committed": false,
+    "nurec_assets_committed": false,
+    "visual_layer_only": true,
+    "navigation_collision_geometry_changed": false,
+    "physical_release": false
+  }
+}
