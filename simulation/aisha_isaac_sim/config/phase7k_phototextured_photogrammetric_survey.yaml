@@ -1,0 +1,150 @@
+schema_version: 1
+phase: "PHASE7K-PHOTOTEXTURED-PHOTOGRAMMETRIC-SURVEY"
+date: "2026-08-25"
+status: hybrid_phototextured_survey_ready
+objective: >-
+  Preserve the accepted administration navigation stack while adding genuine
+  privacy-screened dense capture evidence and capture-derived PBR finishes to
+  the metric RoomPlan/LiDAR administration twin.
+
+source_evidence:
+  walkthrough_video: "/home/robot-wst/Downloads/IMG_6700.MOV"
+  primary_roomplan_sha256: "d12576bf72c1a5ccf51706501bc8d65f16ea2a22353a9cf7cf287c3f58f9e13b"
+  principal_supplement_sha256: "d94287e3562344e634889a94aba1ea39d359e29666dd6389673bd8a12599d6cb"
+  mission: results/administration_nav2_phase7e_static_fusion_mission.json
+  approved_topology: "A1 page 2 Block A"
+  raw_photographs_and_original_atlases_committed: false
+
+photogrammetry:
+  engine: "AliceVision 3.3.0 dense reconstruction and texturing"
+  clusters:
+    atrium_corridor:
+      vertices: 185330
+      faces: 371694
+      metric_scale: 1.0
+      registration_quality: provisional_visual_alignment_not_survey_control
+    principal_office:
+      vertices: 126420
+      faces: 253601
+      metric_scale: 1.0
+      registration_quality: provisional_visual_alignment_not_survey_control
+  total_vertices: 311750
+  total_faces: 625295
+  disconnected_clusters_kept_separate: true
+  privacy_screened_2k_atlases: true
+  raw_dense_mesh_used_for_collision: false
+
+layer_contract:
+  metric_visual_layer: scenes/phase7k_phototextured_metric_visual.usdc
+  atrium_dense_layer: scenes/phase7k_atrium_corridor_photogrammetry.usdc
+  principal_dense_layer: scenes/phase7k_principal_office_photogrammetry.usdc
+  survey_review_scene: scenes/phase7k_phototextured_photogrammetric_survey.usda
+  presentation_scene: scenes/phase7k_phototextured_presentation.usda
+  survey_review_dense_clusters_visible: true
+  presentation_dense_clusters_present_but_hidden: true
+  presentation_reason: >-
+    Dense clusters are incomplete walkthrough reconstructions; hiding their
+    floating fragments keeps the robot and registered metric architecture clear.
+  capture_derived_pbr_material_sets: 7
+  navigation_collision_geometry: "unchanged frozen Phase 7I route-critical geometry"
+  visual_and_collision_layers_separate: true
+  approved_plan_and_metric_roomplan_are_geometry_authority: true
+  raw_dense_mesh_used_for_collision: false
+
+render_contract:
+  renderer: PathTracing
+  path_tracing_spp: 12
+  exposure_bias: 0.65
+  resolution: [1920, 1080]
+  fps: 24
+  seconds_per_shot: 2.5
+  expected_shots: 8
+  expected_frames: 480
+  camera_style: fixed_human_height_capture_textured_environmental
+  robot_should_not_dominate_frame: true
+  replay_motion: recorded_pose_selection_without_route_interpolation
+
+shots:
+  - title: "Phototextured administration - mission start"
+    operator_label: "CAPTURE-DERIVED PBR SURVEY"
+    camera: [0.2, 5.0, 3.0]
+    look_at: [5.1, -1.2, 0.62]
+    focal_length_mm: 15.0
+    segments: [0]
+  - title: "Phototextured east administration hallway"
+    operator_label: "0.80 M/S LEARNED HALLWAY POLICY"
+    camera: [6.0, 1.14, 1.80]
+    look_at: [15.1, -0.15, 0.70]
+    focal_length_mm: 15.0
+    segments: [1]
+    source_fraction: [0.58, 1.0]
+  - title: "Vice-Principal approach in the captured wing"
+    operator_label: "0.875 M ASSUMED DOOR - LOCKED ROOM"
+    camera: [19.4, -6.8, 1.90]
+    look_at: [16.9, -4.5, 0.62]
+    focal_length_mm: 12.0
+    segments: [2, 3]
+  - title: "Vice-Principal visit and safe reverse departure"
+    operator_label: "LOCKED INTERIOR DISCLOSED ASSUMPTION"
+    camera: [19.2, -7.5, 1.92]
+    look_at: [16.8, -6.0, 0.62]
+    focal_length_mm: 11.5
+    segments: [4]
+  - title: "Return through the phototextured hallway"
+    operator_label: "NAV2 + STATIC/LIVE LIDAR FUSION"
+    camera: [-1.0, 2.50, 2.60]
+    look_at: [9.0, -0.10, 0.68]
+    focal_length_mm: 15.0
+    segments: [5]
+  - title: "Principal suite - registered metric approach"
+    operator_label: "PRINCIPAL CAPTURE AT 1:1 SCALE"
+    camera: [2.55, -2.65, 1.84]
+    look_at: [6.75, -7.35, 0.70]
+    focal_length_mm: 15.0
+    segments: [6, 7]
+    source_fraction: [0.60, 1.0]
+  - title: "Principal visit with captured floor and finishes"
+    operator_label: "ROOMPLAN/LIDAR + PHOTO PBR"
+    camera: [10.00, -5.00, 4.00]
+    look_at: [7.20, -7.80, 0.55]
+    focal_length_mm: 18.0
+    cutaway: true
+    segments: [8, 9]
+  - title: "Mission complete in the phototextured twin"
+    operator_label: "12/12 LEGS COMPLETE"
+    camera: [0.2, 5.0, 3.0]
+    look_at: [5.1, -1.2, 0.62]
+    focal_length_mm: 15.0
+    segments: [10, 11]
+
+presentation_disclosures:
+  overlay: >-
+    Accepted live-policy poses replayed in the capture-textured metric twin;
+    visual replay, not live policy execution.
+  supported_claim: >-
+    Hybrid metric phototextured survey with genuine dense captured clusters
+    and real image-derived PBR finishes.
+  complete_monolithic_photogrammetric_mesh: false
+  registration_is_certified_survey_control: false
+  vice_principal_interior_assumed_because_locked: true
+  narrowest_administration_reported_door_width_m: 0.85
+  reported_door_height_m: 2.12
+  central_polygon_step_down_m: 0.20
+  raw_dense_mesh_used_for_collision: false
+  visual_replay_is_live_policy_execution: false
+  physical_localization_credit: false
+  physical_safety_credit: false
+  physical_release: false
+
+outputs:
+  material_report: results/phase7k_capture_materials_report.json
+  privacy_manifest: results/phase7k_photogrammetry_asset_manifest.json
+  dense_usd_build: results/phase7k_photogrammetry_usd_build.json
+  survey_build: results/phase7k_phototextured_survey_build.json
+  static_render_report: results/phase7k_phototextured_survey_static_render.json
+  replay_validation: results/administration_nav2_phase7k_replay_validation.json
+  render_report: results/administration_nav2_phase7k_rtx_render_report.json
+  frames: outputs/phase7k_phototextured_survey_rtx_frames
+  video: media/videos/AI-SHA_Phase7K_Phototextured_Photogrammetric_Survey.mp4
+  contact_sheet: media/AI-SHA_Phase7K_Phototextured_Photogrammetric_Survey_contact_sheet.jpg
+  acceptance: results/administration_nav2_phase7k_phototextured_survey_acceptance.json

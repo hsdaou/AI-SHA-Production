@@ -1,0 +1,59 @@
+{
+  "report_type": "phase7k_photogrammetry_usd_build",
+  "generated_at_utc": "2026-08-25T04:29:14.434405+00:00",
+  "status": "passed",
+  "passed": true,
+  "manifest": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/phase7k_photogrammetry_asset_manifest.json",
+  "manifest_sha256": "42b70b201a37415cf7c4eea0c224c1298b68580437e335c3cbb7abce63a635ef",
+  "outputs": {
+    "atrium_corridor": {
+      "path": "scenes/phase7k_atrium_corridor_photogrammetry.usdc",
+      "sha256": "c09d20a191bd48205de80f0def4fb12e82a829c22208a0c81d109fa474eb17ae",
+      "vertices": 185330,
+      "faces": 371694,
+      "materials": [
+        "material_1001",
+        "material_1002"
+      ],
+      "native_z_up_min_xyz_m": [
+        -1.953655,
+        -0.596557,
+        0.0
+      ],
+      "native_z_up_max_xyz_m": [
+        1.204112,
+        3.710405,
+        1.451837
+      ],
+      "metric_scale": 1.0,
+      "collision_enabled": false
+    },
+    "principal_office": {
+      "path": "scenes/phase7k_principal_office_photogrammetry.usdc",
+      "sha256": "ae80b2613e2fc9cabcf92d21e9e99ed83cc857dcdcb4728867d2ebe7a73f853c",
+      "vertices": 126420,
+      "faces": 253601,
+      "materials": [
+        "material_1001",
+        "material_1002"
+      ],
+      "native_z_up_min_xyz_m": [
+        -1.803314,
+        -1.073099,
+        0.0
+      ],
+      "native_z_up_max_xyz_m": [
+        1.961839,
+        3.85643,
+        2.995433
+      ],
+      "metric_scale": 1.0,
+      "collision_enabled": false
+    }
+  },
+  "total_vertices": 311750,
+  "total_faces": 625295,
+  "clusters_kept_separate": true,
+  "raw_dense_mesh_used_for_collision": false,
+  "physical_release": false
+}

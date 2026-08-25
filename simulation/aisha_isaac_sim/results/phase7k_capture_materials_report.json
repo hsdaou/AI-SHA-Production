@@ -1,0 +1,389 @@
+{
+  "report_type": "phase7k_privacy_safe_capture_material_generation",
+  "status": "passed",
+  "passed": true,
+  "sources": {
+    "IMG_6702.jpg": {
+      "sha256": "e102a38e5e180c8aa7aa834f69ee5810f0cc29cb9c30fb2433b269adbd6311bd",
+      "dimensions_px": [
+        3024,
+        4032
+      ],
+      "path_committed": false
+    },
+    "IMG_6704.jpg": {
+      "sha256": "f43b9c2e2b17ebe5927236296eca10b1a32bd53ee972f3246ad3c05a934afa6b",
+      "dimensions_px": [
+        3024,
+        4032
+      ],
+      "path_committed": false
+    },
+    "IMG_6705.jpg": {
+      "sha256": "c7c6f1ec0ddb57bad0fa184c1ee3abfe286348681e5e654150064e88e85c885b",
+      "dimensions_px": [
+        3024,
+        4032
+      ],
+      "path_committed": false
+    },
+    "IMG_6707.jpg": {
+      "sha256": "07c167d801c9310fd3c6ecbde22bd6b783cc40984f898c8401fdc2387881a15c",
+      "dimensions_px": [
+        3024,
+        4032
+      ],
+      "path_committed": false
+    },
+    "IMG_6708.jpg": {
+      "sha256": "4ed8c802de8c4c3120b3cb8d88e4719608f726d2d86e02416adec6d07e106819",
+      "dimensions_px": [
+        3024,
+        4032
+      ],
+      "path_committed": false
+    }
+  },
+  "source_stills_committed": false,
+  "privacy_scope": "surface-only crops; no names, paperwork, portraits, screens, people, GPS or complete-room photographs retained",
+  "assets": {
+    "atrium_terrazzo": {
+      "source": "IMG_6702.jpg",
+      "normalized_rectification_quad": [
+        [
+          0.05,
+          0.64
+        ],
+        [
+          0.45,
+          0.64
+        ],
+        [
+          0.45,
+          0.7
+        ],
+        [
+          0.05,
+          0.7
+        ]
+      ],
+      "privacy_note": "speckled atrium floor away from furniture and wall graphics",
+      "maps": {
+        "albedo": {
+          "path": "textures/phase7k_capture/atrium_terrazzo_albedo.png",
+          "sha256": "8aec507cc069a614f17522d8b2bc896dc6e83776c4c28465dd9380df1ee6309e",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "roughness": {
+          "path": "textures/phase7k_capture/atrium_terrazzo_roughness.png",
+          "sha256": "b4cde81bcd438fabb9abcc9215cf7ae5c207aa6b0a376c6179ccd0426554fc70",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "normal": {
+          "path": "textures/phase7k_capture/atrium_terrazzo_normal.png",
+          "sha256": "d8083661aee8cc95a1c34530b5867553d5ff50835ee5d5d7e2f1778e0759477c",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        }
+      }
+    },
+    "hall_terrazzo": {
+      "source": "IMG_6704.jpg",
+      "normalized_rectification_quad": [
+        [
+          0.16,
+          0.78
+        ],
+        [
+          0.62,
+          0.78
+        ],
+        [
+          0.64,
+          0.89
+        ],
+        [
+          0.13,
+          0.89
+        ]
+      ],
+      "privacy_note": "office-hall terrazzo below all door signs",
+      "maps": {
+        "albedo": {
+          "path": "textures/phase7k_capture/hall_terrazzo_albedo.png",
+          "sha256": "8e74e55a10252aeb7bb30791cbbbb41bbe3efb00bb56987994ec3f70d71a3b89",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "roughness": {
+          "path": "textures/phase7k_capture/hall_terrazzo_roughness.png",
+          "sha256": "70338614b4bad5cdf0aca318ad441cd00894a9ade8a62ca52c9d4140b5d5bd7b",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "normal": {
+          "path": "textures/phase7k_capture/hall_terrazzo_normal.png",
+          "sha256": "926b93ca9e794c8527f7b6ca51105d97b12e30d12b0d32a10712f532aa6487e4",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        }
+      }
+    },
+    "grey_door": {
+      "source": "IMG_6705.jpg",
+      "normalized_rectification_quad": [
+        [
+          0.31,
+          0.48
+        ],
+        [
+          0.45,
+          0.48
+        ],
+        [
+          0.45,
+          0.73
+        ],
+        [
+          0.31,
+          0.73
+        ]
+      ],
+      "privacy_note": "grey wood door surface excluding the name plate and hardware",
+      "maps": {
+        "albedo": {
+          "path": "textures/phase7k_capture/grey_door_albedo.png",
+          "sha256": "49f78b05a01a74a5a13e4584aa4df7701ce3b638485ac65c07c9898c6b7aef0e",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "roughness": {
+          "path": "textures/phase7k_capture/grey_door_roughness.png",
+          "sha256": "e7e4cd0ee73d3e31969addb25d3906913b9c476fca1432181cc39e878c61867c",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "normal": {
+          "path": "textures/phase7k_capture/grey_door_normal.png",
+          "sha256": "d6ef6c7dc7cd8987213c092cbd347bf579613c1ae97e4295043a2a9881dab3db",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        }
+      }
+    },
+    "office_wall": {
+      "source": "IMG_6704.jpg",
+      "normalized_rectification_quad": [
+        [
+          0.65,
+          0.13
+        ],
+        [
+          0.78,
+          0.13
+        ],
+        [
+          0.78,
+          0.26
+        ],
+        [
+          0.65,
+          0.26
+        ]
+      ],
+      "privacy_note": "plain off-white partition infill without signage",
+      "maps": {
+        "albedo": {
+          "path": "textures/phase7k_capture/office_wall_albedo.png",
+          "sha256": "f4c57296aad683c313f3a163f5c907a139e07230504277676187b9d5d5b69d7d",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "roughness": {
+          "path": "textures/phase7k_capture/office_wall_roughness.png",
+          "sha256": "7f3bd696cc684ac50255747a1fe895c89d3ded9670f0345c9e06aab74c920eaf",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "normal": {
+          "path": "textures/phase7k_capture/office_wall_normal.png",
+          "sha256": "ae1fe5b8629d0e083ebc327cf5cc807a127138df4d4117e28d0ef27211b5b149",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        }
+      }
+    },
+    "principal_grey_oak": {
+      "source": "IMG_6707.jpg",
+      "normalized_rectification_quad": [
+        [
+          0.4,
+          0.82
+        ],
+        [
+          0.9,
+          0.78
+        ],
+        [
+          0.98,
+          0.995
+        ],
+        [
+          0.3,
+          0.995
+        ]
+      ],
+      "privacy_note": "Principal-office grey plank floor",
+      "maps": {
+        "albedo": {
+          "path": "textures/phase7k_capture/principal_grey_oak_albedo.png",
+          "sha256": "f202777fa8f776a940bbb8355cc9d739942e067e27cac45f68a392f0b77923fa",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "roughness": {
+          "path": "textures/phase7k_capture/principal_grey_oak_roughness.png",
+          "sha256": "c70a041c5568d19d5902cae2efd5217c52a60a042d2ab2c3f83f5bd3c5835003",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "normal": {
+          "path": "textures/phase7k_capture/principal_grey_oak_normal.png",
+          "sha256": "d3c03d156e7c63f424483d53057d041b80b365c3f534982ea7f44d543f553535",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        }
+      }
+    },
+    "principal_walnut": {
+      "source": "IMG_6708.jpg",
+      "normalized_rectification_quad": [
+        [
+          0.05,
+          0.15
+        ],
+        [
+          0.18,
+          0.17
+        ],
+        [
+          0.18,
+          0.23
+        ],
+        [
+          0.05,
+          0.21
+        ]
+      ],
+      "privacy_note": "Principal-office walnut cabinet surface",
+      "maps": {
+        "albedo": {
+          "path": "textures/phase7k_capture/principal_walnut_albedo.png",
+          "sha256": "140eef884114af195adb94009a9ee635d629a3c7bb475e8f7d4d70738303de75",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "roughness": {
+          "path": "textures/phase7k_capture/principal_walnut_roughness.png",
+          "sha256": "a286f823de439139e91e37fd6c717e780d3c0a5114751be8a1084a52b0c8affe",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "normal": {
+          "path": "textures/phase7k_capture/principal_walnut_normal.png",
+          "sha256": "aaf32c4e53e1952188292a27ed53c283548b746bd9fc1aa9270539ede2c4b30f",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        }
+      }
+    },
+    "principal_green": {
+      "source": "IMG_6708.jpg",
+      "normalized_rectification_quad": [
+        [
+          0.13,
+          0.62
+        ],
+        [
+          0.19,
+          0.62
+        ],
+        [
+          0.19,
+          0.69
+        ],
+        [
+          0.13,
+          0.69
+        ]
+      ],
+      "privacy_note": "Principal-office muted-green cabinet fronts without awards",
+      "maps": {
+        "albedo": {
+          "path": "textures/phase7k_capture/principal_green_albedo.png",
+          "sha256": "da3c5b78686f18f7b9a5e740e31bf441f4ff137af147e83e2e618bf0174a927a",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "roughness": {
+          "path": "textures/phase7k_capture/principal_green_roughness.png",
+          "sha256": "7d44ba0a62ff0fbe989fb082da1098078b6bbf19515987d318f8e4413948e7e6",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        },
+        "normal": {
+          "path": "textures/phase7k_capture/principal_green_normal.png",
+          "sha256": "49c4e8a1808e57f92f83778e8ae5666387f4d95b283e4e0b189c3804e323f49e",
+          "dimensions_px": [
+            1024,
+            1024
+          ]
+        }
+      }
+    }
+  },
+  "collision_geometry_changed": false,
+  "physical_release": false
+}

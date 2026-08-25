@@ -1,0 +1,358 @@
+{
+  "atrium_column_clearance": {
+    "column_radius_m": 0.19,
+    "columns": [
+      {
+        "closest_trace_segment_index": 4924,
+        "column_index": 0,
+        "minimum_surface_clearance_m": 5.750797,
+        "minimum_trace_centre_distance_m": 6.644754,
+        "passed": true,
+        "position_xy_m": [
+          -3.25,
+          -2.55
+        ]
+      },
+      {
+        "closest_trace_segment_index": 0,
+        "column_index": 1,
+        "minimum_surface_clearance_m": 6.261226,
+        "minimum_trace_centre_distance_m": 7.155183,
+        "passed": true,
+        "position_xy_m": [
+          -3.25,
+          2.55
+        ]
+      },
+      {
+        "closest_trace_segment_index": 4883,
+        "column_index": 2,
+        "minimum_surface_clearance_m": 1.491833,
+        "minimum_trace_centre_distance_m": 2.38579,
+        "passed": true,
+        "position_xy_m": [
+          1.25,
+          -4.2
+        ]
+      },
+      {
+        "closest_trace_segment_index": 0,
+        "column_index": 3,
+        "minimum_surface_clearance_m": 1.701853,
+        "minimum_trace_centre_distance_m": 2.595811,
+        "passed": true,
+        "position_xy_m": [
+          2.95,
+          2.55
+        ]
+      }
+    ],
+    "conservative_robot_radius_m": 0.703957,
+    "method": "minimum 2D distance to every interpolated learned-trace segment",
+    "required_trace_centre_distance_m": 0.95,
+    "robot_envelope_length_m": 1.18,
+    "robot_envelope_width_m": 0.768
+  },
+  "camera_style": "fixed_human_height_capture_textured_environmental",
+  "checkpoint": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase6_high_speed_080_model_223.pt",
+  "claim_boundary": {
+    "physical_localization_credit": false,
+    "physical_release": false,
+    "source_motion_was_live_policy_execution": true,
+    "supported": "PathTracing visual replay of recorded poses from the accepted live Nav2/Isaac wheel-physics mission",
+    "visual_replay_is_live_policy_execution": false
+  },
+  "clearance_validation_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7k_replay_validation.json",
+  "clearance_validation_report_sha256": "d76e1885e6976882cad066a48cf431dc0f8fa54de481e5f013ed189a7e5f8ab7",
+  "completed_steps": 15061,
+  "disclosure": "visual replay of a verified learned run in the presentation environment; not live policy execution",
+  "duration_s": 20.0,
+  "encoded_duration_s": 20.0,
+  "encoded_fps": 24.0,
+  "encoded_frame_count": 480,
+  "encoder": "ffmpeg/libx264",
+  "encoder_crf": 18,
+  "encoder_preset": "slow",
+  "exposure_bias": 0.65,
+  "fps": 24,
+  "frame_count": 480,
+  "frame_directory": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/outputs/phase7k_phototextured_survey_rtx_frames",
+  "motion": "recorded pose samples from the successful live Nav2/Isaac wheel-physics mission; no scripted route interpolation",
+  "path_tracing_spp": 12,
+  "presentation_disclosures": {
+    "central_polygon_step_down_m": 0.2,
+    "complete_monolithic_photogrammetric_mesh": false,
+    "narrowest_administration_reported_door_width_m": 0.85,
+    "overlay": "Accepted live-policy poses replayed in the capture-textured metric twin; visual replay, not live policy execution.",
+    "physical_localization_credit": false,
+    "physical_release": false,
+    "physical_safety_credit": false,
+    "raw_dense_mesh_used_for_collision": false,
+    "registration_is_certified_survey_control": false,
+    "reported_door_height_m": 2.12,
+    "supported_claim": "Hybrid metric phototextured survey with genuine dense captured clusters and real image-derived PBR finishes.",
+    "vice_principal_interior_assumed_because_locked": true,
+    "visual_replay_is_live_policy_execution": false
+  },
+  "presentation_phase": "PHASE7K-PHOTOTEXTURED-PHOTOGRAMMETRIC-SURVEY",
+  "presentation_profile": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/config/phase7k_phototextured_photogrammetric_survey.yaml",
+  "presentation_profile_sha256": "15bbc71b1d129c90c8ee88cbde5b0fbb46899f02e9b91e0a1e5d128cbb1e1509",
+  "renderer": "PathTracing",
+  "resolution": [
+    1920,
+    1080
+  ],
+  "scene": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/scenes/phase7k_phototextured_presentation.usda",
+  "scene_sha256": "d52137df88222421410c1723eb57a5ac6f93d52f21b4e4a6f88eb39f4ebcd5ef",
+  "shots": [
+    {
+      "available_source_trace_records": 56,
+      "camera": [
+        0.2,
+        5.0,
+        3.0
+      ],
+      "cutaway": false,
+      "first_elapsed_s": 0.066667,
+      "first_source_step": 3,
+      "focal_length_mm": 15.0,
+      "last_elapsed_s": 5.566667,
+      "last_source_step": 168,
+      "look_at": [
+        5.1,
+        -1.2,
+        0.62
+      ],
+      "rendered_frames": 60,
+      "segment_ids": [
+        0
+      ],
+      "source_fraction": [
+        0.0,
+        1.0
+      ],
+      "source_trace_records": 56,
+      "title": "Phototextured administration - mission start"
+    },
+    {
+      "available_source_trace_records": 234,
+      "camera": [
+        6.0,
+        1.14,
+        1.8
+      ],
+      "cutaway": false,
+      "first_elapsed_s": 19.166667,
+      "first_source_step": 576,
+      "focal_length_mm": 15.0,
+      "last_elapsed_s": 28.966667,
+      "last_source_step": 870,
+      "look_at": [
+        15.1,
+        -0.15,
+        0.7
+      ],
+      "rendered_frames": 60,
+      "segment_ids": [
+        1
+      ],
+      "source_fraction": [
+        0.58,
+        1.0
+      ],
+      "source_trace_records": 99,
+      "title": "Phototextured east administration hallway"
+    },
+    {
+      "available_source_trace_records": 1407,
+      "camera": [
+        19.4,
+        -6.8,
+        1.9
+      ],
+      "cutaway": false,
+      "first_elapsed_s": 29.066667,
+      "first_source_step": 873,
+      "focal_length_mm": 12.0,
+      "last_elapsed_s": 169.666667,
+      "last_source_step": 5091,
+      "look_at": [
+        16.9,
+        -4.5,
+        0.62
+      ],
+      "rendered_frames": 60,
+      "segment_ids": [
+        2,
+        3
+      ],
+      "source_fraction": [
+        0.0,
+        1.0
+      ],
+      "source_trace_records": 1407,
+      "title": "Vice-Principal approach in the captured wing"
+    },
+    {
+      "available_source_trace_records": 890,
+      "camera": [
+        19.2,
+        -7.5,
+        1.92
+      ],
+      "cutaway": false,
+      "first_elapsed_s": 169.766667,
+      "first_source_step": 5094,
+      "focal_length_mm": 11.5,
+      "last_elapsed_s": 258.666667,
+      "last_source_step": 7761,
+      "look_at": [
+        16.8,
+        -6.0,
+        0.62
+      ],
+      "rendered_frames": 60,
+      "segment_ids": [
+        4
+      ],
+      "source_fraction": [
+        0.0,
+        1.0
+      ],
+      "source_trace_records": 890,
+      "title": "Vice-Principal visit and safe reverse departure"
+    },
+    {
+      "available_source_trace_records": 226,
+      "camera": [
+        -1.0,
+        2.5,
+        2.6
+      ],
+      "cutaway": false,
+      "first_elapsed_s": 258.766667,
+      "first_source_step": 7764,
+      "focal_length_mm": 15.0,
+      "last_elapsed_s": 281.266667,
+      "last_source_step": 8439,
+      "look_at": [
+        9.0,
+        -0.1,
+        0.68
+      ],
+      "rendered_frames": 60,
+      "segment_ids": [
+        5
+      ],
+      "source_fraction": [
+        0.0,
+        1.0
+      ],
+      "source_trace_records": 226,
+      "title": "Return through the phototextured hallway"
+    },
+    {
+      "available_source_trace_records": 526,
+      "camera": [
+        2.55,
+        -2.65,
+        1.84
+      ],
+      "cutaway": false,
+      "first_elapsed_s": 312.866667,
+      "first_source_step": 9387,
+      "focal_length_mm": 15.0,
+      "last_elapsed_s": 333.866667,
+      "last_source_step": 10017,
+      "look_at": [
+        6.75,
+        -7.35,
+        0.7
+      ],
+      "rendered_frames": 60,
+      "segment_ids": [
+        6,
+        7
+      ],
+      "source_fraction": [
+        0.6,
+        1.0
+      ],
+      "source_trace_records": 211,
+      "title": "Principal suite - registered metric approach"
+    },
+    {
+      "available_source_trace_records": 1147,
+      "camera": [
+        10.0,
+        -5.0,
+        4.0
+      ],
+      "cutaway": true,
+      "first_elapsed_s": 333.966667,
+      "first_source_step": 10020,
+      "focal_length_mm": 18.0,
+      "last_elapsed_s": 448.566667,
+      "last_source_step": 13458,
+      "look_at": [
+        7.2,
+        -7.8,
+        0.55
+      ],
+      "rendered_frames": 60,
+      "segment_ids": [
+        8,
+        9
+      ],
+      "source_fraction": [
+        0.0,
+        1.0
+      ],
+      "source_trace_records": 1147,
+      "title": "Principal visit with captured floor and finishes"
+    },
+    {
+      "available_source_trace_records": 534,
+      "camera": [
+        0.2,
+        5.0,
+        3.0
+      ],
+      "cutaway": false,
+      "first_elapsed_s": 448.666667,
+      "first_source_step": 13461,
+      "focal_length_mm": 15.0,
+      "last_elapsed_s": 501.966667,
+      "last_source_step": 15060,
+      "look_at": [
+        5.1,
+        -1.2,
+        0.62
+      ],
+      "rendered_frames": 60,
+      "segment_ids": [
+        10,
+        11
+      ],
+      "source_fraction": [
+        0.0,
+        1.0
+      ],
+      "source_trace_records": 534,
+      "title": "Mission complete in the phototextured twin"
+    }
+  ],
+  "source_trace_control_modes": {
+    "nav2_phase6_and_phase3n_learned_safety_with_static_fused_native_costmap": 5020
+  },
+  "source_trace_record_count": 5020,
+  "status": "route_video_encoded",
+  "trajectory_outcome": "success",
+  "trajectory_report": "/home/robot-wst/Documents/Codex/2026-08-20/continue-the-ai-sha-isaac-sim/work/AI-SHA-Production/simulation/aisha_isaac_sim/results/administration_nav2_phase7e_static_fusion_mission.json",
+  "trajectory_report_sha256": "6463b80bfc1015063c5805c555f43d5986fe3f0c0517848735d093d92c759bf5",
+  "trajectory_seed": 6084,
+  "video": "media/videos/AI-SHA_Phase7K_Phototextured_Photogrammetric_Survey.mp4",
+  "video_sha256": "5b823a3bf76619333e1f7b40fdb3b286323e3eae3aa20d2469501315be482c30",
+  "video_size_bytes": 3697408,
+  "waypoints_completed": 12
+}

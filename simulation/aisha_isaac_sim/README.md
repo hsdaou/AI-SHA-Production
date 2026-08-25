@@ -217,6 +217,35 @@ disclosed assumption because it was locked. The displayed motion is a visual
 replay of recorded poses from the accepted live Nav2/learned-safety simulation
 mission, not a second live-policy execution or a physical-deployment release.
 
+## Phase 7K phototextured photogrammetric survey
+
+Phase 7K adds two genuine AliceVision dense, camera-textured clusters from the
+supplied walkthrough (311,750 vertices and 625,295 faces) and seven privacy-safe
+albedo/roughness/normal material sets derived from the supplied stills. The
+clusters remain separate and use provisional metric alignment; their original
+photographs, OBJ files and atlases are not committed.
+
+The survey-review USD keeps the dense capture visible. The presentation USD
+references the same survey but hides the incomplete floating fragments, while
+retaining capture-derived finishes on the metric RoomPlan/LiDAR geometry. Raw
+dense geometry has no collision and the accepted navigation layer is unchanged.
+
+Build the survey, render the Full HD PathTracing presentation, encode the
+video, make its contact sheet and run acceptance with:
+
+```bash
+tools/run_phase7k_phototextured_survey.sh
+```
+
+Start the live clean presentation with `tools/run_phase7k_live_omniverse.sh`,
+or inspect the raw survey evidence with `tools/open_phase7k_survey_review.sh`.
+Use `PHASE7K_PRESENTATION_RUNBOOK.md` for the exact venue sequence and claim
+boundary. This is an authentic hybrid photogrammetry-backed digital twin, not
+a seamless or certified as-built survey. The Vice-Principal interior remains
+assumed because it was locked. The frozen 480-frame Full HD release passed all
+54 acceptance checks; its video SHA-256 is
+`5b823a3bf76619333e1f7b40fdb3b286323e3eae3aa20d2469501315be482c30`.
+
 ## Phase 8A physical-localization preflight
 
 The first sim-to-real phase now has a fail-safe, localization-only ROS 2 graph

@@ -1,0 +1,521 @@
+{
+  "report_type": "phase7k_phototextured_photogrammetric_survey_build",
+  "generated_at_utc": "2026-08-25T04:59:40.975693+00:00",
+  "status": "passed",
+  "passed": true,
+  "visual_layer": {
+    "category_counts": {
+      "Chair": 2,
+      "Floor": 2,
+      "Storage": 2,
+      "Table": 2,
+      "Television": 1,
+      "Wall": 81
+    },
+    "crop_counts": {
+      "hidden_primary:Wall": 6,
+      "hidden_principal_supplement:Floor": 1,
+      "hidden_principal_supplement:Wall": 17,
+      "visible_primary:Chair": 1,
+      "visible_primary:Floor": 1,
+      "visible_primary:Storage": 1,
+      "visible_primary:Table": 1,
+      "visible_primary:Television": 1,
+      "visible_primary:Wall": 47,
+      "visible_principal_supplement:Chair": 1,
+      "visible_principal_supplement:Storage": 1,
+      "visible_principal_supplement:Table": 1,
+      "visible_principal_supplement:Wall": 11
+    },
+    "uuid_fields_scrubbed": 90,
+    "flattened": true,
+    "external_roomplan_dependencies": false,
+    "normal_maps_connected": 5,
+    "sha256": "e0c549cdf35724d751b90147b01a8401283f9ad86a2908a76f042ee05e6b80ad",
+    "path": "scenes/phase7k_phototextured_metric_visual.usdc"
+  },
+  "composite_scene": {
+    "route_trace_points": 1005,
+    "source_motion_live_policy": true,
+    "presentation_motion_is_recorded_pose_replay": true,
+    "visual_collision_layers_separated": true,
+    "visible_plan_authority_floor_with_atrium_step_down": true,
+    "floor_elevation_ranges": {
+      "plan_authority_z_m": [
+        -0.0545,
+        0.002
+      ],
+      "/World/CapturedAdministration/Primary/Mesh_grp/Floor_grp": [
+        -0.158,
+        0.002
+      ],
+      "/World/CapturedAdministration/PrincipalSupplement/Mesh_grp/Floor_grp": [
+        -0.158,
+        0.002
+      ]
+    },
+    "presentation_hidden_roomplan_floor_count": 2,
+    "presentation_hidden_roomplan_floors": [
+      "/World/CapturedAdministration/Primary/Mesh_grp/Floor_grp",
+      "/World/CapturedAdministration/PrincipalSupplement/Mesh_grp/Floor_grp"
+    ],
+    "presentation_hidden_movable_route_conflicts": [
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Storage_grp/Storage11",
+        "category": "Storage",
+        "minimum_route_centre_distance_m": 0.0,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Storage_grp/Storage0",
+        "category": "Storage",
+        "minimum_route_centre_distance_m": 0.308,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair31",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.047,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair30",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.2097,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair29",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.3357,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair28",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.2357,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair27",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.6791,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair26",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.5562,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair25",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.2334,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair23",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.1806,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair21",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.253,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair18",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.0,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair15",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.5875,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair12",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.8425,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair3",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.0,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Table_grp/Table4",
+        "category": "Table",
+        "minimum_route_centre_distance_m": 0.0,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Table_grp/Table2",
+        "category": "Table",
+        "minimum_route_centre_distance_m": 0.0,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/PrincipalSupplement/Mesh_grp/Object_grp/Storage_grp/Storage7",
+        "category": "Storage",
+        "minimum_route_centre_distance_m": 0.7303,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/PrincipalSupplement/Mesh_grp/Object_grp/Storage_grp/Storage1",
+        "category": "Storage",
+        "minimum_route_centre_distance_m": 0.1024,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/PrincipalSupplement/Mesh_grp/Object_grp/Chair_grp/Chair2",
+        "category": "Chair",
+        "minimum_route_centre_distance_m": 0.4875,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/PrincipalSupplement/Mesh_grp/Object_grp/Table_grp/Table1",
+        "category": "Table",
+        "minimum_route_centre_distance_m": 0.0,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/PrincipalSupplement/Mesh_grp/Object_grp/Table_grp/Table0",
+        "category": "Table",
+        "minimum_route_centre_distance_m": 0.5834,
+        "corner_swept_presentation_envelope_radius_m": 0.85,
+        "full_capture_visual_layer_retains_item": true
+      }
+    ],
+    "presentation_hidden_movable_route_conflict_count": 22,
+    "presentation_hidden_static_visual_route_conflicts": [
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Arch_grp/Wall_1_grp",
+        "category": "Wall",
+        "minimum_route_centre_distance_m": 0.0,
+        "required_robot_corridor_radius_m": 0.42,
+        "approved_plan_and_frozen_collision_layer_are_authority": true,
+        "full_capture_visual_layer_retains_component": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Arch_grp/Wall_11_grp",
+        "category": "Wall",
+        "minimum_route_centre_distance_m": 0.0,
+        "required_robot_corridor_radius_m": 0.42,
+        "approved_plan_and_frozen_collision_layer_are_authority": true,
+        "full_capture_visual_layer_retains_component": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Arch_grp/Wall_20_grp",
+        "category": "Wall",
+        "minimum_route_centre_distance_m": 0.1782,
+        "required_robot_corridor_radius_m": 0.42,
+        "approved_plan_and_frozen_collision_layer_are_authority": true,
+        "full_capture_visual_layer_retains_component": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Arch_grp/Wall_29_grp",
+        "category": "Wall",
+        "minimum_route_centre_distance_m": 0.0,
+        "required_robot_corridor_radius_m": 0.42,
+        "approved_plan_and_frozen_collision_layer_are_authority": true,
+        "full_capture_visual_layer_retains_component": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Arch_grp/Wall_36_grp",
+        "category": "Wall",
+        "minimum_route_centre_distance_m": 0.0,
+        "required_robot_corridor_radius_m": 0.42,
+        "approved_plan_and_frozen_collision_layer_are_authority": true,
+        "full_capture_visual_layer_retains_component": true
+      },
+      {
+        "path": "/World/CapturedAdministration/PrincipalSupplement/Mesh_grp/Arch_grp/Wall_8_grp",
+        "category": "Wall",
+        "minimum_route_centre_distance_m": 0.1678,
+        "required_robot_corridor_radius_m": 0.42,
+        "approved_plan_and_frozen_collision_layer_are_authority": true,
+        "full_capture_visual_layer_retains_component": true
+      },
+      {
+        "path": "/World/CapturedAdministration/PrincipalSupplement/Mesh_grp/Arch_grp/Wall_12_grp",
+        "category": "Wall",
+        "minimum_route_centre_distance_m": 0.0,
+        "required_robot_corridor_radius_m": 0.42,
+        "approved_plan_and_frozen_collision_layer_are_authority": true,
+        "full_capture_visual_layer_retains_component": true
+      },
+      {
+        "path": "/World/CapturedAdministration/PrincipalSupplement/Mesh_grp/Arch_grp/Wall_19_grp",
+        "category": "Wall",
+        "minimum_route_centre_distance_m": 0.1433,
+        "required_robot_corridor_radius_m": 0.42,
+        "approved_plan_and_frozen_collision_layer_are_authority": true,
+        "full_capture_visual_layer_retains_component": true
+      }
+    ],
+    "presentation_hidden_static_visual_route_conflict_count": 8,
+    "presentation_hidden_primary_principal_furniture_duplicates": [
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Storage_grp/Storage12",
+        "category": "Storage",
+        "centre_xy_m": [
+          7.6595,
+          -6.5355
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Storage_grp/Storage9",
+        "category": "Storage",
+        "centre_xy_m": [
+          7.6614,
+          -6.5293
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Storage_grp/Storage5",
+        "category": "Storage",
+        "centre_xy_m": [
+          6.7935,
+          -5.5901
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Storage_grp/Storage2",
+        "category": "Storage",
+        "centre_xy_m": [
+          8.6415,
+          -7.6306
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Storage_grp/Storage0",
+        "category": "Storage",
+        "centre_xy_m": [
+          6.137,
+          -5.3255
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair32",
+        "category": "Chair",
+        "centre_xy_m": [
+          5.6923,
+          -9.2311
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair31",
+        "category": "Chair",
+        "centre_xy_m": [
+          6.4856,
+          -7.5786
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair20",
+        "category": "Chair",
+        "centre_xy_m": [
+          6.281,
+          -9.9114
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair18",
+        "category": "Chair",
+        "centre_xy_m": [
+          7.2622,
+          -7.6447
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair15",
+        "category": "Chair",
+        "centre_xy_m": [
+          6.4395,
+          -8.3567
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair6",
+        "category": "Chair",
+        "centre_xy_m": [
+          7.687,
+          -4.4525
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Chair_grp/Chair3",
+        "category": "Chair",
+        "centre_xy_m": [
+          3.8644,
+          -4.2372
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Table_grp/Table4",
+        "category": "Table",
+        "centre_xy_m": [
+          4.0957,
+          -4.0221
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Table_grp/Table2",
+        "category": "Table",
+        "centre_xy_m": [
+          6.8508,
+          -8.0007
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Table_grp/Table1",
+        "category": "Table",
+        "centre_xy_m": [
+          5.6404,
+          -9.8709
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      },
+      {
+        "path": "/World/CapturedAdministration/Primary/Mesh_grp/Object_grp/Television_grp/Television1",
+        "category": "Television",
+        "centre_xy_m": [
+          7.6974,
+          -6.4135
+        ],
+        "principal_supplement_is_presentation_authority": true,
+        "full_capture_visual_layer_retains_item": true
+      }
+    ],
+    "presentation_hidden_primary_principal_furniture_duplicate_count": 16,
+    "full_capture_layer_retains_all_captured_furniture": true,
+    "vice_principal_interior_assumed": true,
+    "cluster_registrations": {
+      "AtriumCorridorCluster": {
+        "asset": "phase7k_atrium_corridor_photogrammetry.usdc",
+        "native_centre_xy_m": [
+          -0.374771,
+          1.556924
+        ],
+        "world_centre_xy_m": [
+          1.8,
+          -0.4
+        ],
+        "world_yaw_deg": -3.56,
+        "metric_scale": 1.0,
+        "collision_enabled": false
+      },
+      "PrincipalOfficeCluster": {
+        "asset": "phase7k_principal_office_photogrammetry.usdc",
+        "native_centre_xy_m": [
+          0.079262,
+          1.391665
+        ],
+        "world_centre_xy_m": [
+          7.6,
+          -8.3
+        ],
+        "world_yaw_deg": -146.0,
+        "metric_scale": 1.0,
+        "collision_enabled": false
+      }
+    },
+    "cluster_count": 2,
+    "clusters_visible": true,
+    "clusters_false_welded": false,
+    "principal_photo_floor_overlay": true,
+    "sha256": "e15e26cf53c0d2d3c6cbe294021b1760d310a27ea754545f4c5a2d4befdff74c",
+    "path": "scenes/phase7k_phototextured_photogrammetric_survey.usda"
+  },
+  "presentation_scene": {
+    "path": "scenes/phase7k_phototextured_presentation.usda",
+    "sha256": "d52137df88222421410c1723eb57a5ac6f93d52f21b4e4a6f88eb39f4ebcd5ef",
+    "survey_scene_referenced": "scenes/phase7k_phototextured_photogrammetric_survey.usda",
+    "dense_clusters_present_but_hidden": true,
+    "navigation_collision_geometry_changed": false
+  },
+  "capture_materials": {
+    "report_sha256": "def604f54e5dea12f5becbd0690cb671d5378c502d7b5ed7e165929b272f8661",
+    "asset_sets": 7,
+    "source_stills_committed": false
+  },
+  "photogrammetry": {
+    "manifest_sha256": "42b70b201a37415cf7c4eea0c224c1298b68580437e335c3cbb7abce63a635ef",
+    "usd_build_sha256": "e97baf2f83aca84efa85f975360caa6a1884ade99d6bc1844eb5554b8201af93",
+    "total_vertices": 311750,
+    "total_faces": 625295,
+    "clusters_kept_separate": true,
+    "privacy_screened_atlases": true
+  },
+  "frozen_safety_contract": {
+    "navigation_collision_geometry_changed": false,
+    "raw_dense_mesh_used_for_collision": false,
+    "source_motion_was_accepted_live_policy": true,
+    "presentation_motion_is_recorded_pose_replay": true
+  },
+  "claim_boundary": {
+    "supported": "hybrid metric phototextured survey with genuine dense captured clusters and real image-derived PBR",
+    "complete_monolithic_photogrammetric_mesh": false,
+    "cluster_registration_is_survey_control": false,
+    "locked_vice_principal_interior_captured": false,
+    "physical_release": false
+  }
+}
