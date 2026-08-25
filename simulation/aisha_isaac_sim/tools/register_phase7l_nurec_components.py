@@ -40,6 +40,7 @@ class Model:
     points: dict[int, np.ndarray]
     observations: dict[int, np.ndarray]
     camera_centres: dict[int, np.ndarray]
+    camera_up: dict[int, np.ndarray]
 
 
 def parse_args() -> argparse.Namespace:
@@ -96,6 +97,7 @@ def load_model(source: Path, component: int) -> Model:
 
     observations: dict[int, np.ndarray] = {}
     camera_centres: dict[int, np.ndarray] = {}
+    camera_up: dict[int, np.ndarray] = {}
     lines = (text_dir / "images.txt").read_text(encoding="utf-8").splitlines()
     index = 0
     while index < len(lines):
@@ -110,6 +112,11 @@ def load_model(source: Path, component: int) -> Model:
             translation = np.asarray(fields[5:8], dtype=np.float64)
             rotation = Rotation.from_quat((qx, qy, qz, qw)).as_matrix()
             camera_centres[frame] = -rotation.T @ translation
+            # COLMAP/OpenCV camera Y points down in the image, therefore the
+            # corresponding physical up vector in reconstruction coordinates
+            # is the negative camera-Y axis.  Retaining this vector resolves
+            # the otherwise ambiguous sign of a PCA-derived gravity axis.
+            camera_up[frame] = -(rotation.T @ np.asarray((0.0, 1.0, 0.0)))
             point_fields = lines[index + 1].split()
             observations[frame] = np.asarray(
                 [int(point_fields[offset]) for offset in range(2, len(point_fields), 3)],
@@ -118,19 +125,23 @@ def load_model(source: Path, component: int) -> Model:
             index += 2
         else:
             index += 1
-    return Model(points, observations, camera_centres)
+    return Model(points, observations, camera_centres, camera_up)
 
 
 def gravity_from_cameras(model: Model, frames: tuple[int, ...] | None = None) -> np.ndarray:
-    selected = [
-        centre
-        for frame, centre in model.camera_centres.items()
+    selected_frames = [
+        frame
+        for frame in model.camera_centres
         if frames is None or frame in frames
     ]
+    selected = [model.camera_centres[frame] for frame in selected_frames]
     covariance = np.cov(np.asarray(selected).T)
     _, eigenvectors = np.linalg.eigh(covariance)
     up = eigenvectors[:, 0]
-    if up[1] < 0.0:
+    camera_up = np.mean(
+        np.asarray([model.camera_up[frame] for frame in selected_frames]), axis=0
+    )
+    if float(np.dot(up, camera_up)) < 0.0:
         up = -up
     return up / np.linalg.norm(up)
 
@@ -373,9 +384,8 @@ def main() -> int:
     ceiling_height = float(plan["plan_geometry"]["ceiling_height_m"]["value"])
 
     principal_heights = np.asarray(list(principal_model.points.values())) @ principal_up
-    height_low, height_high = np.quantile(principal_heights, (0.01, 0.95))
+    height_low, height_high = np.quantile(principal_heights, (0.01, 0.99))
     reconstructed_height_span = float(height_high - height_low)
-    absolute_scale = ceiling_height / reconstructed_height_span
 
     # Frame 351 is still in the secretary/anteroom.  Frame 358 is the first
     # camera centre at the captured Principal office transition and is the
@@ -388,6 +398,17 @@ def main() -> int:
     approach_basis = basis.T @ approach_camera
     source_direction = approach_basis[:2] - door_basis[:2]
     world_direction = turn_xy - door_xy
+    source_anchor_distance = float(np.linalg.norm(source_direction))
+    world_anchor_distance = float(np.linalg.norm(world_direction))
+    if source_anchor_distance < 1e-6:
+        raise RuntimeError("Principal doorway-to-turn source anchor is degenerate")
+    # Route registration is presentation-critical, while the 3.0 m ceiling is
+    # explicitly an appearance assumption.  Use the two semantic route anchors
+    # to set absolute scale, then keep the reconstructed ceiling height as an
+    # independent reasonableness check.
+    absolute_scale = world_anchor_distance / source_anchor_distance
+    reconstructed_ceiling_height = absolute_scale * reconstructed_height_span
+    ceiling_height_residual = abs(reconstructed_ceiling_height - ceiling_height)
     yaw = math.atan2(world_direction[1], world_direction[0]) - math.atan2(
         source_direction[1], source_direction[0]
     )
@@ -424,6 +445,7 @@ def main() -> int:
         and float(np.quantile(world_errors, 0.95)) <= 0.25
         and gravity_residual <= 3.0
         and approach_anchor_residual <= 0.35
+        and ceiling_height_residual <= 0.25
     )
 
     report = {
@@ -456,6 +478,8 @@ def main() -> int:
             )[:12],
         },
         "metric_anchor": {
+            "gravity_axis_sign_method": "mean COLMAP camera physical-up vectors",
+            "gravity_axis_sign_resolved": True,
             "principal_door_transition_source_frame": door_frame,
             "approach_direction_source_frame": approach_frame,
             "principal_door_world_xy_m": door_xy.tolist(),
@@ -464,9 +488,14 @@ def main() -> int:
             "camera_height_status": "presentation_assumption",
             "ceiling_height_m": ceiling_height,
             "ceiling_height_status": plan["plan_geometry"]["ceiling_height_m"]["status"],
-            "principal_height_quantiles": [0.01, 0.95],
+            "principal_height_quantiles": [0.01, 0.99],
             "reconstructed_height_span_units": reconstructed_height_span,
             "principal_absolute_scale_m_per_unit": absolute_scale,
+            "absolute_scale_method": "principal_door_to_turn_metric_anchor",
+            "source_anchor_distance_units": source_anchor_distance,
+            "world_anchor_distance_m": world_anchor_distance,
+            "reconstructed_ceiling_height_m": reconstructed_ceiling_height,
+            "ceiling_height_residual_m": ceiling_height_residual,
             "world_yaw_deg": math.degrees(yaw),
         },
         "world_transforms": {
@@ -489,12 +518,14 @@ def main() -> int:
             "principal_door_anchor_residual_m": 0.0,
             "approach_direction_residual_deg": 0.0,
             "principal_turn_anchor_residual_m": approach_anchor_residual,
+            "reconstructed_ceiling_height_residual_m": ceiling_height_residual,
             "thresholds": {
                 "minimum_shared_3d_pairs": 10,
                 "median_residual_max_m": 0.10,
                 "p95_residual_max_m": 0.25,
                 "gravity_residual_max_deg": 3.0,
                 "principal_turn_anchor_residual_max_m": 0.35,
+                "reconstructed_ceiling_height_residual_max_m": 0.25,
             },
         },
         "layer_contract": {

@@ -49,10 +49,12 @@ registration:
     transition anchor, and the presentation ceiling-height assumption.
   shared_atrium_candidate_pairs: 74
   accepted_pairs: 19
-  median_residual_m: 0.0486773
-  p95_residual_m: 0.1869833
+  median_residual_m: 0.0469125
+  p95_residual_m: 0.1802040
   gravity_residual_deg: 2.360724
-  principal_turn_anchor_residual_m: 0.2057169
+  gravity_axis_sign: "resolved from COLMAP camera physical-up vectors"
+  principal_turn_anchor_residual_m: 0.0
+  reconstructed_ceiling_height_m: 2.932979
   certified_survey_control: false
   status: "provisional presentation registration"
 

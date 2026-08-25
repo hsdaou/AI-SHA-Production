@@ -91,6 +91,13 @@ simulation/aisha_isaac_sim/tmp/phase7l_*
 simulation/aisha_isaac_sim/media/screenshots/phase7l_nurec_*/
 simulation/aisha_isaac_sim/media/AI-SHA_Phase7L_NuRec_IsaacSim_contact_sheet.jpg
 
+# Phase 7M contains presentation media rendered from the privacy-sensitive
+# school capture. Keep frames, QA images and the encoded preview local until an
+# authorized human privacy review approves external distribution.
+simulation/aisha_isaac_sim/tmp/phase7m_*
+simulation/aisha_isaac_sim/media/videos/AI-SHA_Phase7M_NuRec_*.mp4
+simulation/aisha_isaac_sim/media/AI-SHA_Phase7M_NuRec_*.jpg
+
 # Selected Phase 2 presentation policy (small, hash-locked release artifact)
 !simulation/aisha_isaac_sim/isaaclab/checkpoints/
 !simulation/aisha_isaac_sim/isaaclab/checkpoints/aisha_phase2_policy_model_1850.pt

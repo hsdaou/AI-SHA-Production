@@ -1,0 +1,92 @@
+schema_version: 1
+phase: PHASE7M-NUREC-PRESENTATION-REEL
+date: "2026-08-25"
+status: validated_local_presentation_preview
+objective: >-
+  Produce a privacy-reviewed widescreen presentation reel of AI-SHA visiting
+  the captured Principal-office area inside NVIDIA Isaac Sim, using the
+  corrected Phase 7L NuRec registration and accepted recorded navigation poses.
+
+source:
+  scene: scenes/phase7l_nurec_registered_administration.usda
+  trajectory_report: results/administration_nav2_phase7e_static_fusion_mission.json
+  camera: /World/Presentation/NuRec/gauss/Cameras/camera_0
+  robot: /World/Presentation/MetricWorld/AISHA
+  visual_sector: principal_office
+  source_capture: user-supplied administration walkthrough IMG_6700.MOV
+
+render:
+  renderer: RaytracedLighting with NuRec RTX
+  resolution_px: [1920, 1080]
+  fps: 24
+  single_gpu: true
+  raw_frames_committed: false
+  encoded_video_committed: false
+  output_frames: tmp/phase7m_final_frames
+  output_video: media/videos/AI-SHA_Phase7M_NuRec_Principal_Visit_Presentation.mp4
+
+motion:
+  source: accepted Phase 7E recorded pose trace
+  interpolation: none
+  presentation_retimed: true
+  nominal_reel_speed_mps: 0.7
+  source_policy_executed_live_during_render: false
+  source_motion_was_generated_by_live_nav2_and_learned_safety: true
+
+shots:
+  - id: atrium_approach
+    title: Atrium approach
+    camera_time_code: 5
+    segments: [6]
+    pose_fraction_start: 0.35
+    pose_fraction_end: 0.75
+    frame_count: 52
+  - id: principal_access
+    title: Principal-office access
+    camera_time_code: 20
+    segments: [7]
+    pose_fraction_start: 0.35
+    pose_fraction_end: 0.80
+    frame_count: 70
+  - id: principal_entry
+    title: Principal-office entry and clearance
+    camera_time_code: 65
+    segments: [8]
+    pose_fraction_start: 0.35
+    pose_fraction_end: 0.67
+    frame_count: 40
+  - id: controlled_return
+    title: Controlled return through the office doorway
+    camera_time_code: 95
+    segments: [9]
+    pose_fraction_start: 0.25
+    pose_fraction_end: 0.55
+    frame_count: 36
+
+presentation_disclosures:
+  medium: recorded-pose presentation replay inside an Isaac Sim NuRec visual twin
+  live_policy_execution_during_reel: false
+  trajectory_source: accepted live Nav2 and learned-safety simulation mission
+  nurec_used_for_collision_or_lidar: false
+  navigation_collision_geometry_changed: false
+  registration: provisional presentation registration, not certified survey control
+  vice_principal_interior_captured: false
+  physical_release: false
+
+privacy:
+  raw_capture_committed: false
+  extracted_images_committed: false
+  nurec_assets_committed: false
+  final_video_local_only: true
+  selected_camera_codes: [5, 20, 65, 95]
+  excludes_close_certificate_and_portrait_views: true
+  excludes_live_people: true
+  user_review_required_before_external_distribution: true
+
+outputs:
+  registration: results/phase7l_nurec_registration.json
+  composite_build: results/phase7l_nurec_composite_build.json
+  render_report: results/phase7m_nurec_reel_render.json
+  encode_report: results/phase7m_nurec_reel_encode.json
+  privacy_review: results/phase7m_nurec_reel_privacy_review.json
+  acceptance: results/phase7m_nurec_presentation_acceptance.json

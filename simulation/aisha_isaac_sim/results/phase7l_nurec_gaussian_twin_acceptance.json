@@ -1,6 +1,6 @@
 {
   "report_type": "phase7l_nurec_gaussian_twin_acceptance",
-  "generated_at_utc": "2026-08-25T08:28:49.172689+00:00",
+  "generated_at_utc": "2026-08-25T11:00:34.652069+00:00",
   "status": "accepted",
   "passed": true,
   "checks": {
@@ -51,12 +51,12 @@
   "checks_passed": 43,
   "checks_total": 43,
   "profile": "config/phase7l_nurec_gaussian_twin.yaml",
-  "profile_sha256": "b154319086c926db5dba5643e98f0977bbe7d727f3e2ce41ce805996e01b4d63",
+  "profile_sha256": "e04e48db908316d10de134dfceee75f4a77a1572937eaa3b08d89840087abe0c",
   "scene": "scenes/phase7l_nurec_registered_administration.usda",
-  "scene_sha256": "415a04403368e2820f4c30889b90a97a13ca0788455d712afdfd6a2070cc898a",
+  "scene_sha256": "fe5e72dacaf2b03980975688ef63091a55661f05570f6ee80311d71d9c0a807d",
   "registration_summary": {
-    "shared_atrium_median_residual_m": 0.0486772994216081,
-    "shared_atrium_p95_residual_m": 0.1869832547906237,
+    "shared_atrium_median_residual_m": 0.046912462256453395,
+    "shared_atrium_p95_residual_m": 0.18020401680419157,
     "gravity_residual_deg": 2.3607239518285903,
     "certified_survey_control": false
   },
