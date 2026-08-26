@@ -270,14 +270,70 @@ def is_followup(text: str) -> bool:
                 or _TIMETABLE.search(t))
 
 
+def is_slot_fragment(text: str) -> bool:
+    """Whether *text* contains timetable coordinates and nothing else.
+
+    This intentionally works without conversation context.  The console may
+    have the previous timetable turn while ``brain_node`` does not; classifying
+    the fragment as a skill-owned follow-up makes the brain stay silent instead
+    of independently sending it to the exam knowledge base.
+    """
+    t = _norm(text)
+    slots = extract_slots(text)
+    if not t or not any(value is not None for value in slots.values()):
+        return False
+
+    # Remove exactly the coordinate expressions the extractor understands,
+    # then allow only connective/filler words.  This rejects "what period is it
+    # now?" (residue: "what is it") and "exams on Wednesday" ("exams") while
+    # accepting "on Wednesday, the sixth" and "section A on Monday".
+    remainder = _GRADE_RE.sub(" ", t)
+    remainder = _SECTION_RE.sub(" ", remainder)
+    remainder = _PERIOD_RE.sub(" ", remainder)
+    remainder = re.sub(r"\b(" + "|".join(WEEKDAYS) + r")\b", " ", remainder)
+    remainder = re.sub(r"\b(right\s+now|at\s+the\s+moment|today|tomorrow|now)\b",
+                       " ", remainder)
+    remainder = re.sub(
+        r"\b(on|in|for|at|during|the|and|then|please|from|of|this|next|"
+        r"period|grade|class|section)\b", " ", remainder)
+    return not _norm(remainder)
+
+
+def is_slot_followup(text: str, context: dict | None) -> bool:
+    """Whether *text* only supplies missing timetable coordinates.
+
+    People commonly split one request over two turns::
+
+        "Send me the available teachers."
+        "On Thursday, the sixth period."
+
+    The second line is not a new knowledge-base question.  It refines the
+    availability request in ``context``.  This predicate is deliberately
+    conservative: at least one real slot must be present, a compatible previous
+    skill request must exist, and an utterance naming another topic (exams,
+    leave, rooms, etc.) is never borrowed by the timetable skill.
+    """
+    if not context or context.get("intent") not in (
+            INTENT_FREE_TEACHERS, INTENT_FREE_STUDENTS,
+            INTENT_FREE_COUNT, INTENT_TIMETABLE):
+        return False
+    return is_slot_fragment(text)
+
+
 def synthesize(context: dict) -> str:
     """Rebuild a full question from a remembered query, so a follow-up can be
     answered by the ordinary path instead of a second, parallel code path."""
     if not context:
         return ""
+    intent = context.get("intent")
     subject = context.get("subject") or (
-        "teachers" if context.get("intent") == INTENT_FREE_TEACHERS else "students")
-    parts = [f"send me the list of available {subject}"]
+        "teachers" if intent == INTENT_FREE_TEACHERS else "students")
+    if intent == INTENT_TIMETABLE:
+        parts = ["show me the timetable"]
+    elif intent == INTENT_FREE_COUNT:
+        parts = [f"how many {subject} are available"]
+    else:
+        parts = [f"send me the list of available {subject}"]
     if context.get("grade"):
         parts.append(f"in grade {context['grade']}")
     if context.get("section"):
@@ -308,6 +364,39 @@ def classify(text: str, context: dict | None = None) -> dict:
         return res
     if _KNOWLEDGE.search(t):
         res["why"] = "knowledge-base question"
+        return res
+
+    # A bare coordinate such as "on Wednesday, the sixth" belongs to the
+    # immediately preceding timetable request.  Without this branch it falls
+    # through to RAG, where a date-shaped fragment retrieves the exam calendar
+    # and produces an unrelated exam answer.
+    if is_slot_followup(text, context):
+        merged = {
+            name: (slots[name] if slots[name] is not None else context.get(name))
+            for name in ("grade", "section", "day", "period")
+        }
+        intent = context["intent"]
+        subject = context.get("subject")
+        if not subject and intent in (INTENT_FREE_TEACHERS,
+                                      INTENT_FREE_STUDENTS,
+                                      INTENT_FREE_COUNT):
+            subject = ("teachers" if intent == INTENT_FREE_TEACHERS
+                       else "students")
+        res.update({
+            "intent": intent,
+            **merged,
+            "why": "slot-only follow-up resolved against the previous question",
+        })
+        if subject:
+            res["subject"] = subject
+        return res
+
+    # No context is available in this process. Still claim the fragment as a
+    # timetable follow-up so it cannot reach RAG and turn into an exam answer;
+    # the skill path will ask which request it belongs to.
+    if is_slot_fragment(text):
+        res["intent"] = INTENT_FOLLOWUP
+        res["why"] = "timetable coordinates supplied without a previous question"
         return res
 
     # "send me the report" - resolvable only against the last query.

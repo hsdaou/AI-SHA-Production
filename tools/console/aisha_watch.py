@@ -56,10 +56,9 @@ SR_TOOL     = os.path.expanduser("~/robot_ws/tools/student_report_query/student_
 TT_HOME     = os.path.expanduser("~/timetable_query")
 TT_TOOL     = os.path.expanduser("~/robot_ws/tools/timetable_query/timetable_query.py")
 FACE_HOME   = os.path.expanduser("~/face_auth")        # face-auth gate lives here
-# Camera window for a scan. 8 s was too short: auth_gate loads the ArcFace model
-# BEFORE creating its ROS node, so model load + DDS discovery ate most of the
-# window and it collected <3 usable frames -> "I couldn't see a face" while the
-# user sat perfectly framed. 20 s leaves a real sampling window.
+# Maximum camera window for a difficult scan. The gate normally returns much
+# sooner after five fresh depth-live frames agree; 20 s remains the fallback for
+# poor lighting, momentary depth dropout, or a face that is not yet positioned.
 AUTH_SECS   = 20
 # Camera mounting rotation for the face gate: "0" now that the camera has been
 # re-aimed upright. It was 180 while the D435 was mounted inverted. Keep this in
@@ -70,6 +69,10 @@ CAM_ROTATE  = os.environ.get("AISHA_CAM_ROTATE", "0")
 # PIN. Set AISHA_AUTH_RELAXED=0 to restore the full four-factor gate.
 AUTH_RELAXED = os.environ.get("AISHA_AUTH_RELAXED", "1") == "1"
 VIDEO_SECS  = 15                                       # length of a recorded message
+# A slot-only continuation ("on Thursday, period six") is useful only while it
+# is genuinely part of the current conversation. Expiring the context prevents
+# an unrelated date fragment much later from being attached to a stale request.
+SKILL_CONTEXT_SECS = 5 * 60
 
 # Spoken/typed phrases that trigger the video-message skill instead of the LLM.
 VIDEO_INTENT = re.compile(
@@ -155,6 +158,7 @@ class Hub(Node):
         self._hrms_busy = False
         self._tt_busy = False
         self._last_skill = None   # last answered timetable query, for follow-ups
+        self._last_skill_at = 0.0
         self._auth_busy = False
         self._awaiting_pin = False      # next TYPED line is a PIN, not a question
         self._pin_deadline = 0.0
@@ -195,6 +199,27 @@ class Hub(Node):
         self._speaking = False        # held while the Pi's speaker is talking
         self.mic_pub = self.create_publisher(Bool, "/speaker/playing", 10)
         self.create_timer(20.0, self._reassert_mic)
+
+    def _skill_context(self):
+        """Return recent timetable context, never an indefinitely stale turn."""
+        with self.lock:
+            if (self._last_skill is not None
+                    and time.monotonic() - self._last_skill_at
+                    <= SKILL_CONTEXT_SECS):
+                return dict(self._last_skill)
+            self._last_skill = None
+            self._last_skill_at = 0.0
+            return None
+
+    def _remember_skill(self, classified):
+        with self.lock:
+            self._last_skill = dict(classified)
+            self._last_skill_at = time.monotonic()
+
+    def _clear_skill_context(self):
+        with self.lock:
+            self._last_skill = None
+            self._last_skill_at = 0.0
 
     def set_mic_mute(self, muted: bool):
         muted = bool(muted)
@@ -327,16 +352,24 @@ class Hub(Node):
             # never display this token as something the visitor said.
             return
         self._push("you", m.data)
+        context = self._skill_context()
         if VIDEO_INTENT.search(m.data or ""):
+            self._clear_skill_context()
             self._start_video_message()
         elif AUTH_INTENT.search(m.data or ""):
             self._start_auth_prompt()      # PIN is then typed, never spoken
         elif HRMS_INTENT.search(m.data or ""):
+            self._clear_skill_context()
             self._start_hrms_query(m.data)
         elif STUDENT_REPORT_INTENT.search(m.data or ""):
+            self._clear_skill_context()
             self._start_student_report_query(m.data)
-        elif _is_timetable(m.data or "", self._last_skill):
+        elif _is_timetable(m.data or "", context):
             self._start_timetable_query(m.data)
+        else:
+            # Only an immediate continuation may borrow timetable context. A
+            # real intervening topic starts a new conversation.
+            self._clear_skill_context()
 
     # ── video-message skill ─────────────────────────────────────────────────
     def _start_video_message(self):
@@ -463,26 +496,36 @@ class Hub(Node):
         # A follow-up ("send me the report") carries no subject. Rebuild the full
         # question from the last one and run it down the ordinary path, so there
         # is no second code path that can drift from the first.
+        context = self._skill_context()
         if _si is not None:
-            c = _si.classify(utterance, self._last_skill)
+            c = _si.classify(utterance, context)
             if c["intent"] == "followup":
-                self._push("AI-SHA", "Send you which report? Ask me about free "
-                                     "teachers or students first, then say "
-                                     "\"send me the list\".")
+                if _si.is_slot_fragment(utterance):
+                    self._push(
+                        "AI-SHA",
+                        "Which availability or timetable request should I apply "
+                        "that day and period to? Please start with the full request.")
+                else:
+                    self._push("AI-SHA", "Send you which report? Ask me about free "
+                                         "teachers or students first, then say "
+                                         "\"send me the list\".")
                 with self.lock:
                     self._tt_busy = False
                 return
-            if _si.is_followup(utterance) and self._last_skill:
+            # The timetable subprocess has no conversation memory. Rebuild both
+            # "send me the report" and coordinate-only continuations into a
+            # complete standalone request before invoking it.
+            if context and (_si.is_followup(utterance)
+                            or _si.is_slot_followup(utterance, context)):
                 utterance = _si.synthesize(c)
         """Ask the timetable app. Speakable answers (a class timetable, a count of
         free students) come back as text and are shown; anything that would name a
         student is emailed by the app and only a confirmation comes back here."""
         try:
             if _si is not None:
-                c2 = _si.classify(utterance, self._last_skill)
+                c2 = _si.classify(utterance, context)
                 if c2["intent"] != "none":
-                    with self.lock:
-                        self._last_skill = c2      # remember for the next follow-up
+                    self._remember_skill(c2)      # remember for the next follow-up
             r = subprocess.run(
                 f'python3 -u "{TT_TOOL}" ask {json.dumps(utterance)}',
                 shell=True, cwd=TT_HOME, capture_output=True, text=True, timeout=90)
@@ -524,7 +567,6 @@ class Hub(Node):
         finally:
             with self.lock:
                 self._tt_busy = False
-        self._last_skill = None   # last answered timetable query, for follow-ups
 
     def _sh(self, cmd, timeout=180):
         return subprocess.run(cmd, shell=True, cwd=VIDEO_HOME, capture_output=True,
@@ -648,6 +690,7 @@ class Hub(Node):
         self._awaiting_pin = False
 
         self._push("you", text + "  (typed)")
+        context = self._skill_context()
         # A video-message request is handled HERE, not by the LLM. Publishing it on
         # /speech/text as well would also reach brain_node, which routes it to the
         # knowledge base and answers something irrelevant ("I cannot access private
@@ -655,6 +698,7 @@ class Hub(Node):
         # visitor. Spoken requests still pass through brain_node; only the typed
         # path can be kept clean.
         if VIDEO_INTENT.search(text or ""):
+            self._clear_skill_context()
             self._start_video_message()
             return
         if AUTH_INTENT.search(text or ""):
@@ -669,16 +713,18 @@ class Hub(Node):
                     self._pending_admin = ("hrms", rest)
                 elif STUDENT_REPORT_INTENT.search(rest):
                     self._pending_admin = ("student_report", rest)
-                elif _is_timetable(rest, self._last_skill):
+                elif _is_timetable(rest, context):
                     self._pending_admin = ("timetable", rest)
             self._start_auth_prompt()
             return
         if HRMS_INTENT.search(text or ""):
+            self._clear_skill_context()
             self._start_hrms_query(text)
             return
-        if _is_timetable(text or "", self._last_skill):
+        if _is_timetable(text or "", context):
             self._start_timetable_query(text)
             return
+        self._clear_skill_context()
         msg = String(); msg.data = text
         self.pub.publish(msg)
 
