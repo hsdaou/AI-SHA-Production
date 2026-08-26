@@ -162,11 +162,16 @@ def make_grabber():
         def __init__(self):
             super().__init__('face_auth_grab')
             self.bridge = CvBridge(); self.color = None; self.depth = None
+            # Consumers that make multi-frame decisions must not count the same
+            # cached colour image again when spin_once wakes for a depth frame.
+            self.color_seq = 0
             q = QoSProfile(depth=5, reliability=ReliabilityPolicy.BEST_EFFORT,
                            history=HistoryPolicy.KEEP_LAST)
             self.create_subscription(Image, '/camera/camera/color/image_raw', self._c, q)
             self.create_subscription(Image, '/camera/camera/aligned_depth_to_color/image_raw', self._d, q)
-        def _c(self, m): self.color = orient(self.bridge.imgmsg_to_cv2(m, 'bgr8'))
+        def _c(self, m):
+            self.color = orient(self.bridge.imgmsg_to_cv2(m, 'bgr8'))
+            self.color_seq += 1
         def _d(self, m): self.depth = orient(self.bridge.imgmsg_to_cv2(m, '16UC1'))
     return rclpy, Grab
 

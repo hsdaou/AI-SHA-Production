@@ -19,6 +19,7 @@ Commands:
 Reuses primitives from face_auth.py (Detector, Embedder, depth_liveness, grabber).
 """
 import argparse, os, json, time, hashlib, hmac, secrets, sys, glob
+from collections import Counter, deque
 import numpy as np
 
 import face_auth as fa   # same directory
@@ -149,17 +150,35 @@ def cmd_authenticate(a):
     if not gals:
         print("[auth] DENIED - no admin has both a face gallery and a PIN set."); sys.exit(2)
 
-    det, emb = fa.Detector(), fa.Embedder()
+    # Create the subscriptions before loading the models. DDS discovery then
+    # overlaps the ~4 s detector/embedder startup instead of beginning after it.
     rclpy, Grab = fa.make_grabber(); rclpy.init(); node = Grab()
+    try:
+        det, emb = fa.Detector(), fa.Embedder()
+    except Exception:
+        node.destroy_node(); rclpy.shutdown()
+        raise
 
-    # Phase 1 — identity + passive depth liveness over a short window
+    # Phase 1 — identity + passive depth liveness. The time limit remains a
+    # fallback for poor positioning; a clear, live, consistently matching face
+    # finishes as soon as enough independent fresh frames agree.
     print("[auth] Phase 1/3 IDENTITY: look at the camera...")
     votes, flat, nodata = [], 0, 0
-    t_end = time.time() + a.seconds
-    while rclpy.ok() and time.time() < t_end:
+    fast_matches = max(3, a.fast_matches)
+    recent = deque(maxlen=fast_matches)
+    last_color_seq = -1
+    sample_started = time.monotonic()
+    t_end = sample_started + a.seconds
+    while rclpy.ok() and time.monotonic() < t_end:
         rclpy.spin_once(node, timeout_sec=0.1)
         if node.color is None:
             continue
+        # spin_once also wakes for depth callbacks. Only process a newly arrived
+        # colour frame so the fast path represents independent camera samples.
+        color_seq = getattr(node, "color_seq", last_color_seq + 1)
+        if color_seq == last_color_seq:
+            continue
+        last_color_seq = color_seq
         r = det.detect_align(node.color.copy())
         if r is None:
             continue
@@ -172,6 +191,7 @@ def cmd_authenticate(a):
             # (motion/edge dropout) carries no spoof signal, so skip it.
             if linfo.get("kind") == "flat":
                 flat += 1
+                recent.clear()
             else:
                 nodata += 1
             continue
@@ -181,14 +201,24 @@ def cmd_authenticate(a):
             s = float(np.max(E @ v))
             if s > best:
                 best, best_name = s, name
-        votes.append((best_name if best >= a.threshold else "UNKNOWN", best))
+        decided = best_name if best >= a.threshold else "UNKNOWN"
+        votes.append((decided, best))
+        recent.append(decided)
+        # Five consecutive depth-live matches is stricter than the normal final
+        # three-vote minimum. Never fast-pass after planar/photo evidence; such
+        # attempts continue through the full window for the spoof-fraction test.
+        if (flat == 0 and len(recent) == fast_matches and
+                recent[0] != "UNKNOWN" and len(set(recent)) == 1):
+            elapsed = time.monotonic() - sample_started
+            print(f"[auth]   fast match: {fast_matches} fresh live frames agreed "
+                  f"in {elapsed:.1f}s.")
+            break
     depth_valid = len(votes) + flat
     spoof_frac = flat / max(1, depth_valid)
     if depth_valid >= 3 and spoof_frac > 0.30:
         node.destroy_node(); rclpy.shutdown()
         print(f"[auth] DENIED - possible SPOOF ({spoof_frac*100:.0f}% of depth-valid frames "
               f"were planar/flat: {flat}/{depth_valid}). nodata_skipped={nodata}"); sys.exit(3)
-    from collections import Counter
     tally = Counter(n for n, _ in votes)
     top = tally.most_common(1)[0] if tally else ("UNKNOWN", 0)
     # Distinguish "saw nobody" from "saw someone I don't know". The camera on this
@@ -254,7 +284,10 @@ if __name__ == "__main__":
     au.add_argument("--relaxed", action="store_true",
                     help="demo mode: face + passive liveness only, no challenge/PIN")
     au.add_argument("--threshold", type=float, default=0.45)
-    au.add_argument("--seconds", type=float, default=5); au.set_defaults(fn=cmd_authenticate)
+    au.add_argument("--seconds", type=float, default=5)
+    au.add_argument("--fast-matches", type=int, default=5,
+                    help="finish early after this many consecutive fresh live matches")
+    au.set_defaults(fn=cmd_authenticate)
     cs = sub.add_parser("check-session"); cs.set_defaults(fn=cmd_check_session)
     lo = sub.add_parser("logout"); lo.set_defaults(fn=cmd_logout)
     args = ap.parse_args(); args.fn(args)
