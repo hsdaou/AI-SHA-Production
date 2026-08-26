@@ -1,0 +1,47 @@
+# Teacher-Student App as a boot service.
+#
+#   sudo cp deploy/teacher-student-app.service /etc/systemd/system/
+#   sudo systemctl edit teacher-student-app     # put the keys in an override
+#   sudo systemctl enable --now teacher-student-app
+#
+# Bound to loopback. The robot reaches it through a reverse proxy that terminates
+# TLS; the previous deployment bound 0.0.0.0 directly, which put an endpoint
+# returning children's names on the open network in plain HTTP.
+
+[Unit]
+Description=Teacher-Student App (ISC Sharjah timetable service)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=hsdaou
+Group=hsdaou
+WorkingDirectory=/home/hsdaou/school_app
+EnvironmentFile=/home/hsdaou/.school_app.env
+Environment=SCHOOL_DB=/home/hsdaou/school_app/data/school.db
+Environment=SCHOOL_TZ=Asia/Dubai
+# Keys and SMTP credentials belong in a drop-in, not in a file that is committed:
+#   [Service]
+#   Environment=SCHOOL_STAFF_KEY=...
+#   Environment=SCHOOL_ROBOT_KEY=...
+#   Environment=SCHOOL_REPORT_TO=...
+#   Environment=SCHOOL_SMTP_USER=...
+#   Environment=SCHOOL_SMTP_PASS=...
+ExecStart=/usr/bin/env gunicorn -w 4 -b 127.0.0.1:5055 --timeout 60 'tsapp:create_app()'
+Restart=on-failure
+RestartSec=5
+
+# The service reads one SQLite file and sends mail. It needs nothing else.
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+MemoryMax=1G
+
+[Install]
+WantedBy=multi-user.target

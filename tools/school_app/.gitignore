@@ -1,7 +1,6 @@
-# Personal data — NEVER commit. Student_Database_1.xlsx covers minors.
-data/*.xlsx
-data/*.db
-# Real secrets. Only the .example belongs in git.
-school_app.env
-.env
 __pycache__/
+*.py[cod]
+.pytest_cache/
+# Generated: rebuild with `python3 -m etl.build`. Contains personal data about
+# children and must never be committed.
+data/

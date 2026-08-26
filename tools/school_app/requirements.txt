@@ -1,0 +1,4 @@
+Flask>=3.0
+openpyxl>=3.1
+# gunicorn is only needed to serve in production; the ETL and tests do not use it.
+gunicorn>=21.2
