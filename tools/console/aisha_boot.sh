@@ -28,8 +28,10 @@ trap 'say "stopping on signal"; kill_kids; exit 0' TERM INT
 # ── wait for USB hardware; on a cold boot the camera and mic enumerate late ──
 say "waiting for RealSense + ReSpeaker to enumerate..."
 for i in $(seq 1 45); do
-  cam=$(lsusb 2>/dev/null | grep -ci 'intel' || echo 0)
-  mic=$(arecord -l 2>/dev/null | grep -ci respeaker || echo 0)
+  cam=$(lsusb 2>/dev/null | grep -ci 'intel' || true)
+  mic=$(arecord -l 2>/dev/null | grep -ci respeaker || true)
+  cam=${cam:-0}
+  mic=${mic:-0}
   [ "$cam" -gt 0 ] && [ "$mic" -gt 0 ] && { say "  hardware present"; break; }
   sleep 2
 done
@@ -81,14 +83,16 @@ WATCH=$!
 # figures they never asked for. aisha_watch ignores __selftest__ outright, so
 # it does not start a recording either.
 say "self-testing the question pipeline..."
-BEFORE=$(grep -c 'Route ->' "$LOG" 2>/dev/null || echo 0)
+BEFORE=$(grep -c 'Route ->' "$LOG" 2>/dev/null || true)
+BEFORE=${BEFORE:-0}
 ROUTED=0
 for attempt in 1 2; do
   ros2 topic pub --once /speech/text std_msgs/String \
       "{data: '__selftest__ video message'}" >/dev/null 2>&1
   for i in $(seq 1 20); do
     sleep 3
-    AFTER=$(grep -c 'Route ->' "$LOG" 2>/dev/null || echo 0)
+    AFTER=$(grep -c 'Route ->' "$LOG" 2>/dev/null || true)
+    AFTER=${AFTER:-0}
     if [ "$AFTER" -gt "$BEFORE" ]; then ROUTED=1; break; fi
   done
   [ "$ROUTED" = "1" ] && break
